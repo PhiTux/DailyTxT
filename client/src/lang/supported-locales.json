@@ -1,0 +1,6 @@
+{
+  "langs": [
+    { "code": "en", "desc": "English" },
+    { "code": "de", "desc": "Deutsch" }
+  ]
+}

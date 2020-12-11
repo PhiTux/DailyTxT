@@ -1,0 +1,18 @@
+dailytxt:
+  image: phitux/dailytxt:latest
+  container_name: dailytxt
+  restart: always
+  environment:
+    # That's the internal container-port. You can actually use any portnumber (must match with the one at 'ports')
+    - PORT=8765
+
+    - SECRET_KEY=<openssl rand -base64 32>
+
+    # Set it to False or remove the line completely to disallow registration of new users.
+    - ALLOW_REGISTRATION=True
+  ports:
+    - "127.0.0.1:<host_port>:8765"
+    # perhaps you only want:
+    # "<host_port>:8765"
+  volumes:
+    - "</save/my/dailytxt-files/here/>:/app/data/"
