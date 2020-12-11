@@ -8,7 +8,7 @@ You should definitely take a quick look at [How it Works](#howitworks) to see al
 ## Chapters
 
 - [Features](#features)
-- [How it Works](#how-it-works)
+- [How to Use](#how-to-use)
 - [Installation](#installation)
 
 ## Features
@@ -20,7 +20,7 @@ You should definitely take a quick look at [How it Works](#howitworks) to see al
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
 - **Multi-User-Spport:** You can create multiple User Accounts. Each account uses it's one encryption key - so there is no risk for a data breach.
 
-## How it Works
+## How to Use
 
 There are two cool Shortcuts you should know:
 
