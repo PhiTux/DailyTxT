@@ -3,7 +3,7 @@
 DailyTxT is an encrypted Diary Web-App to simply write down your stories of the day and to easily find them again.
 It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run via **[Docker](https://hub.docker.com/r/phitux/dailytxt/)**.
 
-You should definitely take a quick look at [How it Works](#howitworks) to see all the hidden features.
+You should definitely take a quick look at [How to Use](#how-to-use) to see all the hidden features.
 
 ## Chapters
 
