@@ -10,6 +10,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - [Features](#features)
 - [How to Use](#how-to-use)
 - [Installation](#installation)
+- [Changelog](#changelog)
 
 ## Features
 
@@ -109,6 +110,18 @@ Here is an example apache-configuration (which of course needs to be slightly ad
     ProxyPassReverse / http://localhost:8007/
 </VirtualHost>
 
+```
+
+## Changelog
+
+### 1.0.2
+```
+Minor CSS Updates.
+Exported Zip now also includes the history texts.
+```
+### 1.0.1 
+```
+Initial Release
 ```
 
 ### License
