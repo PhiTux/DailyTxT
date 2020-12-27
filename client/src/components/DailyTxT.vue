@@ -396,7 +396,6 @@ export default {
       versionHistory: [],
       selectedHistoryText: '',
       selectedHistoryVersion: 0
-      // historyAvailable: false
     }
   },
   updated: function() {
@@ -864,9 +863,14 @@ export default {
         return
       }
       this.isExporting = true
+      this.isLoading = true
+
+      this.toastSuccess(this.$t('export-started-1'))
+      this.toastSuccess(this.$t('export-started-2'))
 
       UserService.exportData().then(
         response => {
+          this.isLoading = false
           this.isExporting = false
           let blob = new Blob([response.data], { type: 'application/zip' })
           let link = document.createElement('a')
@@ -891,6 +895,7 @@ export default {
           link.click()
         },
         error => {
+          this.isLoading = false
           this.isExporting = false
           console.log(error)
         }
@@ -1174,7 +1179,11 @@ input[type='password']:focus {
 }
 
 .searchResultSelected {
-  background-color: #bdbdbd !important;
+  background-color: #42a5f5 !important;
+}
+
+.searchResultRow:not(.searchResultSelected):hover {
+  background-color: #90caf9 !important;
 }
 
 .searchResultRow {
@@ -1275,6 +1284,7 @@ input[type='password']:focus {
 
 .uploadProgress {
   display: list-item;
+  list-style: none;
 }
 
 .fileList {

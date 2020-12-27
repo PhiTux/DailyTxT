@@ -34,5 +34,7 @@
   "modal-history-title": "History of the currently selected day",
   "use-selected-history-as-default": "Set selected history version as newest text?",
   "yes": "Yes",
-  "no-history-available-yet": "No history available yet!"
+  "no-history-available-yet": "No history available yet!",
+  "export-started-1": "Zip file is being created. This may take a few minutes depending on the size.",
+  "export-started-2": "IMPORTANT: Do NOT reload the page during this process!"
 }

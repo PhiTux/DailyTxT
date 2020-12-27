@@ -369,6 +369,10 @@ def exportData(user_id, key):
                 if 'text' in day.keys():
                     day['text'] = decrypt_by_key(
                         day['text'].encode(), enc_key).decode('utf-8')
+                if 'history' in day.keys():
+                    for h in day['history']:
+                        h['text'] = decrypt_by_key(
+                        h['text'].encode(), enc_key).decode('utf-8')
 
             write_export_log(user_id, logfile.split(
                 '/')[-2], logfile.split('/')[-1].split('.')[0], file_content)

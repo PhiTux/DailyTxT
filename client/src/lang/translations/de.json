@@ -34,5 +34,7 @@
   "modal-history-title": "Verlauf des aktuell ausgewählten Tages",
   "use-selected-history-as-default": "Aktuell ausgewählte Version als neuesten Text setzen?",
   "yes": "Ja",
-  "no-history-available-yet": "Noch kein Verlauf verfügbar!"
+  "no-history-available-yet": "Noch kein Verlauf verfügbar!",
+  "export-started-1": "Zip-Datei wird erstellt. Das kann je nach Umfang einige Minuten dauern.",
+  "export-started-2": "WICHTIG: Die Seite währenddessen NICHT neu laden!"
 }
