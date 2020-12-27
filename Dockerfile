@@ -1,9 +1,11 @@
 # build
-FROM node:15.2.1-alpine3.10 as build-vue
+FROM node:15.5.0-alpine3.10 as build-vue
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY ./client/package*.json ./
+COPY ./client/.npmrc ./
 RUN npm config set update-notifier false && \
+    npm set registry https://registry.npmjs.org && \
     npm install
 COPY ./client .
 RUN npm run build
