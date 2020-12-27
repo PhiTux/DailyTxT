@@ -124,6 +124,6 @@ Exported Zip now also includes the history texts.
 Initial Release
 ```
 
-### License
+## License
 
 MIT, see the License-File.
