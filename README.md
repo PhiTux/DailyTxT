@@ -19,7 +19,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Search:** Support your memorization by searching all your notes for any keyword to quickly rediscover what you have already forgotten.
 - **Multi-Language-Support:** The Web-App is currently available in **German** and **English** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
-- **Multi-User-Spport:** You can create multiple User Accounts. Each account uses it's one encryption key - so there is no risk for a data breach.
+- **Multi-User-Spport:** You can create multiple User Accounts. Each account uses it's own encryption key - so there is no risk for a data breach.
 
 ## How to Use
 
