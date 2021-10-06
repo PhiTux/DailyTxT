@@ -11,3 +11,8 @@ class BaseConfig(object):
     SECRET_KEY = os.urandom(24)
     if 'SECRET_KEY' in os.environ:
         SECRET_KEY = os.environ.get('SECRET_KEY')
+
+    DATA_INDENT = None
+    if 'DATA_INDENT' in os.environ:
+        DATA_INDENT = int(os.environ.get('DATA_INDENT', '0'), 10)
+
