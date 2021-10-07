@@ -76,7 +76,7 @@ def login():
         'sub': user['user_id'],
         'key': user['password_key'].decode(),
         'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(days=30)},
+        'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
     return jsonify({'token': token.decode('UTF-8')})

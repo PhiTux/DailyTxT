@@ -16,3 +16,6 @@ class BaseConfig(object):
     if 'DATA_INDENT' in os.environ:
         DATA_INDENT = int(os.environ.get('DATA_INDENT', '0'), 10)
 
+    JWT_EXP_DAYS = 30
+    if 'JWT_EXP_DAYS' in os.environ:
+        JWT_EXP_DAYS = int(os.environ.get('JWT_EXP_DAYS', '30'), 10)
