@@ -59,6 +59,12 @@ dailytxt:
 
     # Set it to False or remove the line completely to disallow registration of new users.
     - ALLOW_REGISTRATION=True
+
+    # Use this if you want the json log file to be indented. Makes it easier to compare the files. Otherwise just remove this line! 
+    - DATA_INDENT=2
+
+    # Set after how many days the JWT token will expire and you have to re-login. Defaults to 30 days if line is ommited.
+    - JWT_EXP_DAYS=60
   ports:
     - "127.0.0.1:<host_port>:8765"
     # perhaps you only want:
@@ -114,11 +120,20 @@ Here is an example apache-configuration (which of course needs to be slightly ad
 
 ## Changelog
 
+### 1.0.3
+```
+Added two new environment variables:
+1. DATA_INDENT
+2. JWT_EXP_DAYS
+(see explanation above)
+```
+
 ### 1.0.2
 ```
 Minor CSS Updates.
 Exported Zip now also includes the history texts.
 ```
+
 ### 1.0.1 
 ```
 Initial Release
