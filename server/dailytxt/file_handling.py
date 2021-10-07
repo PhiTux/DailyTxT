@@ -132,7 +132,7 @@ def write_json(path, data):
 
     try:
         with open(path, 'w') as outfile:
-            json.dump(data, outfile, ensure_ascii=False)
+            json.dump(data, outfile, ensure_ascii=False, indent=current_app.config['DATA_INDENT'])
             return True
     except IOError:
         return False
