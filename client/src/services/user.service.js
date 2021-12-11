@@ -1,7 +1,7 @@
 import axios from 'axios'
 import authHeader from './auth-headers'
 
-const API_URL = '/api/'
+const API_URL = process.env.VUE_APP_API_URL
 
 class UserService {
   getHistory(dateSelected) {

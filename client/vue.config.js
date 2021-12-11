@@ -3,7 +3,7 @@ module.exports = {
     name: 'DailyTxT',
     short_name: 'DailyTxT',
     themeColor: '#2196f3',
-    msTileColor: '#000000',
+    msTileColor: '#2196f3',
     backgroundColor: '#2196f3',
     manifestOptions: {
       icons: [
