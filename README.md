@@ -115,18 +115,26 @@ Here is an example apache-configuration (which of course needs to be slightly ad
     ProxyPass / http://localhost:8007/ nocanon
     ProxyPassReverse / http://localhost:8007/
 </VirtualHost>
-
 ```
 
+You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
+
 ## Changelog
+
+### 1.0.4
+```
+Added possibility to run application on a subpath
+```
+Thanks to [@rhld16](https://github.com/rhld16)'s PR
 
 ### 1.0.3
 ```
 Added two new environment variables:
-1. DATA_INDENT
+1. DATA_INDENT [1]
 2. JWT_EXP_DAYS
 (see explanation above)
 ```
+[1]: Thanks to [@bogosj]( https://github.com/bogosj)'s PR
 
 ### 1.0.2
 ```
