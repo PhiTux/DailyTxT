@@ -10,10 +10,8 @@
   "dependencies": {
     "animate.css": "^4.1.1",
     "axios": "^0.20.0",
-    "core-js": "^3.6.5",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
-    "material-design-icons": "^3.0.1",
     "material-design-icons-iconfont": "^6.1.0",
     "materialize-css": "^1.0.0-rc.2",
     "register-service-worker": "^1.7.1",
