@@ -16,7 +16,7 @@ PyJWT == 1.7.1
 Werkzeug == 1.0.1
 
 # server/dailytxt/encryption.py: 1,2,3,4
-cryptography == 3.2.1
+cryptography == 35.0.0
 
 # server/dailytxt/logs.py: 3
 shortuuid == 1.0.1
