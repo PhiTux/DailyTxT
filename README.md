@@ -121,6 +121,13 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.6
+(2021_12_12)
+```
+Docker image size was drastically reduced by new multi-stage build.
+```
+Thank you very much [@rhld16](https://github.com/rhld16)!
+
 ### 1.0.5
 (2021_12_12)
 ```
