@@ -121,7 +121,14 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
-### 1.0.4
+### 1.0.5
+(2021_12_12)
+```
+Now automatically redirects (in most cases) to login-page when the Webtoken expired.
+```
+
+### 1.0.4 
+(2021_12_12)
 ```
 Added possibility to run application on a subpath
 ```

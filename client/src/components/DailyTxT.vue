@@ -751,6 +751,9 @@ export default {
         error => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
+          this.$parent.$parent.transitionName = 'slideRight'
+          this.$store.dispatch('auth/logout')
+          this.$router.push('/login')
         }
       )
     },
@@ -855,6 +858,9 @@ export default {
         error => {
           this.isLoading = false
           this.toastAlert(error.response.data.message)
+          this.$parent.$parent.transitionName = 'slideRight'
+          this.$store.dispatch('auth/logout')
+          this.$router.push('/login')
         }
       )
     },
