@@ -20,15 +20,18 @@ RUN apk update && apk add --no-cache python3 && \
     rm -r /root/.cache
 COPY ./server/requirements.txt ./
 RUN apk update && apk add --no-cache gcc musl-dev libressl-dev libffi-dev python3-dev && \
-    pip install --user -r requirements.txt
+    pip install --user -r requirements.txt && \
+    pip install --user gunicorn
 
 # production
-FROM nginx:stable-alpine as production
+FROM python:3-alpine as production
 WORKDIR /app
 COPY --from=build-vue /app/dist /usr/share/nginx/html
+RUN apk update && apk add --no-cache nginx
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /root/.local/ /usr/local/
-RUN apk update && apk add --no-cache py3-gunicorn
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY --from=builder /root/.local/ /root/.local/
+ENV PATH=/root/.local/bin:$PATH
 COPY ./server .
 CMD gunicorn -b 0.0.0.0:5000 'dailytxt.application:create_app()' --daemon && \
     sed -i -e 's/$PORT/'"$PORT"'/g' /etc/nginx/conf.d/default.conf && \
