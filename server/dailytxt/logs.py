@@ -86,6 +86,10 @@ def saveLog(user_id, key, log):
         user_id, log['year'], log['month']
     )
 
+    logIsEmpty = False
+    if log['log'] == "":
+        logIsEmpty = True
+
     enc_res = encrypt_by_userid(log['log'], user_id, key)
     if not enc_res['success']:
         return {'success': False, 'message': 'Encryption error'}
@@ -101,11 +105,15 @@ def saveLog(user_id, key, log):
                 # append 'old' text to history:
                 if not 'history' in day.keys():
                     day['history'] = []
-                day['history'].append({'version': len(
-                    day['history']) + 1, 'date_written': day['date_written'], 'text': day['text']})
+                if 'text' in day.keys() and 'date_written' in day.keys():
+                    day['history'].append({'version': len(
+                        day['history']) + 1, 'date_written': day['date_written'], 'text': day['text']})
 
                 # save new text
-                day['text'] = enc_res['text']
+                if logIsEmpty:
+                    day['text'] = ""
+                else:
+                    day['text'] = enc_res['text']
                 day['date_written'] = log['date_written']
                 written = True
                 break
@@ -130,10 +138,11 @@ def getHistory(user_id, key, date):
                     return {'success': False, 'message': 'No history available yet!'}
                 res = {'success': True, 'history': []}
                 for h in day['history']:
-                    dec_res = decrypt_by_userid(h['text'], user_id, key)
-                    if not dec_res['success']:
-                        continue
-                    h['text'] = dec_res['text']
+                    if h['text'] != '':
+                        dec_res = decrypt_by_userid(h['text'], user_id, key)
+                        if not dec_res['success']:
+                            continue
+                        h['text'] = dec_res['text']
                     res['history'].append(h)
                 return res
 
@@ -180,11 +189,14 @@ def loadDay(user_id, key, date):
         for day in file_content['days']:
             if day['day'] == date['day']:
                 if 'text' in day.keys():
-                    dec_res = decrypt_by_userid(day['text'], user_id, key)
-                    if not dec_res['success']:
-                        day_info['enc_error'] = True
-                        return day_info
-                    day_info['text'] = dec_res['text']
+                    if day['text'] == '':
+                        day_info['text'] = ''
+                    else:
+                        dec_res = decrypt_by_userid(day['text'], user_id, key)
+                        if not dec_res['success']:
+                            day_info['enc_error'] = True
+                            return day_info
+                        day_info['text'] = dec_res['text']
                     day_info['date_written'] = day['date_written']
                 if 'files' in day.keys():
                     for f in day['files']:
@@ -209,38 +221,12 @@ def getDaysWithLogs(user_id, key, page):
 
     if isinstance(file_content, dict):
         for day in file_content['days']:
-            if 'text' in day.keys():
+            if 'text' in day.keys() and day['text'] != "":
                 logs.append(day['day'])
             if 'files' in day.keys() and day['files'] != []:
                 files.append(day['day'])
 
     return {'logs': logs, 'files': files}
-
-
-def removeDay(user_id, key, date):
-    file_content = read_log(user_id, date['year'], date['month'])
-
-    res = {'success': False}
-
-    new_days = []
-
-    if isinstance(file_content, dict):
-        for day in file_content['days']:
-            if day['day'] == date['day']:
-                if 'files' in day.keys() and day['files'] != []:
-                    new_days.append({'day': day['day'], 'files': day['files']})
-
-            else:
-                new_days.append(day)
-    else:
-        return res
-
-    file_content['days'] = new_days
-
-    if write_log(user_id, date['year'], date['month'], file_content):
-        return {'success': True}
-
-    return res
 
 
 def createOrArray(s):
@@ -367,12 +353,14 @@ def exportData(user_id, key):
                         allFiles.append(new_f)
                     day['files'] = new_files
                 if 'text' in day.keys():
-                    day['text'] = decrypt_by_key(
-                        day['text'].encode(), enc_key).decode('utf-8')
+                    if day['text'] != '':
+                        day['text'] = decrypt_by_key(
+                            day['text'].encode(), enc_key).decode('utf-8')
                 if 'history' in day.keys():
                     for h in day['history']:
-                        h['text'] = decrypt_by_key(
-                        h['text'].encode(), enc_key).decode('utf-8')
+                        if h['text'] != '':
+                            h['text'] = decrypt_by_key(
+                                h['text'].encode(), enc_key).decode('utf-8')
 
             write_export_log(user_id, logfile.split(
                 '/')[-2], logfile.split('/')[-1].split('.')[0], file_content)

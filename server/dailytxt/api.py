@@ -106,13 +106,6 @@ def route_getDaysWithLogs(user_id, key):
     return jsonify(res)
 
 
-@api.route('/removeDay', methods=['POST'])
-@token_required
-def route_removeDay(user_id, key):
-    res = removeDay(user_id, key, request.get_json())
-    return jsonify(res)
-
-
 @api.route('search', methods=['POST'])
 @token_required
 def route_search(user_id, key):

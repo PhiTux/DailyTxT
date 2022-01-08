@@ -122,18 +122,6 @@ class UserService {
     )
   }
 
-  removeDay(date) {
-    return axios.post(
-      API_URL + 'removeDay',
-      {
-        year: date.getFullYear(),
-        month: date.getMonth() + 1,
-        day: date.getDate()
-      },
-      { headers: authHeader() }
-    )
-  }
-
   search(searchString) {
     return axios.post(
       API_URL + 'search',

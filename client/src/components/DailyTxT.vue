@@ -802,11 +802,6 @@ export default {
 
       var toSave = this.logText
 
-      if (toSave == '') {
-        await this.removeDay(date)
-        return
-      }
-
       var now = new Date()
       var date_written = now.toLocaleString([], {
         year: 'numeric',
@@ -826,19 +821,6 @@ export default {
               month: this.monthShown
             })
           }
-        },
-        error => {
-          console.log(error.response.data.message)
-          this.toastAlert(error.response.data.message)
-        }
-      )
-    },
-    async removeDay(date) {
-      await UserService.removeDay(date).then(
-        () => {
-          this.savedLogText = ''
-          this.dateWritten = ''
-          this.getDaysWithLogs({ year: this.yearShown, month: this.monthShown })
         },
         error => {
           console.log(error.response.data.message)
