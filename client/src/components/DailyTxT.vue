@@ -30,9 +30,14 @@
         >
       </div>
     </div>
-    <div id="modal_preview_file" class="modal">
+    <div id="modal_preview_file" class="modal modal-fixed-footer">
       <div class="modal-content">
-        <h4>{{ $t('modal-preview-file-header') }}</h4>
+        <h4 id="modal_preview_file_titletext">
+          {{ $t('modal-preview-file-header') }}
+        </h4>
+        <p id="modal_preview_file_zoomtext">
+          {{ $t('modal-preview-file-click-to-zoom') }}
+        </p>
         <p>
           <img
             class="responsive-img materialboxed"
@@ -983,6 +988,14 @@ body {
 </style>
 
 <style scoped>
+#modal_preview_file_titletext {
+  margin-bottom: 0;
+}
+
+#modal_preview_file_zoomtext {
+  margin-top: 0;
+}
+
 .historyTabs {
   overflow-x: auto;
   white-space: nowrap;

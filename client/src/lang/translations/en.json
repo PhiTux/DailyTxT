@@ -2,7 +2,8 @@
   "upload-files-overlay": "Upload File(s)",
   "modal-delete-file-header": "Delete File?",
   "modal-delete-file-text": "Do you really want to delete {0}?",
-  "modal-preview-file-header": "File Preview",
+  "modal-preview-file-header": "Image Preview",
+  "modal-preview-file-click-to-zoom": "Click to zoom",
   "abort": "Abort",
   "delete": "Delete",
   "modal-change-password-header": "Change Password",
@@ -37,5 +38,7 @@
   "yes": "Yes",
   "no-history-available-yet": "No history available yet!",
   "export-started-1": "Zip file is being created. This may take a few minutes depending on the size.",
-  "export-started-2": "IMPORTANT: Do NOT reload the page during this process!"
+  "export-started-2": "IMPORTANT: Do NOT reload the page during this process!",
+  "close": "Close",
+  "download": "Download"
 }
