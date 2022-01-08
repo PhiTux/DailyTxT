@@ -30,6 +30,28 @@
         >
       </div>
     </div>
+    <div id="modal_preview_file" class="modal">
+      <div class="modal-content">
+        <h4>{{ $t('modal-preview-file-header') }}</h4>
+        <p>
+          <img
+            class="responsive-img materialboxed"
+            id="modal_preview_file_img"
+            :src="fileToDownload.href"
+          />
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a
+          class="modal-close waves-effect waves-red btn-flat"
+          @click="downloadFile()"
+          >{{ $t('download') }}</a
+        >
+        <a class="modal-close waves-effect waves-green btn-flat">{{
+          $t('close')
+        }}</a>
+      </div>
+    </div>
     <div id="modal_history" class="modal">
       <div class="modal-content">
         <h4>{{ $t('modal-history-title') }}</h4>
@@ -336,7 +358,7 @@
                   class="file tooltipped"
                   data-position="left"
                   :data-tooltip="file.filename"
-                  @click="downloadFile(file.uuid)"
+                  @click="downloadFileModal(file.uuid)"
                 >
                   {{ file.filename }}
                 </a>
@@ -386,6 +408,7 @@ export default {
       fileUploadProgresses: [],
       files: [],
       fileToDelete: {},
+      fileToDownload: {},
       old_password: '',
       new_password1: '',
       new_password2: '',
@@ -554,19 +577,33 @@ export default {
       }
       this.lastPage = page
     },
-    downloadFile(uuid) {
+    downloadFileModal(uuid) {
       UserService.downloadFile(uuid).then(
+        response => {
+          let blob = new Blob([response.data])
+          var href = window.URL.createObjectURL(blob)
+          this.fileToDownload = this.files.find(f => f.uuid == uuid)
+          this.fileToDownload.href = href
+          if (this.fileToDownload.filename.match(/\.(jpg|jpeg|png|gif)$/)) {
+            var modal = document.querySelector('#modal_preview_file')
+            M.Modal.getInstance(modal).open()
+          } else {
+            this.downloadFile()
+          }
+        },
+        error => {
+          console.log(error.response.data.message)
+          this.toastAlert(error.response.data.message)
+        }
+      )
+    },
+    downloadFile() {
+      UserService.downloadFile(this.fileToDownload.uuid).then(
         response => {
           let blob = new Blob([response.data])
           let link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
-          var filename
-          this.files.forEach(f => {
-            if (f.uuid == uuid) {
-              filename = f.filename
-            }
-          })
-          link.download = filename
+          link.download = this.fileToDownload.filename
           link.click()
         },
         error => {
@@ -604,11 +641,7 @@ export default {
       )
     },
     deleteFileModal(uuid) {
-      this.files.forEach(f => {
-        if (f.uuid == uuid) {
-          this.fileToDelete = f
-        }
-      })
+      this.fileToDelete = this.files.find(f => f.uuid == uuid)
       var modal = document.querySelector('#modal_delete_file')
       M.Modal.getInstance(modal).open()
     },

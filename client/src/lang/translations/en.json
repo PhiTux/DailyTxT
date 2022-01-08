@@ -2,6 +2,7 @@
   "upload-files-overlay": "Upload File(s)",
   "modal-delete-file-header": "Delete File?",
   "modal-delete-file-text": "Do you really want to delete {0}?",
+  "modal-preview-file-header": "File Preview",
   "abort": "Abort",
   "delete": "Delete",
   "modal-change-password-header": "Change Password",

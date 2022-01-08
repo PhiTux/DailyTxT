@@ -2,6 +2,7 @@
   "upload-files-overlay": "Datei(en) hochladen",
   "modal-delete-file-header": "Datei löschen?",
   "modal-delete-file-text": "Soll die Datei {0} wirklich gelöscht werden?",
+  "modal-preview-file-header": "Dateivorschau",
   "abort": "Abbrechen",
   "delete": "Löschen",
   "modal-change-password-header": "Passwort ändern",
