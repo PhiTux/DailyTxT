@@ -126,7 +126,7 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 
 ### 1.0.7
-(2022_01_11)
+(NOT YET PUBLISHED IN DOCKER)
 ```
 - Added image preview for uploaded image-files [1]
 - Bugfix: couldn't save text, when there was not yet any text for this day BUT already an uploaded file.
