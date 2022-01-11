@@ -25,6 +25,11 @@
         </div>
       </a>
       <ul id="nav-mobile" class="right">
+        <li v-if="this.newerDailyTxTVersion">
+          <a @click.prevent="versionToast"
+            ><i style="color:#f57c00" class="material-icons">info_outline</i></a
+          >
+        </li>
         <li v-if="this.$store.state.historyAvailable">
           <a @click.prevent="historyModal"
             ><i class="material-icons">history</i></a
@@ -51,7 +56,8 @@ export default {
   name: 'NavBar',
   data() {
     return {
-      locales: supported_locales.langs
+      locales: supported_locales.langs,
+      newerDailyTxTVersion: false
     }
   },
   methods: {
@@ -68,7 +74,15 @@ export default {
     },
     exportData() {
       eventBus.$emit('exportData')
+    },
+    versionToast() {
+      eventBus.$emit('updateModal')
     }
+  },
+  beforeMount() {
+    this.$root.$on('dailytxt_version_update', data => {
+      this.newerDailyTxTVersion = data.update_available
+    })
   }
 }
 </script>

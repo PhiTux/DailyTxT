@@ -158,6 +158,13 @@ def route_exportData(user_id, key):
     return send_file(f, as_attachment=True, attachment_filename="export.zip")
 
 
+@api.route('getRecentVersion', methods=['POST'])
+@token_required
+def route_getRecentVersion(user_id, key):
+    res = getRecentVersion(user_id, key, request.get_json())
+    return jsonify(res)
+
+
 @api.route('getHistory', methods=['POST'])
 @token_required
 def route_getHistory(user_id, key):

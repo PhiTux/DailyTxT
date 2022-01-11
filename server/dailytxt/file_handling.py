@@ -1,9 +1,11 @@
 import json
 import os
 import errno
+import requests
+import re
 from flask import current_app
-from pathlib import Path
 from shutil import rmtree
+from datetime import datetime
 
 
 def users_file():
@@ -132,7 +134,51 @@ def write_json(path, data):
 
     try:
         with open(path, 'w') as outfile:
-            json.dump(data, outfile, ensure_ascii=False, indent=current_app.config['DATA_INDENT'])
+            json.dump(data, outfile, ensure_ascii=False,
+                      indent=current_app.config['DATA_INDENT'])
             return True
     except IOError:
         return False
+
+
+def major_minor_micro(version):
+    major, minor, micro = re.search('(\d+)\.(\d+)\.(\d+)', version).groups()
+
+    return int(major), int(minor), int(micro)
+
+
+def docker_api_get_recent_version():
+    r = requests.get(
+        'https://hub.docker.com/v2/repositories/phitux/dailytxt/tags')
+    r = r.json()
+    versions = [v['name'] for v in r['results'] if v['name']
+                != 'latest' and v['name'].count('.') == 2]
+
+    return max(versions, key=major_minor_micro)
+
+
+def getRecentVersion(user_id, key, v):
+    datestring = "%Y-%m-%d_%H:%M:%S"
+
+    filename = os.path.join(
+        current_app.config['DATA_PATH'], 'recent_version.json')
+    # load file with recent version
+    file_content = read_json(filename)
+
+    write_new = False
+    if (file_content == ''):
+        write_new = True
+    else:
+        # check if version was checked in the last hour
+        diff = datetime.now() - \
+            datetime.strptime(file_content['timestamp'], datestring)
+        if diff.total_seconds() > 3600:
+            write_new = True
+
+    if write_new:
+        file_content = {'timestamp': datetime.now().strftime(datestring),
+                        'version': docker_api_get_recent_version()}
+
+        write_json(filename, file_content)
+
+    return {'recent_version': max([file_content['version'], v['client_version']], key=major_minor_micro)}

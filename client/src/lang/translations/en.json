@@ -40,5 +40,8 @@
   "export-started-1": "Zip file is being created. This may take a few minutes depending on the size.",
   "export-started-2": "IMPORTANT: Do NOT reload the page during this process!",
   "close": "Close",
-  "download": "Download"
+  "download": "Download",
+  "modal-update-available-header": "Newer version of DailyTxT available!",
+  "update-available-client-version": "Currently installed version:",
+  "update-available-recent-version": "Latest version"
 }

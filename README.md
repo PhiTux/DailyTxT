@@ -119,7 +119,22 @@ Here is an example apache-configuration (which of course needs to be slightly ad
 
 You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
+---
+---
+
 ## Changelog
+
+
+### 1.0.7
+(2022_01_11)
+```
+- Added image preview for uploaded image-files [1]
+- Bugfix: couldn't save text, when there was not yet any text for this day BUT already an uploaded file.
+- Added automatic update-check with notification for new docker versions (this is sort of beta, let's see how well it works...)
+```
+[1]: Thanks to [@rhld16](https://github.com/rhld16)
+
+---
 
 ### 1.0.6
 (2021_12_12)
@@ -128,11 +143,15 @@ Docker image size was drastically reduced by new multi-stage build.
 ```
 Thank you very much [@rhld16](https://github.com/rhld16)!
 
+---
+
 ### 1.0.5
 (2021_12_12)
 ```
 Now automatically redirects (in most cases) to login-page when the Webtoken expired.
 ```
+
+---
 
 ### 1.0.4 
 (2021_12_12)
@@ -140,6 +159,8 @@ Now automatically redirects (in most cases) to login-page when the Webtoken expi
 Added possibility to run application on a subpath
 ```
 Thanks to [@rhld16](https://github.com/rhld16)'s PR
+
+---
 
 ### 1.0.3
 ```
@@ -150,11 +171,15 @@ Added two new environment variables:
 ```
 [1]: Thanks to [@bogosj]( https://github.com/bogosj)'s PR
 
+---
+
 ### 1.0.2
 ```
 Minor CSS Updates.
 Exported Zip now also includes the history texts.
 ```
+
+---
 
 ### 1.0.1 
 ```

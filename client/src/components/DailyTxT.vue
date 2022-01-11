@@ -57,6 +57,26 @@
         }}</a>
       </div>
     </div>
+    <div id="modal_update_available" class="modal modal-fixed-footer">
+      <div class="modal-content">
+        <h4>
+          {{ $t('modal-update-available-header') }}
+        </h4>
+        <p class="version_modal_text">
+          {{ $t('update-available-client-version') }}:
+          <b>{{ clientVersion }}</b>
+        </p>
+        <p class="version_modal_text">
+          {{ $t('update-available-recent-version') }}:
+          <b>{{ recentDailytxtVersion }}</b>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a class="modal-close waves-effect waves-green btn-flat">{{
+          $t('close')
+        }}</a>
+      </div>
+    </div>
     <div id="modal_history" class="modal">
       <div class="modal-content">
         <h4>{{ $t('modal-history-title') }}</h4>
@@ -389,6 +409,7 @@ import Vue from 'vue'
 import UserService from '../services/user.service.js'
 import _ from 'lodash'
 import { eventBus } from '../main.js'
+import { version } from '../../package'
 
 Vue.use(VCalendar, {
   componentPrefix: 'vc'
@@ -423,7 +444,9 @@ export default {
       isExporting: false,
       versionHistory: [],
       selectedHistoryText: '',
-      selectedHistoryVersion: 0
+      selectedHistoryVersion: 0,
+      recentDailytxtVersion: version,
+      clientVersion: version
     }
   },
   updated: function() {
@@ -482,6 +505,22 @@ export default {
     isSaved: function() {
       return this.logText == this.savedLogText
     }
+  },
+  beforeMount() {
+    UserService.getRecentVersion(version).then(
+      response => {
+        if (response.data.recent_version != version) {
+          this.$root.$emit('dailytxt_version_update', {
+            update_available:
+              response.data.recent_version != version ? true : false
+          })
+          this.recentDailytxtVersion = response.data.recent_version
+        }
+      },
+      error => {
+        console.log(error.response.data.message)
+      }
+    )
   },
   mounted() {
     $(document).ready(function() {
@@ -549,6 +588,10 @@ export default {
     eventBus.$off('historyModal')
     eventBus.$on('historyModal', () => {
       this.historyModal()
+    })
+    eventBus.$off('updateModal')
+    eventBus.$on('updateModal', () => {
+      this.updateModal()
     })
   },
   methods: {
@@ -719,6 +762,10 @@ export default {
     },
     changePasswordModal() {
       var modal = document.querySelector('#modal_change_password')
+      M.Modal.getInstance(modal).open()
+    },
+    updateModal() {
+      var modal = document.querySelector('#modal_update_available')
       M.Modal.getInstance(modal).open()
     },
     changePassword() {
@@ -970,6 +1017,11 @@ body {
 </style>
 
 <style scoped>
+.version_modal_text {
+  font-size: 17px;
+  text-align: left;
+}
+
 #modal_preview_file_titletext {
   margin-bottom: 0;
 }

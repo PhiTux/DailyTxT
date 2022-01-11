@@ -85,6 +85,16 @@ class UserService {
     )
   }
 
+  getRecentVersion(version) {
+    return axios.post(
+      API_URL + 'getRecentVersion',
+      { client_version: version },
+      {
+        headers: authHeader()
+      }
+    )
+  }
+
   saveLog(text, dateSelected, date_written) {
     return axios.post(
       API_URL + 'saveLog',
