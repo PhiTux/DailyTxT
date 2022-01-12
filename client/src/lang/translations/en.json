@@ -42,6 +42,6 @@
   "close": "Close",
   "download": "Download",
   "modal-update-available-header": "Newer version of DailyTxT available!",
-  "update-available-client-version": "Currently installed version:",
+  "update-available-client-version": "Currently installed version",
   "update-available-recent-version": "Latest version"
 }
