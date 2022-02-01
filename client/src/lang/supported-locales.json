@@ -1,6 +1,16 @@
 {
   "langs": [
-    { "code": "en", "desc": "English" },
-    { "code": "de", "desc": "Deutsch" }
+    {
+      "code": "en",
+      "desc": "English"
+    },
+    {
+      "code": "de",
+      "desc": "Deutsch"
+    },
+    {
+      "code": "es",
+      "desc": "Spanish"
+    }
   ]
 }

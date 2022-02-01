@@ -17,7 +17,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Encryption:** Everything you write is encrypted before it's written to the server's storage. Even the admin can't read your private stuff!
 - **File-Upload:** You can upload arbitrary files for each day (128 MB max each). They are **stored encrypted** on the server as well.
 - **Search:** Support your memorization by searching all your notes for any keyword to quickly rediscover what you have already forgotten.
-- **Multi-Language-Support:** The Web-App is currently available in **German** and **English** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
+- **Multi-Language-Support:** The Web-App is currently available in **German**, **English** and **Spanish** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
 - **Multi-User-Spport:** You can create multiple User Accounts. Each account uses it's own encryption key - so there is no risk for a data breach.
 
@@ -124,6 +124,14 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.8
+(2022_02_XX)
+```
+- Added spanish translation [1]
+```
+[1]: Thanks to [@SmartPhoneLover](https://github.com/SmartPhoneLover)
+
+---
 
 ### 1.0.7
 (2022_01_12)
