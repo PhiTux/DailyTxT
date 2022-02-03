@@ -13,6 +13,21 @@
           >{{ $t('export-data') }}</a
         >
       </li>
+      <li class="divider"></li>
+      <li>
+        <a
+          class="waves-effect waves-light btn"
+          for="importData"
+          @click.prevent="triggerImportData"
+          ><i class="material-icons">cloud_upload</i>{{ $t('import-data') }}</a
+        >
+        <input
+          type="file"
+          id="importData"
+          name="importData"
+          @change="importData($event)"
+        />
+      </li>
     </ul>
     <div class="nav-wrapper">
       <a data-target="slide-out" class="left sidenav-trigger show-on-small"
@@ -75,8 +90,15 @@ export default {
     exportData() {
       eventBus.$emit('exportData')
     },
+    importData(e) {
+      eventBus.$emit('importData', e)
+    },
     versionToast() {
       eventBus.$emit('updateModal')
+    },
+    triggerImportData(e) {
+      e.preventDefault()
+      document.querySelector('#importData').click()
     }
   },
   beforeMount() {
@@ -88,6 +110,10 @@ export default {
 </script>
 
 <style scoped>
+#importData {
+  display: none;
+}
+
 .brand-logo {
   height: 100%;
   display: inline-flex;
@@ -135,7 +161,7 @@ a {
 .dropdown-content,
 .dropdown-content:hover {
   min-width: 250px;
-  max-width: 350px;
+  max-width: 450px;
   background: #fff0;
   box-shadow: none;
 }

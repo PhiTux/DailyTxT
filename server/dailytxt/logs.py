@@ -81,6 +81,165 @@ def uploadFile(user_id, key, upload):
     return {'success': False}
 
 
+def importData(user_id, key, f):
+    zf = f.files['file']
+    path = import_directory(user_id)
+
+    # extract zip-content directly without saving zip itself
+    with zipfile.ZipFile(zf, 'r') as zip_ref:
+        zip_ref.extractall(path)
+
+    # go through decrypted content and 'import'
+
+    # find export root - zip-structure is ./data/<userID>/export/
+    counter = 3
+    for root, dirs, files in os.walk(path):
+        if counter == 0:
+            path = root
+            break
+        counter -= 1
+
+    # find all files
+    log_paths = []
+    file_paths = []
+    for root, dirs, files in os.walk(path):
+        for f in files:
+            if (not root.endswith('files')):
+                log_paths.append(os.path.join(root, f))
+            else:
+                file_paths.append(os.path.join(root, f))
+
+    for l in log_paths:
+        year = int(l.split('/')[-2])
+        month = int(l.split('/')[-1].split('.')[0])
+        print(year)
+        print(month)
+        file_content = read_log(user_id, year, month)
+        file_content_import = read_json(l)
+
+        if not isinstance(file_content, dict):
+            file_content = {'days': []}
+
+        if isinstance(file_content_import, dict):
+            for day_import in file_content_import['days']:
+                print(day_import)
+                file_content = move_text_to_history(
+                    file_content, day_import['day'])
+                if 'history' in day_import.keys():
+                    print(sorted(day_import['history'],
+                                 key=lambda h: h['version']))
+                    for history in sorted(day_import['history'], key=lambda h: h['version']):
+                        print(history)
+                        file_content = append_history(
+                            file_content, history, day_import['day'], user_id, key)
+                if 'text' in day_import.keys() and 'date_written' in day_import.keys():
+                    file_content = set_new_text(
+                        file_content, day_import, user_id, key)
+                if 'files' in day_import.keys():
+                    for file in day_import['files']:
+                        file_content = import_file(
+                            file_content, file, day_import['day'], file_paths, user_id, key)
+
+        write_log(user_id, year, month, file_content)
+
+    delete_import_directory(user_id)
+
+    return {'success': True}
+
+
+def import_file(file_content, import_file, day_date, file_paths, user_id, key):
+
+    # handle filename
+    written = False
+
+    enc_filename = encrypt_by_userid(import_file['filename'], user_id, key)
+    new_file = {
+        'enc_filename': enc_filename['text'], 'uuid_filename': import_file['uuid']}
+
+    for day in file_content['days']:
+        if day['day'] == day_date:
+            if 'files' in day.keys():
+                for file in day['files']:
+                    if file['uuid_filename'] == import_file['uuid']:
+                        return file_content
+            else:
+                day['files'] = []
+            day['files'].append(new_file)
+            written = True
+
+    if not written:
+        file_content['days'].append({'day': day_date, 'files': [new_file]})
+
+    # handle file-content
+    filepath = ''
+    for p in file_paths:
+        if p.split('/')[-1].startswith(import_file['uuid']):
+            filepath = p
+            break
+    with open(filepath, 'rb') as f:
+        enc_file = encrypt_file_by_userid(f.read(), user_id, key)
+        write_file(enc_file['text'], import_file['uuid'])
+
+    return file_content
+
+
+def set_new_text(file_content, import_text, user_id, key):
+    written = False
+
+    enc_res = {'text': ''}
+    if import_text['text'] != '':
+        enc_res = encrypt_by_userid(import_text['text'], user_id, key)
+
+    for day in file_content['days']:
+        if day['day'] == import_text['day']:
+            day['text'] = enc_res['text']
+            day['date_written'] = import_text['date_written']
+            written = True
+            break
+
+    if not written:
+        file_content['days'].append(
+            {'day': import_text['day'], 'text': enc_res['text'], 'date_written': import_text['date_written']})
+
+    return file_content
+
+
+def append_history(file_content, history, day_date, user_id, key):
+    written = False
+
+    enc_res = {'text': ''}
+    if history['text'] != '':
+        enc_res = encrypt_by_userid(history['text'], user_id, key)
+
+    for day in file_content['days']:
+        if day['day'] == day_date:
+            if not 'history' in day.keys():
+                day['history'] = []
+
+            day['history'].append({'version': len(
+                day['history']) + 1, 'date_written': history['date_written'], 'text': enc_res['text']})
+            written = True
+            break
+
+    if not written:
+        file_content['days'].append({'day': day_date, 'history': [
+                                    {'version': 1, 'date_written': history['date_written'], 'text': enc_res['text']}]})
+
+    return file_content
+
+
+def move_text_to_history(file_content, day_date):
+    for day in file_content['days']:
+        if day['day'] == day_date:
+            if not 'history' in day.keys():
+                day['history'] = []
+            if 'text' in day.keys() and 'date_written' in day.keys():
+                day['history'].append({'version': len(
+                    day['history']) + 1, 'date_written': day['date_written'], 'text': day['text']})
+            break
+    return file_content
+
+
 def saveLog(user_id, key, log):
     file_content = read_log(
         user_id, log['year'], log['month']

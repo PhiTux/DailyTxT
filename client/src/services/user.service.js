@@ -50,6 +50,16 @@ class UserService {
     })
   }
 
+  importData(f, onUploadProgress) {
+    let formData = new FormData()
+    formData.append('file', f)
+
+    return axios.post(API_URL + 'importData', formData, {
+      headers: authHeader(),
+      onUploadProgress
+    })
+  }
+
   deleteFile(uuid, dateSelected) {
     return axios.post(
       API_URL + 'deleteFile',

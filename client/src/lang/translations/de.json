@@ -23,6 +23,7 @@
   "encryption-error-try-relogin": "Fehler beim Entschlüsseln! Eventuell neu einloggen?",
   "change-password": "Passwort ändern",
   "export-data": "Daten exportieren (entschlüsselt)",
+  "import-data": "Daten reimportieren (wiederherstellen)",
   "login-header": "Einloggen",
   "username-label": "Benutzername",
   "password-label": "Passwort",
@@ -43,5 +44,10 @@
   "download": "Download",
   "modal-update-available-header": "Es ist eine neuere Version für DailyTxT verfügbar!",
   "update-available-client-version": "Aktuell installierte Version",
-  "update-available-recent-version": "Neueste Version"
+  "update-available-recent-version": "Neueste Version",
+  "error-uploading-file": "Fehler beim Upload! Vielleicht ist die Datei zu groß?",
+  "modal-import-data-header": "Daten werden reimportiert",
+  "modal-import-data-text-1": "Fortschritt des Uploads:",
+  "modal-import-data-text-2": "Verschlüsselung und Importierung der Daten",
+  "import-successful": "Import erfolgreich abgeschlossen"
 }

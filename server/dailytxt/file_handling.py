@@ -8,6 +8,10 @@ from shutil import rmtree
 from datetime import datetime
 
 
+def import_directory(user_id):
+    return os.path.join(current_app.config['DATA_PATH'], str(user_id), 'import_tmp')
+
+
 def users_file():
     return os.path.join(current_app.config['DATA_PATH'], current_app.config['USERS_FILE'])
 
@@ -74,6 +78,11 @@ def delete_file_by_uuid(uuid_filename):
 def delete_export_directory(user_id):
     rmtree(os.path.join(
         current_app.config['DATA_PATH'], str(user_id), 'export'))
+
+
+def delete_import_directory(user_id):
+    rmtree(os.path.join(
+        current_app.config['DATA_PATH'], str(user_id), 'import_tmp'))
 
 
 def read_file(uuid_filename):

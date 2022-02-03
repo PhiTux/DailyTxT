@@ -23,6 +23,7 @@
     "encryption-error-try-relogin": "¡Error en la encriptación! ¿Prueba con volver a iniciar sesión?",
     "change-password": "Cambiar clave",
     "export-data": "Exportar datos (no encriptados)",
+    "import-data": "Reimportar datos (restaurar)",
     "login-header": "Iniciar sesión",
     "username-label": "Nombre usuario",
     "password-label": "Clave",
@@ -43,5 +44,10 @@
     "download": "Descargar",
     "modal-update-available-header": "¡Nueva versión de DailyTxT disponible!",
     "update-available-client-version": "Versión instalada",
-    "update-available-recent-version": "Última versión"
+    "update-available-recent-version": "Última versión",
+    "error-uploading-file": "Error al subir el archivo. ¿Tal vez es demasiado grande?",
+    "modal-import-data-header": "Reimportación de datos",
+    "modal-import-data-text-1": "Progreso de la subida:",
+    "modal-import-data-text-2": "Cifrado e importación de los datos",
+    "import-successful": "Importación completada con éxito"
 }

@@ -30,6 +30,92 @@
         >
       </div>
     </div>
+    <div id="modal_import_data" class="modal">
+      <div class="modal-content">
+        <h4>{{ $t('modal-import-data-header') }}</h4>
+
+        <li class="upload-icons">
+          <i v-if="importStep == 1" class="material-icons">arrow_forward</i>
+          <i v-if="importStep == 2 || importStep == 3" class="material-icons"
+            >check</i
+          >
+        </li>
+        {{ $t('modal-import-data-text-1') }}
+        <br />
+        <li class="collection-item importProgress">
+          <div class="progress">
+            <div
+              class="determinate"
+              :style="{ width: importProgress + '%' }"
+            ></div>
+          </div>
+        </li>
+        <div class="divider"></div>
+        <li class="upload-icons">
+          <i v-if="importStep == 2" class="material-icons">arrow_forward</i>
+          <i v-if="importStep == 3" class="material-icons">check</i>
+        </li>
+        {{ $t('modal-import-data-text-2') }}
+        <div class="col s2 m4 l3" id="loading" v-if="importStep == 2">
+          <div class="preloader-wrapper small active">
+            <div class="spinner-layer spinner-blue">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-red">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-yellow">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-green">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-if="importStep == 3" class="modal-footer">
+        <a
+          @click="reloadPage"
+          class="modal-close waves-effect waves-green btn-flat"
+          >{{ $t('close') }}</a
+        >
+      </div>
+    </div>
     <div id="modal_preview_file" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4 id="modal_preview_file_titletext">
@@ -446,7 +532,9 @@ export default {
       selectedHistoryText: '',
       selectedHistoryVersion: 0,
       recentDailytxtVersion: version,
-      clientVersion: version
+      clientVersion: version,
+      importProgress: 0,
+      importStep: 0
     }
   },
   updated: function() {
@@ -585,6 +673,10 @@ export default {
     eventBus.$on('exportData', () => {
       this.exportData()
     })
+    eventBus.$off('importData')
+    eventBus.$on('importData', e => {
+      this.importData(e)
+    })
     eventBus.$off('historyModal')
     eventBus.$on('historyModal', () => {
       this.historyModal()
@@ -595,6 +687,9 @@ export default {
     })
   },
   methods: {
+    reloadPage() {
+      window.location.reload()
+    },
     setHistoryActive(version) {
       this.selectedHistoryVersion = version
       var h
@@ -626,9 +721,11 @@ export default {
       this.lastPage = page
     },
     downloadFileModal(uuid) {
+      this.isLoading = true
       UserService.downloadFile(uuid).then(
         response => {
           let blob = new Blob([response.data])
+          this.isLoading = false
           var href = window.URL.createObjectURL(blob)
           this.fileToDownload = this.files.find(f => f.uuid == uuid)
           this.fileToDownload.href = href
@@ -640,27 +737,33 @@ export default {
           }
         },
         error => {
+          this.isLoading = false
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
       )
     },
     downloadFile() {
+      this.loading = true
       UserService.downloadFile(this.fileToDownload.uuid).then(
         response => {
           let blob = new Blob([response.data])
+          this.loading = false
           let link = document.createElement('a')
           link.href = window.URL.createObjectURL(blob)
           link.download = this.fileToDownload.filename
           link.click()
         },
         error => {
+          this.loading = false
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
       )
     },
     uploadFile(f) {
+      this.isLoading = true
+
       var myProgress = this.fileUploadProgresses.length
       this.fileUploadProgresses.push(0)
       UserService.uploadFile(f, this.dateSelected, event => {
@@ -671,6 +774,7 @@ export default {
         )
       }).then(
         response => {
+          this.isLoading = false
           if (response.data.success) {
             this.files.push({
               filename: f.name,
@@ -683,8 +787,14 @@ export default {
           }
         },
         error => {
-          console.log(error.response.data.message)
-          this.toastAlert(error.response.data.message)
+          this.isLoading = false
+          if (typeof error.response.data.message !== 'undefined') {
+            console.log(error.response.data.message)
+            this.toastAlert(error.response.data.message)
+          } else {
+            console.log(error.response.data)
+            this.toastAlert(this.$t('error-uploading-file'))
+          }
         }
       )
     },
@@ -788,14 +898,14 @@ export default {
       )
     },
     uploadFilesBtn(event) {
-      event.target.files.forEach(f => {
+      Array.prototype.forEach.call(event.target.files, f => {
         this.uploadFile(f)
       })
     },
     uploadFilesDrop(event) {
       event.preventDefault()
       this.dragging = false
-      event.dataTransfer.files.forEach(f => {
+      Array.prototype.forEach.call(event.dataTransfer.files, f => {
         if (!f.type && f.size % 4096 == 0) {
           this.toastAlert(this.$t('no-valid-file'))
         } else {
@@ -973,6 +1083,40 @@ export default {
           console.log(error)
         }
       )
+    },
+    importData(event) {
+      var f = event.target.files[0]
+
+      var modal = document.querySelector('#modal_import_data')
+      M.Modal.init(modal, { dismissible: false })
+      M.Modal.getInstance(modal).open()
+      this.importStep = 1
+
+      UserService.importData(f, event => {
+        this.importProgress = Math.round((100 * event.loaded) / event.total)
+
+        if (event.loaded == event.total) {
+          this.importStep = 2
+        }
+      }).then(
+        response => {
+          if (response.data.success) {
+            this.importStep = 3
+            this.toastSuccess(this.$t('import-successful'))
+          }
+        },
+        error => {
+          if (typeof error.response.data.message !== 'undefined') {
+            console.log(error.response.data.message)
+            this.toastAlert(error.response.data.message)
+            this.importStep = 3
+          } else {
+            console.log(error.response.data)
+            this.toastAlert(this.$t('error-uploading-file'))
+            this.importStep = 3
+          }
+        }
+      )
     }
   }
 }
@@ -1017,6 +1161,10 @@ body {
 </style>
 
 <style scoped>
+.upload-icons {
+  vertical-align: middle;
+}
+
 .version_modal_text {
   font-size: 17px;
   text-align: left;
@@ -1369,6 +1517,11 @@ input[type='password']:focus {
 }
 
 .uploadProgress {
+  display: list-item;
+  list-style: none;
+}
+
+.importProgress {
   display: list-item;
   list-style: none;
 }

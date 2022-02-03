@@ -120,6 +120,13 @@ def route_uploadFile(user_id, key):
     return jsonify(res)
 
 
+@api.route('importData', methods=['POST'])
+@token_required
+def route_importData(user_id, key):
+    res = importData(user_id, key, request)
+    return jsonify(res)
+
+
 @api.route('downloadFile', methods=['POST'])
 @token_required
 def route_downloadFile(user_id, key):
