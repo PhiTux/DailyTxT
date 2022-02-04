@@ -1455,6 +1455,8 @@ input[type='password']:focus {
   transition: box-shadow ease 0.3s;
   margin-bottom: 20px;
   padding: 2px;
+  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .main-textarea:not(.saved) {

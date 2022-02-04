@@ -19,7 +19,8 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Search:** Support your memorization by searching all your notes for any keyword to quickly rediscover what you have already forgotten.
 - **Multi-Language-Support:** The Web-App is currently available in **German**, **English** and **Spanish** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
-- **Multi-User-Spport:** You can create multiple User Accounts. Each account uses it's own encryption key - so there is no risk for a data breach.
+- **Multi-User-Spport:** You can create multiple User Accounts. Each account uses its own encryption key - so there is no risk for a data breach.
+- **Backup & Restore:** You can export all data (decrypted) for backup-reasons in a zip-file and reimport the data later by uploading the zip.
 
 ## How to Use
 
@@ -29,6 +30,9 @@ There are two cool Shortcuts you should know:
 - Select the search field: <kbd>Ctrl</kbd> + <kbd>F</kbd>
 
 ![DailyTxT Description](readme/DailyTxT_Description.jpg)
+
+### Note on backup & restore: 
+You can only reimport/restore **all** data at once, that was exported before, it's not selective! The restored data is then the most recent data for each day and any previous data for that day was moved to the day's history.
 
 ## Installation
 
@@ -128,6 +132,7 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 (2022_02_XX)
 ```
 - Added spanish translation [1]
+- Added possibility to reimport (restore) data, that was exported before! 
 ```
 [1]: Thanks to [@SmartPhoneLover](https://github.com/SmartPhoneLover)
 

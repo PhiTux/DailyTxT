@@ -112,8 +112,6 @@ def importData(user_id, key, f):
     for l in log_paths:
         year = int(l.split('/')[-2])
         month = int(l.split('/')[-1].split('.')[0])
-        print(year)
-        print(month)
         file_content = read_log(user_id, year, month)
         file_content_import = read_json(l)
 
@@ -122,14 +120,10 @@ def importData(user_id, key, f):
 
         if isinstance(file_content_import, dict):
             for day_import in file_content_import['days']:
-                print(day_import)
                 file_content = move_text_to_history(
                     file_content, day_import['day'])
                 if 'history' in day_import.keys():
-                    print(sorted(day_import['history'],
-                                 key=lambda h: h['version']))
                     for history in sorted(day_import['history'], key=lambda h: h['version']):
-                        print(history)
                         file_content = append_history(
                             file_content, history, day_import['day'], user_id, key)
                 if 'text' in day_import.keys() and 'date_written' in day_import.keys():
