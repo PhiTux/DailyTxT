@@ -30,6 +30,114 @@
         >
       </div>
     </div>
+    <div id="modal_create_backup_codes" class="modal modal-fixed-footer">
+      <div class="modal-content">
+        <h4>{{ $t('backup-codes') }}</h4>
+        <div class="container backup-codes-description">
+          {{ $t('backup-codes-description-1') }}
+          <br />
+          <b>{{ $t('attention') }}:</b>
+          {{ $t('backup-codes-description-2') }}
+        </div>
+        <div class="divider"></div>
+        <div class="col s2 m4 l3" id="loading" v-if="backupCodesLoading">
+          <div class="preloader-wrapper small active">
+            <div class="spinner-layer spinner-blue">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-red">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-yellow">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+
+            <div class="spinner-layer spinner-green">
+              <div class="circle-clipper left">
+                <div class="circle"></div>
+              </div>
+              <div class="gap-patch">
+                <div class="circle"></div>
+              </div>
+              <div class="circle-clipper right">
+                <div class="circle"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container" v-if="backupCodesHTML != ''">
+          <h6>{{ $t('backup-codes-created-1') }}</h6>
+          {{ $t('backup-codes-created-2') }}
+          <div class="backup-wrap">
+            <pre class="backup-codes-textarea" v-html="backupCodesHTML"></pre>
+            <div v-if="canCopy" class="copyToClipboard">
+              <a
+                class="btn-floating waves-effect waves-light deep-orange lighten-1"
+                @click.prevent="copy(backupCodesCopy)"
+                ><i class="material-icons">content_copy</i></a
+              >
+            </div>
+          </div>
+        </div>
+        <div v-if="backupCodesHTML != ''" class="divider"></div>
+        <div class="container">
+          <div class="row">
+            <div class="input-field col s12">
+              <input
+                id="backupCodesPassword"
+                type="password"
+                v-model="password"
+                @keyup.enter="createBackupCodes()"
+              />
+              <label for="backupCodesPassword">{{
+                $t('password-label')
+              }}</label>
+              <a
+                class="waves-effect waves-light btn right deep-orange lighten-1"
+                @click="createBackupCodes()"
+                :class="{
+                  disabled: password == ''
+                }"
+                >{{ $t('create-new-backup-codes') }}</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a
+          class="modal-close waves-effect waves-green btn-flat"
+          @click="backupCodes = []"
+          >{{ $t('close') }}</a
+        >
+      </div>
+    </div>
     <div id="modal_import_data" class="modal">
       <div class="modal-content">
         <h4>{{ $t('modal-import-data-header') }}</h4>
@@ -534,7 +642,11 @@ export default {
       recentDailytxtVersion: version,
       clientVersion: version,
       importProgress: 0,
-      importStep: 0
+      importStep: 0,
+      password: '',
+      backupCodes: [],
+      backupCodesLoading: false,
+      canCopy: false
     }
   },
   updated: function() {
@@ -565,6 +677,24 @@ export default {
           dates: datesFiles
         }
       ]
+    },
+    backupCodesHTML: function() {
+      var html = ''
+      if (this.backupCodes.length > 0) {
+        this.backupCodes.forEach(t => {
+          html += html == '' ? t : '<br />' + t
+        })
+      }
+      return html
+    },
+    backupCodesCopy: function() {
+      var text = ''
+      if (this.backupCodes.length > 0) {
+        this.backupCodes.forEach(t => {
+          text += text == '' ? t : '\n' + t
+        })
+      }
+      return text
     },
     dateDescription: function() {
       return this.dateSelected.toLocaleDateString([], {
@@ -662,12 +792,17 @@ export default {
     }
   },
   created: function() {
+    this.canCopy = !!navigator.clipboard
     this.debouncedAutoSave = _.debounce(function() {
       this.autoSave(this.dateSelected)
     }, 1000)
     eventBus.$off('changePassword')
     eventBus.$on('changePassword', () => {
       this.changePasswordModal()
+    })
+    eventBus.$off('backupCodes')
+    eventBus.$on('backupCodes', () => {
+      this.backupCodesModal()
     })
     eventBus.$off('exportData')
     eventBus.$on('exportData', () => {
@@ -874,6 +1009,11 @@ export default {
       var modal = document.querySelector('#modal_change_password')
       M.Modal.getInstance(modal).open()
     },
+    backupCodesModal() {
+      var modal = document.querySelector('#modal_create_backup_codes')
+      M.Modal.init(modal, { dismissible: false })
+      M.Modal.getInstance(modal).open()
+    },
     updateModal() {
       var modal = document.querySelector('#modal_update_available')
       M.Modal.getInstance(modal).open()
@@ -885,6 +1025,10 @@ export default {
             if (response.data.token) {
               localStorage.setItem('user', JSON.stringify(response.data))
               this.toastSuccess(this.$t('password-change-successful'))
+              if (response.data.backup_codes_deleted) {
+                console.log(this.$t('backup-codes-deleted'))
+                this.toastAlert(this.$t('backup-codes-deleted'))
+              }
             }
           } else {
             console.log(response.data.message)
@@ -896,6 +1040,36 @@ export default {
           this.toastAlert(error.response.data.message)
         }
       )
+    },
+    createBackupCodes() {
+      this.backupCodesLoading = true
+      UserService.createBackupCodes(this.password).then(
+        response => {
+          this.backupCodesLoading = false
+          this.password = ''
+          if (response.data.success) {
+            this.backupCodes = response.data.backupCodes
+          } else {
+            if ('message' in response.data) {
+              console.log(response.data.message)
+              this.toastAlert(response.data.message)
+            } else {
+              console.log(this.$t('backup-codes-not-successful'))
+              this.toastAlert(this.$t('backup-codes-not-successful'))
+            }
+          }
+        },
+        error => {
+          this.backupCodesLoading = false
+          this.password = ''
+          console.log(error.response.data.message)
+          this.toastAlert(error.response.data.message)
+        }
+      )
+    },
+    async copy(s) {
+      await navigator.clipboard.writeText(s)
+      this.toastSuccess(this.$t('copy-to-clipboard-successful'))
     },
     uploadFilesBtn(event) {
       Array.prototype.forEach.call(event.target.files, f => {
@@ -1161,6 +1335,43 @@ body {
 </style>
 
 <style scoped>
+.backup-codes-description {
+  text-align: left;
+}
+
+.backup-wrap {
+  position: relative;
+}
+
+.backup-codes-textarea {
+  border: 1px solid #d5d5d5;
+}
+
+.copyToClipboard {
+  position: absolute;
+  top: 0em;
+  right: 2.5em;
+  margin-top: 4px;
+  margin-right: 4px;
+  width: 11px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.copyToClipboard:before {
+  top: -1px;
+  left: 2px;
+  width: 5px;
+  height: 1px;
+}
+
+.copyToClipboard:after {
+  width: 3px;
+  height: 1px;
+  background-color: #333333;
+  box-shadow: 8px 0 0 0 #333333;
+}
+
 .upload-icons {
   vertical-align: middle;
 }
@@ -1323,6 +1534,11 @@ textarea {
 
 .modal-close {
   cursor: pointer;
+}
+
+.modal {
+  box-shadow: 0px 0px 5px 5px #2196f3;
+  border-radius: 20px;
 }
 
 .input-container {

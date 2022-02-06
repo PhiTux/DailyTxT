@@ -79,7 +79,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'token': token.decode('UTF-8')})
+    return jsonify({'token': token.decode('UTF-8'), 'remaining_backup_codes': user['remaining_backup_codes']})
 
 
 @api.route('/saveLog', methods=['POST'])
@@ -155,7 +155,14 @@ def route_changePassword(user_id, key):
         'exp': datetime.utcnow() + timedelta(days=30)},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'success': True, 'token': token.decode('UTF-8')})
+    return jsonify({'success': True, 'token': token.decode('UTF-8'), 'backup_codes_deleted': res['backup_codes_deleted']})
+
+
+@api.route('createBackupCodes', methods=['POST'])
+@token_required
+def route_createBackupCodes(user_id, key):
+    res = createBackupCodes(user_id, key, request.get_json())
+    return jsonify(res)
 
 
 @api.route('exportData', methods=['POST'])

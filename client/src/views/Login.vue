@@ -189,7 +189,17 @@ export default {
             new User(this.login_username, this.login_password)
           )
           .then(
-            () => {
+            response => {
+              if (
+                response.remaining_backup_codes > 0 &&
+                response.remaining_backup_codes <= 3
+              ) {
+                var message = this.$t('few-backup-codes-left', [
+                  response.remaining_backup_codes
+                ])
+                M.toast({ html: message, classes: 'rounded red' })
+              }
+
               this.$parent.transitionName = 'slideLeft'
               this.$router.push('/')
             },

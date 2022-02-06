@@ -8,6 +8,13 @@
       </li>
       <li class="divider"></li>
       <li>
+        <a class="waves-effect waves-light btn" @click.prevent="backupCodes"
+          ><i class="material-icons">settings_backup_restore</i
+          >{{ $t('create-backup-codes') }}</a
+        >
+      </li>
+      <li class="divider"></li>
+      <li>
         <a class="waves-effect waves-light btn" @click.prevent="exportData"
           ><i class="material-icons">cloud_download</i
           >{{ $t('export-data') }}</a
@@ -86,6 +93,9 @@ export default {
     },
     changePassword() {
       eventBus.$emit('changePassword')
+    },
+    backupCodes() {
+      eventBus.$emit('backupCodes')
     },
     exportData() {
       eventBus.$emit('exportData')

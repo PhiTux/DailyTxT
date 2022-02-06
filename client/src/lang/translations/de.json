@@ -49,5 +49,17 @@
   "modal-import-data-header": "Daten werden reimportiert",
   "modal-import-data-text-1": "Fortschritt des Uploads:",
   "modal-import-data-text-2": "Verschlüsselung und Importierung der Daten",
-  "import-successful": "Import erfolgreich abgeschlossen"
+  "import-successful": "Import erfolgreich abgeschlossen",
+  "backup-codes": "Backup Codes",
+  "create-backup-codes": "Backup Codes erstellen",
+  "create-new-backup-codes": "Neue Backup Codes erstellen",
+  "backup-codes-description-1": "Backup Codes funktionieren wie Einmal-Passwörter. Sie können immer anstelle des normalen Passwortes verwendet werden (z. B. falls Du dieses vergessen hast), allerdings jeweils nur einmalig.",
+  "backup-codes-description-2": "Beim Ändern deines Passwortes werden alle Backup Codes gelöscht und Du musst neue erstellen.",
+  "attention": "Achtung",
+  "backup-codes-not-successful": "Fehler beim Erstellen neuer Backup Codes.",
+  "backup-codes-created-1": "Neue Backup Codes wurden erstellt",
+  "backup-codes-created-2": "Notiere die Backup Codes JETZT. Nach dem Schließen dieses Fensters kannst Du sie nicht erneut ansehen, Du kannst aber jederzeit neue erstellen.",
+  "backup-codes-deleted": "Backup Codes wurden gelöscht. Du musst neue erstellen!",
+  "copy-to-clipboard-successful": "Backup Codes erfolgreich kopiert",
+  "few-backup-codes-left": "Nur noch {0} Backup Codes vorhanden. Du solltest neue erstellen."
 }

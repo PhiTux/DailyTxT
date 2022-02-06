@@ -3,7 +3,7 @@
   "version": "1.0.8",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --mode staging",
+    "serve": "vue-cli-service serve --mode staging --host 0.0.0.0 --port 8081",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },

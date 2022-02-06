@@ -1,4 +1,5 @@
 module.exports = {
+  devServer: {},
   pwa: {
     name: 'DailyTxT',
     short_name: 'DailyTxT',

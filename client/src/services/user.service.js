@@ -84,6 +84,16 @@ class UserService {
     )
   }
 
+  createBackupCodes(password) {
+    return axios.post(
+      API_URL + 'createBackupCodes',
+      {
+        password: password
+      },
+      { headers: authHeader() }
+    )
+  }
+
   exportData() {
     return axios.post(
       API_URL + 'exportData',
