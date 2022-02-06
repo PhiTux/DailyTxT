@@ -129,10 +129,12 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 ## Changelog
 
 ### 1.0.8
-(2022_02_XX)
+(2022_02_06)\
+*Actually a **big** update!*
 ```
 - Added spanish translation [1]
 - Added possibility to reimport (restore) data, that was exported before! 
+- Added possibility to create Backup Codes. They work like one-time passwords.
 ```
 [1]: Thanks to [@SmartPhoneLover](https://github.com/SmartPhoneLover)
 
