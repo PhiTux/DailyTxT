@@ -1,7 +1,7 @@
 # DailyTxT
 
-DailyTxT is an encrypted Diary Web-App to simply write down your stories of the day and to easily find them again.
-It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run via **[Docker](https://hub.docker.com/r/phitux/dailytxt/)**.
+DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
+It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run by **[Docker](https://hub.docker.com/r/phitux/dailytxt/)**.
 
 You should definitely take a quick look at [How to Use](#how-to-use) to see all the hidden features.
 
@@ -16,7 +16,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 
 - **Encryption:** Everything you write is encrypted before it's written to the server's storage. Even the admin can't read your private stuff!
 - **File-Upload:** You can upload arbitrary files for each day (128 MB max each). They are **stored encrypted** on the server as well.
-- **Search:** Support your memorization by searching all your notes for any keyword to quickly rediscover what you have already forgotten.
+- **Search:** Support your memory by easily scanning your notes for any keyword and rediscovering details you may have almost forgotten.
 - **Multi-Language-Support:** The Web-App is currently available in **German**, **English** and **Spanish** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
 - **Multi-User-Spport:** You can create multiple User Accounts. Each account uses its own encryption key - so there is no risk for a data breach.
@@ -46,7 +46,7 @@ docker-compose up -d
 
 ### More detailed Installation
 
-DailyTxT is inteded to be run via Docker. There is an [official docker image](https://hub.docker.com/r/phitux/dailytxt/).
+DailyTxT is intended to be run by Docker. There is an [official docker image](https://hub.docker.com/r/phitux/dailytxt/).
 
 Use the **docker-compose.yml** file in this repo and adapt it. You see it here:
 

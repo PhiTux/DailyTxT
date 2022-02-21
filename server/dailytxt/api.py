@@ -17,7 +17,7 @@ def token_required(f):
         auth_headers = request.headers.get('Authorization', '').split()
 
         invalid_msg = {
-            'message': 'Invalid token. Registeration and / or authentication required',
+            'message': 'Invalid token. Registration and / or authentication required',
             'authenticated': False
         }
         expired_msg = {
