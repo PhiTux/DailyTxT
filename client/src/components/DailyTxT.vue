@@ -421,7 +421,11 @@
             >
           </div>
         </div>
-        <div class="row searchResults">
+        <div
+          class="row searchResults"
+          :class="{ searchResultsPulse: searchResultsAttention }"
+          @animationend="searchResultsAttention = false"
+        >
           <div class="collection" v-if="searchResults.length > 0">
             <a
               class="collection-item searchResultRow"
@@ -646,7 +650,8 @@ export default {
       password: '',
       backupCodes: [],
       backupCodesLoading: false,
-      canCopy: false
+      canCopy: false,
+      searchResultsAttention: false
     }
   },
   updated: function() {
@@ -1102,6 +1107,7 @@ export default {
         data => {
           this.searchResults = data.data.results
           this.searchResultSelected = null
+          this.searchResultsAttention = true
         },
         error => {
           console.log(error.response.data.message)
@@ -1622,6 +1628,23 @@ input[type='password']:focus {
   flex: 1;
   overflow-y: auto;
   box-shadow: 0px 0px 4px 1px #ff7043;
+}
+
+.searchResultsPulse {
+  animation: searchResultsPulseAnimation 0.75s;
+}
+
+@keyframes searchResultsPulseAnimation {
+  0% {
+    box-shadow: 0px 0px 4px 1px #ff7043;
+  }
+  40%,
+  60% {
+    box-shadow: 0px 0px 4px 3px #2196f3;
+  }
+  100% {
+    box-shadow: 0px 0px 4px 1px #ff7043;
+  }
 }
 
 .searchResults .collection {

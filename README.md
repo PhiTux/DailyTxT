@@ -69,6 +69,9 @@ dailytxt:
 
     # Set after how many days the JWT token will expire and you have to re-login. Defaults to 30 days if line is ommited.
     - JWT_EXP_DAYS=60
+
+    # Enable/disable a feature of DailyTxT to auto-check maximal once per hour if there's a newer version of DailyTxT available. Defaults to True if line is ommited.
+    - ENABLE_UPDATE_CHECK=True
   ports:
     - "127.0.0.1:<host_port>:8765"
     # perhaps you only want:

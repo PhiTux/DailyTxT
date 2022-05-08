@@ -451,7 +451,7 @@ def search(user_id, key, request):
 
         if isinstance(file_content, dict):
             for day in file_content['days']:
-                if not 'text' in day.keys():
+                if not 'text' in day.keys() or day['text'] == "":
                     continue
                 dec_res = decrypt_by_key(
                     day['text'].encode(), enc_key).decode()

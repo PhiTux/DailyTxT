@@ -167,6 +167,10 @@ def docker_api_get_recent_version():
 
 
 def getRecentVersion(user_id, key, v):
+    if 'ENABLE_UPDATE_CHECK' in os.environ:
+        if os.environ.get('ENABLE_UPDATE_CHECK').lower() == 'false':
+            return {'recent_version': v['client_version']}
+
     datestring = "%Y-%m-%d_%H:%M:%S"
 
     filename = os.path.join(
