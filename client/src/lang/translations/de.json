@@ -61,5 +61,6 @@
   "backup-codes-created-2": "Notiere die Backup Codes JETZT. Nach dem Schließen dieses Fensters kannst Du sie nicht erneut ansehen, Du kannst aber jederzeit neue erstellen.",
   "backup-codes-deleted": "Backup Codes wurden gelöscht. Du musst neue erstellen!",
   "copy-to-clipboard-successful": "Backup Codes erfolgreich kopiert",
-  "few-backup-codes-left": "Nur noch {0} Backup Codes vorhanden. Du solltest neue erstellen."
+  "few-backup-codes-left": "Nur noch {0} Backup Codes vorhanden. Du solltest neue erstellen.",
+  "update-installed-reload": "Neues Update wurde installiert. Bitte die Seite neu laden!"
 }

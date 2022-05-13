@@ -461,14 +461,14 @@
     </ul>
     <div class="right-main">
       <div class="row main-header-row">
-        <div class="col s5 m4 l3" id="left">
+        <div class="col s5 m4 l3 xl2" id="left">
           <div class="dateDescription">
             <span>{{ dateDescription.split(',')[0] }}</span>
             <hr />
             <span>{{ dateDescription.split(',')[1] }}</span>
           </div>
         </div>
-        <div class="col s5 m4 l3" id="right">
+        <div class="col s5 m4 l3 xl2" id="right">
           <transition name="fade-only-opacity">
             <div class="dateWritten" v-if="!isLoading && dateWritten != ''">
               <span>{{ $t('last-edited') }}</span>
@@ -527,6 +527,17 @@
               </div>
             </div>
           </div>
+        </div>
+        <div
+          class="col s2 m1 l3 xl5 valign-wrapper"
+          id="removeDay"
+          v-if="!isLoading"
+        >
+          <a
+            class="removeDay valign-wrapper"
+            @click="deleteFileModal(file.uuid)"
+            ><i class="material-icons">delete</i></a
+          >
         </div>
       </div>
       <div class="row">
@@ -797,6 +808,7 @@ export default {
     }
   },
   created: function() {
+    document.addEventListener('swUpdated', this.updateAvailable, { once: true })
     this.canCopy = !!navigator.clipboard
     this.debouncedAutoSave = _.debounce(function() {
       this.autoSave(this.dateSelected)
@@ -827,6 +839,9 @@ export default {
     })
   },
   methods: {
+    updateAvailable() {
+      this.toastSuccess(this.$t('update-installed-reload'))
+    },
     reloadPage() {
       window.location.reload()
     },
@@ -1460,6 +1475,25 @@ textarea {
 .main-header-row > .col#right {
   padding-left: 0;
   transition: opacity ease 0.5s;
+}
+
+.main-header-row > .col#removeDay {
+}
+
+.removeDay {
+  float: right;
+  color: #e57373;
+  margin-left: auto;
+  cursor: pointer;
+  opacity: 0.4;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  transition: ease 0.3s;
+}
+
+.removeDay:hover {
+  opacity: 1;
+  border: 1px solid #bdbdbd;
 }
 
 .fade-enter-active,

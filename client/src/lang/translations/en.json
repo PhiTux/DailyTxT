@@ -61,5 +61,6 @@
   "backup-codes-created-2": "Write down the Backup Codes NOW. After closing this window you will not be able to view them again, but you can always create new ones.",
   "backup-codes-deleted": "Backup codes have been deleted. You need to create new ones!",
   "copy-to-clipboard-successful": "Backup codes successfully copied",
-  "few-backup-codes-left": "Only {0} backup codes left. You should create new ones."
+  "few-backup-codes-left": "Only {0} backup codes left. You should create new ones.",
+  "update-installed-reload": "New update has been installed. Please reload the page!"
 }
