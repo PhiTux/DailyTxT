@@ -1,6 +1,6 @@
 {
   "name": "dailytxt",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode staging --host 0.0.0.0 --port 8081",

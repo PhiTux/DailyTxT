@@ -135,6 +135,18 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.9
+(2022_05_14)
+```
+- Added new environment variable 'ENABLE_UPDATE_CHECK' (see above)
+- Added button to delete ALL data of the selected day
+- Changes on the Service Worker (PWA) to get quicker client-update after the server was already updated (will unfortunately only take effekt in the next version after 1.0.9).
+- Bugfix of a possible race-condition
+- Bugfix: search didn't work in a specific case of an 'empty' log
+- Bugfix: Internal server-errors no longer falsely show the message that a 'authentication is required'
+```
+
+
 ### 1.0.8
 (2022_02_06)\
 *Actually a **big** update!*

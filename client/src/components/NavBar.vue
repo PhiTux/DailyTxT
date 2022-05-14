@@ -58,7 +58,7 @@
           >
         </li>
         <li>
-          <a class="dropdown-trigger" data-target="dropdown"
+          <a class="dropdown-trigger settings" data-target="dropdown"
             ><i class="material-icons">settings</i></a
           >
         </li>
@@ -166,6 +166,14 @@ export default {
 
 a {
   cursor: pointer;
+}
+
+.settings > i {
+  transition: transform 0.4s ease-in-out;
+}
+
+.settings:hover > i {
+  transform: rotate(30deg);
 }
 
 .dropdown-content,
