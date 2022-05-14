@@ -73,6 +73,18 @@ class UserService {
     )
   }
 
+  removeDay(dateSelected) {
+    return axios.post(
+      API_URL + 'removeDay',
+      {
+        year: dateSelected.getFullYear(),
+        month: dateSelected.getMonth() + 1,
+        day: dateSelected.getDate()
+      },
+      { headers: authHeader() }
+    )
+  }
+
   changePassword(old_password, new_password) {
     return axios.post(
       API_URL + 'changePassword',

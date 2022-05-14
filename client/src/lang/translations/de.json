@@ -62,5 +62,8 @@
   "backup-codes-deleted": "Backup Codes wurden gelöscht. Du musst neue erstellen!",
   "copy-to-clipboard-successful": "Backup Codes erfolgreich kopiert",
   "few-backup-codes-left": "Nur noch {0} Backup Codes vorhanden. Du solltest neue erstellen.",
-  "update-installed-reload": "Neues Update wurde installiert. Bitte die Seite neu laden!"
+  "update-installed-reload": "Neues Update wurde installiert. Bitte die Seite neu laden!",
+  "remove-day": "Sämtliche Einträge und Dateien dieses Tages löschen.",
+  "modal-remove-day-header": "Alle Daten dieses Tages löschen?",
+  "modal-remove-day-text": "Sollen alle Einträge und Dateien vom {0} dauerhaft gelöscht werden?"
 }

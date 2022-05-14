@@ -30,6 +30,26 @@
         >
       </div>
     </div>
+    <div id="modal_remove_day" class="modal">
+      <div class="modal-content">
+        <h4>{{ $t('modal-remove-day-header') }}</h4>
+        <p>
+          <i18n path="modal-remove-day-text">
+            <b>{{ dateDescription.split(',')[1] }}</b>
+          </i18n>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <a class="modal-close waves-effect waves-red btn-flat">{{
+          $t('abort')
+        }}</a>
+        <a
+          class="modal-close waves-effect waves-green btn-flat"
+          @click="removeDay()"
+          >{{ $t('delete') }}</a
+        >
+      </div>
+    </div>
     <div id="modal_create_backup_codes" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4>{{ $t('backup-codes') }}</h4>
@@ -531,11 +551,12 @@
         <div
           class="col s2 m1 l3 xl5 valign-wrapper"
           id="removeDay"
-          v-if="!isLoading"
+          v-if="!isLoading && (dateWritten != '' || files.length != 0)"
         >
           <a
-            class="removeDay valign-wrapper"
-            @click="deleteFileModal(file.uuid)"
+            class="removeDay valign-wrapper tooltipped"
+            :data-tooltip="$t('remove-day')"
+            @click="removeDayModal()"
             ><i class="material-icons">delete</i></a
           >
         </div>
@@ -884,7 +905,11 @@ export default {
           var href = window.URL.createObjectURL(blob)
           this.fileToDownload = this.files.find(f => f.uuid == uuid)
           this.fileToDownload.href = href
-          if (this.fileToDownload.filename.match(/\.(jpg|jpeg|png|gif)$/)) {
+          if (
+            this.fileToDownload.filename
+              .toLowerCase()
+              .match(/\.(jpg|jpeg|png|gif)$/)
+          ) {
             var modal = document.querySelector('#modal_preview_file')
             M.Modal.getInstance(modal).open()
           } else {
@@ -969,6 +994,27 @@ export default {
               month: this.monthShown,
               year: this.yearShown
             })
+          }
+        },
+        error => {
+          console.log(error.response.data.message)
+          this.toastAlert(error.response.data.message)
+        }
+      )
+    },
+    removeDayModal() {
+      var modal = document.querySelector('#modal_remove_day')
+      M.Modal.getInstance(modal).open()
+    },
+    removeDay() {
+      UserService.removeDay(this.dateSelected).then(
+        response => {
+          if (response.data.success) {
+            this.getDaysWithLogs({
+              month: this.monthShown,
+              year: this.yearShown
+            })
+            this.daySelected()
           }
         },
         error => {
@@ -1486,7 +1532,7 @@ textarea {
   margin-left: auto;
   cursor: pointer;
   opacity: 0.4;
-  border: 1px solid #e0e0e0;
+  border: 1px solid transparent;
   border-radius: 4px;
   transition: ease 0.3s;
 }

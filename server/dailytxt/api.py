@@ -148,6 +148,13 @@ def route_deleteFile(user_id, key):
     return jsonify(res)
 
 
+@api.route('removeDay', methods=['POST'])
+@token_required
+def route_removeDay(user_id, key):
+    res = removeDay(user_id, key, request.get_json())
+    return jsonify(res)
+
+
 @api.route('changePassword', methods=['POST'])
 @token_required
 def route_changePassword(user_id, key):

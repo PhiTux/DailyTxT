@@ -16,6 +16,24 @@ def downloadFile(user_id, key, download):
     return {'success': True, 'file': file['text']}
 
 
+def removeDay(user_id, key, delete):
+    file_content = read_log(user_id, delete['year'], delete['month'])
+
+    if isinstance(file_content, dict):
+        new_log = {'days': []}
+        for day in file_content['days']:
+            if day['day'] == delete['day']:
+                if 'files' in day.keys():
+                    for f in day['files']:
+                        delete_file_by_uuid(f['uuid_filename'])
+            else:
+                new_log['days'].append(day)
+        if write_log(user_id, delete['year'], delete['month'], new_log):
+            return {'success': True}
+
+    return {'success': False, 'message': 'Internal error!? File seems not to exist.'}
+
+
 def deleteFile(user_id, key, delete):
 
     file_content = read_log(user_id, delete['year'], delete['month'])
