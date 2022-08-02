@@ -5,7 +5,7 @@ It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) an
 
 You should definitely take a quick look at [How to Use](#how-to-use) to see all the hidden features.
 
-> ⚠️ Please just open a new issue if you have any information, problem, new feature idea, new translation or anything else!
+> ⚠️ Please simply open a new issue if you have any information, problem, new feature idea, new translation or anything else!
 > I usually reply quickly and the project will have long support (unless marked as deprecated) as I use it regularly myself.
 
 
