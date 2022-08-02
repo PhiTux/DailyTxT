@@ -8,6 +8,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 > ⚠️ Please simply open a new issue if you have any information, problem, new feature idea, new translation or anything else!
 > I usually reply quickly and the project will have long support (unless marked as deprecated) as I use it regularly myself.
 
+> ⚠️ Please note when submitting ideas: The basic text-layout will not be changed -> Only one plain text will be saved for each day, to keep things simple!
 
 ## Chapters
 
