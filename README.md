@@ -26,7 +26,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
 - **Multi-User-Spport:** You can create multiple User Accounts. Each account uses its own encryption key - so there is no risk for a data breach.
 - **Backup & Restore:** You can export all data (decrypted) for backup-reasons in a zip-file and reimport the data later by uploading the zip.
-- If you're coming from [journey.cloud](https://journey.cloud), you could try [this script](https://github.com/PhiTux/DailyTxT/issues/13#issue-1327951670) to **import** your text to DailyTxT.
+- If you came from [journey.cloud](https://journey.cloud), you could try [this script](https://github.com/PhiTux/DailyTxT/issues/13#issue-1327951670) to **import** your text to DailyTxT.
 
 ## How to Use
 
