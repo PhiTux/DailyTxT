@@ -1587,6 +1587,24 @@ textarea {
   margin: 0;
 }
 
+@media only screen and (max-width: 1450px) and (min-width: 1316px) {
+  .dateDescription {
+    font-size: 12.5px;
+  }
+  .dateWritten {
+    font-size: 12.5px;
+  }
+}
+
+@media only screen and (max-width: 1315px) and (min-width: 1200px) {
+  .dateDescription {
+    font-size: 11px;
+  }
+  .dateWritten {
+    font-size: 12px;
+  }
+}
+
 .dateWritten {
   background-color: #aed581;
   border-top: 1px solid #4caf50;
