@@ -46,9 +46,9 @@
   "update-available-client-version": "Currently installed version",
   "update-available-recent-version": "Latest version",
   "error-uploading-file": "Error on uploading file! Perhaps it is too large?",
-  "modal-import-data-header": "Reimporting data",
-  "modal-import-data-text-1": "Upload progress:",
-  "modal-import-data-text-2": "Encrypting and importing the data",
+  "import-data-header": "Reimporting data",
+  "import-data-text-1": "Upload progress:",
+  "import-data-text-2": "Encrypting and importing the data",
   "import-successful": "Import successfully completed",
   "backup-codes": "Backup Codes",
   "create-backup-codes": "Create Backup Codes",
@@ -65,5 +65,12 @@
   "update-installed-reload": "New update has been installed. Please reload the page!",
   "remove-day": "Delete all logs and files of this day.",
   "modal-remove-day-header": "Delete all data of this day?",
-  "modal-remove-day-text": "Do you want to permanently delete all logs and files from {0}?"
+  "modal-remove-day-text": "Do you want to permanently delete all logs and files from {0}?",
+  "settings": "Settings",
+  "close-settings": "Close settings",
+  "templates": "Templates",
+  "export-data-description": "Creates a ZIP file for download that contains all texts and uploaded files. The content is <b>decrypted</b>!",
+  "create-export": "Create export",
+  "import-data-description": "Select your (previously exported) ZIP file to upload the data. The texts contained in it will be handled as the newest entries. The import might take a few minutes (depending on the size).",
+  "start-import": "Choose ZIP file and start import"
 }

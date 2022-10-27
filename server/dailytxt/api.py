@@ -182,7 +182,9 @@ def route_createBackupCodes(user_id, key):
 @api.route('exportData', methods=['POST'])
 @token_required
 def route_exportData(user_id, key):
-    f = exportData(user_id, key)
+    f = exportData(user_id, key, request.get_json())
+    if isinstance(f, dict):
+        return jsonify(f)
     return send_file(f, as_attachment=True, attachment_filename="export.zip")
 
 

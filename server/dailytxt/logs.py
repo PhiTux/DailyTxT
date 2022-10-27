@@ -1,6 +1,7 @@
 import shortuuid
 from .file_handling import *
 from .encryption import *
+from .models import *
 import zipfile
 from io import BytesIO
 
@@ -502,59 +503,64 @@ def filename_to_export(old):
     return '/'.join(temp)
 
 
-def exportData(user_id, key):
-    allLogs = getAllFiles(user_id)
-    allFiles = []
+def exportData(user_id, key, p):
+    with lock:
+        pwd_check = check_for_password_and_backup_codes(user_id, p['password'])
+        if not pwd_check['success']:
+            return {'success': False, 'message': 'Wrong password!'}
 
-    enc_key = get_enc_key(user_id, key)
-    if enc_key == '':
-        return {'success': False}
+        allLogs = getAllFiles(user_id)
+        allFiles = []
 
-    for logfile in allLogs:
-        file_content = read_json(logfile)
+        enc_key = get_enc_key(user_id, key)
+        if enc_key == '':
+            return {'success': False}
 
-        if isinstance(file_content, dict):
-            for day in file_content['days']:
-                if 'files' in day.keys():
-                    new_files = []
-                    for f in day['files']:
-                        new_f = {'uuid': f['uuid_filename'], 'filename': decrypt_by_key(
-                            f['enc_filename'].encode(), enc_key).decode('utf-8')}
-                        new_files.append(new_f)
-                        allFiles.append(new_f)
-                    day['files'] = new_files
-                if 'text' in day.keys():
-                    if day['text'] != '':
-                        day['text'] = decrypt_by_key(
-                            day['text'].encode(), enc_key).decode('utf-8')
-                if 'history' in day.keys():
-                    for h in day['history']:
-                        if h['text'] != '':
-                            h['text'] = decrypt_by_key(
-                                h['text'].encode(), enc_key).decode('utf-8')
+        for logfile in allLogs:
+            file_content = read_json(logfile)
 
-            write_export_log(user_id, logfile.split(
-                '/')[-2], logfile.split('/')[-1].split('.')[0], file_content)
+            if isinstance(file_content, dict):
+                for day in file_content['days']:
+                    if 'files' in day.keys():
+                        new_files = []
+                        for f in day['files']:
+                            new_f = {'uuid': f['uuid_filename'], 'filename': decrypt_by_key(
+                                f['enc_filename'].encode(), enc_key).decode('utf-8')}
+                            new_files.append(new_f)
+                            allFiles.append(new_f)
+                        day['files'] = new_files
+                    if 'text' in day.keys():
+                        if day['text'] != '':
+                            day['text'] = decrypt_by_key(
+                                day['text'].encode(), enc_key).decode('utf-8')
+                    if 'history' in day.keys():
+                        for h in day['history']:
+                            if h['text'] != '':
+                                h['text'] = decrypt_by_key(
+                                    h['text'].encode(), enc_key).decode('utf-8')
 
-    allExportLogs = set(map(filename_to_export, allLogs))
+                write_export_log(user_id, logfile.split(
+                    '/')[-2], logfile.split('/')[-1].split('.')[0], file_content)
 
-    mem_zip = BytesIO()
+        allExportLogs = set(map(filename_to_export, allLogs))
 
-    with zipfile.ZipFile(mem_zip, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for f in allExportLogs:
-            zf.write(f)
+        mem_zip = BytesIO()
 
-        for f in allFiles:
-            file_content = read_file(f['uuid'])
-            res = decrypt_file_by_userid(
-                file_content, user_id, key)
-            if res['success']:
-                filename = write_export_file(
-                    user_id, f['filename'], f['uuid'], res['text'])
-                if filename != '':
-                    zf.write(filename)
+        with zipfile.ZipFile(mem_zip, mode="w", compression=zipfile.ZIP_DEFLATED) as zf:
+            for f in allExportLogs:
+                zf.write(f)
 
-        delete_export_directory(user_id)
+            for f in allFiles:
+                file_content = read_file(f['uuid'])
+                res = decrypt_file_by_userid(
+                    file_content, user_id, key)
+                if res['success']:
+                    filename = write_export_file(
+                        user_id, f['filename'], f['uuid'], res['text'])
+                    if filename != '':
+                        zf.write(filename)
 
-    mem_zip.seek(0)
-    return mem_zip
+            delete_export_directory(user_id)
+
+        mem_zip.seek(0)
+        return mem_zip

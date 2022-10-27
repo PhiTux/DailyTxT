@@ -46,9 +46,9 @@
   "update-available-client-version": "Aktuell installierte Version",
   "update-available-recent-version": "Neueste Version",
   "error-uploading-file": "Fehler beim Upload! Vielleicht ist die Datei zu groß?",
-  "modal-import-data-header": "Daten werden reimportiert",
-  "modal-import-data-text-1": "Fortschritt des Uploads:",
-  "modal-import-data-text-2": "Verschlüsselung und Importierung der Daten",
+  "import-data-header": "Daten werden reimportiert",
+  "import-data-text-1": "Fortschritt des Uploads:",
+  "import-data-text-2": "Verschlüsselung und Importierung der Daten",
   "import-successful": "Import erfolgreich abgeschlossen",
   "backup-codes": "Backup Codes",
   "create-backup-codes": "Backup Codes erstellen",
@@ -65,5 +65,12 @@
   "update-installed-reload": "Neues Update wurde installiert. Bitte die Seite neu laden!",
   "remove-day": "Sämtliche Einträge und Dateien dieses Tages löschen.",
   "modal-remove-day-header": "Alle Daten dieses Tages löschen?",
-  "modal-remove-day-text": "Sollen alle Einträge und Dateien vom {0} dauerhaft gelöscht werden?"
+  "modal-remove-day-text": "Sollen alle Einträge und Dateien vom {0} dauerhaft gelöscht werden?",
+  "settings": "Einstellungen",
+  "close-settings": "Einstellungen schließen",
+  "templates": "Vorlagen",
+  "export-data-description": "Erstellt eine ZIP-Datei zum Download, die alle Texte und hochgeladenen Dateien enthält. Der Inhalt ist <b>entschlüsselt</b>!",
+  "create-export": "Export erstellen",
+  "import-data-description": "Wähle deine (zuvor exportierte) ZIP-Datei, um die Daten hochzuladen. Die darin enhaltenen Texte, werden als neueste Einträge angesehen. Der Import kann (je nach Umfang) einige Minuten dauern.",
+  "start-import": "ZIP-Datei wählen und Import starten"
 }

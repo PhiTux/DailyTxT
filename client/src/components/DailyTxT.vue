@@ -50,200 +50,6 @@
         >
       </div>
     </div>
-    <div id="modal_create_backup_codes" class="modal modal-fixed-footer">
-      <div class="modal-content">
-        <h4>{{ $t('backup-codes') }}</h4>
-        <div class="container backup-codes-description">
-          {{ $t('backup-codes-description-1') }}
-          <br />
-          <b>{{ $t('attention') }}:</b>
-          {{ $t('backup-codes-description-2') }}
-        </div>
-        <div class="divider"></div>
-        <div class="col s2 m4 l3" id="loading" v-if="backupCodesLoading">
-          <div class="preloader-wrapper small active">
-            <div class="spinner-layer spinner-blue">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-red">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-yellow">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-green">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="container" v-if="backupCodesHTML != ''">
-          <h6>{{ $t('backup-codes-created-1') }}</h6>
-          {{ $t('backup-codes-created-2') }}
-          <div class="backup-wrap">
-            <pre class="backup-codes-textarea" v-html="backupCodesHTML"></pre>
-            <div v-if="canCopy" class="copyToClipboard">
-              <a
-                class="btn-floating waves-effect waves-light deep-orange lighten-1"
-                @click.prevent="copy(backupCodesCopy)"
-                ><i class="material-icons">content_copy</i></a
-              >
-            </div>
-          </div>
-        </div>
-        <div v-if="backupCodesHTML != ''" class="divider"></div>
-        <div class="container">
-          <div class="row">
-            <div class="input-field col s12">
-              <input
-                id="backupCodesPassword"
-                type="password"
-                v-model="password"
-                @keyup.enter="createBackupCodes()"
-              />
-              <label for="backupCodesPassword">{{
-                $t('password-label')
-              }}</label>
-              <a
-                class="waves-effect waves-light btn right deep-orange lighten-1"
-                @click="createBackupCodes()"
-                :class="{
-                  disabled: password == ''
-                }"
-                >{{ $t('create-new-backup-codes') }}</a
-              >
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a
-          class="modal-close waves-effect waves-green btn-flat"
-          @click="backupCodes = []"
-          >{{ $t('close') }}</a
-        >
-      </div>
-    </div>
-    <div id="modal_import_data" class="modal">
-      <div class="modal-content">
-        <h4>{{ $t('modal-import-data-header') }}</h4>
-
-        <li class="upload-icons">
-          <i v-if="importStep == 1" class="material-icons">arrow_forward</i>
-          <i v-if="importStep == 2 || importStep == 3" class="material-icons"
-            >check</i
-          >
-        </li>
-        {{ $t('modal-import-data-text-1') }}
-        <br />
-        <li class="collection-item importProgress">
-          <div class="progress">
-            <div
-              class="determinate"
-              :style="{ width: importProgress + '%' }"
-            ></div>
-          </div>
-        </li>
-        <div class="divider"></div>
-        <li class="upload-icons">
-          <i v-if="importStep == 2" class="material-icons">arrow_forward</i>
-          <i v-if="importStep == 3" class="material-icons">check</i>
-        </li>
-        {{ $t('modal-import-data-text-2') }}
-        <div class="col s2 m4 l3" id="loading" v-if="importStep == 2">
-          <div class="preloader-wrapper small active">
-            <div class="spinner-layer spinner-blue">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-red">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-yellow">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-
-            <div class="spinner-layer spinner-green">
-              <div class="circle-clipper left">
-                <div class="circle"></div>
-              </div>
-              <div class="gap-patch">
-                <div class="circle"></div>
-              </div>
-              <div class="circle-clipper right">
-                <div class="circle"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="importStep == 3" class="modal-footer">
-        <a
-          @click="reloadPage"
-          class="modal-close waves-effect waves-green btn-flat"
-          >{{ $t('close') }}</a
-        >
-      </div>
-    </div>
     <div id="modal_preview_file" class="modal modal-fixed-footer">
       <div class="modal-content">
         <h4 id="modal_preview_file_titletext">
@@ -335,67 +141,6 @@
           class="modal-close waves-effect waves-green btn-flat"
           @click="useHistoryVersion()"
           >{{ $t('yes') }}</a
-        >
-      </div>
-    </div>
-    <div id="modal_change_password" class="modal">
-      <div class="modal-content">
-        <h4>{{ $t('modal-change-password-header') }}</h4>
-        <div class="container">
-          <div class="input-container">
-            <div class="input-field">
-              <input id="old_password" type="password" v-model="old_password" />
-              <label for="old_password">{{ $t('old-password') }}</label>
-            </div>
-          </div>
-        </div>
-        <div class="divider input-divider"></div>
-        <div class="container">
-          <div class="input-container">
-            <div class="input-field">
-              <input
-                id="new_password1"
-                type="password"
-                v-model="new_password1"
-              />
-              <label for="new_password1">{{ $t('new-password') }}</label>
-            </div>
-            <div class="input-field">
-              <input
-                id="new_password2"
-                type="password"
-                v-model="new_password2"
-              />
-              <label for="new_password2">{{
-                $t('confirm-new-password')
-              }}</label>
-            </div>
-            <div
-              class="alert-password"
-              v-if="
-                (new_password1 != '' || new_password2 != '') &&
-                  new_password1 != new_password2
-              "
-            >
-              {{ $t('new-password-does-not-match') }}
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <a class="modal-close waves-effect waves-red btn-flat">{{
-          $t('abort')
-        }}</a>
-        <a
-          class="modal-close waves-effect waves-green btn-flat"
-          @click="changePassword()"
-          :class="{
-            disabled:
-              old_password == '' ||
-              new_password1 == '' ||
-              new_password1 != new_password2
-          }"
-          >{{ $t('save') }}</a
         >
       </div>
     </div>
@@ -671,18 +416,12 @@ export default {
       lastPage: {},
       dragging: false,
       searchResultSelected: null,
-      isExporting: false,
       versionHistory: [],
       selectedHistoryText: '',
       selectedHistoryVersion: 0,
       recentDailytxtVersion: version,
       clientVersion: version,
-      importProgress: 0,
-      importStep: 0,
       password: '',
-      backupCodes: [],
-      backupCodesLoading: false,
-      canCopy: false,
       searchResultsAttention: false
     }
   },
@@ -714,24 +453,6 @@ export default {
           dates: datesFiles
         }
       ]
-    },
-    backupCodesHTML: function() {
-      var html = ''
-      if (this.backupCodes.length > 0) {
-        this.backupCodes.forEach(t => {
-          html += html == '' ? t : '<br />' + t
-        })
-      }
-      return html
-    },
-    backupCodesCopy: function() {
-      var text = ''
-      if (this.backupCodes.length > 0) {
-        this.backupCodes.forEach(t => {
-          text += text == '' ? t : '\n' + t
-        })
-      }
-      return text
     },
     dateDescription: function() {
       return this.dateSelected.toLocaleDateString([], {
@@ -784,9 +505,6 @@ export default {
 
       var modals = document.querySelectorAll('.modal')
       M.Modal.init(modals, {})
-
-      var dropdown = document.querySelector('.dropdown-trigger')
-      M.Dropdown.init(dropdown, { coverTrigger: false, constrainWidth: false })
     })
 
     this.daySelected()
@@ -834,22 +552,6 @@ export default {
     this.debouncedAutoSave = _.debounce(function() {
       this.autoSave(this.dateSelected)
     }, 1000)
-    eventBus.$off('changePassword')
-    eventBus.$on('changePassword', () => {
-      this.changePasswordModal()
-    })
-    eventBus.$off('backupCodes')
-    eventBus.$on('backupCodes', () => {
-      this.backupCodesModal()
-    })
-    eventBus.$off('exportData')
-    eventBus.$on('exportData', () => {
-      this.exportData()
-    })
-    eventBus.$off('importData')
-    eventBus.$on('importData', e => {
-      this.importData(e)
-    })
     eventBus.$off('historyModal')
     eventBus.$on('historyModal', () => {
       this.historyModal()
@@ -1071,67 +773,9 @@ export default {
         }
       )
     },
-    changePasswordModal() {
-      var modal = document.querySelector('#modal_change_password')
-      M.Modal.getInstance(modal).open()
-    },
-    backupCodesModal() {
-      var modal = document.querySelector('#modal_create_backup_codes')
-      M.Modal.init(modal, { dismissible: false })
-      M.Modal.getInstance(modal).open()
-    },
     updateModal() {
       var modal = document.querySelector('#modal_update_available')
       M.Modal.getInstance(modal).open()
-    },
-    changePassword() {
-      UserService.changePassword(this.old_password, this.new_password1).then(
-        response => {
-          if (response.data.success) {
-            if (response.data.token) {
-              localStorage.setItem('user', JSON.stringify(response.data))
-              this.toastSuccess(this.$t('password-change-successful'))
-              if (response.data.backup_codes_deleted) {
-                console.log(this.$t('backup-codes-deleted'))
-                this.toastAlert(this.$t('backup-codes-deleted'))
-              }
-            }
-          } else {
-            console.log(response.data.message)
-            this.toastAlert(response.data.message)
-          }
-        },
-        error => {
-          console.log(error.response.data.message)
-          this.toastAlert(error.response.data.message)
-        }
-      )
-    },
-    createBackupCodes() {
-      this.backupCodesLoading = true
-      UserService.createBackupCodes(this.password).then(
-        response => {
-          this.backupCodesLoading = false
-          this.password = ''
-          if (response.data.success) {
-            this.backupCodes = response.data.backupCodes
-          } else {
-            if ('message' in response.data) {
-              console.log(response.data.message)
-              this.toastAlert(response.data.message)
-            } else {
-              console.log(this.$t('backup-codes-not-successful'))
-              this.toastAlert(this.$t('backup-codes-not-successful'))
-            }
-          }
-        },
-        error => {
-          this.backupCodesLoading = false
-          this.password = ''
-          console.log(error.response.data.message)
-          this.toastAlert(error.response.data.message)
-        }
-      )
     },
     async copy(s) {
       await navigator.clipboard.writeText(s)
@@ -1281,83 +925,6 @@ export default {
           this.$router.push('/login')
         }
       )
-    },
-    exportData() {
-      if (this.isExporting) {
-        return
-      }
-      this.isExporting = true
-      this.isLoading = true
-
-      this.toastSuccess(this.$t('export-started-1'))
-      this.toastSuccess(this.$t('export-started-2'))
-
-      UserService.exportData().then(
-        response => {
-          this.isLoading = false
-          this.isExporting = false
-          let blob = new Blob([response.data], { type: 'application/zip' })
-          let link = document.createElement('a')
-          link.href = window.URL.createObjectURL(blob)
-          var now = new Date()
-          var filename =
-            'DailyTxT_Export_' +
-            now.getFullYear() +
-            '-' +
-            now.getMonth() +
-            '-' +
-            now.getDate() +
-            '_' +
-            now.getHours() +
-            '-' +
-            now.getMinutes() +
-            '-' +
-            now.getSeconds() +
-            '.zip'
-
-          link.download = filename
-          link.click()
-        },
-        error => {
-          this.isLoading = false
-          this.isExporting = false
-          console.log(error)
-        }
-      )
-    },
-    importData(event) {
-      var f = event.target.files[0]
-
-      var modal = document.querySelector('#modal_import_data')
-      M.Modal.init(modal, { dismissible: false })
-      M.Modal.getInstance(modal).open()
-      this.importStep = 1
-
-      UserService.importData(f, event => {
-        this.importProgress = Math.round((100 * event.loaded) / event.total)
-
-        if (event.loaded == event.total) {
-          this.importStep = 2
-        }
-      }).then(
-        response => {
-          if (response.data.success) {
-            this.importStep = 3
-            this.toastSuccess(this.$t('import-successful'))
-          }
-        },
-        error => {
-          if (typeof error.response.data.message !== 'undefined') {
-            console.log(error.response.data.message)
-            this.toastAlert(error.response.data.message)
-            this.importStep = 3
-          } else {
-            console.log(error.response.data)
-            this.toastAlert(this.$t('error-uploading-file'))
-            this.importStep = 3
-          }
-        }
-      )
     }
   }
 }
@@ -1391,6 +958,19 @@ body {
   opacity: 0 !important;
 }
 
+/* label focus color */
+.input-field input[type='text']:focus + label,
+input[type='password']:focus + label {
+  color: #ff7043 !important;
+}
+
+/* label underline focus color */
+.input-field input[type='text']:focus,
+input[type='password']:focus {
+  border-bottom: 1px solid #ff7043 !important;
+  box-shadow: 0 1px 0 0 #ff7043 !important;
+}
+
 @media only screen and (max-width: 992px) {
   #toast-container {
     top: auto !important;
@@ -1402,10 +982,6 @@ body {
 </style>
 
 <style scoped>
-.backup-codes-description {
-  text-align: left;
-}
-
 .backup-wrap {
   position: relative;
 }
@@ -1655,12 +1231,6 @@ textarea {
   height: 0;
 }
 
-.alert-password {
-  color: #f44336;
-  border: 1px solid #f44336;
-  border-radius: 10px;
-}
-
 h3 {
   margin: 40px 0 0;
 }
@@ -1856,11 +1426,6 @@ input[type='password']:focus {
 }
 
 .uploadProgress {
-  display: list-item;
-  list-style: none;
-}
-
-.importProgress {
   display: list-item;
   list-style: none;
 }

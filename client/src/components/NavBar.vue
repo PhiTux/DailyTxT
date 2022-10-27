@@ -1,41 +1,5 @@
 <template>
   <nav class="blue">
-    <ul id="dropdown" class="dropdown-content">
-      <li>
-        <a class="waves-effect waves-light btn" @click.prevent="changePassword"
-          ><i class="material-icons">vpn_key</i>{{ $t('change-password') }}</a
-        >
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a class="waves-effect waves-light btn" @click.prevent="backupCodes"
-          ><i class="material-icons">settings_backup_restore</i
-          >{{ $t('create-backup-codes') }}</a
-        >
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a class="waves-effect waves-light btn" @click.prevent="exportData"
-          ><i class="material-icons">cloud_download</i
-          >{{ $t('export-data') }}</a
-        >
-      </li>
-      <li class="divider"></li>
-      <li>
-        <a
-          class="waves-effect waves-light btn"
-          for="importData"
-          @click.prevent="triggerImportData"
-          ><i class="material-icons">cloud_upload</i>{{ $t('import-data') }}</a
-        >
-        <input
-          type="file"
-          id="importData"
-          name="importData"
-          @change="importData($event)"
-        />
-      </li>
-    </ul>
     <div class="nav-wrapper">
       <a data-target="slide-out" class="left sidenav-trigger show-on-small"
         ><i class="material-icons">menu</i></a
@@ -58,7 +22,7 @@
           >
         </li>
         <li>
-          <a class="dropdown-trigger settings" data-target="dropdown"
+          <a class="settings" @click.prevent="switchSettings"
             ><i class="material-icons">settings</i></a
           >
         </li>
@@ -83,6 +47,9 @@ export default {
     }
   },
   methods: {
+    switchSettings() {
+      eventBus.$emit('switchSettings')
+    },
     historyModal() {
       eventBus.$emit('historyModal')
     },
@@ -91,24 +58,8 @@ export default {
       this.$store.dispatch('auth/logout')
       this.$router.push('/login')
     },
-    changePassword() {
-      eventBus.$emit('changePassword')
-    },
-    backupCodes() {
-      eventBus.$emit('backupCodes')
-    },
-    exportData() {
-      eventBus.$emit('exportData')
-    },
-    importData(e) {
-      eventBus.$emit('importData', e)
-    },
     versionToast() {
       eventBus.$emit('updateModal')
-    },
-    triggerImportData(e) {
-      e.preventDefault()
-      document.querySelector('#importData').click()
     }
   },
   beforeMount() {
@@ -120,10 +71,6 @@ export default {
 </script>
 
 <style scoped>
-#importData {
-  display: none;
-}
-
 .brand-logo {
   height: 100%;
   display: inline-flex;

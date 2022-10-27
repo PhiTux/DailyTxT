@@ -106,10 +106,12 @@ class UserService {
     )
   }
 
-  exportData() {
+  exportData(password) {
     return axios.post(
       API_URL + 'exportData',
-      {},
+      {
+        password: password
+      },
       {
         headers: authHeader(),
         responseType: 'blob'
