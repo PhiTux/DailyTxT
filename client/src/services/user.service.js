@@ -106,6 +106,32 @@ class UserService {
     )
   }
 
+  saveTemplate(number, name, text) {
+    return axios.post(
+      API_URL + 'saveTemplate',
+      {
+        number: number,
+        name: name,
+        text: text
+      },
+      { headers: authHeader() }
+    )
+  }
+
+  removeTemplate(number) {
+    return axios.post(
+      API_URL + 'removeTemplate',
+      {
+        number: number
+      },
+      { headers: authHeader() }
+    )
+  }
+
+  loadTemplates() {
+    return axios.post(API_URL + 'loadTemplates', {}, { headers: authHeader() })
+  }
+
   exportData(password) {
     return axios.post(
       API_URL + 'exportData',

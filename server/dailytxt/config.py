@@ -6,6 +6,7 @@ class BaseConfig(object):
 
     DATA_PATH = 'data/'
     USERS_FILE = 'users.json'
+    TEMPLATES_FILE = 'templates.json'
 
     # used for encryption and session management
     SECRET_KEY = os.urandom(24)

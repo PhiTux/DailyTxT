@@ -12,6 +12,18 @@ def import_directory(user_id):
     return os.path.join(current_app.config['DATA_PATH'], str(user_id), 'import_tmp')
 
 
+def read_templates(user_id):
+    return read_json(template_file(user_id))
+
+
+def write_templates(user_id, data):
+    return write_json(template_file(user_id), data)
+
+
+def template_file(user_id):
+    return os.path.join(current_app.config['DATA_PATH'], str(user_id), current_app.config['TEMPLATES_FILE'])
+
+
 def users_file():
     return os.path.join(current_app.config['DATA_PATH'], current_app.config['USERS_FILE'])
 

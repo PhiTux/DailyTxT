@@ -179,6 +179,27 @@ def route_createBackupCodes(user_id, key):
     return jsonify(res)
 
 
+@api.route('saveTemplate', methods=['POST'])
+@token_required
+def route_saveTemplate(user_id, key):
+    res = saveTemplate(user_id, key, request.get_json())
+    return jsonify(res)
+
+
+@api.route('removeTemplate', methods=['POST'])
+@token_required
+def route_removeTemplate(user_id, key):
+    res = removeTemplate(user_id, key, request.get_json())
+    return jsonify(res)
+
+
+@api.route('loadTemplates', methods=['POST'])
+@token_required
+def route_loadTemplates(user_id, key):
+    res = loadTemplates(user_id, key)
+    return jsonify(res)
+
+
 @api.route('exportData', methods=['POST'])
 @token_required
 def route_exportData(user_id, key):

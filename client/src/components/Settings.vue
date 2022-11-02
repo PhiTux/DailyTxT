@@ -64,7 +64,11 @@
       <li class="spacer"></li>
       <li class="divider"></li>
       <li>
-        <a href="#" :class="{ active: isMenuSelected('templates') }"
+        <a
+          href="#"
+          :class="{ active: isMenuSelected('templates') }"
+          class="waves-effect"
+          @click.prevent="setting('templates')"
           ><i class="material-icons">library_books</i>{{ $t('templates') }}</a
         >
       </li>
@@ -75,6 +79,7 @@
         <a
           href="#"
           :class="{ active: isMenuSelected('export') }"
+          class="waves-effect"
           @click.prevent="setting('export')"
           ><i class="material-icons">cloud_download</i
           >{{ $t('export-data') }}</a
@@ -85,6 +90,7 @@
         <a
           href="#"
           :class="{ active: isMenuSelected('import') }"
+          class="waves-effect"
           for="importData"
           @click.prevent="setting('import')"
           ><i class="material-icons">cloud_upload</i>{{ $t('import-data') }}</a
@@ -101,6 +107,7 @@
       >
         <Password v-if="isMenuSelected('password')" />
         <BackupCodes v-else-if="isMenuSelected('backup-codes')" />
+        <Templates v-else-if="isMenuSelected('templates')" />
         <Export v-else-if="isMenuSelected('export')" />
         <Import v-else-if="isMenuSelected('import')" />
       </transition>
@@ -114,6 +121,7 @@ import M from 'materialize-css'
 import { eventBus } from '../main.js'
 import Password from '@/components/settings/Password.vue'
 import BackupCodes from '@/components/settings/BackupCodes.vue'
+import Templates from '@/components/settings/Templates.vue'
 import Export from '@/components/settings/Export.vue'
 import Import from '@/components/settings/Import.vue'
 
@@ -122,6 +130,7 @@ export default {
   components: {
     Password,
     BackupCodes,
+    Templates,
     Export,
     Import
   },

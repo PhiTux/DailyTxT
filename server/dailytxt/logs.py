@@ -564,3 +564,89 @@ def exportData(user_id, key, p):
 
         mem_zip.seek(0)
         return mem_zip
+
+
+def saveTemplate(user_id, key, p):
+    file_content = read_templates(user_id)
+
+    enc_res_name = encrypt_by_userid(p['name'], user_id, key)
+    if not enc_res_name['success']:
+        return {'success': False, 'message': 'Encryption error'}
+
+    enc_res_text = encrypt_by_userid(p['text'], user_id, key)
+    if not enc_res_text['success']:
+        return {'success': False, 'message': 'Encryption error'}
+
+    if isinstance(file_content, dict):
+        if not 'templates' in file_content.keys():
+            return {'success': False, 'message': 'File error - templates corrupted'}
+
+        # number 0 means 'new template'
+        if p['number'] == 0:
+            max_number = 0
+            for template in file_content['templates']:
+                if template['number'] > max_number:
+                    max_number = template['number']
+            max_number += 1
+            file_content['templates'].append({"number": max_number, 'name': enc_res_name['text'],
+                                              'text': enc_res_text['text']})
+        else:
+            for template in file_content['templates']:
+                if template['number'] == p['number']:
+                    template['name'] = enc_res_name['text']
+                    template['text'] = enc_res_text['text']
+                    break
+    else:
+        if p['number'] == 0:
+            file_content = {'templates': [{'number': 1, 'name': enc_res_name['text'],
+                                           'text': enc_res_text['text']}]}
+        else:
+            return {'success': False, 'message': 'File error - templates file corrupted'}
+
+    if write_templates(user_id, file_content):
+        return {'success': True}
+
+    return {'success': False, 'message': 'Error on saving template'}
+
+
+def removeTemplate(user_id, key, p):
+    file_content = read_templates(user_id)
+    new_content = {'templates': []}
+
+    if isinstance(file_content, dict):
+        if not 'templates' in file_content.keys():
+            return {'success': False, 'message': 'File error - templates file corrupted'}
+        for template in file_content['templates']:
+            if template['number'] != p['number']:
+                new_content['templates'].append(template)
+        if write_templates(user_id, new_content):
+            return {'success': True}
+        return {'success': False, 'message': 'Error on deleting template'}
+    else:
+        return {'success': False, 'message': 'File error - templates file already empty'}
+
+
+def loadTemplates(user_id, key):
+    file_content = read_templates(user_id)
+
+    if isinstance(file_content, dict):
+        if not 'templates' in file_content.keys():
+            return {'success': False, 'message': 'File error - templates corrupted'}
+
+        templates_dec = []
+        for template in file_content['templates']:
+            name_dec_res = decrypt_by_userid(template['name'], user_id, key)
+            if not name_dec_res['success']:
+                return {'success': False, 'message': 'Encryption error'}
+
+            text_dec_res = decrypt_by_userid(template['text'], user_id, key)
+            if not text_dec_res['success']:
+                return {'success': False, 'message': 'Encryption error'}
+
+            templates_dec.append(
+                {'number': template['number'], 'name': name_dec_res['text'], 'text': text_dec_res['text']})
+
+        return {'success': True, 'templates': templates_dec}
+
+    else:
+        return {'success': True, 'templates': []}

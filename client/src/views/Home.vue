@@ -9,7 +9,7 @@
       appear
     >
       <DailyTxT v-if="!settings" />
-      <Settings v-else-if="settings" />
+      <Settings v-else />
     </transition>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       settings: false,
-      transitionName: 'slideDown'
+      transitionName: ''
     }
   },
   created: function() {

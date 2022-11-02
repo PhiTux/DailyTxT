@@ -137,6 +137,15 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.10
+(2022_11_02)
+```
+- Moved Settings to new separate settings-page
+- Added Feature to create templates and to insert them with one (well, it's two) clicks
+- Safety strengthened: Export only possible with password confirmation
+- Minor CSS fixes
+```
+
 ### 1.0.9
 (2022_05_14)
 ```

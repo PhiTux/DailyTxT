@@ -72,5 +72,14 @@
   "export-data-description": "Creates a ZIP file for download that contains all texts and uploaded files. The content is <b>decrypted</b>!",
   "create-export": "Create export",
   "import-data-description": "Select your (previously exported) ZIP file to upload the data. The texts contained in it will be handled as the newest entries. The import might take a few minutes (depending on the size).",
-  "start-import": "Choose ZIP file and start import"
+  "start-import": "Choose ZIP file and start import",
+  "select-template": "Select a template",
+  "create-new-template": "Create new template",
+  "template-name": "Name",
+  "saving-template-error": "Error on saving the template",
+  "saving-template-success": "Template successfully saved",
+  "save-new-template": "Save new template",
+  "save-changes": "Save changes",
+  "remove-template-tooltip": "Delete template '{name}'",
+  "removing-template-success": "Template successfully removed"
 }

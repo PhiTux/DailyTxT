@@ -225,15 +225,30 @@
       </div>
     </ul>
     <div class="right-main">
+      <div class="row">
+        <div class="col s12 hide-on-xlarge">
+          <div v-if="templates.length > 0">
+            <a class="dropdown-trigger btn left" data-target="dropdown1"
+              >{{ $t('select-template') }}
+              <i class="material-icons right">arrow_drop_down</i>
+            </a>
+            <ul id="dropdown1" class="dropdown-content">
+              <li v-for="t in templatesSorted" :key="t.number">
+                <a @click="selectTemplate(t.number)">{{ t.name }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
       <div class="row main-header-row">
-        <div class="col s5 m4 l3 xl2" id="left">
+        <div class="col s5 m3 l3 xl2" id="left">
           <div class="dateDescription">
             <span>{{ dateDescription.split(',')[0] }}</span>
             <hr />
             <span>{{ dateDescription.split(',')[1] }}</span>
           </div>
         </div>
-        <div class="col s5 m4 l3 xl2" id="right">
+        <div class="col s5 m3 l3 xl2" id="right">
           <transition name="fade-only-opacity">
             <div class="dateWritten" v-if="!isLoading && dateWritten != ''">
               <span>{{ $t('last-edited') }}</span>
@@ -242,7 +257,20 @@
             </div>
           </transition>
         </div>
-        <div class="col s2 m4 l3" id="loading" v-if="isLoading">
+        <div class="col s12 l12 xl4 hide-on-large-and-down">
+          <div class="left" v-if="templates.length > 0">
+            <a class="dropdown-trigger btn" data-target="dropdown2"
+              >{{ $t('select-template') }}
+              <i class="material-icons right">arrow_drop_down</i>
+            </a>
+            <ul id="dropdown2" class="dropdown-content">
+              <li v-for="t in templatesSorted" :key="t.number">
+                <a @click="selectTemplate(t.number)">{{ t.name }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="col s2 m2 l2 xl1" id="loading" v-if="isLoading">
           <div class="preloader-wrapper small active">
             <div class="spinner-layer spinner-blue">
               <div class="circle-clipper left">
@@ -294,7 +322,7 @@
           </div>
         </div>
         <div
-          class="col s2 m1 l3 xl5 valign-wrapper"
+          class="col s2 m3 l3 xl1 valign-wrapper"
           id="removeDay"
           v-if="!isLoading && (dateWritten != '' || files.length != 0)"
         >
@@ -422,16 +450,36 @@ export default {
       recentDailytxtVersion: version,
       clientVersion: version,
       password: '',
-      searchResultsAttention: false
+      searchResultsAttention: false,
+      templates: [],
+      templatesReload: false
     }
   },
   updated: function() {
     this.$nextTick(function() {
       var elems = document.querySelectorAll('.tooltipped')
       M.Tooltip.init(elems, {})
+
+      if (this.templatesReload) {
+        elems = document.querySelectorAll('.dropdown-trigger')
+        M.Dropdown.init(elems, {})
+        this.templatesReload = false
+      }
     })
   },
   computed: {
+    templatesSorted: function() {
+      function compare(a, b) {
+        if (a.number < b.number) {
+          return -1
+        } else {
+          return 1
+        }
+      }
+      var arr = this.templates
+
+      return arr.sort(compare)
+    },
     fileUploadProgressesActive: function() {
       return this.fileUploadProgresses.filter(i => i !== 100)
     },
@@ -509,6 +557,8 @@ export default {
 
     this.daySelected()
 
+    this.loadTemplates()
+
     $(document).keydown(event => {
       if (event.altKey && event.key == 'ArrowLeft') {
         event.preventDefault()
@@ -562,6 +612,33 @@ export default {
     })
   },
   methods: {
+    loadTemplates() {
+      UserService.loadTemplates().then(
+        response => {
+          if (response.data.success) {
+            this.templates = response.data.templates
+            this.templatesReload = true
+          } else {
+            this.templates = []
+            console.log(response.data.message)
+            eventBus.$emit('toastAlert', response.data.message)
+          }
+        },
+        error => {
+          this.templates = []
+          console.log(error.response.data.message)
+          eventBus.$emit('toastAlert', error.response.data.message)
+        }
+      )
+    },
+    selectTemplate(i) {
+      this.templates.forEach(t => {
+        if (t.number == i) {
+          if (this.logText == '') this.logText = t.text
+          else this.logText = this.logText + '\n' + t.text
+        }
+      })
+    },
     updateAvailable() {
       this.toastSuccess(this.$t('update-installed-reload'))
     },
@@ -982,6 +1059,28 @@ input[type='password']:focus {
 </style>
 
 <style scoped>
+.dropdown-content li {
+  margin: 0;
+}
+
+.dropdown-trigger {
+  background-color: #2196f3;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid #2196f3;
+  text-decoration: none;
+  transition: box-shadow ease 0.3s;
+}
+
+.dropdown-trigger:hover {
+  background-color: #2196f3;
+  box-shadow: 0 0px 4px 4px rgba(0, 0, 0, 0.14);
+}
+
+.dropdown-content li > a {
+  color: #2196f3;
+}
+
 .backup-wrap {
   position: relative;
 }
@@ -1247,7 +1346,7 @@ li {
   min-width: 400px;
   max-width: 550px;
   width: 35%;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 84px);
   top: inherit;
   box-shadow: none;
   flex-flow: column;
@@ -1488,6 +1587,18 @@ input[type='password']:focus {
   height: calc(100% - 64px - 20px);
 }
 
+@media only screen and (min-width: 1201px) {
+  .hide-on-xlarge {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .hide-on-large-and-down {
+    display: none;
+  }
+}
+
 @media only screen and (min-width: 1600px) {
   .col#left,
   .col#right {
@@ -1496,7 +1607,7 @@ input[type='password']:focus {
   }
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 630px) {
   .dateWritten {
     font-size: 12px;
   }
