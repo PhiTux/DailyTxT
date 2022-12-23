@@ -1,3 +1,7 @@
+![Docker Image Version (latest by date)](https://img.shields.io/docker/v/phitux/dailytxt?label=latest%20docker%20version)
+![Docker Pulls](https://img.shields.io/docker/pulls/phitux/dailytxt)
+![GitHub](https://img.shields.io/github/license/PhiTux/DailyTxT)
+
 # DailyTxT
 
 DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
