@@ -205,7 +205,8 @@
                 )
                 searchResultSelected = index
               "
-              ><div class="col s3 searchResultLeft">
+            >
+              <div class="col s3 searchResultLeft">
                 {{
                   $t('full-date', {
                     day: searchResult.day,
@@ -218,8 +219,8 @@
                 {{ searchResult.snippetStart
                 }}<b>{{ searchResult.snippetBold }}</b
                 >{{ searchResult.snippetEnd }}
-              </div></a
-            >
+              </div>
+            </a>
           </div>
         </div>
       </div>
@@ -1198,9 +1199,6 @@ textarea {
   transition: opacity ease 0.5s;
 }
 
-.main-header-row > .col#removeDay {
-}
-
 .removeDay {
   float: right;
   color: #e57373;
@@ -1266,6 +1264,7 @@ textarea {
   .dateDescription {
     font-size: 12.5px;
   }
+
   .dateWritten {
     font-size: 12.5px;
   }
@@ -1275,6 +1274,7 @@ textarea {
   .dateDescription {
     font-size: 11px;
   }
+
   .dateWritten {
     font-size: 12px;
   }
@@ -1333,10 +1333,12 @@ textarea {
 h3 {
   margin: 40px 0 0;
 }
+
 ul {
   list-style-type: none;
   padding: 0;
 }
+
 li {
   display: inline-block;
   margin: 0 10px;
@@ -1405,10 +1407,12 @@ input[type='password']:focus {
   0% {
     box-shadow: 0px 0px 4px 1px #ff7043;
   }
+
   40%,
   60% {
     box-shadow: 0px 0px 4px 3px #2196f3;
   }
+
   100% {
     box-shadow: 0px 0px 4px 1px #ff7043;
   }

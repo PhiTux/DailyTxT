@@ -144,6 +144,12 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.11
+(2023_02_03)
+```
+- Bugfix: Search and Export didn't work when a template was existing (sorry for bad testing 🙈)
+```
+
 ### 1.0.10
 (2022_11_02)
 ```

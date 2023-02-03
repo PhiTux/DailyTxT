@@ -132,7 +132,8 @@ def getAllFiles(user_id):
 
     for path, subdirs, files in os.walk(root):
         for name in files:
-            res.append(os.path.join(path, name))
+            if name != "templates.json":
+                res.append(os.path.join(path, name))
 
     return res
 
