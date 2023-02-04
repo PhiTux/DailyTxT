@@ -64,33 +64,38 @@ DailyTxT is intended to be run by Docker. There is an [official docker image](ht
 Use the **docker-compose.yml** file in this repo and adapt it. You see it here:
 
 ```yaml
-dailytxt:
-  image: phitux/dailytxt:latest
-  container_name: dailytxt
-  restart: always
-  environment:
-    # That's the internal container-port. You can actually use any portnumber (must match with the one at 'ports')
-    - PORT=8765
+version: "3"
 
-    - SECRET_KEY=<openssl rand -base64 32>
+services:
+  dailytxt:
+    image: phitux/dailytxt:latest
+    container_name: dailytxt
+    restart: always
+    environment:
+      # That's the internal container-port. You can actually use any portnumber (must match with the one at 'ports')
+      - PORT=8765
 
-    # Set it to False or remove the line completely to disallow registration of new users.
-    - ALLOW_REGISTRATION=True
+      - SECRET_KEY=<openssl rand -base64 32>
 
-    # Use this if you want the json log file to be indented. Makes it easier to compare the files. Otherwise just remove this line! 
-    - DATA_INDENT=2
+      # Set it to False or remove the line completely to disallow registration of new users.
+      - ALLOW_REGISTRATION=True
 
-    # Set after how many days the JWT token will expire and you have to re-login. Defaults to 30 days if line is ommited.
-    - JWT_EXP_DAYS=60
+      # Use this if you want the json log file to be indented. Makes it easier to compare the files. Otherwise just remove this line!
+      - DATA_INDENT=2
 
-    # Enable/disable a feature of DailyTxT to auto-check maximal once per hour if there's a newer version of DailyTxT available. Defaults to True if line is ommited.
-    - ENABLE_UPDATE_CHECK=True
-  ports:
-    - "127.0.0.1:<host_port>:8765"
-    # perhaps you only want:
-    # "<host_port>:8765"
+      # Set after how many days the JWT token will expire and you have to re-login. Defaults to 30 days if line is ommited.
+      - JWT_EXP_DAYS=60
+
+      # Enable/disable a feature of DailyTxT to auto-check maximal once per hour if there's a newer version of DailyTxT available. Defaults to True if line is ommited.
+      - ENABLE_UPDATE_CHECK=True
+    ports:
+      - "127.0.0.1:<host_port>:8765"
+      # perhaps you only want:
+      # "<host_port>:8765"
   volumes:
     - "</save/my/dailytxt-files/here/>:/app/data/"
+    # Or perhaps if using on a windows enviroment:
+    # "C:/Users/example/dailytxt/:/app/data"
 ```
 
 There are **four <ins>important</ins> things that you should adapt** to your needs:

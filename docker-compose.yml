@@ -1,4 +1,5 @@
 version: "3"
+
 services:
   dailytxt:
     image: phitux/dailytxt:latest
@@ -26,6 +27,6 @@ services:
       # perhaps you only want:
       # "<host_port>:8765"
   volumes:
-      - "</save/my/dailytxt-files/here/>:/app/data/"
-      # Or perhaps if using on a windows enviroment:
-      # "C:/Users/example/dailytxt/:/app/data"
+    - "</save/my/dailytxt-files/here/>:/app/data/"
+    # Or perhaps if using on a windows enviroment:
+    # "C:/Users/example/dailytxt/:/app/data"
