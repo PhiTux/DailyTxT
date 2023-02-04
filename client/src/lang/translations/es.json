@@ -61,7 +61,7 @@
     "backup-codes-created-2": "Anota AHORA los Códigos de Respaldo. Después de cerrar esta ventana ya no será posible ver los códigos nuevamente, pero siempre puedes generar nuevos.",
     "backup-codes-deleted": "Códigos de respaldo eliminados. ¡Necesitas crear unos nuevos!",
     "copy-to-clipboard-successful": "Códigos de respaldo copiados correctamente",
-    "few-backup-codes-left": "Solo quedan {0} códigos de respaldo restantes. Deberías crear unos nuevos."
+    "few-backup-codes-left": "Solo quedan {0} códigos de respaldo restantes. Deberías crear unos nuevos.",
     "update-installed-reload": "New update has been installed. Please reload the page!",
     "remove-day": "Borrar todos los registros y archivos de este día.",
     "modal-remove-day-header": "¿Borrar todos los datos de este día?",
