@@ -206,7 +206,7 @@ def route_exportData(user_id, key):
     f = exportData(user_id, key, request.get_json())
     if isinstance(f, dict):
         return jsonify(f)
-    return send_file(f, as_attachment=True, attachment_filename="export.zip")
+    return send_file(f, as_attachment=True, download_name="export.zip")
 
 
 @api.route('getRecentVersion', methods=['POST'])
