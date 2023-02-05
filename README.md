@@ -92,10 +92,10 @@ services:
       - "127.0.0.1:<host_port>:8765"
       # perhaps you only want:
       # "<host_port>:8765"
-  volumes:
-    - "</save/my/dailytxt-files/here/>:/app/data/"
-    # Or perhaps if using on a windows enviroment:
-    # "C:/Users/example/dailytxt/:/app/data"
+    volumes:
+      - "</save/my/dailytxt-files/here/>:/app/data/"
+      # Or perhaps if using on a windows enviroment:
+      # "C:/Users/example/dailytxt/:/app/data"
 ```
 
 There are **four <ins>important</ins> things that you should adapt** to your needs:
@@ -148,6 +148,13 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 ---
 
 ## Changelog
+
+### 1.0.12
+(2023_02_05)
+```
+- Updated spanish translation
+- Updated several packages
+```
 
 ### 1.0.11
 (2023_02_03)
