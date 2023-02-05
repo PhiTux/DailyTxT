@@ -85,6 +85,7 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
     transform: scale(0.92);
@@ -96,9 +97,11 @@ body {
     opacity: 0;
     transform: translateX(20%) scale(0.92);
   }
+
   50% {
     transform: translateX(0) scale(0.92);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -110,9 +113,11 @@ body {
     opacity: 0;
     transform: translateX(-20%) scale(0.92);
   }
+
   50% {
     transform: translateX(0) scale(0.92);
   }
+
   100% {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -136,6 +141,7 @@ body {
   opacity: 0;
   transform: scale(0.92);
 }
+
 .fade-leave-to {
   opacity: 0;
   transform: scale(0.92);

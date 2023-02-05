@@ -105,10 +105,10 @@ export default {
       eventBus.$emit('toastSuccess', this.$t('export-started-2'))
 
       UserService.exportData(this.password).then(
-        async response => {
+        async (response) => {
           if (response.data.type == 'application/json') {
             let blob = new Blob([response.data], { type: 'application/json' })
-            await blob.text().then(a => {
+            await blob.text().then((a) => {
               var res = JSON.parse(a)
               if (!res.success) {
                 eventBus.$emit('toastAlert', res.message)
@@ -140,7 +140,7 @@ export default {
             link.click()
           }
         },
-        error => {
+        (error) => {
           this.isExporting = false
           console.log(error)
         }

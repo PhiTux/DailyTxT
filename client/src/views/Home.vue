@@ -30,7 +30,7 @@ export default {
       transitionName: ''
     }
   },
-  created: function() {
+  created: function () {
     eventBus.$off('switchSettings')
     eventBus.$on('switchSettings', () => {
       if (this.settings) {
@@ -43,11 +43,11 @@ export default {
       this.$store.state.historyAvailable = false
     })
     eventBus.$off('toastSuccess')
-    eventBus.$on('toastSuccess', message => {
+    eventBus.$on('toastSuccess', (message) => {
       this.toastSuccess(message)
     })
     eventBus.$off('toastAlert')
-    eventBus.$on('toastAlert', message => {
+    eventBus.$on('toastAlert', (message) => {
       this.toastAlert(message)
     })
   },
@@ -92,6 +92,7 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+
   100% {
     opacity: 0;
     transform: translateY(5%);
@@ -103,6 +104,7 @@ export default {
     opacity: 0;
     transform: translateY(-5%);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -122,6 +124,7 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+
   100% {
     opacity: 0;
     transform: translateY(-5%);
@@ -133,6 +136,7 @@ export default {
     opacity: 0;
     transform: translateY(5%);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);

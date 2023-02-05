@@ -11,11 +11,11 @@ export const auth = {
   actions: {
     login({ commit }, user) {
       return AuthService.login(user).then(
-        user => {
+        (user) => {
           commit('loginSuccess', user)
           return Promise.resolve(user)
         },
-        error => {
+        (error) => {
           commit('loginFailure')
           return Promise.reject(error)
         }
@@ -27,11 +27,11 @@ export const auth = {
     },
     register({ commit }, user) {
       return AuthService.register(user).then(
-        response => {
+        (response) => {
           commit('registerSuccess')
           return Promise.resolve(response.data)
         },
-        error => {
+        (error) => {
           commit('registerFailure')
           return Promise.reject(error)
         }

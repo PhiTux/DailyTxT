@@ -166,7 +166,7 @@ export default {
     this.onResize()
     window.addEventListener('resize', this.onResize, { passive: true })
 
-    $(document).ready(function() {
+    $(document).ready(function () {
       var sidenav = document.querySelectorAll('.sidenav')[0]
       M.Sidenav.init(sidenav, {})
     })
@@ -181,7 +181,7 @@ export default {
 }
 
 .fade-enter-from {
-  opactity: 0;
+  opacity: 0;
 }
 
 .fade-leave-to {

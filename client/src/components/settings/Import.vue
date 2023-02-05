@@ -121,20 +121,20 @@ export default {
       this.isImporting = true
       this.importStep = 1
 
-      UserService.importData(f, event => {
+      UserService.importData(f, (event) => {
         this.importProgress = Math.round((100 * event.loaded) / event.total)
 
         if (event.loaded == event.total) {
           this.importStep = 2
         }
       }).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             this.importStep = 3
             eventBus.$emit('toastSuccess', this.$t('import-successful'))
           }
         },
-        error => {
+        (error) => {
           if (typeof error.response.data.message !== 'undefined') {
             console.log(error.response.data.message)
             eventBus.$emit('toastAlert', error.response.data.message)

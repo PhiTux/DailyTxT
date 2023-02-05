@@ -174,7 +174,7 @@ export default {
       return this.$store.state.auth.status.loggedIn
     }
   },
-  created: function() {
+  created: function () {
     if (this.loggedIn) {
       this.$router.push('/')
     }
@@ -189,7 +189,7 @@ export default {
             new User(this.login_username, this.login_password)
           )
           .then(
-            response => {
+            (response) => {
               if (
                 response.remaining_backup_codes > 0 &&
                 response.remaining_backup_codes <= 3
@@ -203,7 +203,7 @@ export default {
               this.$parent.transitionName = 'slideLeft'
               this.$router.push('/')
             },
-            error => {
+            (error) => {
               this.login_loading = false
               this.error_shake = true
               this.login_error =
@@ -232,7 +232,7 @@ export default {
               var instance = M.Collapsible.getInstance(elem)
               instance.open(0)
             },
-            error => {
+            (error) => {
               this.register_loading = false
               this.error_shake = true
               this.register_error =
@@ -245,7 +245,7 @@ export default {
     }
   },
   mounted() {
-    $(document).ready(function() {
+    $(document).ready(function () {
       var elems = document.querySelectorAll('.collapsible')
       M.Collapsible.init(elems, {})
       document.getElementById('username').focus()

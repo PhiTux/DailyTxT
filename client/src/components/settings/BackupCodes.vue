@@ -117,7 +117,7 @@ export default {
     createBackupCodes() {
       this.backupCodesLoading = true
       UserService.createBackupCodes(this.password).then(
-        response => {
+        (response) => {
           this.backupCodesLoading = false
           this.password = ''
           if (response.data.success) {
@@ -135,7 +135,7 @@ export default {
             }
           }
         },
-        error => {
+        (error) => {
           this.backupCodesLoading = false
           this.password = ''
           console.log(error.response.data.message)
@@ -149,26 +149,26 @@ export default {
     }
   },
   computed: {
-    backupCodesHTML: function() {
+    backupCodesHTML: function () {
       var html = ''
       if (this.backupCodes.length > 0) {
-        this.backupCodes.forEach(t => {
+        this.backupCodes.forEach((t) => {
           html += html == '' ? t : '<br />' + t
         })
       }
       return html
     },
-    backupCodesCopy: function() {
+    backupCodesCopy: function () {
       var text = ''
       if (this.backupCodes.length > 0) {
-        this.backupCodes.forEach(t => {
+        this.backupCodes.forEach((t) => {
           text += text == '' ? t : '\n' + t
         })
       }
       return text
     }
   },
-  created: function() {
+  created: function () {
     this.canCopy = !!navigator.clipboard
   },
   beforeUnmount() {

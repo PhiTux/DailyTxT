@@ -13,7 +13,9 @@
       <ul id="nav-mobile" class="right">
         <li v-if="this.newerDailyTxTVersion">
           <a @click.prevent="versionToast"
-            ><i style="color:#f57c00" class="material-icons">info_outline</i></a
+            ><i style="color: #f57c00" class="material-icons"
+              >info_outline</i
+            ></a
           >
         </li>
         <li v-if="this.$store.state.historyAvailable">
@@ -63,7 +65,7 @@ export default {
     }
   },
   beforeMount() {
-    this.$root.$on('dailytxt_version_update', data => {
+    this.$root.$on('dailytxt_version_update', (data) => {
       this.newerDailyTxTVersion = data.update_available
     })
   }

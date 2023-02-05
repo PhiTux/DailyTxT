@@ -39,7 +39,7 @@
           class="alert-password"
           v-if="
             (new_password1 != '' || new_password2 != '') &&
-              new_password1 != new_password2
+            new_password1 != new_password2
           "
         >
           {{ $t('new-password-does-not-match') }}
@@ -73,7 +73,7 @@ export default {
     }
   },
   computed: {
-    inputError: function() {
+    inputError: function () {
       return (
         this.old_password == '' ||
         this.new_password1 == '' ||
@@ -89,7 +89,7 @@ export default {
     },
     changePassword() {
       UserService.changePassword(this.old_password, this.new_password1).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             if (response.data.token) {
               localStorage.setItem('user', JSON.stringify(response.data))
@@ -107,7 +107,7 @@ export default {
             eventBus.$emit('toastAlert', response.data.message)
           }
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           eventBus.$emit('toastAlert', error.response.data.message)
         }

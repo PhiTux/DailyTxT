@@ -174,7 +174,7 @@
               type="text"
               @keypress.enter="search"
               :value="searchString"
-              @input="e => (searchString = e.target.value)"
+              @input="(e) => (searchString = e.target.value)"
             />
             <label for="search">{{ $t('search-label') }}</label>
           </div>
@@ -339,7 +339,7 @@
         <div class="col s12 m9">
           <textarea
             :value="logText"
-            @input="e => (logText = e.target.value)"
+            @input="(e) => (logText = e.target.value)"
             name="main-text"
             cols="30"
             rows="10"
@@ -456,8 +456,8 @@ export default {
       templatesReload: false
     }
   },
-  updated: function() {
-    this.$nextTick(function() {
+  updated: function () {
+    this.$nextTick(function () {
       var elems = document.querySelectorAll('.tooltipped')
       M.Tooltip.init(elems, {})
 
@@ -469,7 +469,7 @@ export default {
     })
   },
   computed: {
-    templatesSorted: function() {
+    templatesSorted: function () {
       function compare(a, b) {
         if (a.number < b.number) {
           return -1
@@ -481,14 +481,14 @@ export default {
 
       return arr.sort(compare)
     },
-    fileUploadProgressesActive: function() {
-      return this.fileUploadProgresses.filter(i => i !== 100)
+    fileUploadProgressesActive: function () {
+      return this.fileUploadProgresses.filter((i) => i !== 100)
     },
-    datesWithLogs: function() {
-      var datesLogs = this.datesWithLogsRaw.map(o => {
+    datesWithLogs: function () {
+      var datesLogs = this.datesWithLogsRaw.map((o) => {
         return new Date(this.yearShown, this.monthShown - 1, o)
       })
-      var datesFiles = this.datesWithFilesRaw.map(o => {
+      var datesFiles = this.datesWithFilesRaw.map((o) => {
         return new Date(this.yearShown, this.monthShown - 1, o)
       })
 
@@ -503,7 +503,7 @@ export default {
         }
       ]
     },
-    dateDescription: function() {
+    dateDescription: function () {
       return this.dateSelected.toLocaleDateString([], {
         weekday: 'long',
         year: 'numeric',
@@ -511,7 +511,7 @@ export default {
         day: 'numeric'
       })
     },
-    searchResultsSorted: function() {
+    searchResultsSorted: function () {
       function compare(a, b) {
         if (
           a.year < b.year ||
@@ -527,13 +527,13 @@ export default {
 
       return arr.sort(compare)
     },
-    isSaved: function() {
+    isSaved: function () {
       return this.logText == this.savedLogText
     }
   },
   beforeMount() {
     UserService.getRecentVersion(version).then(
-      response => {
+      (response) => {
         if (response.data.recent_version != version) {
           this.$root.$emit('dailytxt_version_update', {
             update_available:
@@ -542,13 +542,13 @@ export default {
           this.recentDailytxtVersion = response.data.recent_version
         }
       },
-      error => {
+      (error) => {
         console.log(error.response.data.message)
       }
     )
   },
   mounted() {
-    $(document).ready(function() {
+    $(document).ready(function () {
       var sidenav = document.querySelectorAll('.sidenav')[0]
       M.Sidenav.init(sidenav, {})
 
@@ -560,7 +560,7 @@ export default {
 
     this.loadTemplates()
 
-    $(document).keydown(event => {
+    $(document).keydown((event) => {
       if (event.altKey && event.key == 'ArrowLeft') {
         event.preventDefault()
         this.dateSelected = new Date(
@@ -581,7 +581,7 @@ export default {
       }
     })
 
-    window.addEventListener('beforeunload', e => {
+    window.addEventListener('beforeunload', (e) => {
       if (!this.isSaved) {
         e.preventDefault()
         this.toastAlert(this.$t('not-yet-saved'))
@@ -589,18 +589,18 @@ export default {
     })
   },
   watch: {
-    dateSelected: function() {
+    dateSelected: function () {
       this.daySelected()
       this.$refs.calendar.$children[0].move(this.dateSelected)
     },
-    logText: function() {
+    logText: function () {
       this.debouncedAutoSave()
     }
   },
-  created: function() {
+  created: function () {
     document.addEventListener('swUpdated', this.updateAvailable, { once: true })
     this.canCopy = !!navigator.clipboard
-    this.debouncedAutoSave = _.debounce(function() {
+    this.debouncedAutoSave = _.debounce(function () {
       this.autoSave(this.dateSelected)
     }, 1000)
     eventBus.$off('historyModal')
@@ -615,7 +615,7 @@ export default {
   methods: {
     loadTemplates() {
       UserService.loadTemplates().then(
-        response => {
+        (response) => {
           if (response.data.success) {
             this.templates = response.data.templates
             this.templatesReload = true
@@ -625,7 +625,7 @@ export default {
             eventBus.$emit('toastAlert', response.data.message)
           }
         },
-        error => {
+        (error) => {
           this.templates = []
           console.log(error.response.data.message)
           eventBus.$emit('toastAlert', error.response.data.message)
@@ -633,7 +633,7 @@ export default {
       )
     },
     selectTemplate(i) {
-      this.templates.forEach(t => {
+      this.templates.forEach((t) => {
         if (t.number == i) {
           if (this.logText == '') this.logText = t.text
           else this.logText = this.logText + '\n' + t.text
@@ -679,11 +679,11 @@ export default {
     downloadFileModal(uuid) {
       this.isLoading = true
       UserService.downloadFile(uuid).then(
-        response => {
+        (response) => {
           let blob = new Blob([response.data])
           this.isLoading = false
           var href = window.URL.createObjectURL(blob)
-          this.fileToDownload = this.files.find(f => f.uuid == uuid)
+          this.fileToDownload = this.files.find((f) => f.uuid == uuid)
           this.fileToDownload.href = href
           if (
             this.fileToDownload.filename
@@ -696,7 +696,7 @@ export default {
             this.downloadFile()
           }
         },
-        error => {
+        (error) => {
           this.isLoading = false
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
@@ -706,7 +706,7 @@ export default {
     downloadFile() {
       this.loading = true
       UserService.downloadFile(this.fileToDownload.uuid).then(
-        response => {
+        (response) => {
           let blob = new Blob([response.data])
           this.loading = false
           let link = document.createElement('a')
@@ -714,7 +714,7 @@ export default {
           link.download = this.fileToDownload.filename
           link.click()
         },
-        error => {
+        (error) => {
           this.loading = false
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
@@ -726,14 +726,14 @@ export default {
 
       var myProgress = this.fileUploadProgresses.length
       this.fileUploadProgresses.push(0)
-      UserService.uploadFile(f, this.dateSelected, event => {
+      UserService.uploadFile(f, this.dateSelected, (event) => {
         Vue.set(
           this.fileUploadProgresses,
           myProgress,
           Math.round((100 * event.loaded) / event.total)
         )
       }).then(
-        response => {
+        (response) => {
           this.isLoading = false
           if (response.data.success) {
             this.files.push({
@@ -746,7 +746,7 @@ export default {
             })
           }
         },
-        error => {
+        (error) => {
           this.isLoading = false
           if (typeof error.response.data.message !== 'undefined') {
             console.log(error.response.data.message)
@@ -759,15 +759,15 @@ export default {
       )
     },
     deleteFileModal(uuid) {
-      this.fileToDelete = this.files.find(f => f.uuid == uuid)
+      this.fileToDelete = this.files.find((f) => f.uuid == uuid)
       var modal = document.querySelector('#modal_delete_file')
       M.Modal.getInstance(modal).open()
     },
     deleteFile() {
       UserService.deleteFile(this.fileToDelete.uuid, this.dateSelected).then(
-        response => {
+        (response) => {
           if (response.data.success) {
-            this.files = this.files.filter(obj => {
+            this.files = this.files.filter((obj) => {
               return obj.uuid !== this.fileToDelete.uuid
             })
             this.getDaysWithLogs({
@@ -776,7 +776,7 @@ export default {
             })
           }
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
@@ -788,7 +788,7 @@ export default {
     },
     removeDay() {
       UserService.removeDay(this.dateSelected).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             this.getDaysWithLogs({
               month: this.monthShown,
@@ -797,7 +797,7 @@ export default {
             this.daySelected()
           }
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
@@ -806,7 +806,7 @@ export default {
     historyModal() {
       this.isLoading = true
       UserService.getHistory(this.dateSelected).then(
-        response => {
+        (response) => {
           this.isLoading = false
           if (response.data.success) {
             this.versionHistory = response.data.history
@@ -825,7 +825,7 @@ export default {
             this.toastAlert(this.$t('no-history-available-yet'))
           }
         },
-        error => {
+        (error) => {
           this.isLoading = false
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
@@ -837,7 +837,7 @@ export default {
         this.selectedHistoryVersion,
         this.dateSelected
       ).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             this.daySelected()
           } else {
@@ -845,7 +845,7 @@ export default {
             this.toastAlert(response.data.message)
           }
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
@@ -860,14 +860,14 @@ export default {
       this.toastSuccess(this.$t('copy-to-clipboard-successful'))
     },
     uploadFilesBtn(event) {
-      Array.prototype.forEach.call(event.target.files, f => {
+      Array.prototype.forEach.call(event.target.files, (f) => {
         this.uploadFile(f)
       })
     },
     uploadFilesDrop(event) {
       event.preventDefault()
       this.dragging = false
-      Array.prototype.forEach.call(event.dataTransfer.files, f => {
+      Array.prototype.forEach.call(event.dataTransfer.files, (f) => {
         if (!f.type && f.size % 4096 == 0) {
           this.toastAlert(this.$t('no-valid-file'))
         } else {
@@ -887,12 +887,12 @@ export default {
 
       this.searchResults = []
       UserService.search(s).then(
-        data => {
+        (data) => {
           this.searchResults = data.data.results
           this.searchResultSelected = null
           this.searchResultsAttention = true
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
@@ -902,11 +902,11 @@ export default {
       this.yearShown = page.year
       this.monthShown = page.month
       UserService.getDaysWithLogs(page).then(
-        dates => {
+        (dates) => {
           this.datesWithLogsRaw = dates.data.logs
           this.datesWithFilesRaw = dates.data.files
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
           this.$parent.$parent.transitionName = 'slideRight'
@@ -942,7 +942,7 @@ export default {
             })
           }
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           this.toastAlert(error.response.data.message)
         }
@@ -975,7 +975,7 @@ export default {
       var loadingDay = this.dateSelected
 
       UserService.loadDay(this.dateSelected).then(
-        response => {
+        (response) => {
           if (loadingDay != this.dateSelected) {
             return
           }
@@ -995,7 +995,7 @@ export default {
             document.querySelector('.main-textarea').focus()
           }
         },
-        error => {
+        (error) => {
           this.isLoading = false
           this.toastAlert(error.response.data.message)
           this.$parent.$parent.transitionName = 'slideRight'

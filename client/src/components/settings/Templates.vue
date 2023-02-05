@@ -84,14 +84,14 @@ export default {
       templateText: ''
     }
   },
-  updated: function() {
-    this.$nextTick(function() {
+  updated: function () {
+    this.$nextTick(function () {
       var elems = document.querySelectorAll('.tooltipped')
       M.Tooltip.init(elems, {})
     })
   },
   computed: {
-    templatesSorted: function() {
+    templatesSorted: function () {
       function compare(a, b) {
         if (a.number < b.number) {
           return -1
@@ -111,7 +111,7 @@ export default {
         this.templateName = ''
         this.templateText = ''
       }
-      this.templates.forEach(t => {
+      this.templates.forEach((t) => {
         if (t.number == i) {
           this.templateName = t.name
           this.templateText = t.text
@@ -124,7 +124,7 @@ export default {
         this.templateName,
         this.templateText
       ).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             console.log(this.$t('saving-template-success'))
             eventBus.$emit('toastSuccess', this.$t('saving-template-success'))
@@ -139,7 +139,7 @@ export default {
             }
           }
         },
-        error => {
+        (error) => {
           if (typeof error.response.data.message !== 'undefined') {
             console.log(error.response.data.message)
             eventBus.$emit('toastAlert', error.response.data.message)
@@ -154,7 +154,7 @@ export default {
       this.templateName = ''
       this.templateText = ''
       UserService.removeTemplate(this.templateIndex).then(
-        response => {
+        (response) => {
           if (response.data.success) {
             console.log(this.$t('removing-template-success'))
             eventBus.$emit('toastSuccess', this.$t('removing-template-success'))
@@ -165,7 +165,7 @@ export default {
           }
           this.loadTemplates()
         },
-        error => {
+        (error) => {
           console.log(error.response.data.message)
           eventBus.$emit('toastAlert', error.response.data.message)
           this.loadTemplates()
@@ -174,7 +174,7 @@ export default {
     },
     loadTemplates() {
       UserService.loadTemplates().then(
-        response => {
+        (response) => {
           if (response.data.success) {
             this.templates = response.data.templates
 
@@ -186,7 +186,7 @@ export default {
             eventBus.$emit('toastAlert', response.data.message)
           }
         },
-        error => {
+        (error) => {
           this.templates = []
           console.log(error.response.data.message)
           eventBus.$emit('toastAlert', error.response.data.message)
@@ -195,7 +195,7 @@ export default {
     }
   },
   mounted() {
-    $(document).ready(function() {
+    $(document).ready(function () {
       var select = document.querySelectorAll('select')[0]
       M.FormSelect.init(select, {})
 
