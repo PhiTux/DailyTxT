@@ -10,7 +10,8 @@ Flask == 2.2.2
 Flask_Cors == 3.0.10
 
 # server/dailytxt/api.py: 3
-PyJWT == 1.7.1
+#PyJWT == 1.7.1
+PyJWT == 2.4.0
 
 # server/dailytxt/models.py: 2
 Werkzeug == 2.2.2

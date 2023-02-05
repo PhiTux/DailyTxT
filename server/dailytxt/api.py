@@ -34,7 +34,8 @@ def token_required(f):
 
         try:
             token = auth_headers[1]
-            data = jwt.decode(token, current_app.config['SECRET_KEY'])
+            data = jwt.decode(
+                token, current_app.config['SECRET_KEY'], algorithms="HS256")
             if data['sub'] != 0:
                 return f(data['sub'], data['key'], *args, **kwargs)
 
@@ -86,7 +87,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'token': token.decode('UTF-8'), 'remaining_backup_codes': user['remaining_backup_codes']})
+    return jsonify({'token': token, 'remaining_backup_codes': user['remaining_backup_codes']})
 
 
 @api.route('/saveLog', methods=['POST'])
@@ -169,7 +170,7 @@ def route_changePassword(user_id, key):
         'exp': datetime.utcnow() + timedelta(days=30)},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'success': True, 'token': token.decode('UTF-8'), 'backup_codes_deleted': res['backup_codes_deleted']})
+    return jsonify({'success': True, 'token': token, 'backup_codes_deleted': res['backup_codes_deleted']})
 
 
 @api.route('createBackupCodes', methods=['POST'])
