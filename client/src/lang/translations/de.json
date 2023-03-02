@@ -71,7 +71,7 @@
   "templates": "Vorlagen",
   "export-data-description": "Erstellt eine ZIP-Datei zum Download, die alle Texte und hochgeladenen Dateien enthält. Der Inhalt ist <b>entschlüsselt</b>!",
   "create-export": "Export erstellen",
-  "import-data-description": "Wähle deine (zuvor exportierte) ZIP-Datei, um die Daten hochzuladen. Die darin enhaltenen Texte, werden als neueste Einträge angesehen. Der Import kann (je nach Umfang) einige Minuten dauern.",
+  "import-data-description": "Wähle deine (zuvor exportierte) ZIP-Datei, um die Daten hochzuladen. Die darin enthaltenen Texte werden als neueste Einträge angesehen. Der Import kann (je nach Umfang) einige Minuten dauern.",
   "start-import": "ZIP-Datei wählen und Import starten",
   "select-template": "Vorlage wählen",
   "create-new-template": "Neue Vorlage erstellen",
