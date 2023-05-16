@@ -53,7 +53,7 @@
   "backup-codes": "备份代码",
   "create-backup-codes": "创建备份代码",
   "create-new-backup-codes": "创建新的备份代码",
-  "backup-codes-description-1": "备份代码的工作原理类似于一次性密码. 它们可以始终代替常规密码使用 (例如，如果您忘记了密码), 但仅能使用一次.",
+  "backup-codes-description-1": "备份代码的工作原理类似于一次性密码. 它们可以随时代替常规密码使用 (例如，如果您忘记了密码), 但仅能使用一次.",
   "backup-codes-description-2": "当您更改密码时, 所有备份代码将被删除, 您将需要创建新的备份代码.",
   "attention": "注意",
   "backup-codes-not-successful": "创建新备份代码时出错.",
