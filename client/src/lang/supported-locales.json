@@ -11,6 +11,10 @@
     {
       "code": "es",
       "desc": "Spanish"
+    },
+    {
+      "code": "zh-Hans",
+      "desc": "Chinese"
     }
   ]
 }
