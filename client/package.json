@@ -3,9 +3,10 @@
   "version": "1.0.12",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve --mode staging --host 0.0.0.0 --port 8081",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "vite -m dev",
+    "build": "vite build",
+    "serve": "vite preview",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
   },
   "dependencies": {
     "animate.css": "^4.1.1",
@@ -21,24 +22,18 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "~5.0.8",
-    "@vue/cli-plugin-eslint": "~5.0.8",
-    "@vue/cli-plugin-pwa": "~5.0.8",
-    "@vue/cli-plugin-router": "^5.0.8",
-    "@vue/cli-service": "~5.0.8",
+    "vite": "^4.3.9",
+    "vite-plugin-vue2": "^2.0.3",
     "@vue/eslint-config-prettier": "^7.0.0",
-    "babel-eslint": "^10.1.0",
-    "eslint": "^7.5.0",
+    "eslint": "^8.43.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-vue": "^9.9.0",
+    "eslint-plugin-vue": "^9.15.0",
     "prettier": "^2.8.3",
     "sass": "^1.58.0",
-    "sass-loader": "^8.0.2",
-    "v-calendar": "^2.4.1",
-    "vue-template-compiler": "^2.7.14"
+    "v-calendar": "^2.4.1"
   }
 }
