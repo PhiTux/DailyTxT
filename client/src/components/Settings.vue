@@ -10,10 +10,7 @@
           <span class="right" v-if="isMenuSelected('password') && !isMobile">
             {{ $t('change-password') }}
           </span>
-          <span
-            class="right"
-            v-if="isMenuSelected('backup-codes') && !isMobile"
-          >
+          <span class="right" v-if="isMenuSelected('backup-codes') && !isMobile">
             {{ $t('create-backup-codes') }}
           </span>
           <span class="right" v-if="isMenuSelected('templates') && !isMobile">
@@ -28,83 +25,51 @@
         </a>
         <ul class="right">
           <li>
-            <a
-              id="close-settings-btn"
-              class="waves-effect waves-light btn-large"
-              @click.prevent="switchSettings"
-              ><span v-if="!isMobile">{{ $t('close-settings') }}</span>
-              <i class="material-icons" :class="{ right: !isMobile }"
-                >close</i
-              ></a
-            >
+            <a id="close-settings-btn" class="waves-effect waves-light btn-large" @click.prevent="switchSettings"><span
+                v-if="!isMobile">{{ $t('close-settings') }}</span>
+              <i class="material-icons" :class="{ right: !isMobile }">close</i></a>
           </li>
         </ul>
       </div>
     </nav>
     <ul id="slide-out" class="settings-sidenav sidenav sidenav-fixed">
       <li>
-        <a
-          @click.prevent="setting('password')"
-          :class="{ active: isMenuSelected('password') }"
-          class="waves-effect"
-          ><i class="material-icons">vpn_key</i>{{ $t('change-password') }}</a
-        >
+        <a @click.prevent="setting('password')" :class="{ active: isMenuSelected('password') }" class="waves-effect"><i
+            class="material-icons">vpn_key</i>{{ $t('change-password') }}</a>
       </li>
       <li class="divider"></li>
       <li>
-        <a
-          @click.prevent="setting('backup-codes')"
-          :class="{ active: isMenuSelected('backup-codes') }"
-          class="waves-effect"
-          ><i class="material-icons">security</i
-          >{{ $t('create-backup-codes') }}</a
-        >
+        <a @click.prevent="setting('backup-codes')" :class="{ active: isMenuSelected('backup-codes') }"
+          class="waves-effect"><i class="material-icons">security</i>{{ $t('create-backup-codes') }}</a>
       </li>
       <li class="divider"></li>
       <li class="spacer"></li>
       <li class="divider"></li>
       <li>
-        <a
-          href="#"
-          :class="{ active: isMenuSelected('templates') }"
-          class="waves-effect"
-          @click.prevent="setting('templates')"
-          ><i class="material-icons">library_books</i>{{ $t('templates') }}</a
-        >
+        <a href="#" :class="{ active: isMenuSelected('templates') }" class="waves-effect"
+          @click.prevent="setting('templates')"><i class="material-icons">library_books</i>{{ $t('templates') }}</a>
       </li>
       <li class="divider"></li>
       <li class="spacer"></li>
       <li class="divider"></li>
       <li>
-        <a
-          href="#"
-          :class="{ active: isMenuSelected('export') }"
-          class="waves-effect"
-          @click.prevent="setting('export')"
-          ><i class="material-icons">cloud_download</i
-          >{{ $t('export-data') }}</a
-        >
+        <a href="#" :class="{ active: isMenuSelected('export') }" class="waves-effect"
+          @click.prevent="setting('export')"><i class="material-icons">cloud_download</i>{{ $t('export-data') }}</a>
       </li>
       <li class="divider"></li>
       <li>
-        <a
-          href="#"
-          :class="{ active: isMenuSelected('import') }"
-          class="waves-effect"
-          for="importData"
-          @click.prevent="setting('import')"
-          ><i class="material-icons">cloud_upload</i>{{ $t('import-data') }}</a
-        >
+        <a href="#" :class="{ active: isMenuSelected('import') }" class="waves-effect" for="importData"
+          @click.prevent="setting('import')"><i class="material-icons">cloud_upload</i>{{ $t('import-data') }}</a>
       </li>
       <li class="divider"></li>
+
+      <li class="version" id="version">
+        <span>{{ $t('dailytxt-version') }}: {{ clientVersion }}</span>
+      </li>
     </ul>
     <div class="settings-area">
-      <transition
-        v-on:after-enter="transitionEnd"
-        v-on:before-leave="transitionStart"
-        :name="transitionName"
-        mode="out-in"
-      >
+      <transition v-on:after-enter="transitionEnd" v-on:before-leave="transitionStart" :name="transitionName"
+        mode="out-in">
         <Password v-if="isMenuSelected('password')" />
         <BackupCodes v-else-if="isMenuSelected('backup-codes')" />
         <Templates v-else-if="isMenuSelected('templates')" />
@@ -124,6 +89,8 @@ import BackupCodes from '@/components/settings/BackupCodes.vue'
 import Templates from '@/components/settings/Templates.vue'
 import Export from '@/components/settings/Export.vue'
 import Import from '@/components/settings/Import.vue'
+import { version } from '../../package'
+
 
 export default {
   name: 'Settings',
@@ -138,7 +105,8 @@ export default {
     return {
       selectedMenu: 'password',
       transitionName: 'fade',
-      isMobile: false
+      isMobile: false,
+      clientVersion: version,
     }
   },
   methods: {
@@ -175,6 +143,10 @@ export default {
 </script>
 
 <style scoped>
+.version {
+  margin-top: 20px;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.2s ease-out;
@@ -193,7 +165,7 @@ export default {
   height: calc(100vh - 64px) !important;
 }
 
-ul > .divider {
+ul>.divider {
   margin: 4px 0 4px 0;
 }
 
@@ -216,7 +188,7 @@ ul > .divider {
   background-color: rgba(76, 175, 80, 0.1) !important;
 }
 
-.sidenav li > a {
+.sidenav li>a {
   margin: 5px;
   height: auto;
   line-height: 25px;
@@ -225,7 +197,7 @@ ul > .divider {
   outline: none;
 }
 
-.sidenav li > a > i.material-icons {
+.sidenav li>a>i.material-icons {
   line-height: inherit;
 }
 
@@ -236,7 +208,7 @@ ul > .divider {
   transform: none;
 }
 
-#settings-header > i {
+#settings-header>i {
   line-height: 64px;
 }
 
@@ -268,7 +240,7 @@ ul > .divider {
 
 @media only screen and (min-width: 601px) {
   .settings-sidenav {
-    height: calc(100% - 66px) !important;
+    height: calc(100%) !important;
     top: 2px;
   }
 }

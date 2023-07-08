@@ -81,5 +81,6 @@
   "save-new-template": "Neue Vorlage speichern",
   "save-changes": "Änderungen speichern",
   "remove-template-tooltip": "Vorlage '{name}' löschen",
-  "removing-template-success": "Vorlage erfolgreich gelöscht"
+  "removing-template-success": "Vorlage erfolgreich gelöscht",
+  "dailytxt-version": "DailyTxT-Version"
 }

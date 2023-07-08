@@ -81,5 +81,6 @@
   "save-new-template": "Save new template",
   "save-changes": "Save changes",
   "remove-template-tooltip": "Delete template '{name}'",
-  "removing-template-success": "Template successfully removed"
+  "removing-template-success": "Template successfully removed",
+  "dailytxt-version": "DailyTxT version"
 }

@@ -81,5 +81,6 @@
     "save-new-template": "Guardar nueva plantilla",
     "save-changes": "Guardar cambios",
     "remove-template-tooltip": "Eliminar plantilla '{name}'",
-    "removing-template-success": "Plantilla eliminada con éxito"
+    "removing-template-success": "Plantilla eliminada con éxito",
+    "dailytxt-version": "Versión de DailyTxt"
 }
