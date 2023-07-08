@@ -229,3 +229,17 @@ def route_getHistory(user_id, key):
 def route_useHistoryVersion(user_id, key):
     res = useHistoryVersion(user_id, key, request.get_json())
     return jsonify(res)
+
+
+@api.route('addBookmark', methods=['POST'])
+@token_required
+def route_addBookmark(user_id, key):
+    res = addBookmark(user_id, key, request.get_json())
+    return jsonify(res)
+
+
+@api.route('removeBookmark', methods=['POST'])
+@token_required
+def route_removeBookmark(user_id, key):
+    res = removeBookmark(user_id, key, request.get_json())
+    return jsonify(res)

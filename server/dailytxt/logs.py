@@ -388,17 +388,20 @@ def loadDay(user_id, key, date):
 def getDaysWithLogs(user_id, key, page):
     file_content = read_log(user_id, page['year'], page['month'])
 
+    bookmarks = []
     logs = []
     files = []
 
     if isinstance(file_content, dict):
         for day in file_content['days']:
+            if 'isBookmarked' in day.keys() and day['isBookmarked']:
+                bookmarks.append(day['day'])
             if 'text' in day.keys() and day['text'] != "":
                 logs.append(day['day'])
             if 'files' in day.keys() and day['files'] != []:
                 files.append(day['day'])
 
-    return {'logs': logs, 'files': files}
+    return {'logs': logs, 'files': files, 'bookmarks': bookmarks}
 
 
 def createOrArray(s):
@@ -650,3 +653,49 @@ def loadTemplates(user_id, key):
 
     else:
         return {'success': True, 'templates': []}
+
+
+def addBookmark(user_id, key, date):
+    file_content = read_log(
+        user_id, date['year'], date['month']
+    )
+
+    # in case a new day gets started
+    new_day = {'day': date['day'], 'isBookmarked': True}
+
+    written = False
+    if isinstance(file_content, dict):
+        for day in file_content['days']:
+            if day['day'] == date['day']:
+                # set bookmarked
+                day['isBookmarked'] = True
+
+                written = True
+                break
+        if not written:
+            file_content['days'].append(new_day)
+    else:
+        file_content = {'days': [new_day]}
+
+    if write_log(user_id, date['year'], date['month'], file_content):
+        return {'success': True}
+
+    return {'success': False, 'message': 'Error on setting bookmark'}
+
+
+def removeBookmark(user_id, key, date):
+    file_content = read_log(
+        user_id, date['year'], date['month']
+    )
+
+    if isinstance(file_content, dict):
+        for day in file_content['days']:
+            if day['day'] == date['day']:
+                # set not bookmarked
+                day['isBookmarked'] = False
+                break
+
+    if write_log(user_id, date['year'], date['month'], file_content):
+        return {'success': True}
+
+    return {'success': False, 'message': 'Error on removing bookmark'}

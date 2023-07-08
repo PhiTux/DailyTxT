@@ -107,11 +107,28 @@
     <ul id="slide-out" class="sidenav sidenav-fixed">
       <div class="calendar-box section">
         <vc-date-picker :value="new Date()" v-model="dateSelected" :attributes="datesWithLogs" ref="calendar"
-          @update:from-page="getDaysWithLogsTrigger" :locale="$t('calendar-locale')"><template v-slot:footer>
-            <div class="calendar-footer">
-              <a class="waves-effect waves-light btn todayBtn" @click="moveToToday">
-                {{ $t('today') }}
-              </a>
+          @update:from-page="getDaysWithLogsTrigger" :locale="$t('calendar-locale')">
+          <template v-slot:footer>
+            <div class="calendar-footer row">
+              <div class="col s2">
+
+              </div>
+              <div class="col s8">
+                <a class="waves-effect waves-light btn todayBtn" @click="moveToToday">
+                  {{ $t('today') }}
+                </a>
+              </div>
+              <div class="col s2">
+                <a v-if="!dateIsBookmarked" class="waves-effect waves-light btn bookmarkBtn tooltipped"
+                  @click="addBookmark" :data-tooltip="$t('tooltip-add-bookmark')">
+                  <i class="material-icons">bookmark_add</i>
+                </a>
+                <a v-else class="waves-effect waves-light btn bookmarkBtn tooltipped" @click="removeBookmark"
+                  :data-tooltip="$t('tooltip-remove-bookmark')">
+                  <i class="material-icons">bookmark_remove</i>
+                </a>
+              </div>
+
             </div>
           </template>
         </vc-date-picker>
@@ -176,7 +193,7 @@
       </div>
       <div class="row main-header-row">
         <div class="col s5 m3 l3 xl2" id="left">
-          <div class="dateDescription">
+          <div class="dateDescription" :class="{ dateDescriptionBookmarked: dateIsBookmarked }">
             <span>{{ dateDescription.split(',')[0] }}</span>
             <hr />
             <span>{{ dateDescription.split(',')[1] }}</span>
@@ -314,12 +331,14 @@ export default {
   data() {
     return {
       dateSelected: new Date(),
+      dateIsBookmarked: false,
       lastDateSelected: new Date(),
       dateWritten: '',
       logText: '',
       savedLogText: '',
       searchString: '',
       searchResults: [],
+      datesWithBookmarkRaw: [],
       datesWithLogsRaw: [],
       datesWithFilesRaw: [],
       yearShown: new Date(),
@@ -375,6 +394,9 @@ export default {
       return this.fileUploadProgresses.filter((i) => i !== 100)
     },
     datesWithLogs: function () {
+      var datesBookmark = this.datesWithBookmarkRaw.map((o) => {
+        return new Date(this.yearShown, this.monthShown - 1, o)
+      })
       var datesLogs = this.datesWithLogsRaw.map((o) => {
         return new Date(this.yearShown, this.monthShown - 1, o)
       })
@@ -382,10 +404,19 @@ export default {
         return new Date(this.yearShown, this.monthShown - 1, o)
       })
 
+      //remove dates from datesLogs that are already in datesBookmark
+      let datesLogsFiltered = datesLogs.filter((o) => !this.datesWithBookmarkRaw.includes(o.getDate()))
+
+      this.checkIfBookmarked()
+
       return [
         {
+          highlight: 'orange',
+          dates: datesBookmark
+        },
+        {
           highlight: 'green',
-          dates: datesLogs
+          dates: datesLogsFiltered
         },
         {
           dot: 'red',
@@ -503,6 +534,45 @@ export default {
     })
   },
   methods: {
+    addBookmark() {
+      UserService.addBookmark(this.dateSelected).then(
+        (response) => {
+          if (response.data.success) {
+            this.datesWithBookmarkRaw.push(this.dateSelected.getDate())
+            eventBus.$emit('toastSuccess', this.$t('bookmark-added'))
+          } else {
+            console.log(response.data.message)
+            eventBus.$emit('toastAlert', this.$t('bookmark-added-error'))
+          }
+          this.checkIfBookmarked()
+        },
+        (error) => {
+          console.log(error.response.data.message)
+          eventBus.$emit('toastAlert', this.$t('bookmark-added'))
+        }
+      )
+    },
+    removeBookmark() {
+      UserService.removeBookmark(this.dateSelected).then(
+        (response) => {
+          if (response.data.success) {
+            this.datesWithBookmarkRaw = this.datesWithBookmarkRaw.filter(
+              (o) => o != this.dateSelected.getDate()
+            )
+            eventBus.$emit('toastSuccess', this.$t('bookmark-removed'))
+          } else {
+            console.log(response.data.message)
+            eventBus.$emit('toastAlert', this.$t('bookmark-removed-error'))
+          }
+          this.checkIfBookmarked()
+        },
+        (error) => {
+          console.log(error.response.data.message)
+          eventBus.$emit('toastAlert', this.$t('bookmark-removed-error'))
+        }
+      )
+    },
+
     searchInputUpdated(e) {
       this.searchString = e.target.value
 
@@ -567,6 +637,7 @@ export default {
         this.lastPage.month != page.month ||
         this.lastPage.year != page.year
       ) {
+        this.datesWithBookmarkRaw = []
         this.datesWithLogsRaw = []
         this.datesWithFilesRaw = []
         this.getDaysWithLogs(page)
@@ -802,6 +873,7 @@ export default {
         (dates) => {
           this.datesWithLogsRaw = dates.data.logs
           this.datesWithFilesRaw = dates.data.files
+          this.datesWithBookmarkRaw = dates.data.bookmarks
         },
         (error) => {
           console.log(error.response.data.message)
@@ -848,6 +920,19 @@ export default {
     moveToToday() {
       this.dateSelected = new Date()
     },
+    checkIfBookmarked() {
+      if (this.dateSelected == null) {
+        this.dateIsBookmarked = false
+        return
+      }
+
+      if (this.datesWithBookmarkRaw.includes(this.dateSelected.getDate())) {
+        this.dateIsBookmarked = true
+      } else {
+        this.dateIsBookmarked = false
+      }
+
+    },
     async daySelected() {
       this.debouncedAutoSave.cancel()
 
@@ -860,6 +945,8 @@ export default {
           }
         }
       }
+
+      this.checkIfBookmarked()
 
       if (!this.isSaved) {
         await this.autoSave(this.lastDateSelected)
@@ -957,6 +1044,16 @@ input[type='password']:focus {
 </style>
 
 <style scoped>
+.bookmarkBtn {
+  margin: 10px 0;
+  background-color: #f57c00;
+  border-radius: 5px;
+}
+
+.bookmarkBtn:hover {
+  background-color: #ff9800;
+}
+
 .dropdown-content li {
   margin: 0;
 }
@@ -1149,6 +1246,10 @@ textarea {
   align-items: center;
   flex-flow: wrap;
   padding: 5px;
+}
+
+.dateDescriptionBookmarked {
+  background-color: #ffa803;
 }
 
 .dateDescription>hr {
@@ -1481,6 +1582,7 @@ input[type='password']:focus {
 
 .calendar-footer {
   border-top: 1px solid #e0e0e0;
+  margin-bottom: auto;
 }
 
 .main {

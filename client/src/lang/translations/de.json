@@ -83,5 +83,11 @@
   "save-changes": "Änderungen speichern",
   "remove-template-tooltip": "Vorlage '{name}' löschen",
   "removing-template-success": "Vorlage erfolgreich gelöscht",
-  "dailytxt-version": "DailyTxT-Version"
+  "dailytxt-version": "DailyTxT-Version",
+  "bookmark-added": "Lesezeichen hinzugefügt",
+  "bookmark-added-error": "Fehler beim Hinzufügen des Lesezeichens",
+  "bookmark-removed": "Lesezeichen entfernt",
+  "bookmark-removed-error": "Fehler beim Entfernen des Lesezeichens",
+  "tooltip-add-bookmark": "Lesezeichen hinzufügen (Tag orange einfärben)",
+  "tooltip-remove-bookmark": "Lesezeichen entfernen (Tag nicht mehr orange einfärben)"
 }

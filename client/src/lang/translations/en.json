@@ -83,5 +83,11 @@
   "save-changes": "Save changes",
   "remove-template-tooltip": "Delete template '{name}'",
   "removing-template-success": "Template successfully removed",
-  "dailytxt-version": "DailyTxT version"
+  "dailytxt-version": "DailyTxT version",
+  "bookmark-added": "Added bookmark",
+  "bookmark-added-error": "Error on adding bookmark",
+  "bookmark-removed": "Removed bookmark",
+  "bookmark-removed-error": "Error on removing bookmark",
+  "tooltip-add-bookmark": "Add bookmark (color day in orange)",
+  "tooltip-remove-bookmark": "Remove bookmark (day is no longer orange)"
 }
