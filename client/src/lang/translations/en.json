@@ -62,6 +62,7 @@
   "backup-codes-deleted": "Backup codes have been deleted. You need to create new ones!",
   "copy-to-clipboard-successful": "Backup codes successfully copied",
   "few-backup-codes-left": "Only {0} backup codes left. You should create new ones.",
+  "x-backup-codes-left": "You used a backup code. There are {0} more left.",
   "update-installed-reload": "New update has been installed. Please reload the page!",
   "remove-day": "Delete all logs and files of this day.",
   "modal-remove-day-header": "Delete all data of this day?",

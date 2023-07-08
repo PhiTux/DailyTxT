@@ -62,6 +62,7 @@
   "backup-codes-deleted": "备份代码已被删除, 您需要创建新的备份代码!",
   "copy-to-clipboard-successful": "备份代码已成功复制",
   "few-backup-codes-left": "只剩下 {0} 个备份代码. 您应该创建新的备份代码.",
+  "x-backup-codes-left": "You used a backup code. There are {0} more left.",
   "update-installed-reload": "新的更新已经安装完成. 请重新加载页面!",
   "remove-day": "删除这一天所有的日志和文件.",
   "modal-remove-day-header": "删除这一天所有的数据?",

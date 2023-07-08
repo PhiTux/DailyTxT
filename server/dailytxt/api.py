@@ -87,7 +87,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'token': token.decode(), 'remaining_backup_codes': user['remaining_backup_codes']})
+    return jsonify({'token': token.decode(), 'remaining_backup_codes': user['remaining_backup_codes'], 'used_backup_code': user['used_backup_code']})
 
 
 @api.route('/saveLog', methods=['POST'])
