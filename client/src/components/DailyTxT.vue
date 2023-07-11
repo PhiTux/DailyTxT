@@ -110,15 +110,15 @@
           @update:from-page="getDaysWithLogsTrigger" :locale="$t('calendar-locale')">
           <template v-slot:footer>
             <div class="calendar-footer row">
-              <div class="col s2">
+              <div class="col s3 l3 xl2">
 
               </div>
-              <div class="col s8">
+              <div class="col s6 l6 xl8">
                 <a class="waves-effect waves-light btn todayBtn" @click="moveToToday">
                   {{ $t('today') }}
                 </a>
               </div>
-              <div class="col s2">
+              <div class="col s3 l3 xl2" style="padding: 0 !important">
                 <a v-if="!dateIsBookmarked" class="waves-effect waves-light btn bookmarkBtn tooltipped"
                   @click="addBookmark" :data-tooltip="$t('tooltip-add-bookmark')">
                   <i class="material-icons">bookmark_add</i>
@@ -511,6 +511,10 @@ export default {
   },
   watch: {
     dateSelected: function () {
+      if (this.dateSelected == null) {
+        this.dateSelected = this.lastDateSelected
+        return
+      }
       this.daySelected()
       this.$refs.calendar.$children[0].move(this.dateSelected)
     },
@@ -934,6 +938,11 @@ export default {
 
     },
     async daySelected() {
+      if (this.dateSelected == null) {
+        console.log('date is null')
+        return
+      }
+
       this.debouncedAutoSave.cancel()
 
       if ($(window).width() <= 992) {
@@ -1052,6 +1061,13 @@ input[type='password']:focus {
 
 .bookmarkBtn:hover {
   background-color: #ff9800;
+}
+
+/* Disable dropdown animation on iOS because of Webkit-bug */
+@supports (-webkit-touch-callout: none) {
+  .dropdown-content {
+    transform: none !important;
+  }
 }
 
 .dropdown-content li {

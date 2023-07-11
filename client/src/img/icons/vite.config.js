@@ -8,7 +8,6 @@ export default defineConfig({
     createVuePlugin(),
     VitePWA({
       manifest: {
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         name: 'DailyTxT',
         short_name: 'DailyTxT',
         description: 'Encrypted diary web-app',

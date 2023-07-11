@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import logging
 
 
 def create_app(app_name='DailyTxT'):
@@ -10,5 +11,8 @@ def create_app(app_name='DailyTxT'):
 
     from dailytxt.api import api
     app.register_blueprint(api, url_prefix="/api")
+
+    app.logger.addHandler(logging.StreamHandler())
+    app.logger.setLevel(logging.INFO)
 
     return app

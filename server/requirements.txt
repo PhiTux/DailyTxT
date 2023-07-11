@@ -4,7 +4,7 @@
 # server/dailytxt/application.py: 1
 # server/dailytxt/encryption.py: 6
 # server/dailytxt/file_handling.py: 4
-Flask == 2.2.2
+Flask >= 2.2.5
 
 # server/dailytxt/application.py: 2
 Flask_Cors == 3.0.10
@@ -14,12 +14,12 @@ Flask_Cors == 3.0.10
 PyJWT == 2.4.0
 
 # server/dailytxt/models.py: 2
-Werkzeug == 2.2.2
+Werkzeug >= 2.2.3
 
 # server/dailytxt/encryption.py: 1,2,3,4
-cryptography == 39.0.0
+cryptography >= 41.0.0
 
 # server/dailytxt/logs.py: 3
 shortuuid == 1.0.11
 
-requests == 2.28.2
+requests >= 2.31.0

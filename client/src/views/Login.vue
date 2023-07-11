@@ -1,7 +1,7 @@
 <template>
   <div class="full-site">
     <div class="logo-container">
-      <img class="logo" src="../../public/img/icons/locked_heart_with_keyhole.svg" />
+      <img class="logo" src="../../src/img/icons/locked_heart_with_keyhole.svg" />
     </div>
     <h2>DailyTxT</h2>
     <ul class="collapsible login-container" :class="{ 'animate__animated animate__shakeX': error_shake }"

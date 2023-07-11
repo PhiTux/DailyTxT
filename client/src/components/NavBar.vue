@@ -1,32 +1,22 @@
 <template>
   <nav class="blue">
     <div class="nav-wrapper">
-      <a data-target="slide-out" class="left sidenav-trigger show-on-small"
-        ><i class="material-icons">menu</i></a
-      >
+      <a data-target="slide-out" class="left sidenav-trigger show-on-small"><i class="material-icons">menu</i></a>
       <a class="brand-logo center">
-        <img src="./../../public/img/icons/locked_heart_with_keyhole.svg" />
+        <img src="./../../src/img/icons/locked_heart_with_keyhole.svg" />
         <div class="title hide-on-small-only">
           <div class="title-text">DailyTxT</div>
         </div>
       </a>
       <ul id="nav-mobile" class="right">
         <li v-if="this.newerDailyTxTVersion">
-          <a @click.prevent="versionToast"
-            ><i style="color: #f57c00" class="material-icons"
-              >info_outline</i
-            ></a
-          >
+          <a @click.prevent="versionToast"><i style="color: #f57c00" class="material-icons">info_outline</i></a>
         </li>
         <li v-if="this.$store.state.historyAvailable">
-          <a @click.prevent="historyModal"
-            ><i class="material-icons">history</i></a
-          >
+          <a @click.prevent="historyModal"><i class="material-icons">history</i></a>
         </li>
         <li>
-          <a class="settings" @click.prevent="switchSettings"
-            ><i class="material-icons">settings</i></a
-          >
+          <a class="settings" @click.prevent="switchSettings"><i class="material-icons">settings</i></a>
         </li>
         <li>
           <a @click.prevent="logOut"><i class="material-icons">logout</i></a>
@@ -80,13 +70,13 @@ export default {
   align-items: center;
 }
 
-.brand-logo > img {
+.brand-logo>img {
   height: 80%;
   margin-right: 1rem;
   transition: ease 0.3s;
 }
 
-.brand-logo:hover > img {
+.brand-logo:hover>img {
   transform: scale(1.1);
   filter: drop-shadow(0px 0px 5px #90caf9);
 }
@@ -117,11 +107,11 @@ a {
   cursor: pointer;
 }
 
-.settings > i {
+.settings>i {
   transition: transform 0.4s ease-in-out;
 }
 
-.settings:hover > i {
+.settings:hover>i {
   transform: rotate(30deg);
 }
 
@@ -133,7 +123,7 @@ a {
   box-shadow: none;
 }
 
-.dropdown-content > li:hover {
+.dropdown-content>li:hover {
   background: none;
 }
 
@@ -141,7 +131,7 @@ a {
   width: 0;
 }
 
-.dropdown-content > li {
+.dropdown-content>li {
   cursor: inherit;
   width: auto;
   float: right !important;
@@ -149,7 +139,7 @@ a {
   height: auto;
 }
 
-.dropdown-content > li > a {
+.dropdown-content>li>a {
   border-radius: 40px;
   color: #424242 !important;
   background: #29b6f6;
@@ -163,13 +153,13 @@ a {
   transition: ease 0.3s;
 }
 
-.dropdown-content > li > a:hover {
+.dropdown-content>li>a:hover {
   background: #81d4fa;
   box-shadow: 0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 7px 0 rgba(0, 0, 0, 0.12),
     0 3px 1px -1px rgba(0, 0, 0, 0.2);
 }
 
-.dropdown-content > li > a > i {
+.dropdown-content>li>a>i {
   display: flex;
   align-items: center;
 }

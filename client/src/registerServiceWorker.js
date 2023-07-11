@@ -2,7 +2,7 @@
 
 import { register } from 'register-service-worker'
 
-if (import.meta.env.NODE_ENV === 'production') {
+if (!import.meta.env.DEV) {
   register(`${import.meta.env.BASE_URL}service-worker.js`, {
     ready() {
       console.log(

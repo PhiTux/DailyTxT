@@ -3,8 +3,7 @@
     <h4>{{ $t('templates') }}</h4>
     <div class="row">
       <div class="col s12 l12 xl4">
-        <a class="dropdown-trigger btn" data-target="dropdown1"
-          >{{ $t('select-template') }}
+        <a class="dropdown-trigger btn" data-target="dropdown1">{{ $t('select-template') }}
           <i class="material-icons right">arrow_drop_down</i>
         </a>
         <ul id="dropdown1" class="dropdown-content">
@@ -27,41 +26,18 @@
           </div>
         </div>
         <div class="row">
-          <textarea
-            v-model="templateText"
-            name="template-textarea"
-            cols="30"
-            rows="10"
-            class="template-textarea"
-          >
+          <textarea v-model="templateText" name="template-textarea" cols="30" rows="10" class="template-textarea">
           </textarea>
         </div>
         <div class="row">
-          <div
-            class="left valign-wrapper"
-            id="removeTemplate"
-            v-if="templateIndex != 0"
-          >
-            <a
-              class="removeTemplate valign-wrapper tooltipped"
-              :data-tooltip="
-                $t('remove-template-tooltip', { name: templateName })
-              "
-              data-position="top"
-              @click="removeTemplate()"
-              ><i class="material-icons">delete</i></a
-            >
+          <div class="left valign-wrapper" id="removeTemplate" v-if="templateIndex != 0">
+            <a class="removeTemplate valign-wrapper tooltipped" :data-tooltip="$t('remove-template-tooltip', { name: templateName })
+              " data-position="top" @click="removeTemplate()"><i class="material-icons">delete</i></a>
           </div>
-          <a
-            class="waves-effect waves-light btn right deep-orange lighten-1"
-            @click="saveTemplate()"
-            :class="{
-              disabled: this.templateName == '' || this.templateText == ''
-            }"
-            ><i class="material-icons left">save</i
-            ><span v-if="templateIndex == 0">{{ $t('save-new-template') }}</span
-            ><span v-else>{{ $t('save-changes') }}</span></a
-          >
+          <a class="waves-effect waves-light btn right deep-orange lighten-1" @click="saveTemplate()" :class="{
+            disabled: this.templateName == '' || this.templateText == ''
+          }"><i class="material-icons left">save</i><span v-if="templateIndex == 0">{{ $t('save-new-template')
+}}</span><span v-else>{{ $t('save-changes') }}</span></a>
         </div>
       </div>
     </div>
@@ -234,7 +210,14 @@ export default {
   margin: 25px 0;
 }
 
-.dropdown-content li > a {
+/* Disable dropdown animation on iOS because of Webkit-bug */
+@supports (-webkit-touch-callout: none) {
+  .dropdown-content {
+    transform: none !important;
+  }
+}
+
+.dropdown-content li>a {
   color: #2196f3;
 }
 
