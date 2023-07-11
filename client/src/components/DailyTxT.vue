@@ -450,7 +450,6 @@ export default {
       dateSelected: new Date(),
       dateIsBookmarked: false,
       lastDateSelected: new Date(),
-      dateIsBookmarked: false,
       dateWritten: '',
       logText: '',
       savedLogText: '',

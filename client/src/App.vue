@@ -1,7 +1,12 @@
 <template>
   <div id="app">
-    <transition v-on:after-enter="transitionEnd" v-on:before-leave="transitionStart" :name="transitionName" mode="out-in"
-      appear>
+    <transition
+      v-on:after-enter="transitionEnd"
+      v-on:before-leave="transitionStart"
+      :name="transitionName"
+      mode="out-in"
+      appear
+    >
       <router-view />
     </transition>
   </div>

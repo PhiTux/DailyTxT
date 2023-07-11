@@ -1,11 +1,17 @@
 <template>
   <div class="full-site">
     <div class="logo-container">
-      <img class="logo" src="../../src/img/icons/locked_heart_with_keyhole.svg" />
+      <img
+        class="logo"
+        src="../../public/img/icons/locked_heart_with_keyhole.svg"
+      />
     </div>
     <h2>DailyTxT</h2>
-    <ul class="collapsible login-container" :class="{ 'animate__animated animate__shakeX': error_shake }"
-      @animationend="error_shake = false">
+    <ul
+      class="collapsible login-container"
+      :class="{ 'animate__animated animate__shakeX': error_shake }"
+      @animationend="error_shake = false"
+    >
       <li class="active">
         <div class="collapsible-header">
           <i class="material-icons">login</i>{{ $t('login-header') }}
@@ -14,7 +20,13 @@
           <form @submit.prevent="handleLogin">
             <div class="row">
               <div class="input-field col s12">
-                <input id="username" type="text" v-model="login_username" name="username" autofocus />
+                <input
+                  id="username"
+                  type="text"
+                  v-model="login_username"
+                  name="username"
+                  autofocus
+                />
                 <label for="username">{{ $t('username-label') }}</label>
               </div>
             </div>
@@ -25,9 +37,13 @@
               </div>
             </div>
             <div class="row">
-              <button v-if="!login_loading" class="btn" :class="{
-                disabled: login_username == '' || login_password == ''
-              }">
+              <button
+                v-if="!login_loading"
+                class="btn"
+                :class="{
+                  disabled: login_username == '' || login_password == ''
+                }"
+              >
                 <span>{{ $t('login-button') }}</span>
               </button>
               <div v-if="login_loading" class="preloader-wrapper small active">
@@ -67,29 +83,47 @@
             </div>
             <div class="row">
               <div class="input-field col s12">
-                <input id="password1" type="password" v-model="register_password1" />
+                <input
+                  id="password1"
+                  type="password"
+                  v-model="register_password1"
+                />
                 <label for="password1">{{ $t('password-label') }}</label>
               </div>
               <div class="input-field col s12">
-                <input id="password2" type="password" v-model="register_password2" />
+                <input
+                  id="password2"
+                  type="password"
+                  v-model="register_password2"
+                />
                 <label for="password2">{{
                   $t('confirm-password-label')
                 }}</label>
               </div>
-              <div class="alert" v-if="register_password1 != register_password2">
+              <div
+                class="alert"
+                v-if="register_password1 != register_password2"
+              >
                 {{ $t('password-does-not-match') }}
               </div>
             </div>
             <div class="row">
-              <button v-if="!register_loading" class="btn" :class="{
-                disabled:
-                  register_username == '' ||
-                  register_password1 == '' ||
-                  register_password1 != register_password2
-              }">
+              <button
+                v-if="!register_loading"
+                class="btn"
+                :class="{
+                  disabled:
+                    register_username == '' ||
+                    register_password1 == '' ||
+                    register_password1 != register_password2
+                }"
+              >
                 <span>{{ $t('register-button') }}</span>
               </button>
-              <div v-if="register_loading" class="preloader-wrapper small active">
+              <div
+                v-if="register_loading"
+                class="preloader-wrapper small active"
+              >
                 <div class="spinner-layer spinner-green-only">
                   <div class="circle-clipper left">
                     <div class="circle"></div>
@@ -170,13 +204,6 @@ export default {
                 ])
                 M.toast({ html: message, classes: 'rounded red' })
               }
-              else if (response.used_backup_code) {
-                var message = this.$t('x-backup-codes-left', [
-                  response.remaining_backup_codes
-                ])
-                M.toast({ html: message, classes: 'rounded red' })
-              }
-
 
               this.$parent.transitionName = 'slideLeft'
               this.$router.push('/')
@@ -233,8 +260,8 @@ export default {
 </script>
 
 <style scoped>
-.input-field input[type='text']:focus+label,
-input[type='password']:focus+label {
+.input-field input[type='text']:focus + label,
+input[type='password']:focus + label {
   color: #ff7043 !important;
 }
 

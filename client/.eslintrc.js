@@ -1,8 +1,7 @@
 module.exports = {
   root: true,
   env: {
-    node: true,
-    es2022: true
+    node: true
   },
   extends: [
     'plugin:vue/essential',
@@ -10,6 +9,9 @@ module.exports = {
     '@vue/prettier',
     'plugin:prettier/recommended'
   ],
+  parserOptions: {
+    parser: 'babel-eslint'
+  },
   rules: {
     'vue/multi-word-component-names': 0,
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
