@@ -160,7 +160,12 @@ export default {
                 response.remaining_backup_codes > 0 &&
                 response.remaining_backup_codes <= 3
               ) {
-                var message = this.$t('few-backup-codes-left', [
+                let message = this.$t('few-backup-codes-left', [
+                  response.remaining_backup_codes
+                ])
+                M.toast({ html: message, classes: 'rounded red' })
+              } else if (response.used_backup_code) {
+                let message = this.$t('x-backup-codes-left', [
                   response.remaining_backup_codes
                 ])
                 M.toast({ html: message, classes: 'rounded red' })

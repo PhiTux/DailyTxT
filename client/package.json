@@ -3,10 +3,9 @@
   "version": "1.0.13",
   "private": true,
   "scripts": {
-    "dev": "vite -m dev",
-    "build": "vite build",
-    "serve": "vite preview",
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src"
+    "serve": "vue-cli-service serve --mode staging --host 0.0.0.0",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "animate.css": "^4.1.1",

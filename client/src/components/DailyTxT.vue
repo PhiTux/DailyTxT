@@ -1,7 +1,13 @@
 <template>
   <div class="main" @dragenter.prevent="dragging = true" @dragover.prevent>
-    <div class="dropzone" v-if="dragging" @dragend="dragging = false" @drop.prevent="uploadFilesDrop" @dragover.prevent
-      @dragleave.prevent="dragging = false">
+    <div
+      class="dropzone"
+      v-if="dragging"
+      @dragend="dragging = false"
+      @drop.prevent="uploadFilesDrop"
+      @dragover.prevent
+      @dragleave.prevent="dragging = false"
+    >
       {{ $t('upload-files-overlay') }}
     </div>
     <div id="modal_delete_file" class="modal">
@@ -17,7 +23,11 @@
         <a class="modal-close waves-effect waves-red btn-flat">{{
           $t('abort')
         }}</a>
-        <a class="modal-close waves-effect waves-green btn-flat" @click="deleteFile()">{{ $t('delete') }}</a>
+        <a
+          class="modal-close waves-effect waves-green btn-flat"
+          @click="deleteFile()"
+          >{{ $t('delete') }}</a
+        >
       </div>
     </div>
     <div id="modal_remove_day" class="modal">
@@ -33,7 +43,11 @@
         <a class="modal-close waves-effect waves-red btn-flat">{{
           $t('abort')
         }}</a>
-        <a class="modal-close waves-effect waves-green btn-flat" @click="removeDay()">{{ $t('delete') }}</a>
+        <a
+          class="modal-close waves-effect waves-green btn-flat"
+          @click="removeDay()"
+          >{{ $t('delete') }}</a
+        >
       </div>
     </div>
     <div id="modal_preview_file" class="modal modal-fixed-footer">
@@ -45,11 +59,19 @@
           {{ $t('modal-preview-file-click-to-zoom') }}
         </p>
         <p>
-          <img class="responsive-img materialboxed" id="modal_preview_file_img" :src="fileToDownload.href" />
+          <img
+            class="responsive-img materialboxed"
+            id="modal_preview_file_img"
+            :src="fileToDownload.href"
+          />
         </p>
       </div>
       <div class="modal-footer">
-        <a class="modal-close waves-effect waves-red btn-flat" @click="downloadFile()">{{ $t('download') }}</a>
+        <a
+          class="modal-close waves-effect waves-red btn-flat"
+          @click="downloadFile()"
+          >{{ $t('download') }}</a
+        >
         <a class="modal-close waves-effect waves-green btn-flat">{{
           $t('close')
         }}</a>
@@ -82,15 +104,29 @@
           <div class="row">
             <div class="col s12">
               <ul class="historyTabs">
-                <li class="historyTab" v-for="(entry, index) in versionHistory" :key="index">
-                  <a @click.prevent="setHistoryActive(entry.version)"
-                    :class="{ active: isHistoryActive(entry.version) }">{{ entry.date_written }}</a>
+                <li
+                  class="historyTab"
+                  v-for="(entry, index) in versionHistory"
+                  :key="index"
+                >
+                  <a
+                    @click.prevent="setHistoryActive(entry.version)"
+                    :class="{ active: isHistoryActive(entry.version) }"
+                    >{{ entry.date_written }}</a
+                  >
                 </li>
               </ul>
             </div>
             <div class="col s12">
-              <textarea disabled class="historyText" name="" id="" cols="30" rows="10"
-                :value="selectedHistoryText"></textarea>
+              <textarea
+                disabled
+                class="historyText"
+                name=""
+                id=""
+                cols="30"
+                rows="10"
+                :value="selectedHistoryText"
+              ></textarea>
             </div>
             <div class="col s12"></div>
           </div>
@@ -101,34 +137,51 @@
         <a class="modal-close waves-effect waves-red btn-flat">{{
           $t('abort')
         }}</a>
-        <a class="modal-close waves-effect waves-green btn-flat" @click="useHistoryVersion()">{{ $t('yes') }}</a>
+        <a
+          class="modal-close waves-effect waves-green btn-flat"
+          @click="useHistoryVersion()"
+          >{{ $t('yes') }}</a
+        >
       </div>
     </div>
     <ul id="slide-out" class="sidenav sidenav-fixed">
       <div class="calendar-box section">
-        <vc-date-picker :value="new Date()" v-model="dateSelected" :attributes="datesWithLogs" ref="calendar"
-          @update:from-page="getDaysWithLogsTrigger" :locale="$t('calendar-locale')">
-          <template v-slot:footer>
+        <vc-date-picker
+          :value="new Date()"
+          v-model="dateSelected"
+          :attributes="datesWithLogs"
+          ref="calendar"
+          @update:from-page="getDaysWithLogsTrigger"
+          :locale="$t('calendar-locale')"
+          ><template v-slot:footer>
             <div class="calendar-footer row">
-              <div class="col s3 l3 xl2">
-
-              </div>
-              <div class="col s6 l6 xl8">
-                <a class="waves-effect waves-light btn todayBtn" @click="moveToToday">
+              <div class="col s2"></div>
+              <div class="col s8">
+                <a
+                  class="waves-effect waves-light btn todayBtn"
+                  @click="moveToToday"
+                >
                   {{ $t('today') }}
                 </a>
               </div>
-              <div class="col s3 l3 xl2" style="padding: 0 !important">
-                <a v-if="!dateIsBookmarked" class="waves-effect waves-light btn bookmarkBtn tooltipped"
-                  @click="addBookmark" :data-tooltip="$t('tooltip-add-bookmark')">
+              <div class="col s2">
+                <a
+                  v-if="!dateIsBookmarked"
+                  class="waves-effect waves-light btn bookmarkBtn tooltipped"
+                  @click="addBookmark"
+                  :data-tooltip="$t('tooltip-add-bookmark')"
+                >
                   <i class="material-icons">bookmark_add</i>
                 </a>
-                <a v-else class="waves-effect waves-light btn bookmarkBtn tooltipped" @click="removeBookmark"
-                  :data-tooltip="$t('tooltip-remove-bookmark')">
+                <a
+                  v-else
+                  class="waves-effect waves-light btn bookmarkBtn tooltipped"
+                  @click="removeBookmark"
+                  :data-tooltip="$t('tooltip-remove-bookmark')"
+                >
                   <i class="material-icons">bookmark_remove</i>
                 </a>
               </div>
-
             </div>
           </template>
         </vc-date-picker>
@@ -137,27 +190,43 @@
       <div class="searchArea section">
         <div class="row valign-wrapper searchHeader">
           <div class="input-field col s10">
-            <input id="search" type="text" @keypress.enter="search" :value="searchString"
-              @input="(e) => (searchInputUpdated(e))" />
+            <input
+              id="search"
+              type="text"
+              @keypress.enter="search"
+              :value="searchString"
+              @input="(e) => searchInputUpdated(e)"
+            />
             <label for="search">{{ $t('search-label') }}</label>
           </div>
           <div class="col s2 searchBtn">
-            <a class="btn-floating waves-effect waves-light deep-orange lighten-1" @click="search"><i
-                class="material-icons">search</i></a>
+            <a
+              class="btn-floating waves-effect waves-light deep-orange lighten-1"
+              @click="search"
+              ><i class="material-icons">search</i></a
+            >
           </div>
         </div>
-        <div class="row searchResults" :class="{ searchResultsPulse: searchResultsAttention }"
-          @animationend="searchResultsAttention = false">
+        <div
+          class="row searchResults"
+          :class="{ searchResultsPulse: searchResultsAttention }"
+          @animationend="searchResultsAttention = false"
+        >
           <div class="collection" v-if="searchResults.length > 0">
-            <a class="collection-item searchResultRow" :class="{ searchResultSelected: index == searchResultSelected }"
-              v-for="( searchResult, index ) in  searchResultsSorted " :key="index" @click="
+            <a
+              class="collection-item searchResultRow"
+              :class="{ searchResultSelected: index == searchResultSelected }"
+              v-for="(searchResult, index) in searchResultsSorted"
+              :key="index"
+              @click="
                 selectDay(
                   searchResult.year,
                   searchResult.month,
                   searchResult.day
                 )
-              searchResultSelected = index
-                ">
+                searchResultSelected = index
+              "
+            >
               <div class="col s3 searchResultLeft">
                 {{
                   $t('full-date', {
@@ -169,7 +238,8 @@
               </div>
               <div class="col s9 searchResultRight">
                 {{ searchResult.snippetStart
-                }}<b>{{ searchResult.snippetBold }}</b>{{ searchResult.snippetEnd }}
+                }}<b>{{ searchResult.snippetBold }}</b
+                >{{ searchResult.snippetEnd }}
               </div>
             </a>
           </div>
@@ -180,11 +250,12 @@
       <div class="row">
         <div class="col s12 hide-on-xlarge">
           <div v-if="templates.length > 0">
-            <a class="dropdown-trigger btn left" data-target="dropdown1">{{ $t('select-template') }}
+            <a class="dropdown-trigger btn left" data-target="dropdown1"
+              >{{ $t('select-template') }}
               <i class="material-icons right">arrow_drop_down</i>
             </a>
             <ul id="dropdown1" class="dropdown-content">
-              <li v-for=" t  in  templatesSorted " :key="t.number">
+              <li v-for="t in templatesSorted" :key="t.number">
                 <a @click="selectTemplate(t.number)">{{ t.name }}</a>
               </li>
             </ul>
@@ -193,7 +264,10 @@
       </div>
       <div class="row main-header-row">
         <div class="col s5 m3 l3 xl2" id="left">
-          <div class="dateDescription" :class="{ dateDescriptionBookmarked: dateIsBookmarked }">
+          <div
+            class="dateDescription"
+            :class="{ dateDescriptionBookmarked: dateIsBookmarked }"
+          >
             <span>{{ dateDescription.split(',')[0] }}</span>
             <hr />
             <span>{{ dateDescription.split(',')[1] }}</span>
@@ -210,11 +284,12 @@
         </div>
         <div class="col s12 l12 xl4 hide-on-large-and-down">
           <div class="left" v-if="templates.length > 0">
-            <a class="dropdown-trigger btn" data-target="dropdown2">{{ $t('select-template') }}
+            <a class="dropdown-trigger btn" data-target="dropdown2"
+              >{{ $t('select-template') }}
               <i class="material-icons right">arrow_drop_down</i>
             </a>
             <ul id="dropdown2" class="dropdown-content">
-              <li v-for=" t  in  templatesSorted " :key="t.number">
+              <li v-for="t in templatesSorted" :key="t.number">
                 <a @click="selectTemplate(t.number)">{{ t.name }}</a>
               </li>
             </ul>
@@ -271,38 +346,80 @@
             </div>
           </div>
         </div>
-        <div class="col s2 m3 l3 xl1 valign-wrapper" id="removeDay"
-          v-if="!isLoading && (dateWritten != '' || files.length != 0)">
-          <a class="removeDay valign-wrapper tooltipped" :data-tooltip="$t('remove-day')" @click="removeDayModal()"><i
-              class="material-icons">delete</i></a>
+        <div
+          class="col s2 m3 l3 xl1 valign-wrapper"
+          id="removeDay"
+          v-if="!isLoading && (dateWritten != '' || files.length != 0)"
+        >
+          <a
+            class="removeDay valign-wrapper tooltipped"
+            :data-tooltip="$t('remove-day')"
+            @click="removeDayModal()"
+            ><i class="material-icons">delete</i></a
+          >
         </div>
       </div>
       <div class="row">
         <div class="col s12 m9">
-          <textarea :value="logText" @input="(e) => (logText = e.target.value)" name="main-text" cols="30" rows="10"
-            class="main-textarea" v-bind:class="{ saved: isSaved }">
+          <textarea
+            :value="logText"
+            @input="(e) => (logText = e.target.value)"
+            name="main-text"
+            cols="30"
+            rows="10"
+            class="main-textarea"
+            v-bind:class="{ saved: isSaved }"
+          >
           </textarea>
         </div>
         <div class="col s12 m3">
           <div class="uploadArea">
-            <label class="uploadBtn" for="fileUpload"><i class="material-icons center-align">cloud_upload</i></label>
-            <input type="file" id="fileUpload" name="fileUpload" @change="uploadFilesBtn" multiple />
-            <div class="collection" v-if="fileUploadProgressesActive.length > 0">
-              <li class="collection-item uploadProgress" v-for="( progress, index ) in  fileUploadProgressesActive "
-                :key="index">
+            <label class="uploadBtn" for="fileUpload"
+              ><i class="material-icons center-align">cloud_upload</i></label
+            >
+            <input
+              type="file"
+              id="fileUpload"
+              name="fileUpload"
+              @change="uploadFilesBtn"
+              multiple
+            />
+            <div
+              class="collection"
+              v-if="fileUploadProgressesActive.length > 0"
+            >
+              <li
+                class="collection-item uploadProgress"
+                v-for="(progress, index) in fileUploadProgressesActive"
+                :key="index"
+              >
                 <div class="progress">
-                  <div class="determinate" :style="{ width: progress + '%' }"></div>
+                  <div
+                    class="determinate"
+                    :style="{ width: progress + '%' }"
+                  ></div>
                 </div>
               </li>
             </div>
             <div class="collection" v-if="files.length > 0">
-              <li class="collection-item fileList valign-wrapper" v-for=" file  in  files " :key="file.uuid">
-                <a class="file tooltipped" data-position="left" :data-tooltip="file.filename"
-                  @click="downloadFileModal(file.uuid)">
+              <li
+                class="collection-item fileList valign-wrapper"
+                v-for="file in files"
+                :key="file.uuid"
+              >
+                <a
+                  class="file tooltipped"
+                  data-position="left"
+                  :data-tooltip="file.filename"
+                  @click="downloadFileModal(file.uuid)"
+                >
                   {{ file.filename }}
                 </a>
-                <a class="fileDelete valign-wrapper" @click="deleteFileModal(file.uuid)"><i
-                    class="material-icons">delete</i></a>
+                <a
+                  class="fileDelete valign-wrapper"
+                  @click="deleteFileModal(file.uuid)"
+                  ><i class="material-icons">delete</i></a
+                >
               </li>
             </div>
           </div>
@@ -333,6 +450,7 @@ export default {
       dateSelected: new Date(),
       dateIsBookmarked: false,
       lastDateSelected: new Date(),
+      dateIsBookmarked: false,
       dateWritten: '',
       logText: '',
       savedLogText: '',
@@ -405,10 +523,10 @@ export default {
       })
 
       //remove dates from datesLogs that are already in datesBookmark
-      let datesLogsFiltered = datesLogs.filter((o) => !this.datesWithBookmarkRaw.includes(o.getDate()))
-
+      let datesLogsFiltered = datesLogs.filter(
+        (o) => !this.datesWithBookmarkRaw.includes(o.getDate())
+      )
       this.checkIfBookmarked()
-
       return [
         {
           highlight: 'orange',
@@ -576,7 +694,6 @@ export default {
         }
       )
     },
-
     searchInputUpdated(e) {
       this.searchString = e.target.value
 
@@ -929,13 +1046,11 @@ export default {
         this.dateIsBookmarked = false
         return
       }
-
       if (this.datesWithBookmarkRaw.includes(this.dateSelected.getDate())) {
         this.dateIsBookmarked = true
       } else {
         this.dateIsBookmarked = false
       }
-
     },
     async daySelected() {
       if (this.dateSelected == null) {
@@ -1030,8 +1145,8 @@ body {
 }
 
 /* label focus color */
-.input-field input[type='text']:focus+label,
-input[type='password']:focus+label {
+.input-field input[type='text']:focus + label,
+input[type='password']:focus + label {
   color: #ff7043 !important;
 }
 
@@ -1058,7 +1173,6 @@ input[type='password']:focus {
   background-color: #f57c00;
   border-radius: 5px;
 }
-
 .bookmarkBtn:hover {
   background-color: #ff9800;
 }
@@ -1088,7 +1202,7 @@ input[type='password']:focus {
   box-shadow: 0 0px 4px 4px rgba(0, 0, 0, 0.14);
 }
 
-.dropdown-content li>a {
+.dropdown-content li > a {
   color: #2196f3;
 }
 
@@ -1164,7 +1278,7 @@ input[type='password']:focus {
   background: #e0e0e0;
 }
 
-.historyTab>a {
+.historyTab > a {
   cursor: pointer;
   color: #424242;
   text-decoration-color: #f57c00;
@@ -1172,7 +1286,7 @@ input[type='password']:focus {
   padding: 10px;
 }
 
-.historyTab>a.active {
+.historyTab > a.active {
   color: #1565c0;
   text-decoration: underline;
   text-decoration-thickness: 2px;
@@ -1196,15 +1310,15 @@ textarea {
   height: 50px;
 }
 
-.main-header-row>.col {
+.main-header-row > .col {
   height: 100%;
 }
 
-.main-header-row>.col#left {
+.main-header-row > .col#left {
   padding-right: 0;
 }
 
-.main-header-row>.col#right {
+.main-header-row > .col#right {
   padding-left: 0;
   transition: opacity ease 0.5s;
 }
@@ -1245,7 +1359,7 @@ textarea {
   opacity: 0;
 }
 
-.main-header-row>.col.s3#loading {
+.main-header-row > .col.s3#loading {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1268,7 +1382,7 @@ textarea {
   background-color: #ffa803;
 }
 
-.dateDescription>hr {
+.dateDescription > hr {
   width: 100%;
   border: none;
   margin: 0;
@@ -1306,7 +1420,7 @@ textarea {
   padding: 5px;
 }
 
-.dateWritten>hr {
+.dateWritten > hr {
   width: 100%;
   border: none;
   margin: 0;
@@ -1385,8 +1499,8 @@ li {
 }
 
 /* label focus color */
-.input-field input[type='text']:focus+label,
-input[type='password']:focus+label {
+.input-field input[type='text']:focus + label,
+input[type='password']:focus + label {
   color: #ff7043 !important;
 }
 
@@ -1619,7 +1733,6 @@ input[type='password']:focus {
 }
 
 @media only screen and (min-width: 1600px) {
-
   .col#left,
   .col#right {
     width: 16.7%;
