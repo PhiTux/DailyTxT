@@ -155,8 +155,8 @@
           :locale="$t('calendar-locale')"
           ><template v-slot:footer>
             <div class="calendar-footer row">
-              <div class="col s2"></div>
-              <div class="col s8">
+              <div class="col s3 l3 xl2"></div>
+              <div class="col s6 l6 xl8">
                 <a
                   class="waves-effect waves-light btn todayBtn"
                   @click="moveToToday"
@@ -164,7 +164,7 @@
                   {{ $t('today') }}
                 </a>
               </div>
-              <div class="col s2">
+              <div class="col s3 l3 xl2" style="padding: 0 !important">
                 <a
                   v-if="!dateIsBookmarked"
                   class="waves-effect waves-light btn bookmarkBtn tooltipped"

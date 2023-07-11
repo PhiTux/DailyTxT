@@ -151,13 +151,11 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ### 1.0.13
 (2023_07_xx)  
-⚠️ When updating to this version, you will need to spam F5 (reload the site) about 4 Times -> it's finished when you get logged out! Otherwise the update would not be activated in the browser, because a new build tool is used and therefore the logic of PWA/ServiceWorker has been changed. (This only affects this update to 1.0.13). Sadly didn't find a better solution in acceptable time...
 ```
-- Moved build-tool from webpack to vite
 - Bugfix: Dropdown-menus didn't work on Apple Webkit Browsers
 - Added Chinese translation -> zh-Hans: Chinese (simplified) [1]
 - Added Button to calendar to bookmark a day (shown in orange)
-- Always show amount of remaining backup-codes after using one of them
+- Show amount of remaining backup-codes after logging in with one of them
 - Now always showing version number in settings
 - Search-results get removed when search-field is emptied
 - Updated several packages
