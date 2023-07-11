@@ -62,6 +62,7 @@
     "backup-codes-deleted": "Códigos de respaldo eliminados. ¡Necesitas crear unos nuevos!",
     "copy-to-clipboard-successful": "Códigos de respaldo copiados correctamente",
     "few-backup-codes-left": "Solo quedan {0} códigos de respaldo restantes. Deberías crear unos nuevos.",
+    "x-backup-codes-left": "Has utilizado un código de respaldo. Quedan {0} más.",
     "update-installed-reload": "New update has been installed. Please reload the page!",
     "remove-day": "Borrar todos los registros y archivos de este día.",
     "modal-remove-day-header": "¿Borrar todos los datos de este día?",

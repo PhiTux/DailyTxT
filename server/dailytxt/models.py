@@ -59,7 +59,7 @@ def check_for_password_and_backup_codes(user_id, password):
             for user in data['users']:
                 if user['user_id'] == user_id:
                     if check_password_hash(user['password'], password):
-                        return {'success': True, 'password': password, 'remaining_backup_codes': 0 if not 'backup_codes' in user.keys() else len(user['backup_codes'])}
+                        return {'success': True, 'password': password, 'remaining_backup_codes': 0 if not 'backup_codes' in user.keys() else len(user['backup_codes']), 'used_backup_code': False}
                     else:
                         if 'backup_codes' in user.keys():
                             for b in user['backup_codes'][:]:
@@ -74,7 +74,7 @@ def check_for_password_and_backup_codes(user_id, password):
                                     user['backup_codes'].remove(b)
 
                                     if write_users(data):
-                                        return {'success': True, 'password': orig_password, 'remaining_backup_codes': len(user['backup_codes'])}
+                                        return {'success': True, 'password': orig_password, 'remaining_backup_codes': len(user['backup_codes']), 'used_backup_code': True}
                                     else:
                                         return {'success': False}
                         else:
@@ -92,7 +92,7 @@ def login_user(username, password):
                 pwd_check = check_for_password_and_backup_codes(
                     user['user_id'], password)
                 if pwd_check['success']:
-                    return {'user_id': user['user_id'], 'password_key': get_password_key(pwd_check['password'].encode(), user['salt'].encode()), 'remaining_backup_codes': pwd_check['remaining_backup_codes']}
+                    return {'user_id': user['user_id'], 'password_key': get_password_key(pwd_check['password'].encode(), user['salt'].encode()), 'remaining_backup_codes': pwd_check['remaining_backup_codes'], 'used_backup_code': pwd_check['used_backup_code']}
 
     return {'user_id': 0, 'password_key': ''}
 

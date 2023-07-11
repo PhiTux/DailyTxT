@@ -62,6 +62,7 @@
   "backup-codes-deleted": "Backup codes have been deleted. You need to create new ones!",
   "copy-to-clipboard-successful": "Backup codes successfully copied",
   "few-backup-codes-left": "Only {0} backup codes left. You should create new ones.",
+  "x-backup-codes-left": "You used a backup code. There are {0} more left.",
   "update-installed-reload": "New update has been installed. Please reload the page!",
   "remove-day": "Delete all logs and files of this day.",
   "modal-remove-day-header": "Delete all data of this day?",
@@ -81,5 +82,12 @@
   "save-new-template": "Save new template",
   "save-changes": "Save changes",
   "remove-template-tooltip": "Delete template '{name}'",
-  "removing-template-success": "Template successfully removed"
+  "removing-template-success": "Template successfully removed",
+  "dailytxt-version": "DailyTxT version",
+  "bookmark-added": "Added bookmark",
+  "bookmark-added-error": "Error on adding bookmark",
+  "bookmark-removed": "Removed bookmark",
+  "bookmark-removed-error": "Error on removing bookmark",
+  "tooltip-add-bookmark": "Add bookmark (color day in orange)",
+  "tooltip-remove-bookmark": "Remove bookmark (day is no longer orange)"
 }

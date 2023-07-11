@@ -97,6 +97,9 @@
         >
       </li>
       <li class="divider"></li>
+      <li class="version" id="version">
+        <span>{{ $t('dailytxt-version') }}: {{ clientVersion }}</span>
+      </li>
     </ul>
     <div class="settings-area">
       <transition
@@ -124,6 +127,7 @@ import BackupCodes from '@/components/settings/BackupCodes.vue'
 import Templates from '@/components/settings/Templates.vue'
 import Export from '@/components/settings/Export.vue'
 import Import from '@/components/settings/Import.vue'
+import { version } from '../../package'
 
 export default {
   name: 'Settings',
@@ -138,7 +142,8 @@ export default {
     return {
       selectedMenu: 'password',
       transitionName: 'fade',
-      isMobile: false
+      isMobile: false,
+      clientVersion: version
     }
   },
   methods: {
@@ -175,6 +180,10 @@ export default {
 </script>
 
 <style scoped>
+.version {
+  margin-top: 20px;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: all 0.2s ease-out;

@@ -201,6 +201,30 @@ class UserService {
       { headers: authHeader() }
     )
   }
+
+  addBookmark(date) {
+    return axios.post(
+      API_URL + 'addBookmark',
+      {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate()
+      },
+      { headers: authHeader() }
+    )
+  }
+
+  removeBookmark(date) {
+    return axios.post(
+      API_URL + 'removeBookmark',
+      {
+        year: date.getFullYear(),
+        month: date.getMonth() + 1,
+        day: date.getDate()
+      },
+      { headers: authHeader() }
+    )
+  }
 }
 
 export default new UserService()

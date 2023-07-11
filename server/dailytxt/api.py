@@ -87,7 +87,7 @@ def login():
         'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
-    return jsonify({'token': token, 'remaining_backup_codes': user['remaining_backup_codes']})
+    return jsonify({'token': token, 'remaining_backup_codes': user['remaining_backup_codes'], 'used_backup_code': user['used_backup_code']})
 
 
 @api.route('/saveLog', methods=['POST'])
@@ -228,4 +228,18 @@ def route_getHistory(user_id, key):
 @token_required
 def route_useHistoryVersion(user_id, key):
     res = useHistoryVersion(user_id, key, request.get_json())
+    return jsonify(res)
+
+
+@api.route('addBookmark', methods=['POST'])
+@token_required
+def route_addBookmark(user_id, key):
+    res = addBookmark(user_id, key, request.get_json())
+    return jsonify(res)
+
+
+@api.route('removeBookmark', methods=['POST'])
+@token_required
+def route_removeBookmark(user_id, key):
+    res = removeBookmark(user_id, key, request.get_json())
     return jsonify(res)
