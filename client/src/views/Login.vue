@@ -144,6 +144,10 @@
         </div>
       </li>
     </ul>
+    <div class="fill"></div>
+    <div class="version">
+      {{ clientVersion }}
+    </div>
   </div>
 </template>
 
@@ -151,6 +155,7 @@
 import $ from 'jquery'
 import M from 'materialize-css'
 import User from '../models/user'
+import { version } from '../../package.json'
 
 export default {
   name: 'Login',
@@ -166,7 +171,8 @@ export default {
       register_password1: '',
       register_password2: '',
       login_username: '',
-      login_password: ''
+      login_password: '',
+      clientVersion: version
     }
   },
   computed: {
@@ -260,6 +266,19 @@ export default {
 </script>
 
 <style scoped>
+.fill {
+  display: flex;
+  flex: 1;
+}
+
+.version {
+  display: flex;
+  margin: 10px;
+  font-size: large;
+  height: 30px;
+  align-self: end;
+}
+
 .input-field input[type='text']:focus + label,
 input[type='password']:focus + label {
   color: #ff7043 !important;
@@ -281,6 +300,7 @@ input[type='password']:focus {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  height: 100%;
 }
 
 .logo-container {
