@@ -5,11 +5,11 @@
 # DailyTxT
 
 DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
-It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run by **[Docker](https://hub.docker.com/r/phitux/dailytxt/)**.
+It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run by **[Docker](https://hub.docker.com/r/phitux/dailytxt/)** - supports AMD64 and ARM64.
 
 You should definitely take a quick look at [How to Use](#how-to-use) to see all the hidden features.
 
-> ❗ As I'm now heavily working on [schoco](https://github.com/PhiTux/schoco) in my spare time, there probably won't be coming any new features to DailyTxT in the next months!
+> New features will now be added only rarely. However, the support remains and in a few years there will most likely be a completely rewritten version (including upgrade support).
 
 > 💬 Please simply open a new issue if you have any information, problem, new feature idea, new translation or anything else!
 > I usually reply quickly and the project will have long support - especially security support - (unless marked as deprecated) as I use it regularly myself.
@@ -150,14 +150,16 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 ## Changelog
 
 ### 1.0.13
-(2023_07_xx)  
+(2023_07_13)  
+🎉 From this version on, there is also ARM64-support (tested on Apple M1).
 ```
 - Bugfix: Dropdown-menus didn't work on Apple Webkit Browsers
 - Added Chinese translation -> zh-Hans: Chinese (simplified) [1]
 - Added Button to calendar to bookmark a day (shown in orange)
 - Show amount of remaining backup-codes after logging in with one of them
-- Now always showing version number in settings
+- Now always showing version number in settings and on login
 - Search-results get removed when search-field is emptied
+- Slightly changed the dailytxt-icon
 - Updated several packages
 ```
 [1]: Thanks to [@Nyar233](https://github.com/Nyar233)
