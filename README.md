@@ -28,7 +28,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Encryption:** Everything you write is encrypted before it's written to the server's storage. Even the admin can't read your private stuff!
 - **File-Upload:** You can upload arbitrary files for each day (128 MB max each). They are **stored encrypted** on the server as well.
 - **Search:** Support your memory by easily scanning your notes for any keyword and rediscovering details you may have almost forgotten.
-- **Multi-Language-Support:** The Web-App is currently available in **German**, **English** and **Spanish** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
+- **Multi-Language-Support:** The Web-App is currently available in **German**, **English**, **Spanish** and **Chinese (simplified)** translation. The language gets detected and selected automatically based on your browser's settings. More languages are easy to add - [iff](https://en.wikipedia.org/wiki/If_and_only_if) **you** provide me with the language-files! See `client/src/lang/translations`
 - **Mobile:** Responsive design for easy use on mobile screen. Additionally: allows installation "A2HS" (Add 2 Home Screen)
 - **Multi-User-Spport:** You can create multiple User Accounts. Each account uses its own encryption key - so there is no risk for a data breach.
 - **Backup & Restore:** You can export all data (decrypted) for backup-reasons in a zip-file and reimport the data later by uploading the zip.
