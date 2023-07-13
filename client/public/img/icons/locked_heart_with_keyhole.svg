@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="200mm"
    height="200mm"
    viewBox="0 0 200 200"
    version="1.1"
    id="svg8"
    sodipodi:docname="locked_heart_with_keyhole.svg"
-   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   inkscape:version="1.2.2 (732a01da63, 2022-12-09)"
    inkscape:export-filename="/home/marco/Bilder/DailyTxT_Logo_2020/locked_heart_512.png"
    inkscape:export-xdpi="65.024002"
-   inkscape:export-ydpi="65.024002">
+   inkscape:export-ydpi="65.024002"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <defs
      id="defs2">
     <inkscape:path-effect
@@ -52,20 +52,21 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.7"
-     inkscape:cx="203.52058"
-     inkscape:cy="411.67403"
+     inkscape:cx="464.28571"
+     inkscape:cy="371.42857"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="1912"
+     inkscape:window-y="317"
      inkscape:window-maximized="1"
      inkscape:pagecheckerboard="false"
      inkscape:showpageshadow="false"
-     showborder="true" />
+     showborder="true"
+     inkscape:deskcolor="#d1d1d1" />
   <metadata
      id="metadata5">
     <rdf:RDF>
@@ -74,7 +75,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -92,7 +93,7 @@
        width="69.861923"
        height="63.937119"
        x="65.304489"
-       y="85.715736"
+       y="75.826767"
        ry="6.7518868" />
     <path
        style="fill:none;stroke:#1565c0;stroke-width:10;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -100,11 +101,12 @@
        id="path908"
        inkscape:path-effect="#path-effect910;#path-effect912"
        inkscape:original-d="M 74.247469,78.791061 C 74.151923,70.9336 74.05614,63.075953 73.960118,55.217885 c 3.831336,-2.565603 7.662223,-5.131288 11.493119,-7.697359 4.924635,2.22e-4 9.848815,2.22e-4 14.772833,0"
-       transform="matrix(0.90263587,0,0,1.0927354,9.0174096,1.6887081)"
-       sodipodi:nodetypes="cccc" />
+       transform="matrix(0.90263587,0,0,1.0927354,9.7528706,-6.0621084)"
+       sodipodi:nodetypes="cccc"
+       class="UnoptimicedTransforms" />
     <g
        id="g940"
-       transform="translate(0,7.4083337)">
+       transform="translate(0,-1.1442912)">
       <circle
          style="fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.44;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          id="path934"
