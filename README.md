@@ -34,6 +34,7 @@ You should definitely take a quick look at [How to Use](#how-to-use) to see all 
 - **Backup & Restore:** You can export all data (decrypted) for backup-reasons in a zip-file and reimport the data later by uploading the zip.
 - **Templates:** Create templates, which you can reuse every day.
 - If you came from [journey.cloud](https://journey.cloud), you could try [this script](https://github.com/PhiTux/DailyTxT/issues/13#issue-1327951670) to **import** your text to DailyTxT.
+- 🌟 There also exists a [separate CLI program](https://github.com/PhiTux/dailytxt-decrypt-cli) to decrypt your files without a running server. Example use case: In 10 years your server is shut down but you still have your encrypted dailytxt-files and want to read them again.
 
 ## How to Use
 
