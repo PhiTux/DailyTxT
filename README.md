@@ -150,6 +150,12 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.14
+(2024_03_29)
+```
+- Upgraded some packages and the docker-base-image
+```
+
 ### 1.0.13
 (2023_07_13)  
 🎉 From this version on, there is also ARM64-support (tested on Apple M1).

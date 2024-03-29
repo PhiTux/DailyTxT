@@ -4,7 +4,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY ./client/package*.json ./client/.npmrc ./
 RUN npm config set update-notifier false && \
-    npm install
+    npm update -g npm && npm ci --no-audit --maxsockets 1
 COPY ./client .
 RUN npm run build
 
