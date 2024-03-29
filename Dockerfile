@@ -1,5 +1,5 @@
 # build
-FROM node:16.13.2-alpine3.14 as build-vue
+FROM node:18-alpine3.19 as build-vue
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 COPY ./client/package*.json ./client/.npmrc ./

@@ -83,8 +83,8 @@ def login():
     token = jwt.encode({
         'sub': user['user_id'],
         'key': user['password_key'].decode(),
-        'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
+        'iat': datetime.now(),
+        'exp': datetime.now() + timedelta(days=current_app.config['JWT_EXP_DAYS'])},
         current_app.config['SECRET_KEY']
     )
     return jsonify({'token': token, 'remaining_backup_codes': user['remaining_backup_codes'], 'used_backup_code': user['used_backup_code']})
