@@ -65,8 +65,6 @@ DailyTxT is intended to be run by Docker. There is an [official docker image](ht
 Use the **docker-compose.yml** file in this repo and adapt it. You see it here:
 
 ```yaml
-version: "3"
-
 services:
   dailytxt:
     image: phitux/dailytxt:latest
@@ -109,7 +107,7 @@ There are **four <ins>important</ins> things that you should adapt** to your nee
 Then simply run
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ---
