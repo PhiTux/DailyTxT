@@ -1,6 +1,6 @@
 {
   "name": "dailytxt",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode staging --host 0.0.0.0",

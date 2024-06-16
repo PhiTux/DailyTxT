@@ -148,6 +148,12 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ## Changelog
 
+### 1.0.15
+(2024_06_16)
+```
+- Fixed Subpath/Subdirectory support
+```
+
 ### 1.0.14
 (2024_03_29)
 ```

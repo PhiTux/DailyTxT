@@ -1,7 +1,10 @@
 import axios from 'axios'
 import authHeader from './auth-headers'
 
-const API_URL = process.env.VUE_APP_API_URL
+const API_URL =
+  process.env.NODE_ENV === 'production'
+    ? window.location.pathname.replace(/\/+$/, '') + process.env.VUE_APP_API_URL
+    : process.env.VUE_APP_API_URL
 
 class UserService {
   getHistory(dateSelected) {
