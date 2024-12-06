@@ -2,6 +2,17 @@
 	import img from '$lib/assets/locked_heart_with_keyhole.svg';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
+	import { dev } from '$app/environment';
+
+	let show_warning_empty_fields = $state(false);
+	let show_warning_passwords_do_not_match = $state(false);
+
+	let show_registration_success = $state(false);
+	let show_registration_failed = $state(false);
+	let show_registration_failed_with_message = $state(false);
+	let registration_failed_message = $state('');
+
+	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
 
 	function handleLogin(event) {
 		event.preventDefault();
@@ -9,7 +20,7 @@
 		const password = document.getElementById('loginPassword').value;
 
 		axios
-			.post('http://localhost:8000/users/login', { username, password })
+			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
 				console.log(response);
 			})
@@ -22,12 +33,45 @@
 	}
 
 	function handleRegister(event) {
+		show_warning_empty_fields = false;
+		show_warning_passwords_do_not_match = false;
+		show_registration_success = false;
+		show_registration_failed = false;
+		show_registration_failed_with_message = false;
+
 		event.preventDefault();
 		const username = document.getElementById('registerUsername').value;
 		const password = document.getElementById('registerPassword').value;
 		const password2 = document.getElementById('registerPassword2').value;
-		console.log('Register attempt:', { username, password, password2 });
-		// Add your registration logic here
+
+		if (username === '' || password === '') {
+			show_warning_empty_fields = true;
+			console.error('Please fill out all fields');
+			return;
+		}
+
+		if (password !== password2) {
+			show_warning_passwords_do_not_match = true;
+			console.error('Passwords do not match');
+			return;
+		}
+
+		axios
+			.post(API_URL + '/users/register', { username, password })
+			.then((response) => {
+				if (response.data.success) {
+					show_registration_success = true;
+					console.log('Registration successful');
+				} else {
+					show_registration_failed = true;
+					console.error('Registration failed');
+				}
+			})
+			.catch((error) => {
+				console.error(error.response.data.detail);
+				registration_failed_message = error.response.data.detail;
+				show_registration_failed_with_message = true;
+			});
 	}
 </script>
 
@@ -57,7 +101,7 @@
 					data-bs-parent="#loginAccordion"
 				>
 					<div class="accordion-body">
-						<form on:submit={handleLogin}>
+						<form onsubmit={handleLogin}>
 							<div class="form-floating mb-3">
 								<!-- svelte-ignore a11y_autofocus -->
 								<input
@@ -100,7 +144,7 @@
 				</h2>
 				<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#loginAccordion">
 					<div class="accordion-body">
-						<form on:submit={handleRegister}>
+						<form onsubmit={handleRegister}>
 							<div class="form-floating mb-3">
 								<input
 									type="text"
@@ -128,6 +172,30 @@
 								/>
 								<label for="registerPassword2">Password bestätigen</label>
 							</div>
+							{#if show_registration_failed_with_message}
+								<div class="alert alert-danger" role="alert">
+									Registrierung fehlgeschlagen!<br />
+									Fehlermeldung: <i>{registration_failed_message}</i>
+								</div>
+							{/if}
+							{#if show_registration_failed}
+								<div class="alert alert-danger" role="alert">
+									Registrierung fehlgeschlagen - bitte Fehlermeldungen analysieren!
+								</div>
+							{/if}
+							{#if show_registration_success}
+								<div class="alert alert-success" role="alert">
+									Registrierung erfolgreich - bitte einloggen!
+								</div>
+							{/if}
+							{#if show_warning_empty_fields}
+								<div class="alert alert-danger" role="alert">
+									Eingabefelder dürfen nicht leer sein!
+								</div>
+							{/if}
+							{#if show_warning_passwords_do_not_match}
+								<div class="alert alert-danger" role="alert">Passwörter stimmen nicht überein!</div>
+							{/if}
 							<div class="d-flex justify-content-center">
 								<button type="submit" class="btn btn-primary">Registrieren</button>
 							</div>
