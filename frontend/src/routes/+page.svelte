@@ -2,6 +2,7 @@
 	import '../scss/styles.scss';
 	//import * as bootstrap from 'bootstrap';
 	import { Tooltip } from 'bootstrap';
+	import { goto } from '$app/navigation';
 
 	//on mount
 	import { onMount } from 'svelte';

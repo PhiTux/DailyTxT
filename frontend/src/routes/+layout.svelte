@@ -1,9 +1,27 @@
 <script>
 	import { fade, blur, slide } from 'svelte/transition';
+	import axios from 'axios';
+	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	export let data;
 	let inDuration = 150;
 	let outDuration = 150;
+
+	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+
+	function logout() {
+		axios
+			.get(API_URL + '/users/logout')
+			.then((response) => {
+				localStorage.removeItem('user');
+				goto('/login');
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
 </script>
 
 <main class="d-flex flex-column">
@@ -11,6 +29,20 @@
 		<div class="container-fluid">
 			<a class="nav-item" href="/">Navbar</a>
 			<a class="nav-item" href="/login">Navbar</a>
+			<div class="dropdown">
+				<button
+					class="btn btn-outline-secondary dropdown-toggle"
+					type="button"
+					data-bs-toggle="dropdown"
+					aria-expanded="false"
+				>
+					Dropdown button
+				</button>
+				<ul class="dropdown-menu dropdown-menu-end">
+					<li><button class="dropdown-item">Settings</button></li>
+					<li><button class="dropdown-item" onclick={logout}>Logout</button></li>
+				</ul>
+			</div>
 		</div>
 	</nav>
 

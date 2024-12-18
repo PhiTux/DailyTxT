@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
 
 	let show_warning_empty_fields = $state(false);
 	let show_warning_passwords_do_not_match = $state(false);
@@ -22,7 +23,8 @@
 		axios
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
-				console.log(response);
+				localStorage.setItem('user', JSON.stringify(response.data.username));
+				goto('/');
 			})
 			.catch((error) => {
 				console.error(error);
