@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import json
 import secrets
@@ -20,17 +21,18 @@ class Login(BaseModel):
 
 @router.post("/users/login")
 async def login(login: Login, respose: Response):
+
     # check if user exists
     content:dict = fileHandling.getUsers()
     if len(content) == 0 or "users" not in content.keys() or len(content["users"]) == 0 or not any(user["username"] == login.username for user in content["users"]):
         logger.error(f"Login failed. User '{login.username}' not found")
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User/Password combination not found")
     
     # get user data
     user = next(user for user in content["users"] if user["username"] == login.username)
     if not security.verify_password(login.password, user["password"]):
         logger.error(f"Login failed. Password for user '{login.username}' is incorrect")
-        raise HTTPException(status_code=400, detail="Password is incorrect")
+        raise HTTPException(status_code=404, detail="User/Password combination not found")
     
     # get intermediate key
     derived_key = base64.b64encode(security.derive_key_from_password(login.password, user["salt"])).decode()
@@ -61,7 +63,6 @@ async def register(register: Register):
 
     # check if username already exists
     if len(content) > 0:
-        content: dict = json.loads(content)
         if ("users" not in content.keys()):
             logger.error("users.json is not in the correct format. Key 'users' is missing.")
             raise HTTPException(status_code=500, detail="users.json is not in the correct format")

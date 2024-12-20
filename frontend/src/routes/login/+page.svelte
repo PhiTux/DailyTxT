@@ -5,20 +5,36 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 
-	let show_warning_empty_fields = $state(false);
-	let show_warning_passwords_do_not_match = $state(false);
+	let show_login_failed = $state(false);
+	let show_login_warning_empty_fields = $state(false);
+	let is_logging_in = $state(false);
 
+	let show_registration_warning_empty_fields = $state(false);
+	let show_warning_passwords_do_not_match = $state(false);
 	let show_registration_success = $state(false);
 	let show_registration_failed = $state(false);
 	let show_registration_failed_with_message = $state(false);
 	let registration_failed_message = $state('');
+	let is_registering = $state(false);
 
 	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
 
 	function handleLogin(event) {
 		event.preventDefault();
+
+		show_login_failed = false;
+		show_login_warning_empty_fields = false;
+
 		const username = document.getElementById('loginUsername').value;
 		const password = document.getElementById('loginPassword').value;
+
+		if (username === '' || password === '') {
+			show_login_warning_empty_fields = true;
+			console.error('Please fill out all fields');
+			return;
+		}
+
+		is_logging_in = true;
 
 		axios
 			.post(API_URL + '/users/login', { username, password })
@@ -27,15 +43,17 @@
 				goto('/');
 			})
 			.catch((error) => {
-				console.error(error);
+				if (error.response.status === 404) {
+					show_login_failed = true;
+				}
+			})
+			.finally(() => {
+				is_logging_in = false;
 			});
-
-		console.log('Login attempt:', { username, password });
-		// Add your login logic here
 	}
 
 	function handleRegister(event) {
-		show_warning_empty_fields = false;
+		show_registration_warning_empty_fields = false;
 		show_warning_passwords_do_not_match = false;
 		show_registration_success = false;
 		show_registration_failed = false;
@@ -47,7 +65,7 @@
 		const password2 = document.getElementById('registerPassword2').value;
 
 		if (username === '' || password === '') {
-			show_warning_empty_fields = true;
+			show_registration_warning_empty_fields = true;
 			console.error('Please fill out all fields');
 			return;
 		}
@@ -57,6 +75,8 @@
 			console.error('Passwords do not match');
 			return;
 		}
+
+		is_registering = true;
 
 		axios
 			.post(API_URL + '/users/register', { username, password })
@@ -73,6 +93,9 @@
 				console.error(error.response.data.detail);
 				registration_failed_message = error.response.data.detail;
 				show_registration_failed_with_message = true;
+			})
+			.finally(() => {
+				is_registering = false;
 			});
 	}
 </script>
@@ -124,8 +147,26 @@
 								/>
 								<label for="loginPassword">Password</label>
 							</div>
+							{#if show_login_failed}
+								<div class="alert alert-danger" role="alert">
+									Login fehlgeschlagen!<br />
+									Bitte Eingabedaten überprüfen.
+								</div>
+							{/if}
+							{#if show_login_warning_empty_fields}
+								<div class="alert alert-danger" role="alert">
+									Eingabefelder dürfen nicht leer sein!
+								</div>
+							{/if}
 							<div class="d-flex justify-content-center">
-								<button type="submit" class="btn btn-primary">Login</button>
+								<button type="submit" class="btn btn-primary" disabled={is_logging_in}>
+									{#if is_logging_in}
+										<div class="spinner-border spinner-border-sm" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
+									{/if}
+									Login
+								</button>
 							</div>
 						</form>
 					</div>
@@ -190,7 +231,7 @@
 									Registrierung erfolgreich - bitte einloggen!
 								</div>
 							{/if}
-							{#if show_warning_empty_fields}
+							{#if show_registration_warning_empty_fields}
 								<div class="alert alert-danger" role="alert">
 									Eingabefelder dürfen nicht leer sein!
 								</div>
@@ -199,7 +240,14 @@
 								<div class="alert alert-danger" role="alert">Passwörter stimmen nicht überein!</div>
 							{/if}
 							<div class="d-flex justify-content-center">
-								<button type="submit" class="btn btn-primary">Registrieren</button>
+								<button type="submit" class="btn btn-primary" disabled={is_registering}>
+									{#if is_registering}
+										<div class="spinner-border spinner-border-sm" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
+									{/if}
+									Registrieren
+								</button>
 							</div>
 						</form>
 					</div>
