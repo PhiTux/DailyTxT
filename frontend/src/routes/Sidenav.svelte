@@ -9,8 +9,11 @@
 
 <!-- {/if} -->
 
-<Datepicker dateSelected={(date) => (selectedDate = date)} />
+<Datepicker
+	currentlySelectedDate={new Date(2025, 0, 31)}
+	dateSelected={(date) => (selectedDate = date)}
+/>
 <br />
-{selectedDate.toDateString()}
+{selectedDate.toLocaleDateString('de-DE')}
 <br />
 Search

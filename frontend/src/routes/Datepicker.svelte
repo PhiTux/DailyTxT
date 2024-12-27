@@ -3,23 +3,20 @@
 	import { fly } from 'svelte/transition';
 
 	let { currentlySelectedDate = new Date(), dateSelected } = $props();
-	let shownDate = $state(currentlySelectedDate);
+
 	let days = $state([]);
 	let markedDays = {
 		'2024-12-25': { type: 'background', color: '#28a745' }, // green instead of red
 		'2024-12-31': { type: 'dot', color: '#28a745' } // green instead of blue
 	};
-	let currentMonth = $state(shownDate.toLocaleString('default', { month: 'long' }));
-	let currentYear = $state(shownDate.getFullYear());
+	let currentMonth = $state(currentlySelectedDate.getMonth());
+	let currentYear = $state(currentlySelectedDate.getFullYear());
 
-	let animationDirection = $state(1); // Für die Animationsrichtung
+	let animationDirection = $state(1); // swipe the dates left or right
 
-	const updateCalendar = (date) => {
-		currentMonth = date.toLocaleString('default', { month: 'long' });
-		currentYear = date.getFullYear();
-
-		const month = date.getMonth();
-		const year = date.getFullYear();
+	const updateCalendar = () => {
+		const month = currentMonth;
+		const year = currentYear;
 		const firstDay = new Date(year, month, 1);
 		const lastDay = new Date(year, month + 1, 0);
 
@@ -44,8 +41,21 @@
 
 	const changeMonth = (increment) => {
 		animationDirection = increment;
-		shownDate.setMonth(shownDate.getMonth() + increment);
-		days = updateCalendar(shownDate);
+		currentMonth += increment;
+		if (currentMonth < 0) {
+			currentMonth = 11;
+			changeYear(-1);
+		} else if (currentMonth > 11) {
+			currentMonth = 0;
+			changeYear(1);
+		}
+		days = updateCalendar();
+	};
+
+	const changeYear = (increment) => {
+		animationDirection = increment;
+		currentYear += increment;
+		days = updateCalendar();
 	};
 
 	const onDateClick = (date) => {
@@ -54,23 +64,26 @@
 	};
 
 	onMount(() => {
-		days = updateCalendar(shownDate);
+		days = updateCalendar();
 	});
 
 	let months = Array.from({ length: 12 }, (_, i) =>
 		new Date(2000, i).toLocaleString('default', { month: 'long' })
 	);
 
-	let years = Array.from({ length: 201 }, (_, i) => 1900 + i);
-
 	const onMonthSelect = (event) => {
-		shownDate.setMonth(months.indexOf(event.target.value));
-		days = updateCalendar(shownDate);
+		animationDirection = months.indexOf(event.target.value) > currentMonth ? 1 : -1;
+		currentMonth = months.indexOf(event.target.value);
+		days = updateCalendar();
 	};
 
-	const onYearSelect = (event) => {
-		shownDate.setFullYear(parseInt(event.target.value));
-		days = updateCalendar(shownDate);
+	const onYearInput = (event) => {
+		animationDirection = parseInt(event.target.value) > currentYear ? 1 : -1;
+		const year = parseInt(event.target.value);
+		if (year && !isNaN(year) && year >= 1) {
+			currentYear = year;
+			days = updateCalendar();
+		}
 	};
 
 	// weekdays
@@ -81,16 +94,28 @@
 	<div class="datepicker-header">
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
-			<select value={currentMonth} onchange={onMonthSelect}>
+			<select
+				value={new Date(2000, currentMonth).toLocaleString('default', { month: 'long' })}
+				onchange={onMonthSelect}
+			>
 				{#each months as month}
 					<option value={month}>{month}</option>
 				{/each}
 			</select>
-			<select value={currentYear} onchange={onYearSelect}>
-				{#each years as year}
-					<option value={year}>{year}</option>
-				{/each}
-			</select>
+			<div class="year-input-group">
+				<input
+					type="number"
+					value={currentYear}
+					min="1"
+					max="9999"
+					class="year-input"
+					oninput={onYearInput}
+				/>
+				<div class="year-controls">
+					<button type="button" class="btn btn-year" onclick={() => changeYear(1)}>▲</button>
+					<button type="button" class="btn btn-year" onclick={() => changeYear(-1)}>▼</button>
+				</div>
+			</div>
 		</div>
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(1)}>&gt;</button>
 	</div>
@@ -219,6 +244,7 @@
 		gap: 4px;
 		flex: 1;
 		justify-content: center;
+		align-items: center;
 	}
 
 	.date-selectors select {
@@ -275,5 +301,72 @@
 		border-radius: 50%;
 		position: absolute;
 		bottom: 2px;
+	}
+
+	.year-input {
+		background: transparent;
+		color: white;
+		border: none;
+		font-size: 16px;
+		cursor: pointer;
+		padding: 2px 12px;
+		border-radius: 4px;
+		max-width: 100px;
+		text-align: center;
+		-webkit-appearance: textfield;
+		-moz-appearance: textfield;
+		appearance: textfield;
+		width: 60px; /* Angepasste Breite */
+		padding: 2px 4px; /* Schmalere Paddings */
+		padding-right: 20px; /* Platz für die Pfeile */
+	}
+
+	.year-input::-webkit-inner-spin-button,
+	.year-input::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	.year-input:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.year-input-group {
+		position: relative;
+		display: inline-block;
+	}
+
+	.year-controls {
+		position: absolute;
+		right: 2px;
+		top: 50%;
+		transform: translateY(-50%);
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.btn-year {
+		color: white;
+		padding: 0;
+		font-size: 12px;
+		line-height: 12px;
+		min-width: 16px;
+		height: 16px;
+		opacity: 0.1;
+	}
+
+	.year-input-group:hover .btn-year {
+		opacity: 0.5;
+	}
+
+	.btn-year:hover {
+		opacity: 1 !important;
+		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	option {
+		background-color: #007bff;
+		color: white;
 	}
 </style>
