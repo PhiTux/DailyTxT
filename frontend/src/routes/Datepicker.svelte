@@ -1,22 +1,29 @@
 <script>
+	import { cal, selectedDate } from '$lib/calendarStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
-	let { currentlySelectedDate = new Date(), dateSelected } = $props();
+	//let { currentlySelectedDate = new Date(), dateSelected } = $props();
 
 	let days = $state([]);
 	let markedDays = {
 		'2024-12-25': { type: 'background', color: '#28a745' }, // green instead of red
 		'2024-12-31': { type: 'dot', color: '#28a745' } // green instead of blue
 	};
-	let currentMonth = $state(currentlySelectedDate.getMonth());
-	let currentYear = $state(currentlySelectedDate.getFullYear());
+	//let currentMonth = $state(currentlySelectedDate.getMonth());
+	//let currentYear = $state(currentlySelectedDate.getFullYear());
 
 	let animationDirection = $state(1); // swipe the dates left or right
 
+	$effect(() => {
+		if ($cal) {
+			days = updateCalendar();
+		}
+	});
+
 	const updateCalendar = () => {
-		const month = currentMonth;
-		const year = currentYear;
+		const month = $cal.currentMonth;
+		const year = $cal.currentYear;
 		const firstDay = new Date(year, month, 1);
 		const lastDay = new Date(year, month + 1, 0);
 
@@ -41,12 +48,12 @@
 
 	const changeMonth = (increment) => {
 		animationDirection = increment;
-		currentMonth += increment;
-		if (currentMonth < 0) {
-			currentMonth = 11;
+		$cal.currentMonth += increment;
+		if ($cal.currentMonth < 0) {
+			$cal.currentMonth = 11;
 			changeYear(-1);
-		} else if (currentMonth > 11) {
-			currentMonth = 0;
+		} else if ($cal.currentMonth > 11) {
+			$cal.currentMonth = 0;
 			changeYear(1);
 		}
 		days = updateCalendar();
@@ -54,13 +61,13 @@
 
 	const changeYear = (increment) => {
 		animationDirection = increment;
-		currentYear += increment;
+		$cal.currentYear += increment;
 		days = updateCalendar();
 	};
 
 	const onDateClick = (date) => {
-		currentlySelectedDate = date;
-		dateSelected(date);
+		$selectedDate = date;
+		//dateSelected(date);
 	};
 
 	onMount(() => {
@@ -72,16 +79,16 @@
 	);
 
 	const onMonthSelect = (event) => {
-		animationDirection = months.indexOf(event.target.value) > currentMonth ? 1 : -1;
-		currentMonth = months.indexOf(event.target.value);
+		animationDirection = months.indexOf(event.target.value) > $cal.currentMonth ? 1 : -1;
+		$cal.currentMonth = months.indexOf(event.target.value);
 		days = updateCalendar();
 	};
 
 	const onYearInput = (event) => {
-		animationDirection = parseInt(event.target.value) > currentYear ? 1 : -1;
+		animationDirection = parseInt(event.target.value) > $cal.currentYear ? 1 : -1;
 		const year = parseInt(event.target.value);
 		if (year && !isNaN(year) && year >= 1) {
-			currentYear = year;
+			$cal.currentYear = year;
 			days = updateCalendar();
 		}
 	};
@@ -95,7 +102,7 @@
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
 			<select
-				value={new Date(2000, currentMonth).toLocaleString('default', { month: 'long' })}
+				value={new Date(2000, $cal.currentMonth).toLocaleString('default', { month: 'long' })}
 				onchange={onMonthSelect}
 			>
 				{#each months as month}
@@ -105,7 +112,7 @@
 			<div class="year-input-group">
 				<input
 					type="number"
-					value={currentYear}
+					value={$cal.currentYear}
 					min="1"
 					max="9999"
 					class="year-input"
@@ -139,7 +146,7 @@
 							class="day
 								{day.mark?.type === 'background' ? 'mark-background' : ''} 
 								{day.mark?.type === 'dot' ? 'mark-dot' : ''} 
-								{currentlySelectedDate.toDateString() === day.date.toDateString() ? 'selected' : ''}"
+								{$selectedDate.toDateString() === day.date.toDateString() ? 'selected' : ''}"
 							style="--color: {day.mark?.color || 'transparent'}"
 							onclick={() => onDateClick(day.date)}
 						>

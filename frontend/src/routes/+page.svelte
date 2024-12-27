@@ -1,18 +1,37 @@
 <script>
 	import '../scss/styles.scss';
-	//import * as bootstrap from 'bootstrap';
-	import { Tooltip } from 'bootstrap';
-	import { goto } from '$app/navigation';
+	import * as bootstrap from 'bootstrap';
 	import Sidenav from './Sidenav.svelte';
+	import { selectedDate } from '$lib/calendarStore.js';
+	import dayjs from 'dayjs';
 
-	//on mount
-	import { onMount } from 'svelte';
-	onMount(() => {
-		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-		const tooltipList = [...tooltipTriggerList].map(
-			(tooltipTriggerEl) => new Tooltip(tooltipTriggerEl)
-		);
+	$effect(() => {
+		if ($selectedDate) {
+			console.log('hu');
+		}
 	});
+
+	let currentLog = $state('');
+	let savedLog = $state('');
+
+	let timeout;
+
+	function debounce(fn) {
+		clearTimeout(timeout);
+		timeout = setTimeout(() => fn(), 1000);
+	}
+
+	function handleInput() {
+		debounce(() => {
+			saveLog();
+		});
+	}
+
+	function saveLog() {
+		// axios to backend
+		console.log(dayjs().format('DD.MM.YYYY, HH:mm [Uhr]'));
+		savedLog = currentLog;
+	}
 </script>
 
 <!-- shown on small Screen, when triggered -->
@@ -26,7 +45,7 @@
 			aria-label="Close"
 		></button>
 	</div>
-	<Sidenav sidenav="true" />
+	<Sidenav />
 </div>
 
 <div class="d-flex flex-row justify-content-between">
@@ -39,13 +58,24 @@
 	<div class="d-flex flex-column mt-4 mx-4 flex-fill">
 		<!-- Input-Area -->
 		<div class="d-flex flex-column">
-			<div class="d-flex flex-row">
-				<div class="flex-fill">Datum</div>
-				<div class="flex-fill">written at</div>
-				<div>history</div>
-				<div>delete</div>
+			<div class="d-flex flex-row textAreaHeader">
+				<div class="flex-fill textAreaDate">
+					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
+					{$selectedDate.toLocaleDateString('locale')}
+				</div>
+				<div class="flex-fill textAreaWrittenAt">
+					Geschrieben am:<br />
+					TODO
+				</div>
+				<div class="textAreaHistory">history</div>
+				<div class="textAreaDelete">delete</div>
 			</div>
-			<textarea class="form-control" rows="10"></textarea>
+			<textarea
+				bind:value={currentLog}
+				oninput={handleInput}
+				class="form-control {currentLog !== savedLog ? 'notSaved' : ''}"
+				rows="10"
+			></textarea>
 		</div>
 	</div>
 
@@ -53,9 +83,46 @@
 </div>
 
 <style>
+	.textAreaHeader {
+		border-left: 1px solid #ccc;
+		border-top: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+		border-top-left-radius: 5px;
+		border-top-right-radius: 5px;
+	}
+
+	.textAreaDate,
+	.textAreaWrittenAt,
+	.textAreaHistory {
+		border-right: 1px solid #ccc;
+		padding: 0.25em;
+	}
+
+	.notSaved {
+		border-color: #f57c00;
+		/* border-color: #ff9800; */
+	}
+
+	textarea:focus.notSaved {
+		box-shadow: 0 0 0 0.25rem #f57c0030;
+	}
+
+	textarea:focus:not(.notSaved) {
+		border-color: #90ee90;
+		box-shadow: 0 0 0 0.25rem #90ee9070;
+	}
+
+	.textAreaDate {
+		font-weight: 600;
+	}
+
 	textarea {
 		resize: vertical;
 		width: 100%;
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+		border-color: lightgreen;
+		border-width: 1px;
 	}
 
 	#right {
