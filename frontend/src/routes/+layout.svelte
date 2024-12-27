@@ -27,6 +27,13 @@
 <main class="d-flex flex-column">
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
 		<div class="container-fluid">
+			<button
+				class="btn d-md-none"
+				type="button"
+				data-bs-toggle="offcanvas"
+				data-bs-target="#sidenav"
+				aria-controls="sidenav">menü</button
+			>
 			<a class="nav-item" href="/">Navbar</a>
 			<a class="nav-item" href="/login">Navbar</a>
 			<div class="dropdown">
@@ -39,7 +46,7 @@
 					Dropdown button
 				</button>
 				<ul class="dropdown-menu dropdown-menu-end">
-					<li><button class="dropdown-item">Settings</button></li>
+					<li><a class="dropdown-item" href="/settings">Settings</a></li>
 					<li><button class="dropdown-item" onclick={logout}>Logout</button></li>
 				</ul>
 			</div>
