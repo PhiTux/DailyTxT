@@ -17,3 +17,11 @@ def create_new_enc_enc_key(password: str, salt: str) -> bytes:
     key = Fernet.generate_key() # actual encryption key
     f = Fernet(base64.urlsafe_b64encode(derived_key))
     return f.encrypt(key)
+
+def encrypt_text(text: str, derived_key: str) -> str:
+    f = Fernet(base64.urlsafe_b64encode(base64.b64decode(derived_key)))
+    return f.encrypt(text.encode()).decode()
+
+def decrypt_text(text: str, derived_key: str) -> str:
+    f = Fernet(base64.urlsafe_b64encode(base64.b64decode(derived_key)))
+    return f.decrypt(text.encode()).decode()

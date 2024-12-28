@@ -3,16 +3,52 @@
 	import * as bootstrap from 'bootstrap';
 	import Sidenav from './Sidenav.svelte';
 	import { selectedDate } from '$lib/calendarStore.js';
-	import dayjs from 'dayjs';
+	import axios from 'axios';
+	import { dev } from '$app/environment';
+	import { goto } from '$app/navigation';
+
+	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+
+	axios.interceptors.request.use((config) => {
+		config.withCredentials = true;
+		return config;
+	});
+
+	axios.interceptors.response.use(
+		(response) => {
+			return response;
+		},
+		(error) => {
+			if (
+				error.response &&
+				error.response.status &&
+				(error.response.status == 401 || error.response.status == 440)
+			) {
+				// logout
+				axios
+					.get(API_URL + '/users/logout')
+					.then((response) => {
+						localStorage.removeItem('user');
+						goto(`/login?error=${error.response.status}`);
+					})
+					.catch((error) => {
+						console.error(error);
+					});
+			}
+			return Promise.reject(error);
+		}
+	);
 
 	$effect(() => {
 		if ($selectedDate) {
-			console.log('hu');
+			console.log('selectedDate changed');
 		}
 	});
 
 	let currentLog = $state('');
 	let savedLog = $state('');
+
+	let logDateWritten = $state('');
 
 	let timeout;
 
@@ -29,8 +65,40 @@
 
 	function saveLog() {
 		// axios to backend
-		console.log(dayjs().format('DD.MM.YYYY, HH:mm [Uhr]'));
-		savedLog = currentLog;
+		let date_written = new Date().toLocaleString('de-DE', {
+			timeZone: 'Europe/Berlin',
+			year: 'numeric',
+			month: '2-digit',
+			day: '2-digit',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+
+		console.log(new Date($selectedDate).toISOString());
+
+		axios
+			.post(API_URL + '/logs/saveLog', {
+				date: new Date($selectedDate).toISOString(),
+				text: currentLog,
+				date_written: date_written
+			})
+			.then((response) => {
+				if (response.data.success) {
+					savedLog = currentLog;
+					logDateWritten = date_written;
+				} else {
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
+					toast.show();
+					console.error('Log not saved');
+				}
+			})
+			.catch((error) => {
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
+				toast.show();
+				console.error(error.response);
+			});
 	}
 </script>
 
@@ -65,7 +133,7 @@
 				</div>
 				<div class="flex-fill textAreaWrittenAt">
 					Geschrieben am:<br />
-					TODO
+					{logDateWritten}
 				</div>
 				<div class="textAreaHistory">history</div>
 				<div class="textAreaDelete">delete</div>
@@ -80,6 +148,20 @@
 	</div>
 
 	<div id="right">Right</div>
+
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div
+			id="toastErrorSavingLog"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern des Textes!</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>

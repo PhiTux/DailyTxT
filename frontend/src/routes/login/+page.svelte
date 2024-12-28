@@ -1,9 +1,11 @@
 <script>
 	import img from '$lib/assets/locked_heart_with_keyhole.svg';
+	import * as bootstrap from 'bootstrap';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	let show_login_failed = $state(false);
 	let show_login_warning_empty_fields = $state(false);
@@ -18,6 +20,17 @@
 	let is_registering = $state(false);
 
 	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+
+	onMount(() => {
+		// if params error=440 or error=401, show toast
+		if (window.location.search.includes('error=440')) {
+			const toast = new bootstrap.Toast(document.getElementById('toastLoginExpired'));
+			toast.show();
+		} else if (window.location.search.includes('error=401')) {
+			const toast = new bootstrap.Toast(document.getElementById('toastLoginInvalid'));
+			toast.show();
+		}
+	});
 
 	function handleLogin(event) {
 		event.preventDefault();
@@ -252,6 +265,32 @@
 						</form>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div
+			id="toastLoginExpired"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Der Login ist abgelaufen. Bitte neu anmelden.</div>
+			</div>
+		</div>
+
+		<div
+			id="toastLoginInvalid"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Authentifizierung fehlgeschlagen. Bitte neu anmelden.</div>
 			</div>
 		</div>
 	</div>

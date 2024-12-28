@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import json
 import secrets
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, Cookie, HTTPException, Response
 from pydantic import BaseModel
 from ..utils import fileHandling
 from ..utils import security
@@ -19,8 +19,8 @@ class Login(BaseModel):
     username: str
     password: str
 
-@router.post("/users/login")
-async def login(login: Login, respose: Response):
+@router.post("/login")
+async def login(login: Login, response: Response):
 
     # check if user exists
     content:dict = fileHandling.getUsers()
@@ -37,19 +37,30 @@ async def login(login: Login, respose: Response):
     # get intermediate key
     derived_key = base64.b64encode(security.derive_key_from_password(login.password, user["salt"])).decode()
     
-
     # build jwt
-    jwt = create_jwt(user["user_id"], user["username"], derived_key)
-    respose.set_cookie(key="jwt", value=jwt, httponly=True)
+    token = create_jwt(user["user_id"], user["username"], derived_key)
+    response.set_cookie(key="token", value=token, httponly=True)
     return {"username": user["username"]}
 
 def create_jwt(user_id, username, derived_key):
-    return jwt.encode({"iat": datetime.datetime.now() + datetime.timedelta(days=settings.logout_after_days), "user_id": user_id, "name": username, "derived_key": derived_key}, settings.secret_token, algorithm="HS256")
+    return jwt.encode({"exp": datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=settings.logout_after_days), "user_id": user_id, "name": username, "derived_key": derived_key}, settings.secret_token, algorithm="HS256")
+
+def decode_jwt(token):
+    return jwt.decode(token, settings.secret_token, algorithms="HS256")
+
+def isLoggedIn(token: str = Cookie()) -> int:
+    try:
+        decoded = decode_jwt(token)
+        return decoded
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=440, detail="Token expired")
+    except:
+        raise HTTPException(status_code=401, detail="Not logged in")
 
 
-@router.get("/users/logout")
+@router.get("/logout")
 def logout(response: Response):
-    response.delete_cookie("jwt")
+    response.delete_cookie("token", httponly=True)
     return {"success": True}
 
 
@@ -57,7 +68,7 @@ class Register(BaseModel):
     username: str
     password: str
 
-@router.post("/users/register")
+@router.post("/register")
 async def register(register: Register):
     content:dict = fileHandling.getUsers()
 

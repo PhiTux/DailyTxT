@@ -40,7 +40,7 @@
 			const dayKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${i
 				.toString()
 				.padStart(2, '0')}`;
-			tempDays.push({ date: new Date(year, month, i), mark: markedDays[dayKey] });
+			tempDays.push({ date: new Date(Date.UTC(year, month, i)), mark: markedDays[dayKey] });
 		}
 
 		return tempDays;
@@ -136,7 +136,7 @@
 				{#each weekDays as day}
 					<div class="day-header">{day}</div>
 				{/each}
-				{#each days as day (day ? day.date : Math.random())}
+				{#each days as day}
 					{#if day}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
