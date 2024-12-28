@@ -3,15 +3,11 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
-	//let { currentlySelectedDate = new Date(), dateSelected } = $props();
-
 	let days = $state([]);
 	let markedDays = {
 		'2024-12-25': { type: 'background', color: '#28a745' }, // green instead of red
 		'2024-12-31': { type: 'dot', color: '#28a745' } // green instead of blue
 	};
-	//let currentMonth = $state(currentlySelectedDate.getMonth());
-	//let currentYear = $state(currentlySelectedDate.getFullYear());
 
 	let animationDirection = $state(1); // swipe the dates left or right
 
@@ -67,7 +63,6 @@
 
 	const onDateClick = (date) => {
 		$selectedDate = date;
-		//dateSelected(date);
 	};
 
 	onMount(() => {

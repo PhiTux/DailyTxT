@@ -6,6 +6,7 @@
 	import axios from 'axios';
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
 
@@ -39,9 +40,16 @@
 		}
 	);
 
+	onMount(() => {
+		getLog();
+	});
+
+	let lastSelectedDate = $state($selectedDate);
+
 	$effect(() => {
-		if ($selectedDate) {
-			console.log('selectedDate changed');
+		if ($selectedDate !== lastSelectedDate) {
+			getLog();
+			lastSelectedDate = $selectedDate;
 		}
 	});
 
@@ -63,6 +71,32 @@
 		});
 	}
 
+	function getLog() {
+		if (savedLog !== currentLog) {
+			if (!saveLog()) {
+				return;
+			}
+		}
+
+		axios
+			.get(API_URL + '/logs/getLog', {
+				params: {
+					date: $selectedDate.toISOString()
+				}
+			})
+			.then((response) => {
+				currentLog = response.data.text;
+				savedLog = currentLog;
+				logDateWritten = response.data.date_written;
+			})
+			.catch((error) => {
+				console.error(error.response);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingLog'));
+				toast.show();
+			});
+	}
+
 	function saveLog() {
 		// axios to backend
 		let date_written = new Date().toLocaleString('de-DE', {
@@ -74,11 +108,9 @@
 			minute: '2-digit'
 		});
 
-		console.log(new Date($selectedDate).toISOString());
-
 		axios
 			.post(API_URL + '/logs/saveLog', {
-				date: new Date($selectedDate).toISOString(),
+				date: $selectedDate.toISOString(),
 				text: currentLog,
 				date_written: date_written
 			})
@@ -86,11 +118,13 @@
 				if (response.data.success) {
 					savedLog = currentLog;
 					logDateWritten = date_written;
+					return true;
 				} else {
 					// toast
 					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
 					toast.show();
 					console.error('Log not saved');
+					return false;
 				}
 			})
 			.catch((error) => {
@@ -98,6 +132,7 @@
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
 				toast.show();
 				console.error(error.response);
+				return false;
 			});
 	}
 </script>
@@ -132,7 +167,8 @@
 					{$selectedDate.toLocaleDateString('locale')}
 				</div>
 				<div class="flex-fill textAreaWrittenAt">
-					Geschrieben am:<br />
+					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+					<!-- <br /> -->
 					{logDateWritten}
 				</div>
 				<div class="textAreaHistory">history</div>
@@ -159,6 +195,18 @@
 		>
 			<div class="d-flex">
 				<div class="toast-body">Fehler beim Speichern des Textes!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorLoadingLog"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Laden des Textes!</div>
 			</div>
 		</div>
 	</div>
