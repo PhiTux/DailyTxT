@@ -43,8 +43,9 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
                 break
         
     # save new log
-    encrypted_text = security.encrypt_text(log.text, cookie["derived_key"])
-    encrypted_date_written = security.encrypt_text(log.date_written, cookie["derived_key"])
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    encrypted_text = security.encrypt_text(log.text, enc_key)
+    encrypted_date_written = security.encrypt_text(log.date_written, enc_key)
     
     if "days" not in content.keys():
         content["days"] = []
@@ -81,8 +82,9 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
     
     for dayLog in content["days"]:
         if dayLog["day"] == day:
-            text = security.decrypt_text(dayLog["text"], cookie["derived_key"])
-            date_written = security.decrypt_text(dayLog["date_written"], cookie["derived_key"])
+            enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+            text = security.decrypt_text(dayLog["text"], enc_key)
+            date_written = security.decrypt_text(dayLog["date_written"], enc_key)
             return {"text": text, "date_written": date_written}
 
     return {"text": "", "date_written": ""}
