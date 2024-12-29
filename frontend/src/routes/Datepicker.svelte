@@ -11,15 +11,26 @@
 
 	let animationDirection = $state(1); // swipe the dates left or right
 
+	let lastMonth = $cal.currentMonth;
+	let lastYear = $cal.currentYear;
+
 	$effect(() => {
-		if ($cal) {
+		if ($cal && ($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear)) {
+			// set animation direction
+			animationDirection = $cal.currentMonth > lastMonth ? 1 : -1;
+			if ($cal.currentYear > lastYear) {
+				animationDirection = 1;
+			} else if ($cal.currentYear < lastYear) {
+				animationDirection = -1;
+			}
+
 			days = updateCalendar();
+			lastMonth = $cal.currentMonth;
+			lastYear = $cal.currentYear;
 		}
 	});
 
 	const updateCalendar = () => {
-		console.log('updateCalendar');
-
 		const month = $cal.currentMonth;
 		const year = $cal.currentYear;
 		const firstDay = new Date(year, month, 1);
@@ -45,7 +56,6 @@
 	};
 
 	const changeMonth = (increment) => {
-		animationDirection = increment;
 		$cal.currentMonth += increment;
 		if ($cal.currentMonth < 0) {
 			$cal.currentMonth = 11;
@@ -54,13 +64,10 @@
 			$cal.currentMonth = 0;
 			changeYear(1);
 		}
-		days = updateCalendar();
 	};
 
 	const changeYear = (increment) => {
-		animationDirection = increment;
 		$cal.currentYear += increment;
-		days = updateCalendar();
 	};
 
 	const onDateClick = (date) => {
@@ -78,7 +85,6 @@
 	const onMonthSelect = (event) => {
 		animationDirection = months.indexOf(event.target.value) > $cal.currentMonth ? 1 : -1;
 		$cal.currentMonth = months.indexOf(event.target.value);
-		days = updateCalendar();
 	};
 
 	const onYearInput = (event) => {
@@ -86,7 +92,6 @@
 		const year = parseInt(event.target.value);
 		if (year && !isNaN(year) && year >= 1) {
 			$cal.currentYear = year;
-			days = updateCalendar();
 		}
 	};
 
@@ -156,7 +161,21 @@
 			</div>
 		{/key}
 	</div>
-	{$selectedDate}
+
+	<div class="row mb-2">
+		<div class="col-4"></div>
+		<div class="col-4">
+			<button
+				class="btn btn-primary"
+				onclick={() => {
+					$selectedDate = new Date();
+				}}>Heute</button
+			>
+		</div>
+		<div class="col-4">
+			<button class="btn btn-secondary"> Mark </button>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -189,7 +208,7 @@
 	.calendar-container {
 		position: relative;
 		overflow: hidden;
-		min-height: 320px;
+		min-height: 282px;
 	}
 	.datepicker-grid {
 		display: grid;

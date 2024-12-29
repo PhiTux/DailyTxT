@@ -2,7 +2,7 @@
 	import '../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
 	import Sidenav from './Sidenav.svelte';
-	import { selectedDate } from '$lib/calendarStore.js';
+	import { selectedDate, cal } from '$lib/calendarStore.js';
 	import axios from 'axios';
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -53,6 +53,8 @@
 			const result = await getLog();
 			if (result) {
 				lastSelectedDate = $selectedDate;
+				$cal.currentYear = $selectedDate.getFullYear();
+				$cal.currentMonth = $selectedDate.getMonth();
 			} else {
 				$selectedDate = lastSelectedDate;
 			}
