@@ -31,12 +31,12 @@ def get_enc_key(user_id: int, derived_key: str) -> bytes:
             key = user["enc_enc_key"]
     
             f = Fernet(base64.urlsafe_b64encode(base64.b64decode(derived_key)))
-            return f.decrypt(key)
+            return base64.urlsafe_b64encode(base64.urlsafe_b64decode(f.decrypt(key)))
 
 def encrypt_text(text: str, key: str) -> str:
-    f = Fernet(base64.urlsafe_b64encode(base64.urlsafe_b64decode(key)))
+    f = Fernet(key)
     return f.encrypt(text.encode()).decode()
 
 def decrypt_text(text: str, key: str) -> str:
-    f = Fernet(base64.urlsafe_b64encode(base64.urlsafe_b64decode(key)))
+    f = Fernet(key)
     return f.decrypt(text.encode()).decode()
