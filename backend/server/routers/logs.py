@@ -20,7 +20,6 @@ class Log(BaseModel):
 
 @router.post("/saveLog")
 async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
-    print(datetime.datetime.fromisoformat(log.date))
     year = datetime.datetime.fromisoformat(log.date).year
     month = datetime.datetime.fromisoformat(log.date).month
     day = datetime.datetime.fromisoformat(log.date).day

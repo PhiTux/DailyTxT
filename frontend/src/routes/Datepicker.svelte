@@ -18,6 +18,8 @@
 	});
 
 	const updateCalendar = () => {
+		console.log('updateCalendar');
+
 		const month = $cal.currentMonth;
 		const year = $cal.currentYear;
 		const firstDay = new Date(year, month, 1);
@@ -154,6 +156,7 @@
 			</div>
 		{/key}
 	</div>
+	{$selectedDate}
 </div>
 
 <style>

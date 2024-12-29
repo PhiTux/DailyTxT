@@ -7,6 +7,7 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	//import { selectedDate } from './calendar.svelte.js';
 
 	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
 
@@ -46,12 +47,45 @@
 
 	let lastSelectedDate = $state($selectedDate);
 
-	$effect(() => {
+	$effect(async () => {
 		if ($selectedDate !== lastSelectedDate) {
-			getLog();
-			lastSelectedDate = $selectedDate;
+			clearTimeout(timeout);
+			const result = await getLog();
+			if (result) {
+				lastSelectedDate = $selectedDate;
+			} else {
+				$selectedDate = lastSelectedDate;
+			}
 		}
 	});
+
+	let altPressed = false;
+	function on_key_down(event) {
+		if (event.key === 'Alt') {
+			event.preventDefault();
+			altPressed = true;
+		}
+		if (event.key === 'ArrowRight' && altPressed) {
+			event.preventDefault();
+			changeDay(+1);
+		} else if (event.key === 'ArrowLeft' && altPressed) {
+			event.preventDefault();
+			changeDay(-1);
+		}
+	}
+
+	function on_key_up(event) {
+		if (event.key === 'Alt') {
+			event.preventDefault();
+			altPressed = false;
+		}
+	}
+
+	function changeDay(increment) {
+		const newDate = new Date($selectedDate);
+		newDate.setDate(newDate.getDate() + increment);
+		$selectedDate = newDate;
+	}
 
 	let currentLog = $state('');
 	let savedLog = $state('');
@@ -71,33 +105,37 @@
 		});
 	}
 
-	function getLog() {
+	async function getLog() {
 		if (savedLog !== currentLog) {
-			if (!saveLog()) {
-				return;
+			const success = await saveLog();
+			if (!success) {
+				return false;
 			}
 		}
 
-		axios
-			.get(API_URL + '/logs/getLog', {
+		try {
+			const response = await axios.get(API_URL + '/logs/getLog', {
 				params: {
 					date: $selectedDate.toISOString()
 				}
-			})
-			.then((response) => {
-				currentLog = response.data.text;
-				savedLog = currentLog;
-				logDateWritten = response.data.date_written;
-			})
-			.catch((error) => {
-				console.error(error.response);
-				// toast
-				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingLog'));
-				toast.show();
 			});
+
+			currentLog = response.data.text;
+			savedLog = currentLog;
+			logDateWritten = response.data.date_written;
+
+			return true;
+		} catch (error) {
+			console.error(error.response);
+			// toast
+			const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingLog'));
+			toast.show();
+
+			return false;
+		}
 	}
 
-	function saveLog() {
+	async function saveLog() {
 		// axios to backend
 		let date_written = new Date().toLocaleString('de-DE', {
 			timeZone: 'Europe/Berlin',
@@ -108,34 +146,35 @@
 			minute: '2-digit'
 		});
 
-		axios
-			.post(API_URL + '/logs/saveLog', {
-				date: $selectedDate.toISOString(),
+		try {
+			const response = await axios.post(API_URL + '/logs/saveLog', {
+				date: lastSelectedDate.toISOString(),
 				text: currentLog,
 				date_written: date_written
-			})
-			.then((response) => {
-				if (response.data.success) {
-					savedLog = currentLog;
-					logDateWritten = date_written;
-					return true;
-				} else {
-					// toast
-					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
-					toast.show();
-					console.error('Log not saved');
-					return false;
-				}
-			})
-			.catch((error) => {
+			});
+
+			if (response.data.success) {
+				savedLog = currentLog;
+				logDateWritten = date_written;
+				return true;
+			} else {
 				// toast
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
 				toast.show();
-				console.error(error.response);
+				console.error('Log not saved');
 				return false;
-			});
+			}
+		} catch (error) {
+			// toast
+			const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
+			toast.show();
+			console.error(error.response);
+			return false;
+		}
 	}
 </script>
+
+<svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
 <!-- shown on small Screen, when triggered -->
 <div class="offcanvas-md d-md-none offcanvas-start p-3" id="sidenav" tabindex="-1">
@@ -180,6 +219,8 @@
 				class="form-control {currentLog !== savedLog ? 'notSaved' : ''}"
 				rows="10"
 			></textarea>
+			{$selectedDate}<br />
+			{lastSelectedDate}
 		</div>
 	</div>
 
