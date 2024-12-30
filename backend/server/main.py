@@ -15,6 +15,8 @@ app = FastAPI()
 origins = [
     "http://localhost:5173",
     "localhost:5173",
+    "http://192.168.1.35:5173",
+    "192.168.1.35:5173"
 ]
 
 app.add_middleware(
@@ -28,8 +30,5 @@ app.add_middleware(
 app.include_router(users.router, prefix="/users")
 app.include_router(logs.router, prefix="/logs")
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 logger.info("Server started")

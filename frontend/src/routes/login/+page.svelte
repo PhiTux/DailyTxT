@@ -19,7 +19,9 @@
 	let registration_failed_message = $state('');
 	let is_registering = $state(false);
 
-	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+	let API_URL = dev
+		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
+		: window.location.pathname.replace(/\/+$/, '');
 
 	onMount(() => {
 		// if params error=440 or error=401, show toast

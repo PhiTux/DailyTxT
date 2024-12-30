@@ -39,7 +39,7 @@ async def login(login: Login, response: Response):
     
     # build jwt
     token = create_jwt(user["user_id"], user["username"], derived_key)
-    response.set_cookie(key="token", value=token, httponly=True)
+    response.set_cookie(key="token", value=token, httponly=True, samesite="lax")
     return {"username": user["username"]}
 
 def create_jwt(user_id, username, derived_key):

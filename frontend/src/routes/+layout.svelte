@@ -9,7 +9,9 @@
 	let inDuration = 150;
 	let outDuration = 150;
 
-	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+	let API_URL = dev
+		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
+		: window.location.pathname.replace(/\/+$/, '');
 
 	function logout() {
 		axios

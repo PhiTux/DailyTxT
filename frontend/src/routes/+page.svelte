@@ -9,7 +9,9 @@
 	import { onMount } from 'svelte';
 	//import { selectedDate } from './calendar.svelte.js';
 
-	let API_URL = dev ? 'http://localhost:8000' : window.location.pathname.replace(/\/+$/, '');
+	let API_URL = dev
+		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
+		: window.location.pathname.replace(/\/+$/, '');
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
