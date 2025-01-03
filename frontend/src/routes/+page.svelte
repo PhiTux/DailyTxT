@@ -7,7 +7,7 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	//import { selectedDate } from './calendar.svelte.js';
+	import { searchString, searchResults } from '$lib/searchStore.js';
 
 	let API_URL = dev
 		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
@@ -176,6 +176,42 @@
 			return false;
 		}
 	}
+
+	$effect(() => {
+		if ($searchString === '') {
+			$searchResults = [];
+		}
+	});
+
+	let isSearching = $state(false);
+	function search() {
+		console.log($searchString);
+
+		if (isSearching) {
+			return;
+		}
+		isSearching = true;
+
+		axios
+			.get(API_URL + '/logs/search', {
+				params: {
+					searchString: $searchString
+				}
+			})
+			.then((response) => {
+				$searchResults = [...response.data];
+				isSearching = false;
+			})
+			.catch((error) => {
+				$searchResults = [];
+				console.error(error);
+				isSearching = false;
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
+				toast.show();
+			});
+	}
 </script>
 
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
@@ -191,13 +227,13 @@
 			aria-label="Close"
 		></button>
 	</div>
-	<Sidenav />
+	<Sidenav {search} />
 </div>
 
-<div class="d-flex flex-row justify-content-between">
+<div class="d-flex flex-row justify-content-between h-100">
 	<!-- shown on large Screen -->
 	<div class="d-md-block d-none sidenav p-3">
-		<Sidenav />
+		<Sidenav {search} />
 	</div>
 
 	<!-- Center -->
@@ -207,11 +243,14 @@
 			<div class="d-flex flex-row textAreaHeader">
 				<div class="flex-fill textAreaDate">
 					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-					{$selectedDate.toLocaleDateString('locale')}
+					{$selectedDate.toLocaleDateString('locale', {
+						day: '2-digit',
+						month: '2-digit',
+						year: 'numeric'
+					})}
 				</div>
 				<div class="flex-fill textAreaWrittenAt">
 					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
-					<!-- <br /> -->
 					{logDateWritten}
 				</div>
 				<div class="textAreaHistory">history</div>
@@ -254,10 +293,26 @@
 				<div class="toast-body">Fehler beim Laden des Textes!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastErrorSearching"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Suchen!</div>
+			</div>
+		</div>
 	</div>
 </div>
 
 <style>
+	.sidenav {
+		max-width: 430px;
+	}
+
 	.textAreaHeader {
 		border-left: 1px solid #ccc;
 		border-top: 1px solid #ccc;

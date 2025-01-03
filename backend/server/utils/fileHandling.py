@@ -62,3 +62,13 @@ def writeDay(user_id, year, month, content):
         with f:
             f.write(json.dumps(content, indent=4))
             return True
+        
+def get_years(user_id):
+    for entry in os.scandir(os.path.join(settings.data_path, str(user_id))):
+        if entry.is_dir() and entry.name.isnumeric() and len(entry.name) == 4:
+            yield entry.name
+
+def get_months(user_id, year):
+    for entry in os.scandir(os.path.join(settings.data_path, str(user_id), year)):
+        if entry.is_file() and entry.name.endswith(".json"):
+            yield entry.name.split(".")[0]

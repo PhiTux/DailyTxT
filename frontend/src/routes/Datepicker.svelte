@@ -193,7 +193,7 @@
 		font-family: Arial, sans-serif;
 		border: 1px solid #ccc;
 		border-radius: 8px;
-		overflow: hidden;
+		/* overflow: hidden; */
 		width: 300px;
 		box-sizing: border-box;
 	}

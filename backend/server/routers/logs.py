@@ -1,5 +1,6 @@
 import datetime
 import logging
+import re
 from fastapi import APIRouter, Cookie
 from pydantic import BaseModel
 from fastapi import Depends
@@ -87,3 +88,99 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
             return {"text": text, "date_written": date_written}
 
     return {"text": "", "date_written": ""}
+
+def get_start_index(text, index):
+    # find a whitespace two places before the index
+    
+    if index == 0:
+        return 0
+    
+    for i in range(3):
+        startIndex = text.rfind(" ", 0, index-1)
+        index = startIndex
+        if startIndex == -1:
+            return 0
+
+    return startIndex + 1
+
+def get_end_index(text, index):
+    # find a whitespace two places after the index
+    
+    if index == len(text) - 1:
+        return len(text)
+    
+    for i in range(3):
+        endIndex = text.find(" ", index+1)
+        index = endIndex
+        if endIndex == -1:
+            return len(text)
+
+    return endIndex
+
+
+def get_context(text: str, searchString: str, exact: bool):
+    # replace whitespace with non-breaking space
+    text = re.sub(r'\s+', " ", text)
+
+    if exact:
+        pos = text.find(searchString)
+    else:
+        pos = text.lower().find(searchString.lower())
+    if pos == -1:
+        return "<em>Dailytxt: Error formatting...</em>"
+
+    start = get_start_index(text, pos)
+    end = get_end_index(text, pos + len(searchString) - 1)
+    return text[start:pos] + "<b>" + text[pos:pos+len(searchString)] + "</b>" + text[pos+len(searchString):end]
+
+
+@router.get("/search")
+async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
+    results = []
+    
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    # search in all years and months (dirs)
+    for year in fileHandling.get_years(cookie["user_id"]):
+        for month in fileHandling.get_months(cookie["user_id"], year):
+            content:dict = fileHandling.getDay(cookie["user_id"], year, int(month))
+            if "days" not in content.keys():
+                continue
+            for dayLog in content["days"]:
+                text = security.decrypt_text(dayLog["text"], enc_key)
+                
+                # "..." -> exact
+                # ... | ... -> or
+                # ...  ... -> and
+
+                if searchString.startswith('"') and searchString.endswith('"'):
+                    if searchString[1:-1] in text:
+                        context = get_context(text, searchString[1:-1], True)
+                        results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                        
+                
+                elif "|" in searchString:
+                    words = searchString.split("|")
+                    for word in words:
+                        if word.strip().lower() in text.lower():
+                            context = get_context(text, word.strip(), False)
+                            results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                            break
+                            
+
+                elif " " in searchString:
+                    if all([word.strip().lower() in text.lower() for word in searchString.split()]):
+                        context = get_context(text, searchString.split()[0].strip(), False)
+                        results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                        
+                
+                else:
+                    if searchString.lower() in text.lower():
+                        context = get_context(text, searchString, False)
+                        results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                        
+        
+    # sort by year and month and day
+    results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=True)
+    print(results)
+    return results
