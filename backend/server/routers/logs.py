@@ -184,3 +184,20 @@ async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
     results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=True)
     print(results)
     return results
+
+@router.get("/getMarkedDays")
+async def getMarkedDays(month: str, year: str, cookie = Depends(users.isLoggedIn)):
+    days_with_logs = []
+    days_with_files = []
+
+    content:dict = fileHandling.getDay(cookie["user_id"], year, int(month))
+    if "days" not in content.keys():
+        return {"days_with_logs": [], "days_with_files": []}
+
+    for dayLog in content["days"]:
+        if "text" in dayLog.keys():
+            days_with_logs.append(dayLog["day"])
+        if "files" in dayLog.keys() and len(dayLog["files"]) > 0:
+            days_with_files.append(dayLog["day"])
+    
+    return {"days_with_logs": days_with_logs, "days_with_files": days_with_files}

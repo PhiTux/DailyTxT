@@ -49,10 +49,14 @@
 
 	let lastSelectedDate = $state($selectedDate);
 
-	$effect(async () => {
+	let loading = false;
+	$effect(() => {
+		if (loading) return;
+		loading = true;
+
 		if ($selectedDate !== lastSelectedDate) {
 			clearTimeout(timeout);
-			const result = await getLog();
+			const result = getLog();
 			if (result) {
 				lastSelectedDate = $selectedDate;
 				$cal.currentYear = $selectedDate.getFullYear();
@@ -61,7 +65,48 @@
 				$selectedDate = lastSelectedDate;
 			}
 		}
+		loading = false;
 	});
+
+	$effect(() => {
+		if ($cal.currentMonth || $cal.currentYear) {
+			loadMarkedDays();
+		}
+	});
+
+	let lastMonth = $cal.currentMonth;
+	let lastYear = $cal.currentYear;
+	let isLoadingMarkedDays = false;
+	function loadMarkedDays() {
+		if ($cal.currentMonth === lastMonth && $cal.currentYear === lastYear) {
+			return;
+		}
+
+		if (isLoadingMarkedDays) {
+			return;
+		}
+		isLoadingMarkedDays = true;
+
+		axios
+			.get(API_URL + '/logs/getMarkedDays', {
+				params: {
+					month: $cal.currentMonth + 1,
+					year: $cal.currentYear
+				}
+			})
+			.then((response) => {
+				$cal.daysWithLogs = [...response.data.days_with_logs];
+				$cal.daysWithFiles = [...response.data.days_with_files];
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				lastMonth = $cal.currentMonth;
+				lastYear = $cal.currentYear;
+				isLoadingMarkedDays = false;
+			});
+	}
 
 	let altPressed = false;
 	function on_key_down(event) {
@@ -150,6 +195,7 @@
 			minute: '2-digit'
 		});
 
+		let dateOfSave = lastSelectedDate;
 		try {
 			const response = await axios.post(API_URL + '/logs/saveLog', {
 				date: lastSelectedDate.toISOString(),
@@ -160,6 +206,12 @@
 			if (response.data.success) {
 				savedLog = currentLog;
 				logDateWritten = date_written;
+
+				// add to $cal.daysWithLogs
+				if (!$cal.daysWithLogs.includes(lastSelectedDate.getDate())) {
+					$cal.daysWithLogs = [...$cal.daysWithLogs, dateOfSave.getDate()];
+				}
+
 				return true;
 			} else {
 				// toast
@@ -172,7 +224,7 @@
 			// toast
 			const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingLog'));
 			toast.show();
-			console.error(error.response);
+			console.error(error);
 			return false;
 		}
 	}
@@ -310,7 +362,8 @@
 
 <style>
 	.sidenav {
-		max-width: 430px;
+		/* max-width: 430px; */
+		width: 380px;
 	}
 
 	.textAreaHeader {

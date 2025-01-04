@@ -56,6 +56,8 @@
 	};
 
 	const changeMonth = (increment) => {
+		$cal.daysWithLogs = [];
+		$cal.daysWithFiles = [];
 		$cal.currentMonth += increment;
 		if ($cal.currentMonth < 0) {
 			$cal.currentMonth = 11;
@@ -146,10 +148,9 @@
 							in:fly={{ y: 100, duration: 200 }}
 							out:fly={{ y: -100, duration: 200 }}
 							class="day
-								{day.mark?.type === 'background' ? 'mark-background' : ''} 
+								{$cal.daysWithLogs.includes(day.date.getDate()) ? 'mark-background' : ''} 
 								{day.mark?.type === 'dot' ? 'mark-dot' : ''} 
 								{$selectedDate.toDateString() === day.date.toDateString() ? 'selected' : ''}"
-							style="--color: {day.mark?.color || 'transparent'}"
 							onclick={() => onDateClick(day.date)}
 						>
 							{day.date.getDate()}
@@ -194,7 +195,7 @@
 		border: 1px solid #ccc;
 		border-radius: 8px;
 		/* overflow: hidden; */
-		width: 300px;
+		/* width: 300px; */
 		box-sizing: border-box;
 	}
 	.datepicker-header {
@@ -246,7 +247,7 @@
 		background: #f0f0f0;
 	}
 	.day.mark-background {
-		background-color: var(--color);
+		background-color: #00ad00;
 		color: white;
 		aspect-ratio: 1;
 	}
@@ -309,12 +310,6 @@
 
 	.day.selected:hover {
 		background-color: #0056b3;
-	}
-
-	/* Ensure selected state takes precedence */
-	.day.mark-background:not(.selected) {
-		background-color: var(--color);
-		color: white;
 	}
 
 	.day.mark-dot:not(.selected)::after {
