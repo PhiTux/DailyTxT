@@ -4,6 +4,8 @@
 	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import '../scss/styles.scss';
+	import * as bootstrap from 'bootstrap';
 
 	export let data;
 	let inDuration = 150;
@@ -24,6 +26,22 @@
 				console.error(error);
 			});
 	}
+
+	onMount(() => {
+		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
+			const height = document.getElementById('modal-body').clientHeight;
+			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
+			document.getElementById('settings-nav').style.height = 'calc(' + height + 'px - 2rem)';
+			document.getElementById('settings-content').style.overflowY = 'auto';
+
+			setTimeout(() => {
+				const dataSpyList = document.querySelectorAll('[data-bs-spy="scroll"]');
+				dataSpyList.forEach((dataSpyEl) => {
+					bootstrap.ScrollSpy.getInstance(dataSpyEl).refresh();
+				});
+			}, 100);
+		});
+	});
 </script>
 
 <main class="d-flex flex-column">
@@ -38,20 +56,13 @@
 			>
 			<a class="nav-item" href="/">Navbar</a>
 			<a class="nav-item" href="/login">Navbar</a>
-			<div class="dropdown">
-				<button
-					class="btn btn-outline-secondary dropdown-toggle"
-					type="button"
-					data-bs-toggle="dropdown"
-					aria-expanded="false"
-				>
-					Dropdown button
-				</button>
-				<ul class="dropdown-menu dropdown-menu-end">
-					<li><a class="dropdown-item" href="/settings">Settings</a></li>
-					<li><button class="dropdown-item" onclick={logout}>Logout</button></li>
-				</ul>
-			</div>
+
+			<button
+				class="btn btn-outline-secondary"
+				data-bs-toggle="modal"
+				data-bs-target="#settingsModal">Settings</button
+			>
+			<button class="btn btn-outline-secondary" onclick={logout}>Logout</button>
 		</div>
 	</nav>
 
@@ -66,12 +77,139 @@
 			</div>
 		{/key}
 	</div>
+
+	<!-- Full screen modal -->
+	<div class="modal fade" data-bs-backdrop="static" id="settingsModal">
+		<div
+			class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-sm-down"
+		>
+			<!--  -->
+			<div class="modal-content shadow-lg">
+				<div class="modal-header">
+					<h1>Settings</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body" id="modal-body">
+					<div class="row">
+						<div class="col-4 overflow-y-auto">
+							<nav class="flex-column align-items-stretch" id="settings-nav">
+								<nav class="nav nav-pills flex-column">
+									<a class="nav-link mb-1" href="#functions">Funktionen</a>
+									<nav class="nav nav-pills flex-column">
+										<a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
+										<a href="#language" class="ms-3 mb-1 nav-link">Sprache</a>
+										<a href="#timezone" class="ms-3 mb-1 nav-link">Zeitzone</a>
+										<a href="#onthisday" class="ms-3 mb-1 nav-link">An diesem Tag</a>
+										<a href="#loginonreload" class="ms-3 mb-1 nav-link">Login bei Reload</a>
+									</nav>
+									<a class="nav-link mb-1" href="#tags">Tags</a>
+									<a class="nav-link mb-1" href="#templates">Vorlagen</a>
+									<a class="nav-link mb-1" href="#data">Daten</a>
+									<nav class="nav nav-pills flex-column">
+										<a href="#export" class="ms-3 nav-link mb-1">Export</a>
+										<a href="#import" class="ms-3 nav-link mb-1">Import</a>
+									</nav>
+									<a class="nav-link mb-1" href="#account">Account</a>
+									<nav class="nav nav-pills flex-column">
+										<a href="#password" class="ms-3 mb-1 nav-link">Password ändern</a>
+										<a href="#backupkeys" class="ms-3 mb-1 nav-link">Backup-Keys</a>
+										<a href="#username" class="ms-3 mb-1 nav-link">Username ändern</a>
+										<a href="#deleteaccount" class="ms-3 mb-1 nav-link">Konto löschen</a>
+									</nav>
+								</nav>
+							</nav>
+						</div>
+						<div class="col-8">
+							<div
+								class="settings-content overflow-y-auto"
+								data-bs-spy="scroll"
+								data-bs-target="#settings-nav"
+								data-bs-smooth-scroll="true"
+								id="settings-content"
+							>
+								<div id="functions"><h4>Funktionen</h4></div>
+								<div id="lightdark">
+									<h5>Light/Dark-Mode</h5>
+									Bla<br />
+									blub <br />
+									bla <br />
+									blub <br />
+								</div>
+								<div id="language">
+									<h5>Sprache</h5>
+									Bla<br />
+									blub <br />
+									bla <br />
+									blub <br />
+								</div>
+								<div id="timezone">
+									<h5>Zeitzone</h5>
+									Bla<br />
+									blub <br />
+									bla <br />
+									blub <br />
+								</div>
+								<div id="onthisday">
+									<h5>An diesem Tag</h5>
+									Bla<br />
+									blub <br />
+									bla <br />
+									blub <br />
+								</div>
+								<div id="loginonreload">
+									<h5>Login bei Reload</h5>
+									Bla<br />
+									blub <br />
+									bla <br />
+									blub <br />
+								</div>
+
+								<div id="tags"><h4>Tags</h4></div>
+
+								<div id="templates"><h4>Vorlagen</h4></div>
+
+								<div id="data"><h4>Daten</h4></div>
+								<div id="export"><h5>Export</h5></div>
+								<div id="import"><h5>Import</h5></div>
+
+								<div id="account"><h4>Account</h4></div>
+								<div id="password"><h5>Password ändern</h5></div>
+								<div id="backupkeys"><h5>Backup-Keys</h5></div>
+								<div id="username"><h5>Username ändern</h5></div>
+								<div id="deleteaccount"><h5>Konto löschen</h5></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </main>
 
-<!-- in:crossfade={{ duration: inDuration, delay: outDuration }}
-				out:crossfade={{ duration: outDuration }} -->
-
 <style>
+	.modal-body {
+		overflow-y: hidden;
+	}
+
+	.modal-content {
+		backdrop-filter: blur(5px) saturate(150%);
+		/* background-color: rgba(43, 56, 78, 0.75); */
+		background-color: rgba(136, 143, 155, 0.75);
+		/* color: rgb(22, 22, 22); */
+	}
+
+	.modal-header {
+		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.modal-footer {
+		border-top: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
 	main {
 		height: 100vh;
 	}
