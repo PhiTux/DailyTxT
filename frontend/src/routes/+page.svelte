@@ -8,6 +8,8 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
+	import * as TinyMDE from 'tiny-markdown-editor';
+	import '../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 
 	let API_URL = dev
 		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
@@ -43,8 +45,27 @@
 		}
 	);
 
+	let tinyMDE;
 	onMount(() => {
+		tinyMDE = new TinyMDE.Editor({ element: 'editor', content: '' });
+		let commandBar = new TinyMDE.CommandBar({ element: 'toolbar', editor: tinyMDE });
+		document.getElementsByClassName('TinyMDE')[0].classList.add('focus-ring');
+
+		tinyMDE.addEventListener('change', (event) => {
+			currentLog = event.content;
+			handleInput();
+		});
+
 		getLog();
+		loadMarkedDays();
+	});
+
+	$effect(() => {
+		if (currentLog !== savedLog) {
+			document.getElementsByClassName('TinyMDE')[0].classList.add('notSaved');
+		} else {
+			document.getElementsByClassName('TinyMDE')[0].classList.remove('notSaved');
+		}
 	});
 
 	let lastSelectedDate = $state($selectedDate);
@@ -74,7 +95,7 @@
 		}
 	});
 
-	let lastMonth = $cal.currentMonth;
+	let lastMonth = $cal.currentMonth - 1;
 	let lastYear = $cal.currentYear;
 	let isLoadingMarkedDays = false;
 	function loadMarkedDays() {
@@ -171,6 +192,10 @@
 
 			currentLog = response.data.text;
 			savedLog = currentLog;
+
+			tinyMDE.setContent(currentLog);
+			tinyMDE.setSelection({ row: 0, col: 0 });
+
 			logDateWritten = response.data.date_written;
 
 			return true;
@@ -185,6 +210,10 @@
 	}
 
 	async function saveLog() {
+		if (currentLog === savedLog) {
+			return true;
+		}
+
 		// axios to backend
 		let date_written = new Date().toLocaleString('de-DE', {
 			timeZone: 'Europe/Berlin',
@@ -308,12 +337,16 @@
 				<div class="textAreaHistory">history</div>
 				<div class="textAreaDelete">delete</div>
 			</div>
-			<textarea
+			<!-- <textarea
 				bind:value={currentLog}
 				oninput={handleInput}
 				class="form-control {currentLog !== savedLog ? 'notSaved' : ''}"
 				rows="10"
-			></textarea>
+			></textarea> -->
+			<div id="log" class="focus-ring">
+				<div id="toolbar"></div>
+				<div id="editor"></div>
+			</div>
 			{$selectedDate}<br />
 			{lastSelectedDate}
 		</div>
@@ -361,6 +394,38 @@
 </div>
 
 <style>
+	:global(.TMCommandBar) {
+		border-top: 1px solid #ccc;
+		border-left: 1px solid #ccc;
+		border-right: 1px solid #ccc;
+	}
+
+	#editor {
+		height: 400px;
+	}
+
+	:global(.TinyMDE) {
+		border: 1px solid lightgreen;
+
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+		overflow-y: auto;
+
+		transition: all ease 0.2s;
+	}
+
+	:global(.TinyMDE:focus:not(.notSaved)) {
+		box-shadow: 0 0 0 0.25rem #90ee9070;
+	}
+
+	:global(.TinyMDE:focus.notSaved) {
+		box-shadow: 0 0 0 0.25rem #f57c0030;
+	}
+
+	:global(.TinyMDE.notSaved) {
+		border-color: #f57c00;
+	}
+
 	.sidenav {
 		/* max-width: 430px; */
 		width: 380px;
@@ -386,11 +451,11 @@
 		/* border-color: #ff9800; */
 	}
 
-	textarea:focus.notSaved {
+	#log:focus.notSaved {
 		box-shadow: 0 0 0 0.25rem #f57c0030;
 	}
 
-	textarea:focus:not(.notSaved) {
+	#log div:focus:not(.notSaved) {
 		border-color: #90ee90;
 		box-shadow: 0 0 0 0.25rem #90ee9070;
 	}
