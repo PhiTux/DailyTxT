@@ -6,8 +6,18 @@
 	import { onMount } from 'svelte';
 	import '../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
+	import Fa from 'svelte-fa';
+	import { readingMode } from '$lib/settingsStore.js';
+	import { page } from '$app/state';
 
-	export let data;
+	import {
+		faRightFromBracket,
+		faGlasses,
+		faPencil,
+		faSliders
+	} from '@fortawesome/free-solid-svg-icons';
+
+	let { children } = $props();
 	let inDuration = 150;
 	let outDuration = 150;
 
@@ -39,41 +49,65 @@
 				dataSpyList.forEach((dataSpyEl) => {
 					bootstrap.ScrollSpy.getInstance(dataSpyEl).refresh();
 				});
-			}, 100);
+			}, 200);
 		});
 	});
 </script>
 
 <main class="d-flex flex-column">
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
-		<div class="container-fluid">
-			<button
-				class="btn d-md-none"
-				type="button"
-				data-bs-toggle="offcanvas"
-				data-bs-target="#sidenav"
-				aria-controls="sidenav">menü</button
-			>
-			<a class="nav-item" href="/">Navbar</a>
-			<a class="nav-item" href="/login">Navbar</a>
+		<div class="row w-100">
+			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start">
+				<button
+					class="btn d-md-none"
+					type="button"
+					data-bs-toggle="offcanvas"
+					data-bs-target="#sidenav"
+					aria-controls="sidenav">menü</button
+				>
 
-			<button
-				class="btn btn-outline-secondary"
-				data-bs-toggle="modal"
-				data-bs-target="#settingsModal">Settings</button
-			>
-			<button class="btn btn-outline-secondary" onclick={logout}>Logout</button>
+				<div class="form-check form-switch d-flex flex-row">
+					<label class="me-3" for="flexSwitchCheckDefault"><Fa icon={faPencil} size="1.5x" /></label
+					>
+					<div class="form-check form-switch">
+						<input
+							class="form-check-input"
+							bind:checked={$readingMode}
+							type="checkbox"
+							role="switch"
+							id="flexSwitchCheckDefault"
+							style="transform: scale(1.3);"
+						/>
+					</div>
+					<label class="ms-2" for="flexSwitchCheckDefault"
+						><Fa icon={faGlasses} size="1.5x" /></label
+					>
+				</div>
+			</div>
+
+			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center">Center-LOGO</div>
+
+			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-end">
+				<button
+					class="btn btn-outline-secondary"
+					data-bs-toggle="modal"
+					data-bs-target="#settingsModal"><Fa icon={faSliders} /></button
+				>
+				<button class="btn btn-outline-secondary" onclick={logout}
+					><Fa icon={faRightFromBracket} /></button
+				>
+			</div>
 		</div>
 	</nav>
 
 	<div class="wrapper h-100">
-		{#key data.pathname}
+		{#key page.data}
 			<div
 				class="transition-wrapper h-100"
 				out:blur={{ duration: outDuration }}
 				in:blur={{ duration: inDuration, delay: outDuration }}
 			>
-				<slot />
+				{@render children()}
 			</div>
 		{/key}
 	</div>

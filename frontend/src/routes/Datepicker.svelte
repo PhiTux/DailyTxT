@@ -165,7 +165,7 @@
 
 	<div class="row mb-2">
 		<div class="col-4"></div>
-		<div class="col-4">
+		<div class="col-4 d-flex justify-content-center">
 			<button
 				class="btn btn-primary"
 				onclick={() => {
@@ -173,8 +173,8 @@
 				}}>Heute</button
 			>
 		</div>
-		<div class="col-4">
-			<button class="btn btn-secondary"> Mark </button>
+		<div class="col-4 d-flex justify-content-end">
+			<button class="btn btn-secondary me-2"> Mark </button>
 		</div>
 	</div>
 </div>
