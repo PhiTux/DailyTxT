@@ -13,7 +13,7 @@
 	import { readingMode } from '$lib/settingsStore';
 	//import { read } from '$app/server';
 	import { API_URL } from '$lib/APIurl.js';
-	import DatepickerLogic from '$lib/datepickerLogic.svelte';
+	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
 
 	/*let API_URL = dev
 		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
@@ -256,32 +256,6 @@
 				toast.show();
 			});
 	}
-
-	//#TODO Muss in die separate /read page (diese hier in /write umbenennen)
-	let isLoadingMonthForReading = false;
-	function loadMonthForReading() {
-		if (isLoadingMonthForReading) {
-			return;
-		}
-		isLoadingMonthForReading = true;
-
-		axios
-			.get(API_URL + '/logs/loadMonthForReading', {
-				params: {
-					month: $cal.currentMonth + 1,
-					year: $cal.currentYear
-				}
-			})
-			.then((response) => {
-				readingData = response.data;
-			})
-			.catch((error) => {
-				console.error(error);
-			})
-			.finally(() => {
-				isLoadingMonthForReading = false;
-			});
-	}
 </script>
 
 <DatepickerLogic />
@@ -307,55 +281,36 @@
 		<Sidenav {search} />
 	</div>
 
-	{#if !$readingMode}
-		<!-- Center -->
-		<div class="d-flex flex-column mt-4 mx-4 flex-fill">
-			<!-- Input-Area -->
-			<div class="d-flex flex-column">
-				<div class="d-flex flex-row textAreaHeader">
-					<div class="flex-fill textAreaDate">
-						{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-						{$selectedDate.toLocaleDateString('locale', {
-							day: '2-digit',
-							month: '2-digit',
-							year: 'numeric'
-						})}
-					</div>
-					<div class="flex-fill textAreaWrittenAt">
-						<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
-						{logDateWritten}
-					</div>
-					<div class="textAreaHistory">history</div>
-					<div class="textAreaDelete">delete</div>
+	<!-- Center -->
+	<div class="d-flex flex-column mt-4 mx-4 flex-fill">
+		<!-- Input-Area -->
+		<div class="d-flex flex-column">
+			<div class="d-flex flex-row textAreaHeader">
+				<div class="flex-fill textAreaDate">
+					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
+					{$selectedDate.toLocaleDateString('locale', {
+						day: '2-digit',
+						month: '2-digit',
+						year: 'numeric'
+					})}
 				</div>
-				<!-- <textarea
-				bind:value={currentLog}
-				oninput={handleInput}
-				class="form-control {currentLog !== savedLog ? 'notSaved' : ''}"
-				rows="10"
-			></textarea> -->
-				<div id="log" class="focus-ring">
-					<div id="toolbar"></div>
-					<div id="editor"></div>
+				<div class="flex-fill textAreaWrittenAt">
+					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+					{logDateWritten}
 				</div>
-				{$selectedDate}<br />
-				{lastSelectedDate}
+				<div class="textAreaHistory">history</div>
+				<div class="textAreaDelete">delete</div>
 			</div>
+			<div id="log" class="focus-ring">
+				<div id="toolbar"></div>
+				<div id="editor"></div>
+			</div>
+			{$selectedDate}<br />
+			{lastSelectedDate}
 		</div>
+	</div>
 
-		<div id="right">Right</div>
-	{:else}
-		<div class="w-100">
-			{#each readingData as log}
-				<div class="card">
-					<div class="card-header">{log.day} | {log.date_written}</div>
-					<div class="card-body">
-						{@html log.text}
-					</div>
-				</div>
-			{/each}
-		</div>
-	{/if}
+	<div id="right">Right</div>
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div

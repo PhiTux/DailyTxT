@@ -13,7 +13,6 @@
 	let lastYear = $cal.currentYear;
 	let isLoadingMarkedDays = false;
 	function loadMarkedDays() {
-		console.log('a');
 		if ($cal.currentMonth === lastMonth && $cal.currentYear === lastYear) {
 			return;
 		}
@@ -21,7 +20,6 @@
 		if (isLoadingMarkedDays) {
 			return;
 		}
-		console.log('b');
 		isLoadingMarkedDays = true;
 
 		axios
@@ -42,7 +40,6 @@
 				lastMonth = $cal.currentMonth;
 				lastYear = $cal.currentYear;
 				isLoadingMarkedDays = false;
-				console.log('c');
 			});
 	}
 </script>

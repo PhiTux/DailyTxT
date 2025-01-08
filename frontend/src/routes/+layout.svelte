@@ -22,9 +22,13 @@
 	let inDuration = 150;
 	let outDuration = 150;
 
-	/*let API_URL = dev
-		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
-		: window.location.pathname.replace(/\/+$/, '');*/
+	$effect(() => {
+		if ($readingMode) {
+			goto('/read');
+		} else {
+			goto('/write');
+		}
+	});
 
 	function logout() {
 		axios
