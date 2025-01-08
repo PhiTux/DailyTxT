@@ -1,7 +1,7 @@
 <script>
 	import { fade, blur, slide } from 'svelte/transition';
 	import axios from 'axios';
-	import { dev } from '$app/environment';
+	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../scss/styles.scss';
@@ -9,6 +9,7 @@
 	import Fa from 'svelte-fa';
 	import { readingMode } from '$lib/settingsStore.js';
 	import { page } from '$app/state';
+	import { API_URL } from '$lib/APIurl.js';
 
 	import {
 		faRightFromBracket,
@@ -21,9 +22,9 @@
 	let inDuration = 150;
 	let outDuration = 150;
 
-	let API_URL = dev
+	/*let API_URL = dev
 		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
-		: window.location.pathname.replace(/\/+$/, '');
+		: window.location.pathname.replace(/\/+$/, '');*/
 
 	function logout() {
 		axios
@@ -57,7 +58,7 @@
 <main class="d-flex flex-column">
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
 		<div class="row w-100">
-			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start">
+			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start align-items-center">
 				<button
 					class="btn d-md-none"
 					type="button"
@@ -85,11 +86,13 @@
 				</div>
 			</div>
 
-			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center">Center-LOGO</div>
+			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
+				Center-LOGO
+			</div>
 
-			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-end">
+			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
 				<button
-					class="btn btn-outline-secondary"
+					class="btn btn-outline-secondary me-2"
 					data-bs-toggle="modal"
 					data-bs-target="#settingsModal"><Fa icon={faSliders} /></button
 				>

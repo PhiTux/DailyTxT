@@ -3,9 +3,8 @@
 	import * as bootstrap from 'bootstrap';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
-	import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { API_URL } from '$lib/APIurl.js';
 
 	let show_login_failed = $state(false);
 	let show_login_warning_empty_fields = $state(false);
@@ -18,10 +17,6 @@
 	let show_registration_failed_with_message = $state(false);
 	let registration_failed_message = $state('');
 	let is_registering = $state(false);
-
-	let API_URL = dev
-		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
-		: window.location.pathname.replace(/\/+$/, '');
 
 	onMount(() => {
 		// if params error=440 or error=401, show toast
@@ -55,7 +50,7 @@
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
 				localStorage.setItem('user', JSON.stringify(response.data.username));
-				goto('/');
+				goto('/write');
 			})
 			.catch((error) => {
 				if (error.response.status === 404) {

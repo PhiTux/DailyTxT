@@ -1,19 +1,23 @@
 <script>
-	import '../scss/styles.scss';
+	import '../../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
-	import Sidenav from './Sidenav.svelte';
+	import Sidenav from '$lib/Sidenav.svelte';
 	import { selectedDate, cal } from '$lib/calendarStore.js';
 	import axios from 'axios';
-	import { dev } from '$app/environment';
+	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
-	import '../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
+	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
+	import { readingMode } from '$lib/settingsStore';
+	//import { read } from '$app/server';
+	import { API_URL } from '$lib/APIurl.js';
+	import DatepickerLogic from '$lib/datepickerLogic.svelte';
 
-	let API_URL = dev
+	/*let API_URL = dev
 		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
-		: window.location.pathname.replace(/\/+$/, '');
+		: window.location.pathname.replace(/\/+$/, '');*/
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -57,7 +61,6 @@
 		});
 
 		getLog();
-		loadMarkedDays();
 	});
 
 	$effect(() => {
@@ -88,46 +91,6 @@
 		}
 		loading = false;
 	});
-
-	$effect(() => {
-		if ($cal.currentMonth || $cal.currentYear) {
-			loadMarkedDays();
-		}
-	});
-
-	let lastMonth = $cal.currentMonth - 1;
-	let lastYear = $cal.currentYear;
-	let isLoadingMarkedDays = false;
-	function loadMarkedDays() {
-		if ($cal.currentMonth === lastMonth && $cal.currentYear === lastYear) {
-			return;
-		}
-
-		if (isLoadingMarkedDays) {
-			return;
-		}
-		isLoadingMarkedDays = true;
-
-		axios
-			.get(API_URL + '/logs/getMarkedDays', {
-				params: {
-					month: $cal.currentMonth + 1,
-					year: $cal.currentYear
-				}
-			})
-			.then((response) => {
-				$cal.daysWithLogs = [...response.data.days_with_logs];
-				$cal.daysWithFiles = [...response.data.days_with_files];
-			})
-			.catch((error) => {
-				console.error(error);
-			})
-			.finally(() => {
-				lastMonth = $cal.currentMonth;
-				lastYear = $cal.currentYear;
-				isLoadingMarkedDays = false;
-			});
-	}
 
 	let altPressed = false;
 	function on_key_down(event) {
@@ -293,8 +256,35 @@
 				toast.show();
 			});
 	}
+
+	//#TODO Muss in die separate /read page (diese hier in /write umbenennen)
+	let isLoadingMonthForReading = false;
+	function loadMonthForReading() {
+		if (isLoadingMonthForReading) {
+			return;
+		}
+		isLoadingMonthForReading = true;
+
+		axios
+			.get(API_URL + '/logs/loadMonthForReading', {
+				params: {
+					month: $cal.currentMonth + 1,
+					year: $cal.currentYear
+				}
+			})
+			.then((response) => {
+				readingData = response.data;
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				isLoadingMonthForReading = false;
+			});
+	}
 </script>
 
+<DatepickerLogic />
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
 <!-- shown on small Screen, when triggered -->
@@ -317,42 +307,55 @@
 		<Sidenav {search} />
 	</div>
 
-	<!-- Center -->
-	<div class="d-flex flex-column mt-4 mx-4 flex-fill">
-		<!-- Input-Area -->
-		<div class="d-flex flex-column">
-			<div class="d-flex flex-row textAreaHeader">
-				<div class="flex-fill textAreaDate">
-					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-					{$selectedDate.toLocaleDateString('locale', {
-						day: '2-digit',
-						month: '2-digit',
-						year: 'numeric'
-					})}
+	{#if !$readingMode}
+		<!-- Center -->
+		<div class="d-flex flex-column mt-4 mx-4 flex-fill">
+			<!-- Input-Area -->
+			<div class="d-flex flex-column">
+				<div class="d-flex flex-row textAreaHeader">
+					<div class="flex-fill textAreaDate">
+						{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
+						{$selectedDate.toLocaleDateString('locale', {
+							day: '2-digit',
+							month: '2-digit',
+							year: 'numeric'
+						})}
+					</div>
+					<div class="flex-fill textAreaWrittenAt">
+						<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+						{logDateWritten}
+					</div>
+					<div class="textAreaHistory">history</div>
+					<div class="textAreaDelete">delete</div>
 				</div>
-				<div class="flex-fill textAreaWrittenAt">
-					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
-					{logDateWritten}
-				</div>
-				<div class="textAreaHistory">history</div>
-				<div class="textAreaDelete">delete</div>
-			</div>
-			<!-- <textarea
+				<!-- <textarea
 				bind:value={currentLog}
 				oninput={handleInput}
 				class="form-control {currentLog !== savedLog ? 'notSaved' : ''}"
 				rows="10"
 			></textarea> -->
-			<div id="log" class="focus-ring">
-				<div id="toolbar"></div>
-				<div id="editor"></div>
+				<div id="log" class="focus-ring">
+					<div id="toolbar"></div>
+					<div id="editor"></div>
+				</div>
+				{$selectedDate}<br />
+				{lastSelectedDate}
 			</div>
-			{$selectedDate}<br />
-			{lastSelectedDate}
 		</div>
-	</div>
 
-	<div id="right">Right</div>
+		<div id="right">Right</div>
+	{:else}
+		<div class="w-100">
+			{#each readingData as log}
+				<div class="card">
+					<div class="card-header">{log.day} | {log.date_written}</div>
+					<div class="card-body">
+						{@html log.text}
+					</div>
+				</div>
+			{/each}
+		</div>
+	{/if}
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div

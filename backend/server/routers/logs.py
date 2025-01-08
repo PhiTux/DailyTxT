@@ -201,3 +201,22 @@ async def getMarkedDays(month: str, year: str, cookie = Depends(users.isLoggedIn
             days_with_files.append(dayLog["day"])
     
     return {"days_with_logs": days_with_logs, "days_with_files": days_with_files}
+
+
+@router.get("/loadMonthForReading")
+async def loadMonthForReading(month: int, year: int, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    if "days" not in content.keys():
+        return []
+    
+    days = []
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    for dayLog in content["days"]:
+        if "text" in dayLog.keys():
+            days.append({"day": dayLog["day"], 
+                         "text": security.decrypt_text(dayLog["text"], enc_key), 
+                         "date_written": security.decrypt_text(dayLog["date_written"], enc_key)})
+    
+    days.sort(key=lambda x: x["day"])
+
+    return days

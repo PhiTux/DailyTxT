@@ -4,10 +4,6 @@
 	import { fly } from 'svelte/transition';
 
 	let days = $state([]);
-	let markedDays = {
-		'2024-12-25': { type: 'background', color: '#28a745' }, // green instead of red
-		'2024-12-31': { type: 'dot', color: '#28a745' } // green instead of blue
-	};
 
 	let animationDirection = $state(1); // swipe the dates left or right
 
@@ -15,7 +11,7 @@
 	let lastYear = $cal.currentYear;
 
 	$effect(() => {
-		if ($cal && ($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear)) {
+		if ($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear) {
 			// set animation direction
 			animationDirection = $cal.currentMonth > lastMonth ? 1 : -1;
 			if ($cal.currentYear > lastYear) {
@@ -25,6 +21,7 @@
 			}
 
 			days = updateCalendar();
+
 			lastMonth = $cal.currentMonth;
 			lastYear = $cal.currentYear;
 		}
@@ -49,7 +46,7 @@
 			const dayKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${i
 				.toString()
 				.padStart(2, '0')}`;
-			tempDays.push({ date: new Date(Date.UTC(year, month, i)), mark: markedDays[dayKey] });
+			tempDays.push(new Date(Date.UTC(year, month, i)));
 		}
 
 		return tempDays;
@@ -148,12 +145,12 @@
 							in:fly={{ y: 100, duration: 200 }}
 							out:fly={{ y: -100, duration: 200 }}
 							class="day
-								{$cal.daysWithLogs.includes(day.date.getDate()) ? 'mark-background' : ''} 
-								{day.mark?.type === 'dot' ? 'mark-dot' : ''} 
-								{$selectedDate.toDateString() === day.date.toDateString() ? 'selected' : ''}"
-							onclick={() => onDateClick(day.date)}
+								{$cal.daysWithLogs.includes(day.getDate()) ? 'mark-background' : ''} 
+								{$cal.daysWithFiles.includes(day.getDate()) ? 'mark-dot' : ''} 
+								{$selectedDate.toDateString() === day.toDateString() ? 'selected' : ''}"
+							onclick={() => onDateClick(day)}
 						>
-							{day.date.getDate()}
+							{day.getDate()}
 						</div>
 					{:else}
 						<div class="day empty-slot"></div>

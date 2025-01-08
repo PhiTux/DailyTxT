@@ -1,3 +1,3 @@
 import {writable} from 'svelte/store';
 
-export const readingMode = writable(true);
+export const readingMode = writable(false);
