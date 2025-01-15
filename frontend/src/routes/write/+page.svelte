@@ -2,22 +2,15 @@
 	import '../../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
 	import Sidenav from '$lib/Sidenav.svelte';
-	import { selectedDate, cal } from '$lib/calendarStore.js';
+	import { selectedDate, cal, readingDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
-	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
-	import { readingMode } from '$lib/settingsStore';
-	//import { read } from '$app/server';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
-
-	/*let API_URL = dev
-		? `${window.location.origin.replace(/:5173.*$/gm, '')}:8000`
-		: window.location.pathname.replace(/\/+$/, '');*/
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -51,6 +44,8 @@
 
 	let tinyMDE;
 	onMount(() => {
+		$readingDate = null; // no reading-highlighting when in write mode
+
 		tinyMDE = new TinyMDE.Editor({ element: 'editor', content: '' });
 		let commandBar = new TinyMDE.CommandBar({ element: 'toolbar', editor: tinyMDE });
 		document.getElementsByClassName('TinyMDE')[0].classList.add('focus-ring');
@@ -404,15 +399,6 @@
 		padding: 0.25em;
 	}
 
-	.notSaved {
-		border-color: #f57c00;
-		/* border-color: #ff9800; */
-	}
-
-	#log:focus.notSaved {
-		box-shadow: 0 0 0 0.25rem #f57c0030;
-	}
-
 	#log div:focus:not(.notSaved) {
 		border-color: #90ee90;
 		box-shadow: 0 0 0 0.25rem #90ee9070;
@@ -420,15 +406,6 @@
 
 	.textAreaDate {
 		font-weight: 600;
-	}
-
-	textarea {
-		resize: vertical;
-		width: 100%;
-		border-top-left-radius: 0;
-		border-top-right-radius: 0;
-		border-color: lightgreen;
-		border-width: 1px;
 	}
 
 	#right {

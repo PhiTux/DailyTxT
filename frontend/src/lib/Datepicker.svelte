@@ -1,5 +1,5 @@
 <script>
-	import { cal, selectedDate } from '$lib/calendarStore.js';
+	import { cal, selectedDate, readingDate } from '$lib/calendarStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
@@ -147,7 +147,10 @@
 							class="day
 								{$cal.daysWithLogs.includes(day.getDate()) ? 'mark-background' : ''} 
 								{$cal.daysWithFiles.includes(day.getDate()) ? 'mark-dot' : ''} 
-								{$selectedDate.toDateString() === day.toDateString() ? 'selected' : ''}"
+								{(!$readingDate && $selectedDate.toDateString() === day.toDateString()) ||
+							$readingDate?.toDateString() === day.toDateString()
+								? 'selected'
+								: ''}"
 							onclick={() => onDateClick(day)}
 						>
 							{day.getDate()}
@@ -194,6 +197,8 @@
 		/* overflow: hidden; */
 		/* width: 300px; */
 		box-sizing: border-box;
+		backdrop-filter: blur(5px) saturate(150%);
+		background-color: rgba(182, 183, 185, 0.75);
 	}
 	.datepicker-header {
 		display: flex;

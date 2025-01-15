@@ -10,3 +10,5 @@ export let cal = writable({
   currentMonth: date.getMonth(),
   currentYear: date.getFullYear(),
 });
+
+export let readingDate = writable(date)

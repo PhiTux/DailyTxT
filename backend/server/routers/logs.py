@@ -7,6 +7,7 @@ from fastapi import Depends
 from . import users
 from ..utils import fileHandling
 from ..utils import security
+import html
 
 
 logger = logging.getLogger("dailytxtLogger")
@@ -44,8 +45,14 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
         
     # save new log
     enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    ''' IMPORTANT: 
+    Escaping html characters here is NOT possible, since it would break the appearance
+    of html-code in the EDITOR. Code inside a markdown code-quote (`...`) will be auto-escaped.
+    Not a perfect solution, but actually any user can only load its own logs...
+    '''
     encrypted_text = security.encrypt_text(log.text, enc_key)
-    encrypted_date_written = security.encrypt_text(log.date_written, enc_key)
+    encrypted_date_written = security.encrypt_text(html.escape(log.date_written), enc_key)
     
     if "days" not in content.keys():
         content["days"] = []

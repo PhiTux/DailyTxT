@@ -253,6 +253,10 @@
 
 	main {
 		height: 100vh;
+
+		/* background-image: linear-gradient(#ff8a00, #e52e71); */
+		/* background-image: linear-gradient(to right, violet, darkred, purple); */
+		background: linear-gradient(40deg, #38bdf8, #fb7185, #84cc16);
 	}
 
 	.wrapper {
