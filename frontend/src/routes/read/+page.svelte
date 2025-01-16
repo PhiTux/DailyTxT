@@ -142,9 +142,10 @@
 
 <style>
 	.log {
-		backdrop-filter: blur(5px) saturate(150%);
-		background-color: rgba(182, 183, 185, 0.75);
+		backdrop-filter: blur(10px) saturate(150%);
+		background-color: rgba(199, 199, 201, 0.329);
 		border-radius: 15px;
+		border: 1px solid rgba(223, 221, 221, 0.658);
 	}
 
 	.dateNumber {

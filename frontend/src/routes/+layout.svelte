@@ -10,6 +10,8 @@
 	import { readingMode } from '$lib/settingsStore.js';
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
+	import trianglify from 'trianglify';
+	import { useTrianglify, trianglifyOpacity } from '$lib/settingsStore.js';
 
 	import {
 		faRightFromBracket,
@@ -42,7 +44,36 @@
 			});
 	}
 
+	function createBackground() {
+		if ($useTrianglify) {
+			//remove old canvas
+			const oldCanvas = document.querySelector('canvas');
+			if (oldCanvas) {
+				oldCanvas.remove();
+			}
+
+			const canvas = trianglify({
+				width: window.innerWidth,
+				height: window.innerHeight
+			});
+
+			document.body.appendChild(canvas.toCanvas());
+			document.querySelector('canvas').style =
+				'position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8; width: 100%; height: 100%;';
+		}
+	}
+
+	$effect(() => {
+		if ($trianglifyOpacity) {
+			if (document.querySelector('canvas')) {
+				document.querySelector('canvas').style.opacity = $trianglifyOpacity;
+			}
+		}
+	});
+
 	onMount(() => {
+		createBackground();
+
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
 			const height = document.getElementById('modal-body').clientHeight;
 			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
@@ -136,9 +167,11 @@
 						<div class="col-4 overflow-y-auto">
 							<nav class="flex-column align-items-stretch" id="settings-nav">
 								<nav class="nav nav-pills flex-column">
+									<a class="nav-link mb-1" href="#appearance">Aussehen</a>
+									<a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
+									<a href="#background" class="ms-3 mb-1 nav-link">Hintergrund</a>
 									<a class="nav-link mb-1" href="#functions">Funktionen</a>
 									<nav class="nav nav-pills flex-column">
-										<a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
 										<a href="#language" class="ms-3 mb-1 nav-link">Sprache</a>
 										<a href="#timezone" class="ms-3 mb-1 nav-link">Zeitzone</a>
 										<a href="#onthisday" class="ms-3 mb-1 nav-link">An diesem Tag</a>
@@ -169,7 +202,7 @@
 								data-bs-smooth-scroll="true"
 								id="settings-content"
 							>
-								<div id="functions"><h4>Funktionen</h4></div>
+								<div id="appearance"><h4>Aussehen</h4></div>
 								<div id="lightdark">
 									<h5>Light/Dark-Mode</h5>
 									Bla<br />
@@ -177,6 +210,31 @@
 									bla <br />
 									blub <br />
 								</div>
+								<div id="background">
+									<h5>Hintergrund</h5>
+									<div class="d-flex flex-row justify-content-start">
+										<label for="trianglifyOpacity" class="form-label"
+											>Transparenz der Dreiecke</label
+										>
+										<input
+											bind:value={$trianglifyOpacity}
+											type="range"
+											class="mx-3 form-range"
+											id="trianglifyOpacity"
+											min="0"
+											max="1"
+											step="0.01"
+										/>
+										<input
+											bind:value={$trianglifyOpacity}
+											type="number"
+											id="trianglifyOpacityNumber"
+										/>
+									</div>
+								</div>
+
+								<div id="functions"><h4>Funktionen</h4></div>
+
 								<div id="language">
 									<h5>Sprache</h5>
 									Bla<br />
@@ -224,7 +282,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Speichern</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
 				</div>
 			</div>
 		</div>
@@ -232,14 +291,22 @@
 </main>
 
 <style>
+	#trianglifyOpacity {
+		max-width: 300px;
+	}
+
+	#trianglifyOpacityNumber {
+		width: 80px;
+	}
+
 	.modal-body {
 		overflow-y: hidden;
 	}
 
 	.modal-content {
-		backdrop-filter: blur(5px) saturate(150%);
+		backdrop-filter: blur(10px) saturate(150%);
 		/* background-color: rgba(43, 56, 78, 0.75); */
-		background-color: rgba(136, 143, 155, 0.75);
+		background-color: rgba(208, 208, 208, 0.61);
 		/* color: rgb(22, 22, 22); */
 	}
 
@@ -256,7 +323,7 @@
 
 		/* background-image: linear-gradient(#ff8a00, #e52e71); */
 		/* background-image: linear-gradient(to right, violet, darkred, purple); */
-		background: linear-gradient(40deg, #38bdf8, #fb7185, #84cc16);
+		/* background: linear-gradient(40deg, #38bdf8, #fb7185, #84cc16); */
 	}
 
 	.wrapper {

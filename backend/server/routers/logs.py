@@ -188,8 +188,7 @@ async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
                         
         
     # sort by year and month and day
-    results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=True)
-    print(results)
+    results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=False)
     return results
 
 @router.get("/getMarkedDays")
