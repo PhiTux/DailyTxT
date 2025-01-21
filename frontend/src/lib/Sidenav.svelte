@@ -106,6 +106,9 @@
 		border-top-right-radius: 0;
 		overflow-y: auto;
 		min-height: 250px;
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
+		border: 1px solid #ececec77;
 	}
 
 	.input-group {

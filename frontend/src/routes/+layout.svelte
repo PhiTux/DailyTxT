@@ -52,14 +52,19 @@
 				oldCanvas.remove();
 			}
 
+			//xColors: ['#F3F3F3', '#FEFEFE', '#E5E5E5'],
 			const canvas = trianglify({
 				width: window.innerWidth,
-				height: window.innerHeight
+				height: window.innerHeight,
+				xColors: ['#FA2'],
+				fill: false,
+				strokeWidth: 1,
+				cellSize: 100
 			});
 
 			document.body.appendChild(canvas.toCanvas());
 			document.querySelector('canvas').style =
-				'position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.8; width: 100%; height: 100%;';
+				'position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; width: 100%; height: 100%; background-color: #eaeaea;';
 		}
 	}
 

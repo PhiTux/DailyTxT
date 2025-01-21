@@ -1,13 +1,14 @@
 import datetime
 import logging
 import re
-from fastapi import APIRouter, Cookie
+from fastapi import APIRouter, Cookie, Depends, Form, UploadFile, File, HTTPException
 from pydantic import BaseModel
-from fastapi import Depends
 from . import users
 from ..utils import fileHandling
 from ..utils import security
 import html
+from typing import Annotated
+import time
 
 
 logger = logging.getLogger("dailytxtLogger")
@@ -226,3 +227,33 @@ async def loadMonthForReading(month: int, year: int, cookie = Depends(users.isLo
     days.sort(key=lambda x: x["day"])
 
     return days
+
+'''
+Data ist sent as FormData, not as JSON
+'''
+@router.post("/uploadFile")
+async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()], year: Annotated[int, Form()], uuid: Annotated[str, Form()], file: Annotated[UploadFile, File()], cookie = Depends(users.isLoggedIn)):
+    
+    # encrypt file
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    encrypted_file = security.encrypt_file(file.file.read(), enc_key)
+    if not fileHandling.writeFile(encrypted_file, cookie["user_id"], uuid):
+        return {"success": False}
+    
+    # save file in log
+    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    if "days" not in content.keys():
+        content["days"] = []
+        content["days"].append({"day": day, "files": [uuid]})
+###########
+
+
+    print(file.size)
+    print(file.filename)
+    print(uuid)
+    print(file.headers.get("content-type"))
+    print(day, month, year)
+
+    # wait 3 s
+    time.sleep(3)
+    return {"success": True}

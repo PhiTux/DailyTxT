@@ -192,13 +192,13 @@
 	.datepicker {
 		display: inline-block;
 		font-family: Arial, sans-serif;
-		border: 1px solid #ccc;
+		border: 1px solid #ececec77;
 		border-radius: 8px;
 		/* overflow: hidden; */
 		/* width: 300px; */
 		box-sizing: border-box;
-		backdrop-filter: blur(5px) saturate(150%);
-		background-color: rgba(182, 183, 185, 0.75);
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
 	}
 	.datepicker-header {
 		display: flex;

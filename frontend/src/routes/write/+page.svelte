@@ -11,6 +11,9 @@
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
+	import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+	import Fa from 'svelte-fa';
+	import { v4 as uuidv4 } from 'uuid';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -251,6 +254,56 @@
 				toast.show();
 			});
 	}
+
+	function triggerFileInput() {
+		document.getElementById('fileInput').click();
+	}
+
+	function onFileChange(event) {
+		for (let i = 0; i < event.target.files.length; i++) {
+			uploadFile(event.target.files[i]);
+		}
+	}
+
+	let uploadingFiles = $state([]);
+
+	function uploadFile(f) {
+		let uuid = uuidv4();
+
+		uploadingFiles = [...uploadingFiles, { name: f.name, progress: 0, size: f.size, uuid: uuid }];
+
+		const config = {
+			onUploadProgress: (progressEvent) => {
+				uploadingFiles = uploadingFiles.map((file) => {
+					if (file.uuid === uuid) {
+						file.progress = Math.round(progressEvent.progress * 100);
+					}
+					return file;
+				});
+			}
+		};
+
+		const formData = new FormData();
+		formData.append('day', $selectedDate.getDate());
+		formData.append('month', $selectedDate.getMonth() + 1);
+		formData.append('year', $selectedDate.getFullYear());
+		formData.append('file', f);
+		formData.append('uuid', uuid);
+
+		axios
+			.post(API_URL + '/logs/uploadFile', formData, {
+				...config
+			})
+			.then((response) => {
+				console.log(response);
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				uploadingFiles = uploadingFiles.filter((file) => file.uuid !== uuid);
+			});
+	}
 </script>
 
 <DatepickerLogic />
@@ -305,7 +358,42 @@
 		</div>
 	</div>
 
-	<div id="right">Right</div>
+	<div id="right" class="d-flex flex-column">
+		<div>Tags</div>
+
+		<div class="files">
+			<button class="btn btn-secondary" id="uploadBtn" onclick={triggerFileInput}
+				><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
+			>
+			<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
+
+			{#each uploadingFiles as file}
+				<div>
+					{file.name}
+					<div
+						class="progress"
+						role="progressbar"
+						aria-label="Upload progress"
+						aria-valuemin="0"
+						aria-valuemax="100"
+					>
+						<div
+							class="progress-bar {file.progress === 100
+								? 'progress-bar-striped progress-bar-animated'
+								: ''}"
+							style:width={file.progress + '%'}
+						>
+							{#if file.progress !== 100}
+								{file.progress}%
+							{:else}
+								Wird verschlüsselt...
+							{/if}
+						</div>
+					</div>
+				</div>
+			{/each}
+		</div>
+	</div>
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div
@@ -347,6 +435,14 @@
 </div>
 
 <style>
+	:global(#uploadIcon) {
+		transition: all ease 0.3s;
+	}
+
+	:global(#uploadBtn:hover > #uploadIcon) {
+		transform: scale(1.2);
+	}
+
 	:global(.TMCommandBar) {
 		border-top: 1px solid #ccc;
 		border-left: 1px solid #ccc;

@@ -40,6 +40,7 @@
 		"marked": "^15.0.6",
 		"svelte-outside": "^0.0.3",
 		"tiny-markdown-editor": "^0.1.31",
-		"trianglify": "^4.1.1"
+		"trianglify": "^4.1.1",
+		"uuid": "^11.0.5"
 	}
 }
