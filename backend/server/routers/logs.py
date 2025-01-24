@@ -91,9 +91,14 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
     for dayLog in content["days"]:
         if dayLog["day"] == day:
             enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
-            text = security.decrypt_text(dayLog["text"], enc_key)
-            date_written = security.decrypt_text(dayLog["date_written"], enc_key)
-            return {"text": text, "date_written": date_written}
+            if "text" in dayLog.keys():
+                text = security.decrypt_text(dayLog["text"], enc_key)
+                date_written = security.decrypt_text(dayLog["date_written"], enc_key)
+            if "files" in dayLog.keys():
+                for file in dayLog["files"]:
+                    file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
+                    file["type"] = security.decrypt_text(file["enc_type"], enc_key)
+            return {"text": text, "date_written": date_written, "files": dayLog.get("files", [])}
 
     return {"text": "", "date_written": ""}
 
@@ -242,18 +247,71 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
     
     # save file in log
     content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+
+    enc_filename = security.encrypt_text(file.filename, enc_key)
+    enc_type = security.encrypt_text(file.headers.get("content-type"), enc_key)
+    new_file = {"enc_filename": enc_filename, "uuid_filename": uuid,"size": file.size, "enc_type": enc_type}
+
     if "days" not in content.keys():
         content["days"] = []
-        content["days"].append({"day": day, "files": [uuid]})
-###########
+        content["days"].append({"day": day, "files": [new_file]})
 
+    else:
+        found = False
+        for dayLog in content["days"]:
+            if dayLog["day"] == day:
+                if "files" not in dayLog.keys():
+                    dayLog["files"] = []
+                dayLog["files"].append(new_file)
+                found = True
+                break
+        if not found:
+            content["days"].append({"day": day, "files": [new_file]})
+    
+    if not fileHandling.writeDay(cookie["user_id"], year, month, content):
+        fileHandling.removeFile(cookie["user_id"], uuid)
+        return {"success": False}
 
-    print(file.size)
-    print(file.filename)
-    print(uuid)
-    print(file.headers.get("content-type"))
-    print(day, month, year)
-
-    # wait 3 s
-    time.sleep(3)
     return {"success": True}
+
+"""
+@router.get("/getFiles")
+async def getFiles(day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    if "days" not in content.keys():
+        return []
+    
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    for dayLog in content["days"]:
+        if "day" in dayLog.keys() and dayLog["day"] == day:
+            if "files" in dayLog.keys():
+                for file in dayLog["files"]:
+                    file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
+                    file["type"] = security.decrypt_text(file["enc_type"], enc_key)
+    
+                return dayLog["files"]
+
+    return []
+"""
+
+@router.get("/deleteFile")
+async def deleteFile(uuid: str, day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    if "days" not in content.keys():
+        raise HTTPException(status_code=500, detail="Day not found - json error")
+    
+    for dayLog in content["days"]:
+        if dayLog["day"] != day:
+            continue
+        if not "files" in dayLog.keys():
+            break
+        for file in dayLog["files"]:
+            if file["uuid_filename"] == uuid:
+                if not fileHandling.removeFile(cookie["user_id"], uuid):
+                    raise HTTPException(status_code=500, detail="Failed to delete file")
+                dayLog["files"].remove(file)
+                if not fileHandling.writeDay(cookie["user_id"], year, month, content):
+                    raise HTTPException(status_code=500, detail="Failed to write changes of deleted file!")
+                return {"success": True}
+
+    raise HTTPException(status_code=500, detail="Failed to delete file - not found in log")

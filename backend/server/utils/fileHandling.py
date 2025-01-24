@@ -73,7 +73,7 @@ def get_months(user_id, year):
         if entry.is_file() and entry.name.endswith(".json"):
             yield entry.name.split(".")[0]
 
-def writeFile(str, user_id, uuid):
+def writeFile(file, user_id, uuid):
     try:
         os.makedirs(os.path.join(settings.data_path, str(user_id), 'files'), exist_ok=True)
         f = open(os.path.join(settings.data_path, str(user_id), 'files', uuid), "w")
@@ -82,7 +82,7 @@ def writeFile(str, user_id, uuid):
         return False
     else:
         with f:
-            f.write(str)
+            f.write(file)
             return True
         
 def removeFile(user_id, uuid):

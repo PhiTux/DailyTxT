@@ -244,6 +244,7 @@
 		border-radius: 50%;
 		margin: 2px auto;
 		user-select: none;
+		--dot-color: rgb(250, 199, 58);
 	}
 	.day:hover {
 		background: #f0f0f0;
@@ -257,7 +258,7 @@
 		content: '';
 		width: 6px;
 		height: 6px;
-		background-color: var(--color);
+		background-color: var(--dot-color);
 		border-radius: 50%;
 		position: absolute;
 		bottom: 2px;
@@ -316,12 +317,12 @@
 
 	.day.mark-dot:not(.selected)::after {
 		content: '';
-		width: 6px;
-		height: 6px;
-		background-color: var(--color);
+		width: 7px;
+		height: 7px;
+		background-color: var(--dot-color);
 		border-radius: 50%;
 		position: absolute;
-		bottom: 2px;
+		bottom: 1px;
 	}
 
 	.year-input {

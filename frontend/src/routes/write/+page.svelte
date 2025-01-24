@@ -11,9 +11,10 @@
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
-	import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+	import { faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
+	import { slide } from 'svelte/transition';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -121,6 +122,8 @@
 	let currentLog = $state('');
 	let savedLog = $state('');
 
+	let filesOfDay = $state([]);
+
 	let logDateWritten = $state('');
 
 	let timeout;
@@ -152,6 +155,7 @@
 			});
 
 			currentLog = response.data.text;
+			filesOfDay = response.data.files;
 			savedLog = currentLog;
 
 			tinyMDE.setContent(currentLog);
@@ -295,13 +299,62 @@
 				...config
 			})
 			.then((response) => {
-				console.log(response);
+				// append to filesOfDay
+				filesOfDay = [...filesOfDay, { filename: f.name, size: f.size, uuid_filename: uuid }];
 			})
 			.catch((error) => {
 				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingFile'));
+				toast.show();
 			})
 			.finally(() => {
 				uploadingFiles = uploadingFiles.filter((file) => file.uuid !== uuid);
+			});
+	}
+
+	function formatBytes(bytes) {
+		if (!+bytes) return '0 Bytes';
+
+		const k = 1024;
+		const dm = 2;
+		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+
+		const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+	}
+
+	function downloadFile(uuid) {
+		console.log(uuid);
+	}
+
+	let confirmDelete = $state({ uuid: '', filename: '' });
+	function askDeleteFile(uuid, filename) {
+		confirmDelete = { uuid: uuid, filename: filename };
+
+		const modal = new bootstrap.Modal(document.getElementById('modalConfirmDeleteFile'));
+		modal.show();
+	}
+
+	function deleteFile(uuid) {
+		axios
+			.get(API_URL + '/logs/deleteFile', {
+				params: {
+					uuid: uuid,
+					year: $selectedDate.getFullYear(),
+					month: $selectedDate.getMonth() + 1,
+					day: $selectedDate.getDate()
+				}
+			})
+			.then((response) => {
+				filesOfDay = filesOfDay.filter((file) => file.uuid_filename !== uuid);
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletingFile'));
+				toast.show();
 			});
 	}
 </script>
@@ -361,12 +414,30 @@
 	<div id="right" class="d-flex flex-column">
 		<div>Tags</div>
 
-		<div class="files">
-			<button class="btn btn-secondary" id="uploadBtn" onclick={triggerFileInput}
+		<div class="files d-flex flex-column">
+			<button
+				class="btn btn-secondary {filesOfDay.length > 0 ? 'mb-2' : ''}"
+				id="uploadBtn"
+				onclick={triggerFileInput}
 				><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
 			>
 			<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
+			{#each filesOfDay as file (file.uuid_filename)}
+				<div class="btn-group file mt-2" transition:slide>
+					<button
+						onclick={() => downloadFile(file.uuid_filename)}
+						class="p-2 fileBtn d-flex flex-row align-items-center flex-fill"
+						><div class="filename filenameWeight">{file.filename}</div>
+						<span class="filesize">({formatBytes(file.size)})</span>
+					</button>
+					<button
+						class="p-2 fileBtn deleteFileBtn"
+						onclick={() => askDeleteFile(file.uuid_filename, file.filename)}
+						><Fa icon={faTrash} id="uploadIcon" fw /></button
+					>
+				</div>
+			{/each}
 			{#each uploadingFiles as file}
 				<div>
 					{file.name}
@@ -431,16 +502,123 @@
 				<div class="toast-body">Fehler beim Suchen!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastErrorSavingFile"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern einer Datei!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorDeletingFile"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen einer Datei!</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalConfirmDeleteFile" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Datei löschen?</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					<p>
+						Datei <u><span class="filenameWeight">{confirmDelete.filename}</span></u> wirklich löschen?
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+					<button
+						onclick={() => deleteFile(confirmDelete.uuid)}
+						type="button"
+						class="btn btn-primary"
+						data-bs-dismiss="modal">Löschen</button
+					>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>
 
 <style>
+	:global(.modal.show) {
+		background-color: rgba(80, 80, 80, 0.1) !important;
+		backdrop-filter: blur(2px) saturate(150%);
+	}
+
+	.modal-content {
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
+	}
+
+	.filenameWeight {
+		font-weight: 550;
+	}
+
+	.filename {
+		padding-right: 0.5rem;
+		word-break: break-word;
+	}
+
+	.filesize {
+		opacity: 0.7;
+		font-size: 0.8rem;
+	}
+
+	.fileBtn {
+		border: 0;
+		background-color: rgba(0, 0, 0, 0);
+		transition: all ease 0.3s;
+	}
+
+	.fileBtn:hover {
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	.deleteFileBtn {
+		border-left: 1px solid rgba(92, 92, 92, 0.445);
+	}
+
+	.deleteFileBtn:hover {
+		color: rgb(165, 0, 0);
+	}
+
+	.file {
+		background-color: rgba(117, 117, 117, 0.45);
+		border: 0px solid #ececec77;
+		border-radius: 5px;
+	}
+
+	.files {
+		margin-right: 2rem;
+		border-radius: 10px;
+		padding: 1rem;
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
+		border: 1px solid #ececec77;
+	}
+
 	:global(#uploadIcon) {
 		transition: all ease 0.3s;
 	}
 
 	:global(#uploadBtn:hover > #uploadIcon) {
-		transform: scale(1.2);
+		transform: scale(1.4);
 	}
 
 	:global(.TMCommandBar) {
