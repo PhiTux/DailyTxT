@@ -14,7 +14,7 @@
 	import { faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
-	import { slide } from 'svelte/transition';
+	import { slide, fade } from 'svelte/transition';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -71,6 +71,7 @@
 	});
 
 	let lastSelectedDate = $state($selectedDate);
+	let images = $state([]);
 
 	let loading = false;
 	$effect(() => {
@@ -78,6 +79,9 @@
 		loading = true;
 
 		if ($selectedDate !== lastSelectedDate) {
+			images = [];
+			filesOfDay = [];
+
 			clearTimeout(timeout);
 			const result = getLog();
 			if (result) {
@@ -173,6 +177,45 @@
 			return false;
 		}
 	}
+
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png'];
+
+	function base64ToArrayBuffer(base64) {
+		var binaryString = atob(base64);
+		var bytes = new Uint8Array(binaryString.length);
+		for (var i = 0; i < binaryString.length; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+		return bytes.buffer;
+	}
+
+	$effect(() => {
+		if (filesOfDay) {
+			// add all files to images if correct extension
+			filesOfDay.forEach((file) => {
+				// if image -> load it!
+				if (
+					imageExtensions.includes(file.filename.split('.').pop().toLowerCase()) &&
+					!images.find((image) => image.uuid_filename === file.uuid_filename)
+				) {
+					images = [...images, file];
+					axios
+						.get(API_URL + '/logs/downloadFile', { params: { uuid: file.uuid_filename } })
+						.then((response) => {
+							images = images.map((image) => {
+								if (image.uuid_filename === file.uuid_filename) {
+									image.src = response.data.file;
+								}
+								return image;
+							});
+						})
+						.catch((error) => {
+							console.error(error);
+						});
+				}
+			});
+		}
+	});
 
 	async function saveLog() {
 		if (currentLog === savedLog) {
@@ -317,12 +360,12 @@
 		if (!+bytes) return '0 Bytes';
 
 		const k = 1024;
-		const dm = 2;
-		const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+		//const dm = 2; // decimal places
+		const sizes = ['B', 'KB', 'MB', 'GB'];
 
 		const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(0))} ${sizes[i]}`;
 	}
 
 	function downloadFile(uuid) {
@@ -349,6 +392,7 @@
 			})
 			.then((response) => {
 				filesOfDay = filesOfDay.filter((file) => file.uuid_filename !== uuid);
+				images = images.filter((image) => image.uuid_filename !== uuid);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -406,6 +450,26 @@
 				<div id="toolbar"></div>
 				<div id="editor"></div>
 			</div>
+			{#if images.length > 0}
+				<div class="d-flex flex-row images mt-3">
+					{#each images as image (image.uuid_filename)}
+						<div class="imageContainer d-flex align-items-center" transition:slide={{ axis: 'x' }}>
+							{#if image.src}
+								<img
+									transition:fade
+									class="image"
+									alt={image.filename}
+									src={'data:image/jpg;base64,' + image.src}
+								/>
+							{:else}
+								<div class="spinner-border" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			{/if}
 			{$selectedDate}<br />
 			{lastSelectedDate}
 		</div>
@@ -556,6 +620,30 @@
 </div>
 
 <style>
+	.image,
+	.imageContainer {
+		border-radius: 8px;
+	}
+
+	.imageContainer {
+		min-height: 80px;
+	}
+
+	.image:hover {
+		transform: scale(1.1);
+		box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.2);
+	}
+
+	.image {
+		max-width: 250px;
+		max-height: 150px;
+		transition: all ease 0.3s;
+	}
+
+	.images {
+		gap: 1rem;
+	}
+
 	:global(.modal.show) {
 		background-color: rgba(80, 80, 80, 0.1) !important;
 		backdrop-filter: blur(2px) saturate(150%);
@@ -578,6 +666,7 @@
 	.filesize {
 		opacity: 0.7;
 		font-size: 0.8rem;
+		white-space: nowrap;
 	}
 
 	.fileBtn {

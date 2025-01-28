@@ -85,6 +85,19 @@ def writeFile(file, user_id, uuid):
             f.write(file)
             return True
         
+def readFile(user_id, uuid):
+    try:
+        f = open(os.path.join(settings.data_path, str(user_id), 'files', uuid), "r")
+    except FileNotFoundError:
+        logger.info(f"{user_id}/files/{uuid} - File not found")
+        raise HTTPException(status_code=404, detail="File not found")
+    except Exception as e:
+        logger.exception(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error when trying to open file {uuid}")
+    else:
+        with f:
+            return f.read()
+        
 def removeFile(user_id, uuid):
     try:
         os.remove(os.path.join(settings.data_path, str(user_id), 'files', uuid))

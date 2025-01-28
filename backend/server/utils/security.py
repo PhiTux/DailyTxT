@@ -44,3 +44,7 @@ def decrypt_text(text: str, key: str) -> str:
 def encrypt_file(file: bytes, key: str) -> str:
     f = Fernet(key)
     return f.encrypt(file).decode()
+
+def decrypt_file(file: str, key: str) -> bytes:
+    f = Fernet(key)
+    return f.decrypt(file.encode())

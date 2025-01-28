@@ -1,3 +1,4 @@
+import base64
 import datetime
 import logging
 import re
@@ -315,3 +316,11 @@ async def deleteFile(uuid: str, day: int, month: int, year: int, cookie = Depend
                 return {"success": True}
 
     raise HTTPException(status_code=500, detail="Failed to delete file - not found in log")
+
+@router.get("/downloadFile")
+async def downloadFile(uuid: str, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    file = fileHandling.readFile(cookie["user_id"], uuid)
+    if file is None:
+        raise HTTPException(status_code=500, detail="Failed to read file")
+    return {"file": base64.b64encode(security.decrypt_file(file, enc_key))}
