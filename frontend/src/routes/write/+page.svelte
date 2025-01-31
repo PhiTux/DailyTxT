@@ -72,6 +72,7 @@
 
 	let lastSelectedDate = $state($selectedDate);
 	let images = $state([]);
+	let filesOfDay = $state([]);
 
 	let loading = false;
 	$effect(() => {
@@ -126,8 +127,6 @@
 	let currentLog = $state('');
 	let savedLog = $state('');
 
-	let filesOfDay = $state([]);
-
 	let logDateWritten = $state('');
 
 	let timeout;
@@ -178,7 +177,8 @@
 		}
 	}
 
-	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png'];
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
+	//TODO: support svg? -> minsize is necessary...
 
 	function base64ToArrayBuffer(base64) {
 		var binaryString = atob(base64);
@@ -205,12 +205,16 @@
 							images = images.map((image) => {
 								if (image.uuid_filename === file.uuid_filename) {
 									image.src = response.data.file;
+									file.src = response.data.file;
 								}
 								return image;
 							});
 						})
 						.catch((error) => {
 							console.error(error);
+							// toast
+							const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
+							toast.show();
 						});
 				}
 			});
@@ -368,8 +372,47 @@
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(0))} ${sizes[i]}`;
 	}
 
-	function downloadFile(uuid) {
-		console.log(uuid);
+	async function downloadFile(uuid) {
+		// check if present in filesOfDay
+		let file = filesOfDay.find((file) => file.uuid_filename === uuid);
+		if (!file.src) {
+			// download from server
+
+			try {
+				const response = await axios.get(API_URL + '/logs/downloadFile', {
+					params: { uuid: uuid }
+				});
+
+				filesOfDay = filesOfDay.map((f) => {
+					if (f.uuid_filename === uuid) {
+						f.src = response.data.file;
+					}
+					return f;
+				});
+			} catch (error) {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
+				toast.show();
+			}
+		}
+
+		for (let i = 0; i < filesOfDay.length; i++) {
+			if (filesOfDay[i].uuid_filename === uuid) {
+				file = filesOfDay[i];
+				break;
+			}
+		}
+
+		const blob = new Blob([base64ToArrayBuffer(file.src)], {
+			type: 'application/octet-stream'
+		});
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = file.filename;
+		document.body.appendChild(a);
+		a.click();
 	}
 
 	let confirmDelete = $state({ uuid: '', filename: '' });
@@ -400,6 +443,14 @@
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletingFile'));
 				toast.show();
 			});
+	}
+
+	let activeImage = $state('');
+	function viewImage(uuid) {
+		activeImage = uuid;
+
+		const modal = new bootstrap.Modal(document.getElementById('modalImages'));
+		modal.show();
 	}
 </script>
 
@@ -453,7 +504,14 @@
 			{#if images.length > 0}
 				<div class="d-flex flex-row images mt-3">
 					{#each images as image (image.uuid_filename)}
-						<div class="imageContainer d-flex align-items-center" transition:slide={{ axis: 'x' }}>
+						<button
+							type="button"
+							onclick={() => {
+								viewImage(image.uuid_filename);
+							}}
+							class="imageContainer d-flex align-items-center position-relative"
+							transition:slide={{ axis: 'x' }}
+						>
 							{#if image.src}
 								<img
 									transition:fade
@@ -466,7 +524,7 @@
 									<span class="visually-hidden">Loading...</span>
 								</div>
 							{/if}
-						</div>
+						</button>
 					{/each}
 				</div>
 			{/if}
@@ -480,7 +538,7 @@
 
 		<div class="files d-flex flex-column">
 			<button
-				class="btn btn-secondary {filesOfDay.length > 0 ? 'mb-2' : ''}"
+				class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
 				id="uploadBtn"
 				onclick={triggerFileInput}
 				><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
@@ -590,6 +648,18 @@
 				<div class="toast-body">Fehler beim Löschen einer Datei!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastErrorLoadingFile"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Download einer Datei!</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="modal fade" id="modalConfirmDeleteFile" tabindex="-1">
@@ -617,9 +687,95 @@
 			</div>
 		</div>
 	</div>
+
+	<div
+		class="modal fade"
+		id="modalImages"
+		tabindex="-1"
+		aria-labelledby="modalImagesLabel"
+		aria-hidden="true"
+	>
+		<div class="modal-dialog modal-xl modal-fullscreen-sm-down">
+			<div class="modal-content">
+				<div class="modal-header d-none d-sm-block">
+					<!-- <h1 class="modal-title fs-5" id="exampleModalLabel"></h1> -->
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+
+				<div class="modal-body">
+					<div id="imageCarousel" class="carousel slide">
+						<div class="carousel-indicators">
+							{#each images as image, i (image.uuid_filename)}
+								<button
+									type="button"
+									data-bs-target="#imageCarousel"
+									data-bs-slide-to={i}
+									aria-label="Slide {i}"
+									class={image.uuid_filename === activeImage ? 'active' : ''}
+								></button>
+							{/each}
+						</div>
+						<div class="carousel-inner">
+							{#each images as image}
+								<div class="carousel-item {image.uuid_filename === activeImage ? 'active' : ''}">
+									<img
+										src={'data:image/' + image.filename.split('.').pop() + ';base64,' + image.src}
+										class="d-block w-100"
+										alt={image.filename}
+									/>
+									<div class="carousel-caption d-none d-md-block">
+										<span class="imageLabelCarousel">{image.filename}</span>
+										<button
+											class="btn btn-primary"
+											onclick={() => downloadFile(image.uuid_filename)}
+										>
+											Download
+										</button>
+									</div>
+								</div>
+							{/each}
+						</div>
+						<button
+							class="carousel-control-prev"
+							type="button"
+							data-bs-target="#imageCarousel"
+							data-bs-slide="prev"
+						>
+							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Previous</span>
+						</button>
+						<button
+							class="carousel-control-next"
+							type="button"
+							data-bs-target="#imageCarousel"
+							data-bs-slide="next"
+						>
+							<span class="carousel-control-next-icon" aria-hidden="true"></span>
+							<span class="visually-hidden">Next</span>
+						</button>
+					</div>
+				</div>
+				<div class="modal-footer d-block d-sm-none">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
+	.imageLabelCarousel {
+		font-size: 20px;
+		transition: background-color ease 0.3s;
+		padding: 5px;
+		border-radius: 5px;
+	}
+
+	.carousel-caption:hover > .imageLabelCarousel {
+		background-color: rgba(0, 0, 0, 0.4);
+	}
+
 	.image,
 	.imageContainer {
 		border-radius: 8px;
@@ -627,6 +783,10 @@
 
 	.imageContainer {
 		min-height: 80px;
+		padding: 0px;
+		border: 0px;
+		background-color: transparent;
+		overflow: hidden;
 	}
 
 	.image:hover {
