@@ -46,6 +46,8 @@
 		}
 	);
 
+	let cancelDownload = new AbortController();
+
 	let tinyMDE;
 	onMount(() => {
 		$readingDate = null; // no reading-highlighting when in write mode
@@ -82,6 +84,9 @@
 		if ($selectedDate !== lastSelectedDate) {
 			images = [];
 			filesOfDay = [];
+
+			cancelDownload.abort();
+			cancelDownload = new AbortController();
 
 			clearTimeout(timeout);
 			const result = getLog();
@@ -199,8 +204,12 @@
 					!images.find((image) => image.uuid_filename === file.uuid_filename)
 				) {
 					images = [...images, file];
+
 					axios
-						.get(API_URL + '/logs/downloadFile', { params: { uuid: file.uuid_filename } })
+						.get(API_URL + '/logs/downloadFile', {
+							params: { uuid: file.uuid_filename },
+							signal: cancelDownload.signal
+						})
 						.then((response) => {
 							images = images.map((image) => {
 								if (image.uuid_filename === file.uuid_filename) {
@@ -211,6 +220,10 @@
 							});
 						})
 						.catch((error) => {
+							if (error.name == 'CanceledError') {
+								return;
+							}
+
 							console.error(error);
 							// toast
 							const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
@@ -372,31 +385,73 @@
 		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(0))} ${sizes[i]}`;
 	}
 
-	async function downloadFile(uuid) {
+	function downloadFile(uuid) {
 		// check if present in filesOfDay
 		let file = filesOfDay.find((file) => file.uuid_filename === uuid);
-		if (!file.src) {
-			// download from server
+		if (file?.src) {
+			triggerAutomaticDownload(uuid);
+			return;
+		}
 
-			try {
-				const response = await axios.get(API_URL + '/logs/downloadFile', {
-					params: { uuid: uuid }
+		// download from server
+
+		filesOfDay = filesOfDay.map((f) => {
+			if (f.uuid_filename === uuid) {
+				f.downloadProgress = 0;
+			}
+			return f;
+		});
+
+		const config = {
+			params: { uuid: uuid },
+			onDownloadProgress: (progressEvent) => {
+				filesOfDay = filesOfDay.map((file) => {
+					if (file.uuid_filename === uuid) {
+						file.downloadProgress = Math.round(progressEvent.progress * 100);
+					}
+					return file;
 				});
+			},
+			signal: cancelDownload.signal
+		};
 
+		axios
+			.get(API_URL + '/logs/downloadFile', {
+				...config
+			})
+			.then((response) => {
 				filesOfDay = filesOfDay.map((f) => {
 					if (f.uuid_filename === uuid) {
 						f.src = response.data.file;
 					}
 					return f;
 				});
-			} catch (error) {
+			})
+			.catch((error) => {
+				if (error.name == 'CanceledError') {
+					return;
+				}
+
 				console.error(error);
 				// toast
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
 				toast.show();
-			}
-		}
+			})
+			.finally(() => {
+				// remove progress
+				filesOfDay = filesOfDay.map((f) => {
+					if (f.uuid_filename === uuid) {
+						f.downloadProgress = -1;
+					}
+					return f;
+				});
 
+				triggerAutomaticDownload(uuid);
+			});
+	}
+
+	function triggerAutomaticDownload(uuid) {
+		let file;
 		for (let i = 0; i < filesOfDay.length; i++) {
 			if (filesOfDay[i].uuid_filename === uuid) {
 				file = filesOfDay[i];
@@ -445,9 +500,27 @@
 			});
 	}
 
-	let activeImage = $state('');
 	function viewImage(uuid) {
-		activeImage = uuid;
+		// set active image
+		document.querySelectorAll('.carousel-item').forEach((item) => {
+			item.classList.remove('active');
+			if (
+				item.id ===
+				'carousel-item-' + images.findIndex((image) => image.uuid_filename === uuid)
+			) {
+				item.classList.add('active');
+			}
+		});
+		// set active image-button-indicator
+		document.querySelectorAll('.carousel-button').forEach((button) => {
+			button.classList.remove('active');
+			if (
+				button.id ===
+				'carousel-button-' + images.findIndex((image) => image.uuid_filename === uuid)
+			) {
+				button.classList.add('active');
+			}
+		});
 
 		const modal = new bootstrap.Modal(document.getElementById('modalImages'));
 		modal.show();
@@ -478,59 +551,59 @@
 	</div>
 
 	<!-- Center -->
-	<div class="d-flex flex-column mt-4 mx-4 flex-fill">
+	<div class="d-flex flex-column mt-4 mx-4 flex-fill" id="middle">
 		<!-- Input-Area -->
-		<div class="d-flex flex-column">
-			<div class="d-flex flex-row textAreaHeader">
-				<div class="flex-fill textAreaDate">
-					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-					{$selectedDate.toLocaleDateString('locale', {
-						day: '2-digit',
-						month: '2-digit',
-						year: 'numeric'
-					})}
-				</div>
-				<div class="flex-fill textAreaWrittenAt">
-					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
-					{logDateWritten}
-				</div>
-				<div class="textAreaHistory">history</div>
-				<div class="textAreaDelete">delete</div>
+		<!-- <div class="d-flex flex-column"> -->
+		<div class="d-flex flex-row textAreaHeader">
+			<div class="flex-fill textAreaDate">
+				{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
+				{$selectedDate.toLocaleDateString('locale', {
+					day: '2-digit',
+					month: '2-digit',
+					year: 'numeric'
+				})}
 			</div>
-			<div id="log" class="focus-ring">
-				<div id="toolbar"></div>
-				<div id="editor"></div>
+			<div class="flex-fill textAreaWrittenAt">
+				<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+				{logDateWritten}
 			</div>
-			{#if images.length > 0}
-				<div class="d-flex flex-row images mt-3">
-					{#each images as image (image.uuid_filename)}
-						<button
-							type="button"
-							onclick={() => {
-								viewImage(image.uuid_filename);
-							}}
-							class="imageContainer d-flex align-items-center position-relative"
-							transition:slide={{ axis: 'x' }}
-						>
-							{#if image.src}
-								<img
-									transition:fade
-									class="image"
-									alt={image.filename}
-									src={'data:image/jpg;base64,' + image.src}
-								/>
-							{:else}
-								<div class="spinner-border" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</div>
-							{/if}
-						</button>
-					{/each}
-				</div>
-			{/if}
-			{$selectedDate}<br />
-			{lastSelectedDate}
+			<div class="textAreaHistory">history</div>
+			<div class="textAreaDelete">delete</div>
 		</div>
+		<div id="log" class="focus-ring">
+			<div id="toolbar"></div>
+			<div id="editor"></div>
+		</div>
+		{#if images.length > 0}
+			<div class="d-flex flex-row images mt-3">
+				{#each images as image (image.uuid_filename)}
+					<button
+						type="button"
+						onclick={() => {
+							viewImage(image.uuid_filename);
+						}}
+						class="imageContainer d-flex align-items-center position-relative"
+						transition:slide={{ axis: 'x' }}
+					>
+						{#if image.src}
+							<img
+								transition:fade
+								class="image"
+								alt={image.filename}
+								src={'data:image/' + image.filename.split('.').pop() + ';base64,' + image.src}
+							/>
+						{:else}
+							<div class="spinner-border" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{/if}
+					</button>
+				{/each}
+			</div>
+		{/if}
+		{$selectedDate}<br />
+		{lastSelectedDate}
+		<!-- </div> -->
 	</div>
 
 	<div id="right" class="d-flex flex-column">
@@ -549,9 +622,36 @@
 				<div class="btn-group file mt-2" transition:slide>
 					<button
 						onclick={() => downloadFile(file.uuid_filename)}
-						class="p-2 fileBtn d-flex flex-row align-items-center flex-fill"
-						><div class="filename filenameWeight">{file.filename}</div>
-						<span class="filesize">({formatBytes(file.size)})</span>
+						class="p-2 fileBtn d-flex flex-column flex-fill"
+					>
+						<div class="d-flex flex-row align-items-center">
+							<div class="filename filenameWeight">{file.filename}</div>
+							<span class="filesize">({formatBytes(file.size)})</span>
+						</div>
+						{#if file.downloadProgress >= 0}
+							<div
+								class="progress"
+								role="progressbar"
+								aria-label="Download progress"
+								aria-valuemin="0"
+								aria-valuemax="100"
+							>
+								<div
+									class="progress-bar overflow-visible bg-info {file.downloadProgress === 0
+										? 'progress-bar-striped progress-bar-animated'
+										: ''}"
+									style:width={file.downloadProgress + '%'}
+									aria-valuenow={file.downloadProgress}
+									aria-valuemax="100"
+								>
+									{#if file.downloadProgress === 0}
+										<span class="text-dark">Wird entschlüsselt...</span>
+									{:else}
+										<span class="text-dark">Download: {file.downloadProgress}%</span>
+									{/if}
+								</div>
+							</div>
+						{/if}
 					</button>
 					<button
 						class="p-2 fileBtn deleteFileBtn"
@@ -697,14 +797,13 @@
 	>
 		<div class="modal-dialog modal-xl modal-fullscreen-sm-down">
 			<div class="modal-content">
-				<div class="modal-header d-none d-sm-block">
-					<!-- <h1 class="modal-title fs-5" id="exampleModalLabel"></h1> -->
+				<div class="modal-header d-none d-sm-flex">
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
 					></button>
 				</div>
 
 				<div class="modal-body">
-					<div id="imageCarousel" class="carousel slide">
+					<div id="imageCarousel" class="carousel slide carousel-fade">
 						<div class="carousel-indicators">
 							{#each images as image, i (image.uuid_filename)}
 								<button
@@ -712,13 +811,14 @@
 									data-bs-target="#imageCarousel"
 									data-bs-slide-to={i}
 									aria-label="Slide {i}"
-									class={image.uuid_filename === activeImage ? 'active' : ''}
+									class="carousel-button"
+									id="carousel-button-{i}"
 								></button>
 							{/each}
 						</div>
 						<div class="carousel-inner">
-							{#each images as image}
-								<div class="carousel-item {image.uuid_filename === activeImage ? 'active' : ''}">
+							{#each images as image, i (image.uuid_filename)}
+								<div id="carousel-item-{i}" class="carousel-item">
 									<img
 										src={'data:image/' + image.filename.split('.').pop() + ';base64,' + image.src}
 										class="d-block w-100"
@@ -765,6 +865,14 @@
 </div>
 
 <style>
+	.carousel-item > img {
+		transition: all ease 0.3s;
+	}
+
+	#middle {
+		min-width: 400px;
+	}
+
 	.imageLabelCarousel {
 		font-size: 20px;
 		transition: background-color ease 0.3s;
@@ -786,7 +894,7 @@
 		padding: 0px;
 		border: 0px;
 		background-color: transparent;
-		overflow: hidden;
+		overflow: clip;
 	}
 
 	.image:hover {
@@ -802,6 +910,7 @@
 
 	.images {
 		gap: 1rem;
+		overflow-x: auto;
 	}
 
 	:global(.modal.show) {
@@ -905,6 +1014,7 @@
 	.sidenav {
 		/* max-width: 430px; */
 		width: 380px;
+		min-width: 380px;
 	}
 
 	.textAreaHeader {
@@ -932,6 +1042,7 @@
 	}
 
 	#right {
-		width: 300px;
+		min-width: 300px;
+		max-width: 400px;
 	}
 </style>

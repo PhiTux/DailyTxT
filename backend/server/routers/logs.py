@@ -33,7 +33,7 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
     # move old log to history
     if "days" in content.keys():
         for dayLog in content["days"]:
-            if dayLog["day"] == day:
+            if dayLog["day"] == day and "text" in dayLog.keys():
                 historyVersion = 0
                 if "history" not in dayLog.keys():
                     dayLog["history"] = []
@@ -92,6 +92,8 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
     for dayLog in content["days"]:
         if dayLog["day"] == day:
             enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+            text = ""
+            date_written = ""
             if "text" in dayLog.keys():
                 text = security.decrypt_text(dayLog["text"], enc_key)
                 date_written = security.decrypt_text(dayLog["date_written"], enc_key)
