@@ -1,8 +1,10 @@
 import base64
 import datetime
+import io
 import logging
 import re
 from fastapi import APIRouter, Cookie, Depends, Form, UploadFile, File, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from . import users
 from ..utils import fileHandling
@@ -252,8 +254,7 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
     content:dict = fileHandling.getDay(cookie["user_id"], year, month)
 
     enc_filename = security.encrypt_text(file.filename, enc_key)
-    enc_type = security.encrypt_text(file.headers.get("content-type"), enc_key)
-    new_file = {"enc_filename": enc_filename, "uuid_filename": uuid,"size": file.size, "enc_type": enc_type}
+    new_file = {"enc_filename": enc_filename, "uuid_filename": uuid,"size": file.size}
 
     if "days" not in content.keys():
         content["days"] = []
@@ -325,4 +326,5 @@ async def downloadFile(uuid: str, cookie = Depends(users.isLoggedIn)):
     file = fileHandling.readFile(cookie["user_id"], uuid)
     if file is None:
         raise HTTPException(status_code=500, detail="Failed to read file")
-    return {"file": base64.b64encode(security.decrypt_file(file, enc_key))}
+    content = security.decrypt_file(file, enc_key)
+    return StreamingResponse(iter([content]))

@@ -78,15 +78,15 @@
 
 	let loading = false;
 	$effect(() => {
-		if (loading) return;
-		loading = true;
-
 		if ($selectedDate !== lastSelectedDate) {
-			images = [];
-			filesOfDay = [];
-
 			cancelDownload.abort();
 			cancelDownload = new AbortController();
+
+			if (loading) return;
+			loading = true;
+
+			images = [];
+			filesOfDay = [];
 
 			clearTimeout(timeout);
 			const result = getLog();
@@ -208,13 +208,15 @@
 					axios
 						.get(API_URL + '/logs/downloadFile', {
 							params: { uuid: file.uuid_filename },
+							responseType: 'blob',
 							signal: cancelDownload.signal
 						})
 						.then((response) => {
+							const url = URL.createObjectURL(new Blob([response.data]));
 							images = images.map((image) => {
 								if (image.uuid_filename === file.uuid_filename) {
-									image.src = response.data.file;
-									file.src = response.data.file;
+									image.src = url;
+									file.src = url;
 								}
 								return image;
 							});
@@ -393,7 +395,7 @@
 			return;
 		}
 
-		// download from server
+		// otherwise: download from server
 
 		filesOfDay = filesOfDay.map((f) => {
 			if (f.uuid_filename === uuid) {
@@ -407,12 +409,14 @@
 			onDownloadProgress: (progressEvent) => {
 				filesOfDay = filesOfDay.map((file) => {
 					if (file.uuid_filename === uuid) {
-						file.downloadProgress = Math.round(progressEvent.progress * 100);
+						file.downloadProgress = Math.round((progressEvent.loaded / file.size) * 100);
+						console.log(progressEvent);
 					}
 					return file;
 				});
 			},
-			signal: cancelDownload.signal
+			signal: cancelDownload.signal,
+			responseType: 'blob'
 		};
 
 		axios
@@ -420,9 +424,10 @@
 				...config
 			})
 			.then((response) => {
+				const url = URL.createObjectURL(new Blob([response.data]));
 				filesOfDay = filesOfDay.map((f) => {
 					if (f.uuid_filename === uuid) {
-						f.src = response.data.file;
+						f.src = url;
 					}
 					return f;
 				});
@@ -459,15 +464,13 @@
 			}
 		}
 
-		const blob = new Blob([base64ToArrayBuffer(file.src)], {
-			type: 'application/octet-stream'
-		});
-		const url = window.URL.createObjectURL(blob);
 		const a = document.createElement('a');
-		a.href = url;
+		a.href = file.src;
 		a.download = file.filename;
 		document.body.appendChild(a);
+		console.log(a);
 		a.click();
+		document.body.removeChild(a);
 	}
 
 	let confirmDelete = $state({ uuid: '', filename: '' });
@@ -586,12 +589,7 @@
 						transition:slide={{ axis: 'x' }}
 					>
 						{#if image.src}
-							<img
-								transition:fade
-								class="image"
-								alt={image.filename}
-								src={'data:image/' + image.filename.split('.').pop() + ';base64,' + image.src}
-							/>
+							<img transition:fade class="image" alt={image.filename} src={image.src} />
 						{:else}
 							<div class="spinner-border" role="status">
 								<span class="visually-hidden">Loading...</span>
@@ -819,11 +817,7 @@
 						<div class="carousel-inner">
 							{#each images as image, i (image.uuid_filename)}
 								<div id="carousel-item-{i}" class="carousel-item">
-									<img
-										src={'data:image/' + image.filename.split('.').pop() + ';base64,' + image.src}
-										class="d-block w-100"
-										alt={image.filename}
-									/>
+									<img src={image.src} class="d-block w-100" alt={image.filename} />
 									<div class="carousel-caption d-none d-md-block">
 										<span class="imageLabelCarousel">{image.filename}</span>
 										<button
