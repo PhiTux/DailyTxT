@@ -6,9 +6,10 @@
 # DailyTxT
 
 > [!NOTE]
-> I started to rewrite DailyTxT on end of November 2024. The new, **compatible** version will not be available before March 2025.
-> I try to adress several new features like dark-mode, "on-this-day", viewing mode, ...
+> I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before ~~March~~ April 2025.
+> I'm adressing several new features like dark-mode, "on-this-day", viewing mode, Markdown support ...
 > It's written in Svelte & Bootstrap for the frontend and Python Fastapi for the backend.
+> Progress is happening on the branch `version2`.
 
 DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
 It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run by **[Docker](https://hub.docker.com/r/phitux/dailytxt/)** - supports AMD64 and ARM64.
@@ -233,8 +234,8 @@ You can now (Version >= 1.0.4) also run DailyTxT on a subpath.
 
 ### 1.0.8
 
-(2022_02_06)\
-_Actually a **big** update!_
+(2022*02_06)\
+\_Actually a **big** update!*
 
 ```
 - Added spanish translation [1]
