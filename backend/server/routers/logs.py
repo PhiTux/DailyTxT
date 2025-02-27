@@ -254,7 +254,7 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
     content:dict = fileHandling.getDay(cookie["user_id"], year, month)
 
     enc_filename = security.encrypt_text(file.filename, enc_key)
-    new_file = {"enc_filename": enc_filename, "uuid_filename": uuid,"size": file.size}
+    new_file = {"enc_filename": enc_filename, "uuid_filename": uuid, "size": file.size}
 
     if "days" not in content.keys():
         content["days"] = []

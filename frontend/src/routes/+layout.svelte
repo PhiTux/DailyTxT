@@ -173,29 +173,30 @@
 							<nav class="flex-column align-items-stretch" id="settings-nav">
 								<nav class="nav nav-pills flex-column">
 									<a class="nav-link mb-1" href="#appearance">Aussehen</a>
-									<a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
-									<a href="#background" class="ms-3 mb-1 nav-link">Hintergrund</a>
+									<!-- <a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
+									<a href="#background" class="ms-3 mb-1 nav-link">Hintergrund</a> -->
 									<a class="nav-link mb-1" href="#functions">Funktionen</a>
-									<nav class="nav nav-pills flex-column">
+									<!-- <nav class="nav nav-pills flex-column">
 										<a href="#language" class="ms-3 mb-1 nav-link">Sprache</a>
 										<a href="#timezone" class="ms-3 mb-1 nav-link">Zeitzone</a>
 										<a href="#onthisday" class="ms-3 mb-1 nav-link">An diesem Tag</a>
 										<a href="#loginonreload" class="ms-3 mb-1 nav-link">Login bei Reload</a>
-									</nav>
+									</nav> -->
 									<a class="nav-link mb-1" href="#tags">Tags</a>
 									<a class="nav-link mb-1" href="#templates">Vorlagen</a>
 									<a class="nav-link mb-1" href="#data">Daten</a>
-									<nav class="nav nav-pills flex-column">
+									<!-- <nav class="nav nav-pills flex-column">
 										<a href="#export" class="ms-3 nav-link mb-1">Export</a>
 										<a href="#import" class="ms-3 nav-link mb-1">Import</a>
-									</nav>
-									<a class="nav-link mb-1" href="#account">Account</a>
-									<nav class="nav nav-pills flex-column">
+									</nav> -->
+									<a class="nav-link mb-1" href="#security">Sicherheit</a>
+									<!-- <nav class="nav nav-pills flex-column">
 										<a href="#password" class="ms-3 mb-1 nav-link">Password ändern</a>
 										<a href="#backupkeys" class="ms-3 mb-1 nav-link">Backup-Keys</a>
 										<a href="#username" class="ms-3 mb-1 nav-link">Username ändern</a>
 										<a href="#deleteaccount" class="ms-3 mb-1 nav-link">Konto löschen</a>
-									</nav>
+									</nav> -->
+									<a class="nav-link mb-1" href="#about">About</a>
 								</nav>
 							</nav>
 						</div>
@@ -273,15 +274,26 @@
 
 								<div id="templates"><h4>Vorlagen</h4></div>
 
-								<div id="data"><h4>Daten</h4></div>
-								<div id="export"><h5>Export</h5></div>
-								<div id="import"><h5>Import</h5></div>
+								<div id="data">
+									<h4>Daten</h4>
+									<div id="export"><h5>Export</h5></div>
+									<div id="import"><h5>Import</h5></div>
+								</div>
 
-								<div id="account"><h4>Account</h4></div>
-								<div id="password"><h5>Password ändern</h5></div>
-								<div id="backupkeys"><h5>Backup-Keys</h5></div>
-								<div id="username"><h5>Username ändern</h5></div>
-								<div id="deleteaccount"><h5>Konto löschen</h5></div>
+								<div id="security">
+									<h4>Sicherheit</h4>
+									<div id="password"><h5>Password ändern</h5></div>
+									<div id="backupkeys"><h5>Backup-Keys</h5></div>
+									<div id="username"><h5>Username ändern</h5></div>
+									<div id="deleteaccount"><h5>Konto löschen</h5></div>
+								</div>
+
+								<div id="about">
+									<h4>About</h4>
+									Version:<br />
+									Changelog: <br />
+									Link zu github
+								</div>
 							</div>
 						</div>
 					</div>
