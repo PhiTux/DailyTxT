@@ -333,6 +333,16 @@
 </main>
 
 <style>
+	#selectMode:checked {
+		border-color: #da880e;
+		background-color: #da880e;
+	}
+
+	#selectMode:not(:checked) {
+		background-color: #2196f3;
+		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255, 255, 255, 1)'/></svg>");
+	}
+
 	#settings-content > div {
 		background-color: #bdbdbd5d;
 		padding: 0.5rem;
