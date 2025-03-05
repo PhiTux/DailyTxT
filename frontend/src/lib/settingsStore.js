@@ -6,3 +6,4 @@ export const useTrianglify = writable(true);
 export const trianglifyOpacity = writable(0.4);
 export const trianglifyColor = writable('');
 export const backgroundColor = writable('');
+export const autoLoadImages = writable(true);

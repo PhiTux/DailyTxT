@@ -11,10 +11,11 @@
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
-	import { faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { faCloudArrowUp, faCloudArrowDown, faTrash } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
+	import { autoLoadImages } from '$lib/settingsStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -205,36 +206,58 @@
 				) {
 					images = [...images, file];
 
-					axios
-						.get(API_URL + '/logs/downloadFile', {
-							params: { uuid: file.uuid_filename },
-							responseType: 'blob',
-							signal: cancelDownload.signal
-						})
-						.then((response) => {
-							const url = URL.createObjectURL(new Blob([response.data]));
-							images = images.map((image) => {
-								if (image.uuid_filename === file.uuid_filename) {
-									image.src = url;
-									file.src = url;
-								}
-								return image;
-							});
-						})
-						.catch((error) => {
-							if (error.name == 'CanceledError') {
-								return;
-							}
-
-							console.error(error);
-							// toast
-							const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
-							toast.show();
-						});
+					if ($autoLoadImages) {
+						loadImage(file);
+					}
 				}
 			});
 		}
 	});
+
+	function loadImage(file) {
+		images.map((image) => {
+			if (image.uuid_filename === file.uuid_filename) {
+				image.loading = true;
+			}
+			return image;
+		});
+
+		axios
+			.get(API_URL + '/logs/downloadFile', {
+				params: { uuid: file.uuid_filename },
+				responseType: 'blob',
+				signal: cancelDownload.signal
+			})
+			.then((response) => {
+				const url = URL.createObjectURL(new Blob([response.data]));
+				images = images.map((image) => {
+					if (image.uuid_filename === file.uuid_filename) {
+						image.src = url;
+						file.src = url;
+						image.loading = false;
+					}
+					return image;
+				});
+			})
+			.catch((error) => {
+				if (error.name == 'CanceledError') {
+					return;
+				}
+
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
+				toast.show();
+			});
+	}
+
+	function loadImages() {
+		images.forEach((image) => {
+			if (!image.src) {
+				loadImage(image);
+			}
+		});
+	}
 
 	async function saveLog() {
 		if (currentLog === savedLog) {
@@ -578,26 +601,39 @@
 			<div id="editor"></div>
 		</div>
 		{#if images.length > 0}
-			<div class="d-flex flex-row images mt-3">
-				{#each images as image (image.uuid_filename)}
-					<button
-						type="button"
-						onclick={() => {
-							viewImage(image.uuid_filename);
-						}}
-						class="imageContainer d-flex align-items-center position-relative"
-						transition:slide={{ axis: 'x' }}
-					>
-						{#if image.src}
-							<img transition:fade class="image" alt={image.filename} src={image.src} />
+			{#if !$autoLoadImages && !images.find((image) => image.src || image.loading)}
+				<div class="d-flex flex-row">
+					<button type="button" id="loadImageBtn" onclick={() => loadImages()}>
+						<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+						{#if images.length === 1}
+							1 Bild laden
 						{:else}
-							<div class="spinner-border" role="status">
-								<span class="visually-hidden">Loading...</span>
-							</div>
+							{images.length} Bilder laden
 						{/if}
 					</button>
-				{/each}
-			</div>
+				</div>
+			{:else}
+				<div class="d-flex flex-row images mt-3">
+					{#each images as image (image.uuid_filename)}
+						<button
+							type="button"
+							onclick={() => {
+								viewImage(image.uuid_filename);
+							}}
+							class="imageContainer d-flex align-items-center position-relative"
+							transition:slide={{ axis: 'x' }}
+						>
+							{#if image.src}
+								<img transition:fade class="image" alt={image.filename} src={image.src} />
+							{:else}
+								<div class="spinner-border" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+							{/if}
+						</button>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 		{$selectedDate}<br />
 		{lastSelectedDate}
@@ -859,6 +895,14 @@
 </div>
 
 <style>
+	#loadImageBtn {
+		padding: 0.5rem 1rem;
+		border: none;
+		margin-top: 0.5rem;
+		border-radius: 5px;
+		transition: all ease 0.2s;
+	}
+
 	.carousel-item > img {
 		transition: all ease 0.3s;
 	}

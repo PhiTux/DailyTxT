@@ -11,7 +11,7 @@
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
 	import trianglify from 'trianglify';
-	import { useTrianglify, trianglifyOpacity } from '$lib/settingsStore.js';
+	import { useTrianglify, trianglifyOpacity, autoLoadImages } from '$lib/settingsStore.js';
 
 	import {
 		faRightFromBracket,
@@ -108,21 +108,18 @@
 				>
 
 				<div class="form-check form-switch d-flex flex-row">
-					<label class="me-3" for="flexSwitchCheckDefault"><Fa icon={faPencil} size="1.5x" /></label
-					>
+					<label class="me-3" for="selectMode"><Fa icon={faPencil} size="1.5x" /></label>
 					<div class="form-check form-switch">
 						<input
 							class="form-check-input"
 							bind:checked={$readingMode}
 							type="checkbox"
 							role="switch"
-							id="flexSwitchCheckDefault"
+							id="selectMode"
 							style="transform: scale(1.3);"
 						/>
 					</div>
-					<label class="ms-2" for="flexSwitchCheckDefault"
-						><Fa icon={faGlasses} size="1.5x" /></label
-					>
+					<label class="ms-2" for="selectMode"><Fa icon={faGlasses} size="1.5x" /></label>
 				</div>
 			</div>
 
@@ -208,7 +205,7 @@
 								data-bs-smooth-scroll="true"
 								id="settings-content"
 							>
-								<div id="appearance"><h4>Aussehen</h4></div>
+								<h3 id="appearance" class="text-primary">Aussehen</h3>
 								<div id="lightdark">
 									<h5>Light/Dark-Mode</h5>
 									Bla<br />
@@ -239,7 +236,35 @@
 									</div>
 								</div>
 
-								<div id="functions"><h4>Funktionen</h4></div>
+								<h3 id="functions" class="text-primary">Funktionen</h3>
+
+								<div id="autoLoadImages">
+									<h5>Bilder automatisch laden</h5>
+									<ul>
+										<li>
+											Beim Laden eines Textes können hochgeladene Bilder (sofern vorhanden)
+											automatisch geladen werden. <em>Erhöhter Datenverbrauch!</em>
+										</li>
+										<li>Alternativ wird ein Button zum Nachladen aller Bilder angezeigt.</li>
+									</ul>
+
+									<div class="form-check form-switch">
+										<input
+											class="form-check-input"
+											bind:checked={$autoLoadImages}
+											type="checkbox"
+											role="switch"
+											id="autoLoadImagesSwitch"
+										/>
+										<label class="form-check-label" for="autoLoadImagesSwitch">
+											{#if $autoLoadImages}
+												Bilder werden automatisch geladen
+											{:else}
+												Bilder werden nicht automatisch geladen
+											{/if}</label
+										>
+									</div>
+								</div>
 
 								<div id="language">
 									<h5>Sprache</h5>
@@ -308,6 +333,17 @@
 </main>
 
 <style>
+	#settings-content > div {
+		background-color: #bdbdbd5d;
+		padding: 0.5rem;
+		border-radius: 10px;
+		margin-bottom: 1rem;
+	}
+
+	h3.text-primary {
+		font-weight: 700;
+	}
+
 	#trianglifyOpacity {
 		max-width: 300px;
 	}
