@@ -106,3 +106,19 @@ def removeFile(user_id, uuid):
         return False
     else:
         return True
+    
+def getTags(user_id):
+    try:
+        f = open(os.path.join(settings.data_path, str(user_id), "tags.json"), "r")
+    except FileNotFoundError:
+        logger.info(f"{user_id}/tags.json - File not found")
+        return {}
+    except Exception as e:
+        logger.exception(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error when trying to open tags.json")
+    else:
+        with f:
+            s = f.read()
+            if s == "":
+                return {}
+            return json.loads(s)

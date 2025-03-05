@@ -16,6 +16,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
 	import { autoLoadImages } from '$lib/settingsStore';
+	import Tag from '$lib/Tag.svelte';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -62,8 +63,25 @@
 			handleInput();
 		});
 
+		loadTags();
+
 		getLog();
 	});
+
+	let tags = $state([]);
+	function loadTags() {
+		axios
+			.get(API_URL + '/logs/getTags')
+			.then((response) => {
+				tags = response.data;
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingTags'));
+				toast.show();
+			});
+	}
 
 	$effect(() => {
 		if (currentLog !== savedLog) {
@@ -103,6 +121,7 @@
 	});
 
 	let altPressed = false;
+	let ctrlPressed = false;
 	function on_key_down(event) {
 		if (event.key === 'Alt') {
 			event.preventDefault();
@@ -114,6 +133,14 @@
 		} else if (event.key === 'ArrowLeft' && altPressed) {
 			event.preventDefault();
 			changeDay(-1);
+		}
+		if (event.key === 'Control') {
+			event.preventDefault();
+			ctrlPressed = true;
+		}
+		if (event.key === 'g' && ctrlPressed) {
+			event.preventDefault();
+			document.getElementById('tag-input').focus();
 		}
 	}
 
@@ -551,6 +578,97 @@
 		const modal = new bootstrap.Modal(document.getElementById('modalImages'));
 		modal.show();
 	}
+
+	let searchTab = $state('');
+	let showTagDropdown = $state(false);
+
+	let filteredTags = $state([]);
+	let selectedTags = $state([]);
+
+	// show the correct tags in the dropdown
+	$effect(() => {
+		// exclude already selected tags
+		let tagsWithoutSelected = tags.filter(
+			(tag) => !selectedTags.find((selectedTag) => selectedTag.id === tag.id)
+		);
+
+		if (searchTab === '') {
+			filteredTags = tagsWithoutSelected;
+		} else {
+			// remove trailing # if present
+			let searchString = searchTab;
+			if (searchString.startsWith('#')) {
+				searchString = searchString.slice(1);
+			}
+
+			// filter tags for searchstring
+			filteredTags = tagsWithoutSelected.filter((tag) =>
+				tag.name.toLowerCase().includes(searchString.toLowerCase())
+			);
+		}
+
+		selectedTagIndex = 0;
+	});
+
+	let selectedTagIndex = $state(0);
+	// Handle Keyboard Navigation in Tag Dropdown
+	function handleKeyDown(event) {
+		if (!showTagDropdown || filteredTags.length === 0) return;
+
+		switch (event.key) {
+			case 'ArrowDown':
+				event.preventDefault(); // Prevent cursor movement
+				selectedTagIndex = Math.min(selectedTagIndex + 1, filteredTags.length - 1);
+				ensureSelectedVisible();
+				console.log(selectedTagIndex);
+				break;
+
+			case 'ArrowUp':
+				event.preventDefault(); // Prevent cursor movement
+				selectedTagIndex = Math.max(selectedTagIndex - 1, 0);
+				ensureSelectedVisible();
+				break;
+
+			case 'Enter':
+				if (selectedTagIndex >= 0 && selectedTagIndex < filteredTags.length) {
+					event.preventDefault();
+					selectTag(filteredTags[selectedTagIndex].id);
+				}
+				document.activeElement.blur();
+				break;
+
+			case 'Escape':
+				showTagDropdown = false;
+				break;
+		}
+	}
+
+	function ensureSelectedVisible() {
+		setTimeout(() => {
+			const dropdown = document.getElementById('tagDropdown');
+			const selectedElement = dropdown?.querySelector('.tag-item.selected');
+
+			if (dropdown && selectedElement) {
+				const dropdownRect = dropdown.getBoundingClientRect();
+				const selectedRect = selectedElement.getBoundingClientRect();
+
+				if (selectedRect.top < dropdownRect.top) {
+					dropdown.scrollTop -= dropdownRect.top - selectedRect.top;
+				} else if (selectedRect.bottom > dropdownRect.bottom) {
+					dropdown.scrollTop += selectedRect.bottom - dropdownRect.bottom;
+				}
+			}
+		}, 0);
+	}
+
+	function selectTag(id) {
+		selectedTags = [...selectedTags, tags.find((tag) => tag.id === id)];
+		searchTab = '';
+	}
+
+	function removeTag(id) {
+		selectedTags = selectedTags.filter((tag) => tag.id !== id);
+	}
 </script>
 
 <DatepickerLogic />
@@ -641,7 +759,51 @@
 	</div>
 
 	<div id="right" class="d-flex flex-column">
-		<div>Tags</div>
+		<div class="tags">
+			<h3>Tags</h3>
+			<input
+				bind:value={searchTab}
+				onfocus={() => {
+					showTagDropdown = true;
+					selectedTagIndex = 0;
+				}}
+				onfocusout={() => {
+					setTimeout(() => (showTagDropdown = false), 150);
+				}}
+				onkeydown={handleKeyDown}
+				type="text"
+				class="form-control"
+				id="tag-input"
+				placeholder="Tag..."
+			/>
+			{#if showTagDropdown}
+				<div id="tagDropdown">
+					{#if filteredTags.length === 0}
+						<em style="padding: 0.2rem;">Keinen Tag gefunden...</em>
+					{:else}
+						{#each filteredTags as tag, index (tag.id)}
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+							<div
+								role="button"
+								tabindex="0"
+								onclick={() => selectTag(tag.id)}
+								onmouseover={() => (selectedTagIndex = index)}
+								class="tag-item {index === selectedTagIndex ? 'selected' : ''}"
+							>
+								<Tag {tag} />
+							</div>
+						{/each}
+					{/if}
+				</div>
+			{/if}
+			<div class="selectedTags d-flex flex-row flex-wrap">
+				{#each selectedTags as tag (tag.id)}
+					<Tag {tag} {removeTag} isRemovable="true" />
+				{/each}
+			</div>
+		</div>
 
 		<div class="files d-flex flex-column">
 			<button
@@ -690,7 +852,7 @@
 					<button
 						class="p-2 fileBtn deleteFileBtn"
 						onclick={() => askDeleteFile(file.uuid_filename, file.filename)}
-						><Fa icon={faTrash} id="uploadIcon" fw /></button
+						><Fa icon={faTrash} fw /></button
 					>
 				</div>
 			{/each}
@@ -895,6 +1057,43 @@
 </div>
 
 <style>
+	.tag-item.selected {
+		background-color: #b2b4b6;
+	}
+
+	.selectedTags {
+		margin-top: 0.5rem;
+		gap: 0.5rem;
+	}
+
+	#tagDropdown {
+		position: absolute;
+		background-color: white;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		z-index: 1000;
+		max-height: 150px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.tag-item {
+		cursor: pointer;
+		padding: 5px;
+	}
+
+	.tags {
+		z-index: 10;
+		padding: 0.5rem;
+		margin-right: 2rem;
+		margin-bottom: 2rem;
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
+		border: 1px solid #ececec77;
+		border-radius: 10px;
+	}
+
 	#loadImageBtn {
 		padding: 0.5rem 1rem;
 		border: none;
@@ -1080,6 +1279,7 @@
 	}
 
 	#right {
+		margin-top: 1.5rem !important;
 		min-width: 300px;
 		max-width: 400px;
 	}

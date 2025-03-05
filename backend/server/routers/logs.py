@@ -328,3 +328,15 @@ async def downloadFile(uuid: str, cookie = Depends(users.isLoggedIn)):
         raise HTTPException(status_code=500, detail="Failed to read file")
     content = security.decrypt_file(file, enc_key)
     return StreamingResponse(iter([content]))
+
+@router.get("/getTags")
+async def getTags(cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getTags(cookie["user_id"])
+
+    if not 'tags' in content:
+        return []
+    
+    else:
+        return content['tags']
+
+    ### NOCH ENTSCHLÜSSELN!!!!
