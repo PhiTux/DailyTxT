@@ -331,12 +331,45 @@ async def downloadFile(uuid: str, cookie = Depends(users.isLoggedIn)):
 
 @router.get("/getTags")
 async def getTags(cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
     content:dict = fileHandling.getTags(cookie["user_id"])
 
     if not 'tags' in content:
         return []
     
     else:
+        for tag in content['tags']:
+            tag['icon'] = security.decrypt_text(tag['icon'], enc_key)
+            tag['name'] = security.decrypt_text(tag['name'], enc_key)
+            tag['color'] = security.decrypt_text(tag['color'], enc_key)
         return content['tags']
 
-    ### NOCH ENTSCHLÜSSELN!!!!
+
+class NewTag(BaseModel):
+    icon: str
+    name: str
+    color: str
+
+@router.post("/saveTag")
+async def saveTag(tag: NewTag, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    content:dict = fileHandling.getTags(cookie["user_id"])
+    
+    if not 'tags' in content:
+        content['tags'] = []
+        content['next_id'] = 1
+    
+    enc_icon = security.encrypt_text(tag.icon, enc_key)
+    enc_name = security.encrypt_text(tag.name, enc_key)
+    enc_color = security.encrypt_text(tag.color, enc_key)
+
+    new_tag = {"id": content['next_id'], "icon": enc_icon, "name": enc_name, "color": enc_color}
+    content['next_id'] += 1
+    content['tags'].append(new_tag)
+
+    if not fileHandling.writeTags(cookie["user_id"], content):
+        return {"success": False}
+    else:
+        return {"success": True}

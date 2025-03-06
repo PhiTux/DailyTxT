@@ -324,8 +324,8 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-primary">Speichern</button>
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+					<button type="button" class="btn btn-primary">Speichern</button>
 				</div>
 			</div>
 		</div>

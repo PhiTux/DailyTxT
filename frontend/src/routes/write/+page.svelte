@@ -11,12 +11,19 @@
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
-	import { faCloudArrowUp, faCloudArrowDown, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faCloudArrowUp,
+		faCloudArrowDown,
+		faTrash,
+		faSquarePlus,
+		faQuestionCircle
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
 	import { autoLoadImages } from '$lib/settingsStore';
 	import Tag from '$lib/Tag.svelte';
+	import TagModal from '$lib/TagModal.svelte';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -66,6 +73,13 @@
 		loadTags();
 
 		getLog();
+
+		// enable popovers
+		const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+		const popoverList = [...popoverTriggerList].map(
+			(popoverTriggerEl) =>
+				new bootstrap.Popover(popoverTriggerEl, { trigger: 'focus', html: true })
+		);
 	});
 
 	let tags = $state([]);
@@ -212,15 +226,6 @@
 
 	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
 	//TODO: support svg? -> minsize is necessary...
-
-	function base64ToArrayBuffer(base64) {
-		var binaryString = atob(base64);
-		var bytes = new Uint8Array(binaryString.length);
-		for (var i = 0; i < binaryString.length; i++) {
-			bytes[i] = binaryString.charCodeAt(i);
-		}
-		return bytes.buffer;
-	}
 
 	$effect(() => {
 		if (filesOfDay) {
@@ -669,6 +674,49 @@
 	function removeTag(id) {
 		selectedTags = selectedTags.filter((tag) => tag.id !== id);
 	}
+
+	let editTag = $state({});
+	let tagModal;
+
+	function openTagModal(tag) {
+		if (tag === null) {
+			editTag = {
+				icon: '',
+				name: '',
+				color: '#f57c00'
+			};
+		} else {
+			editTag = tag;
+		}
+
+		tagModal.open();
+	}
+
+	let isSavingNewTag = $state(false);
+	function saveNewTag() {
+		isSavingNewTag = true;
+		axios
+			.post(API_URL + '/logs/saveTag', {
+				icon: editTag.icon,
+				name: editTag.name,
+				color: editTag.color
+			})
+			.then((response) => {
+				if (response.data.success) {
+					loadTags();
+					tagModal.close();
+				} else {
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingTag'));
+					toast.show();
+				}
+			})
+			.finally(() => {
+				// close modal
+
+				isSavingNewTag = false;
+			});
+	}
 </script>
 
 <DatepickerLogic />
@@ -760,26 +808,49 @@
 
 	<div id="right" class="d-flex flex-column">
 		<div class="tags">
-			<h3>Tags</h3>
-			<input
-				bind:value={searchTab}
-				onfocus={() => {
-					showTagDropdown = true;
-					selectedTagIndex = 0;
-				}}
-				onfocusout={() => {
-					setTimeout(() => (showTagDropdown = false), 150);
-				}}
-				onkeydown={handleKeyDown}
-				type="text"
-				class="form-control"
-				id="tag-input"
-				placeholder="Tag..."
-			/>
+			<div class="d-flex flex-row justify-content-between">
+				<h3>Tags</h3>
+				<!-- svelte-ignore a11y_missing_attribute -->
+				<a
+					tabindex="-1"
+					type="button"
+					class="btn"
+					data-bs-toggle="popover"
+					data-bs-title="Tags"
+					data-bs-content="Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln."
+				>
+					<Fa icon={faQuestionCircle} fw /></a
+				>
+			</div>
+			<div class="d-flex flex-row">
+				<input
+					bind:value={searchTab}
+					onfocus={() => {
+						showTagDropdown = true;
+						selectedTagIndex = 0;
+					}}
+					onfocusout={() => {
+						setTimeout(() => (showTagDropdown = false), 150);
+					}}
+					onkeydown={handleKeyDown}
+					type="text"
+					class="form-control"
+					id="tag-input"
+					placeholder="Tag..."
+				/>
+				<button
+					class="btn btn-outline-secondary ms-2"
+					onclick={() => {
+						openTagModal(null);
+					}}
+				>
+					<Fa icon={faSquarePlus} fw /> Neu
+				</button>
+			</div>
 			{#if showTagDropdown}
 				<div id="tagDropdown">
 					{#if filteredTags.length === 0}
-						<em style="padding: 0.2rem;">Keinen Tag gefunden...</em>
+						<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
 					{:else}
 						{#each filteredTags as tag, index (tag.id)}
 							<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -886,6 +957,18 @@
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div
+			id="toastErrorSavingTag"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern des Tags!</div>
+			</div>
+		</div>
+
+		<div
 			id="toastErrorSavingLog"
 			class="toast align-items-center text-bg-danger"
 			role="alert"
@@ -984,6 +1067,14 @@
 		</div>
 	</div>
 
+	<TagModal
+		bind:this={tagModal}
+		bind:editTag
+		createTag="true"
+		isSaving={isSavingNewTag}
+		{saveNewTag}
+	/>
+
 	<div
 		class="modal fade"
 		id="modalImages"
@@ -1064,6 +1155,10 @@
 	.selectedTags {
 		margin-top: 0.5rem;
 		gap: 0.5rem;
+	}
+
+	#tag-input {
+		width: inherit !important;
 	}
 
 	#tagDropdown {

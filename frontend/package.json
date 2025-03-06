@@ -37,6 +37,7 @@
 		"axios": "^1.7.8",
 		"bootstrap": "^5.3.3",
 		"dayjs": "^1.11.13",
+		"emoji-picker-element": "^1.26.1",
 		"marked": "^15.0.6",
 		"svelte-outside": "^0.0.3",
 		"tiny-markdown-editor": "^0.1.31",

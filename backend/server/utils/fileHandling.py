@@ -122,3 +122,14 @@ def getTags(user_id):
             if s == "":
                 return {}
             return json.loads(s)
+        
+def writeTags(user_id, content):
+    try:
+        f = open(os.path.join(settings.data_path, str(user_id), "tags.json"), "w")
+    except Exception as e:
+        logger.exception(e)
+        return False
+    else:
+        with f:
+            f.write(json.dumps(content, indent=4))
+            return True

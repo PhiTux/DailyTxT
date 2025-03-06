@@ -2,9 +2,23 @@
 	import Fa from 'svelte-fa';
 	import { faTrash, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
 	let { tag, removeTag, isEditable, isRemovable, isDeletable } = $props();
+
+	let fontColor = $state('#111');
+	$effect(() => {
+		const r = parseInt(tag.color.slice(1, 3), 16);
+		const g = parseInt(tag.color.slice(3, 5), 16);
+		const b = parseInt(tag.color.slice(5, 7), 16);
+		const brightness = r * 0.299 + g * 0.587 + b * 0.114;
+
+		if (brightness > 140) {
+			fontColor = '#111';
+		} else {
+			fontColor = '#eee';
+		}
+	});
 </script>
 
-<span class="badge rounded-pill" style="background-color: {tag.color};">
+<span class="badge rounded-pill" style="background-color: {tag.color}; color: {fontColor}">
 	<div class="d-flex flex-row">
 		<div>{tag.icon} #{tag.name}</div>
 		{#if isEditable}
