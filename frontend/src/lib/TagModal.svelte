@@ -68,8 +68,14 @@
 					<div class="col-8">
 						<button
 							class="btn btn-outline-secondary mb-2 {pickerShown ? 'active' : ''}"
-							onclick={() => togglePicker()}>😀 Emoji auswählen</button
+							onclick={() => togglePicker()}
 						>
+							{#if editTag.icon === ''}
+								😀
+							{:else}
+								{editTag.icon}
+							{/if} Emoji auswählen
+						</button>
 						<!-- <em>(freiwillig)</em> -->
 						<div class="tooltip" role="tooltip">
 							<emoji-picker class="emojiPicker" onemoji-click={(ev) => emojiSelected(ev)}

@@ -206,6 +206,8 @@
 
 			currentLog = response.data.text;
 			filesOfDay = response.data.files;
+			selectedTags = response.data.tags;
+
 			savedLog = currentLog;
 
 			tinyMDE.setContent(currentLog);
@@ -592,9 +594,14 @@
 
 	// show the correct tags in the dropdown
 	$effect(() => {
+		if (tags.length === 0) {
+			filteredTags = [];
+			return;
+		}
+
 		// exclude already selected tags
 		let tagsWithoutSelected = tags.filter(
-			(tag) => !selectedTags.find((selectedTag) => selectedTag.id === tag.id)
+			(tag) => !selectedTags.find((selectedTag) => selectedTag === tag.id)
 		);
 
 		if (searchTab === '') {
@@ -666,13 +673,70 @@
 		}, 0);
 	}
 
+	let showTagLoading = $state(false);
+
 	function selectTag(id) {
-		selectedTags = [...selectedTags, tags.find((tag) => tag.id === id)];
+		showTagLoading = true;
+
+		axios
+			.post(API_URL + '/logs/addTagToLog', {
+				day: $selectedDate.getDate(),
+				month: $selectedDate.getMonth() + 1,
+				year: $selectedDate.getFullYear(),
+				tag_id: id
+			})
+			.then((response) => {
+				if (response.data.success) {
+					selectedTags = [...selectedTags, id];
+				} else {
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorAddingTagToDay'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorAddingTagToDay'));
+				toast.show();
+			})
+			.finally(() => {
+				showTagLoading = false;
+			});
+
 		searchTab = '';
 	}
 
 	function removeTag(id) {
-		selectedTags = selectedTags.filter((tag) => tag.id !== id);
+		showTagLoading = true;
+
+		axios
+			.post(API_URL + '/logs/removeTagFromLog', {
+				day: $selectedDate.getDate(),
+				month: $selectedDate.getMonth() + 1,
+				year: $selectedDate.getFullYear(),
+				tag_id: id
+			})
+			.then((response) => {
+				if (response.data.success) {
+					selectedTags = selectedTags.filter((tag) => tag !== id);
+				} else {
+					// toast
+					const toast = new bootstrap.Toast(
+						document.getElementById('toastErrorRemovingTagFromDay')
+					);
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorRemovingTagFromDay'));
+				toast.show();
+			})
+			.finally(() => {
+				showTagLoading = false;
+			});
 	}
 
 	let editTag = $state({});
@@ -696,7 +760,7 @@
 	function saveNewTag() {
 		isSavingNewTag = true;
 		axios
-			.post(API_URL + '/logs/saveTag', {
+			.post(API_URL + '/logs/saveNewTag', {
 				icon: editTag.icon,
 				name: editTag.name,
 				color: editTag.color
@@ -707,7 +771,7 @@
 					tagModal.close();
 				} else {
 					// toast
-					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingTag'));
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingNewTag'));
 					toast.show();
 				}
 			})
@@ -809,7 +873,14 @@
 	<div id="right" class="d-flex flex-column">
 		<div class="tags">
 			<div class="d-flex flex-row justify-content-between">
-				<h3>Tags</h3>
+				<div class="d-flex flex-row">
+					<h3>Tags</h3>
+					{#if showTagLoading}
+						<div class="spinner-border ms-3" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+					{/if}
+				</div>
 				<!-- svelte-ignore a11y_missing_attribute -->
 				<a
 					tabindex="-1"
@@ -870,9 +941,13 @@
 				</div>
 			{/if}
 			<div class="selectedTags d-flex flex-row flex-wrap">
-				{#each selectedTags as tag (tag.id)}
-					<Tag {tag} {removeTag} isRemovable="true" />
-				{/each}
+				{#if tags.length !== 0}
+					{#each selectedTags as tag_id (tag_id)}
+						<div transition:slide={{ axis: 'x' }}>
+							<Tag tag={tags.find((tag) => tag.id === tag_id)} {removeTag} isRemovable="true" />
+						</div>
+					{/each}
+				{/if}
 			</div>
 		</div>
 
@@ -957,7 +1032,31 @@
 
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div
-			id="toastErrorSavingTag"
+			id="toastErrorRemovingTagFromDay"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Enfternen des Tags!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorAddingTagToDay"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Hinzufügen des Tags zum ausgewählten Datum!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorSavingNewTag"
 			class="toast align-items-center text-bg-danger"
 			role="alert"
 			aria-live="assertive"

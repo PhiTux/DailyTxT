@@ -88,8 +88,10 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
 
     content:dict = fileHandling.getDay(cookie["user_id"], year, month)
     
+    dummy = {"text": "", "date_written": "", "files": [], "tags": []}
+
     if "days" not in content.keys():
-        return {"text": "", "date_written": ""}
+        return dummy
     
     for dayLog in content["days"]:
         if dayLog["day"] == day:
@@ -103,9 +105,9 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
                 for file in dayLog["files"]:
                     file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
                     file["type"] = security.decrypt_text(file["enc_type"], enc_key)
-            return {"text": text, "date_written": date_written, "files": dayLog.get("files", [])}
+            return {"text": text, "date_written": date_written, "files": dayLog.get("files", []), "tags": dayLog.get("tags", [])}
 
-    return {"text": "", "date_written": ""}
+    return dummy
 
 def get_start_index(text, index):
     # find a whitespace two places before the index
@@ -351,8 +353,8 @@ class NewTag(BaseModel):
     name: str
     color: str
 
-@router.post("/saveTag")
-async def saveTag(tag: NewTag, cookie = Depends(users.isLoggedIn)):
+@router.post("/saveNewTag")
+async def saveNewTag(tag: NewTag, cookie = Depends(users.isLoggedIn)):
     enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
     
     content:dict = fileHandling.getTags(cookie["user_id"])
@@ -373,3 +375,55 @@ async def saveTag(tag: NewTag, cookie = Depends(users.isLoggedIn)):
         return {"success": False}
     else:
         return {"success": True}
+    
+
+class AddTagToLog(BaseModel):
+    day: int
+    month: int
+    year: int
+    tag_id: int
+
+@router.post("/addTagToLog")
+async def addTagToLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getDay(cookie["user_id"], data.year, data.month)
+    if "days" not in content.keys():
+        content["days"] = []
+    
+    dayFound = False
+    for dayLog in content["days"]:
+        if dayLog["day"] != data.day:
+            continue
+        dayFound = True
+        if not "tags" in dayLog.keys():
+            dayLog["tags"] = []
+        if data.tag_id in dayLog["tags"]:
+            # fail silently
+            return {"success": True}
+        dayLog["tags"].append(data.tag_id)
+        break
+    
+    if not dayFound:
+        content["days"].append({"day": data.day, "tags": [data.tag_id]})
+    
+    if not fileHandling.writeDay(cookie["user_id"], data.year, data.month, content):
+        raise HTTPException(status_code=500, detail="Failed to write tag - error writing log")
+    return {"success": True}
+
+@router.post("/removeTagFromLog")
+async def removeTagFromLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getDay(cookie["user_id"], data.year, data.month)
+    if "days" not in content.keys():
+        raise HTTPException(status_code=500, detail="Day not found - json error")
+    
+    for dayLog in content["days"]:
+        if dayLog["day"] != data.day:
+            continue
+        if not "tags" in dayLog.keys():
+            raise HTTPException(status_code=500, detail="Failed to remove tag - not found in log")
+        if not data.tag_id in dayLog["tags"]:
+            raise HTTPException(status_code=500, detail="Failed to remove tag - not found in log")
+        dayLog["tags"].remove(data.tag_id)
+        if not fileHandling.writeDay(cookie["user_id"], data.year, data.month, content):
+            raise HTTPException(status_code=500, detail="Failed to remove tag - error writing log")
+        return {"success": True}
+    
