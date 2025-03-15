@@ -1,9 +1,7 @@
-import base64
 import datetime
-import io
 import logging
 import re
-from fastapi import APIRouter, Cookie, Depends, Form, UploadFile, File, HTTPException
+from fastapi import APIRouter, Depends, Form, UploadFile, File, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from . import users
@@ -11,7 +9,6 @@ from ..utils import fileHandling
 from ..utils import security
 import html
 from typing import Annotated
-import time
 
 
 logger = logging.getLogger("dailytxtLogger")
@@ -30,7 +27,7 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
     month = datetime.datetime.fromisoformat(log.date).month
     day = datetime.datetime.fromisoformat(log.date).day
 
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     
     # move old log to history
     if "days" in content.keys():
@@ -86,7 +83,7 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
     month = datetime.datetime.fromisoformat(date).month
     day = datetime.datetime.fromisoformat(date).day
 
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     
     dummy = {"text": "", "date_written": "", "files": [], "tags": []}
 
@@ -104,7 +101,6 @@ async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
             if "files" in dayLog.keys():
                 for file in dayLog["files"]:
                     file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
-                    file["type"] = security.decrypt_text(file["enc_type"], enc_key)
             return {"text": text, "date_written": date_written, "files": dayLog.get("files", []), "tags": dayLog.get("tags", [])}
 
     return dummy
@@ -138,6 +134,13 @@ def get_end_index(text, index):
     return endIndex
 
 
+def get_begin(text):
+    # get first 5 words
+    words = text.split()
+    if len(words) < 5:
+        return text
+    return " ".join(words[:5])
+
 def get_context(text: str, searchString: str, exact: bool):
     # replace whitespace with non-breaking space
     text = re.sub(r'\s+', " ", text)
@@ -154,8 +157,8 @@ def get_context(text: str, searchString: str, exact: bool):
     return text[start:pos] + "<b>" + text[pos:pos+len(searchString)] + "</b>" + text[pos+len(searchString):end]
 
 
-@router.get("/search")
-async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
+@router.get("/searchString")
+async def searchString(searchString: str, cookie = Depends(users.isLoggedIn)):
     results = []
     
     enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
@@ -163,10 +166,20 @@ async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
     # search in all years and months (dirs)
     for year in fileHandling.get_years(cookie["user_id"]):
         for month in fileHandling.get_months(cookie["user_id"], year):
-            content:dict = fileHandling.getDay(cookie["user_id"], year, int(month))
+            content:dict = fileHandling.getMonth(cookie["user_id"], year, int(month))
             if "days" not in content.keys():
                 continue
             for dayLog in content["days"]:
+                if "text" not in dayLog.keys():
+                    if "files" in dayLog.keys():
+                        for file in dayLog["files"]:
+                            filename = security.decrypt_text(file["enc_filename"], enc_key)
+                            if searchString.lower() in filename.lower():
+                                context = "📎 " + filename
+                                results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                                break
+                    continue
+                
                 text = security.decrypt_text(dayLog["text"], enc_key)
                 
                 # "..." -> exact
@@ -198,8 +211,41 @@ async def search(searchString: str, cookie = Depends(users.isLoggedIn)):
                     if searchString.lower() in text.lower():
                         context = get_context(text, searchString, False)
                         results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                    
+                    elif "files" in dayLog.keys():
+                        for file in dayLog["files"]:
+                            filename = security.decrypt_text(file["enc_filename"], enc_key)
+                            if searchString.lower() in filename.lower():
+                                context = "📎 " + filename
+                                results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+                                break
                         
         
+    # sort by year and month and day
+    results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=False)
+    return results
+
+@router.get("/searchTag")
+async def searchTag(tag_id: int, cookie = Depends(users.isLoggedIn)):
+    results = []
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+
+    # search in all years and months (dirs)
+    for year in fileHandling.get_years(cookie["user_id"]):
+        for month in fileHandling.get_months(cookie["user_id"], year):
+            content:dict = fileHandling.getMonth(cookie["user_id"], year, int(month))
+            if "days" not in content.keys():
+                continue
+            for dayLog in content["days"]:
+                if "tags" not in dayLog.keys():
+                    continue
+                if tag_id in dayLog["tags"]:
+                    context = ''
+                    if "text" in dayLog.keys():
+                        text = security.decrypt_text(dayLog["text"], enc_key)
+                        context = get_begin(text)
+                    results.append({"year": year, "month": month, "day": dayLog["day"], "text": context})
+    
     # sort by year and month and day
     results.sort(key=lambda x: (int(x["year"]), int(x["month"]), int(x["day"])), reverse=False)
     return results
@@ -209,7 +255,7 @@ async def getMarkedDays(month: str, year: str, cookie = Depends(users.isLoggedIn
     days_with_logs = []
     days_with_files = []
 
-    content:dict = fileHandling.getDay(cookie["user_id"], year, int(month))
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, int(month))
     if "days" not in content.keys():
         return {"days_with_logs": [], "days_with_files": []}
 
@@ -224,7 +270,7 @@ async def getMarkedDays(month: str, year: str, cookie = Depends(users.isLoggedIn
 
 @router.get("/loadMonthForReading")
 async def loadMonthForReading(month: int, year: int, cookie = Depends(users.isLoggedIn)):
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     if "days" not in content.keys():
         return []
     
@@ -253,7 +299,7 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
         return {"success": False}
     
     # save file in log
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
 
     enc_filename = security.encrypt_text(file.filename, enc_key)
     new_file = {"enc_filename": enc_filename, "uuid_filename": uuid, "size": file.size}
@@ -280,29 +326,10 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
 
     return {"success": True}
 
-"""
-@router.get("/getFiles")
-async def getFiles(day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
-    if "days" not in content.keys():
-        return []
-    
-    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
-    for dayLog in content["days"]:
-        if "day" in dayLog.keys() and dayLog["day"] == day:
-            if "files" in dayLog.keys():
-                for file in dayLog["files"]:
-                    file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
-                    file["type"] = security.decrypt_text(file["enc_type"], enc_key)
-    
-                return dayLog["files"]
-
-    return []
-"""
 
 @router.get("/deleteFile")
 async def deleteFile(uuid: str, day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
-    content:dict = fileHandling.getDay(cookie["user_id"], year, month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     if "days" not in content.keys():
         raise HTTPException(status_code=500, detail="Day not found - json error")
     
@@ -385,7 +412,7 @@ class AddTagToLog(BaseModel):
 
 @router.post("/addTagToLog")
 async def addTagToLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
-    content:dict = fileHandling.getDay(cookie["user_id"], data.year, data.month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], data.year, data.month)
     if "days" not in content.keys():
         content["days"] = []
     
@@ -411,7 +438,7 @@ async def addTagToLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
 
 @router.post("/removeTagFromLog")
 async def removeTagFromLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
-    content:dict = fileHandling.getDay(cookie["user_id"], data.year, data.month)
+    content:dict = fileHandling.getMonth(cookie["user_id"], data.year, data.month)
     if "days" not in content.keys():
         raise HTTPException(status_code=500, detail="Day not found - json error")
     

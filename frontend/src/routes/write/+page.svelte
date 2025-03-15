@@ -6,7 +6,7 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { searchString, searchResults } from '$lib/searchStore.js';
+	import { searchString, searchTag, searchResults, isSearching } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
@@ -22,6 +22,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
 	import { autoLoadImages } from '$lib/settingsStore';
+	import { tags } from '$lib/tagStore';
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
 
@@ -82,12 +83,11 @@
 		);
 	});
 
-	let tags = $state([]);
 	function loadTags() {
 		axios
 			.get(API_URL + '/logs/getTags')
 			.then((response) => {
-				tags = response.data;
+				$tags = response.data;
 			})
 			.catch((error) => {
 				console.error(error);
@@ -162,6 +162,10 @@
 		if (event.key === 'Alt') {
 			event.preventDefault();
 			altPressed = false;
+		}
+		if (event.key === 'Control') {
+			event.preventDefault();
+			ctrlPressed = false;
 		}
 	}
 
@@ -348,30 +352,51 @@
 		}
 	});
 
-	let isSearching = $state(false);
-	function search() {
-		console.log($searchString);
-
-		if (isSearching) {
+	function searchForString() {
+		if ($isSearching) {
 			return;
 		}
-		isSearching = true;
+		$isSearching = true;
 
 		axios
-			.get(API_URL + '/logs/search', {
+			.get(API_URL + '/logs/searchString', {
 				params: {
 					searchString: $searchString
 				}
 			})
 			.then((response) => {
 				$searchResults = [...response.data];
-				isSearching = false;
+				$isSearching = false;
 			})
 			.catch((error) => {
 				$searchResults = [];
 				console.error(error);
-				isSearching = false;
+				$isSearching = false;
 
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
+				toast.show();
+			});
+	}
+
+	function searchForTag() {
+		$searchString = '';
+		if ($isSearching) {
+			return;
+		}
+		$isSearching = true;
+
+		axios
+			.get(API_URL + '/logs/searchTag', { params: { tag_id: $searchTag.id } })
+			.then((response) => {
+				$searchResults = [...response.data];
+				$isSearching = false;
+			})
+			.catch((error) => {
+				$isSearching = false;
+				$searchResults = [];
+
+				console.error(error);
 				// toast
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
 				toast.show();
@@ -594,13 +619,13 @@
 
 	// show the correct tags in the dropdown
 	$effect(() => {
-		if (tags.length === 0) {
+		if ($tags.length === 0) {
 			filteredTags = [];
 			return;
 		}
 
 		// exclude already selected tags
-		let tagsWithoutSelected = tags.filter(
+		let tagsWithoutSelected = $tags.filter(
 			(tag) => !selectedTags.find((selectedTag) => selectedTag === tag.id)
 		);
 
@@ -632,7 +657,6 @@
 				event.preventDefault(); // Prevent cursor movement
 				selectedTagIndex = Math.min(selectedTagIndex + 1, filteredTags.length - 1);
 				ensureSelectedVisible();
-				console.log(selectedTagIndex);
 				break;
 
 			case 'ArrowUp':
@@ -670,7 +694,7 @@
 					dropdown.scrollTop += selectedRect.bottom - dropdownRect.bottom;
 				}
 			}
-		}, 0);
+		}, 40);
 	}
 
 	let showTagLoading = $state(false);
@@ -797,13 +821,13 @@
 			aria-label="Close"
 		></button>
 	</div>
-	<Sidenav {search} />
+	<Sidenav {searchForString} {searchForTag} />
 </div>
 
 <div class="d-flex flex-row justify-content-between h-100">
 	<!-- shown on large Screen -->
 	<div class="d-md-block d-none sidenav p-3">
-		<Sidenav {search} />
+		<Sidenav {searchForString} {searchForTag} />
 	</div>
 
 	<!-- Center -->
@@ -893,7 +917,7 @@
 					<Fa icon={faQuestionCircle} fw /></a
 				>
 			</div>
-			<div class="d-flex flex-row">
+			<div class="tagRow d-flex flex-row">
 				<input
 					bind:value={searchTab}
 					onfocus={() => {
@@ -910,7 +934,7 @@
 					placeholder="Tag..."
 				/>
 				<button
-					class="btn btn-outline-secondary ms-2"
+					class="newTagBtn btn btn-outline-secondary ms-2"
 					onclick={() => {
 						openTagModal(null);
 					}}
@@ -941,10 +965,10 @@
 				</div>
 			{/if}
 			<div class="selectedTags d-flex flex-row flex-wrap">
-				{#if tags.length !== 0}
+				{#if $tags.length !== 0}
 					{#each selectedTags as tag_id (tag_id)}
 						<div transition:slide={{ axis: 'x' }}>
-							<Tag tag={tags.find((tag) => tag.id === tag_id)} {removeTag} isRemovable="true" />
+							<Tag tag={$tags.find((tag) => tag.id === tag_id)} {removeTag} isRemovable="true" />
 						</div>
 					{/each}
 				{/if}
@@ -1247,6 +1271,14 @@
 </div>
 
 <style>
+	.tagRow {
+		width: 100%;
+	}
+
+	.newTagBtn {
+		white-space: nowrap;
+	}
+
 	.tag-item.selected {
 		background-color: #b2b4b6;
 	}

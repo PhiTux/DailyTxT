@@ -23,7 +23,7 @@ def getUsers():
                 return {}
             return json.loads(s)
 
-def getDay(user_id, year, month):
+def getMonth(user_id, year, month):
     try:
         f = open(os.path.join(settings.data_path, f"{user_id}/{year}/{month:02d}.json"), "r")
     except FileNotFoundError:
