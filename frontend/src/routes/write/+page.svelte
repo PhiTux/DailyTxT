@@ -1297,7 +1297,7 @@
 		background-color: white;
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
-		max-height: 150px;
+		max-height: 200px;
 		overflow-y: scroll;
 		overflow-x: hidden;
 		display: flex;

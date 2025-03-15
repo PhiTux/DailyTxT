@@ -19,7 +19,7 @@
 		);
 	});
 
-	let searchInput;
+	let searchInput = $state(null);
 	let ctrlPressed = false;
 	function on_key_down(event) {
 		if (event.key === 'Control') {
@@ -47,7 +47,10 @@
 	let selectedTagIndex = $state(0);
 
 	function handleKeyDown(event) {
-		if (!showTagDropdown && event.key === 'Enter') searchForString();
+		if (!showTagDropdown && event.key === 'Enter') {
+			searchForString();
+			return;
+		}
 		if (filteredTags.length === 0) return;
 
 		switch (event.key) {
@@ -110,13 +113,13 @@
 
 	//let searchTag = $state({});
 	function selectSearchTag(tagId) {
+		showTagDropdown = false;
 		const tag = $tags.find((tag) => tag.id === tagId);
 		if (!tag) {
 			return;
 		}
 		$searchTag = tag;
 		//$searchResults = [];
-		showTagDropdown = false;
 
 		searchForTag();
 	}
@@ -133,13 +136,25 @@
 	<Datepicker />
 	<br />
 
-	<div class="search">
-		<form onsubmit={searchForString} class="input-group mt-5">
+	<div class="search d-flex flex-column">
+		<form onsubmit={searchForString} class="input-group">
 			<button
-				class="btn btn-outline-secondary"
+				class="btnSearchPopover btn btn-outline-secondary"
 				data-bs-toggle="popover"
 				data-bs-title="Suche"
-				data-bs-content="Hier kannst "
+				data-bs-content="Du kannst nach <b>Text</b>, <b>Dateinamen</b> und <b>Tags</b> suchen.<br>
+				Mit <span class='kbd'>Ctrl</span> + <span class='kbd'>F</span> wird das Suchfeld fokussiert.<br>
+				<ul>
+					<li><b><u>Text</u></b>: Bei Verwendung von mehreren Suchbegriffen gelten folgende Regeln:
+						<ul>
+							<li><b>EXAKT</b>: Setze den kompletten Suchbegriff in <u>doppelte Anführungszeichen</u>, um die exakte Wortfolge zu suchen.</li>
+							<li><b>ODER</b>: Trenne Suchbegriffe mit <b>|</b>, um Einträge zu finden, bei denen mindestens ein Begriff verwendet wurde.</li>
+							<li><b>UND</b>: Trenne Suchbegriffe mit <u>Leerzeichen</u>, um Einträge zu finden, bei denen alle Begriffe verwendet wurden. Die Reihenfolge der Begriffe ist dabei irrelevant, genauso wie die Distanz zwischen den Begriffen.</li>
+						</ul>
+					</li>
+					<li><b><u>Dateinamen</u></b>: Wenn der Suchbegriff nur aus <u>einem Wort</u> besteht, dann wird nicht nur nach Text, sondern auch nach Dateinamen gesucht.</li>
+					<li><b><u>Tags</u></b>: Der Suchbegriff muss mit <b>#</b> beginnen. Es wird nach jedem Datum gesucht, das mit dem Tag markiert ist.</li>
+				</ul>"
 				onclick={(event) => event.preventDefault()}><Fa icon={faQuestionCircle} /></button
 			>
 			{#if $searchTag.id}
@@ -208,44 +223,73 @@
 			</div>
 		{/if}
 		<div class="list-group flex-grow-1 mb-2">
-			{#each $searchResults as result}
-				<button
-					type="button"
-					onclick={() => {
-						$selectedDate = new Date(Date.UTC(result.year, result.month - 1, result.day));
-					}}
-					class="list-group-item list-group-item-action {$selectedDate.toDateString() ===
-					new Date(Date.UTC(result.year, result.month - 1, result.day)).toDateString()
-						? 'active'
-						: ''}"
-				>
-					<div class="search-result-content">
-						<div class="date">
-							{new Date(result.year, result.month - 1, result.day).toLocaleDateString('locale', {
-								day: '2-digit',
-								month: '2-digit',
-								year: 'numeric'
-							})}
+			{#if $searchResults.length > 0}
+				{#each $searchResults as result}
+					<button
+						type="button"
+						onclick={() => {
+							$selectedDate = new Date(Date.UTC(result.year, result.month - 1, result.day));
+						}}
+						class="list-group-item list-group-item-action {$selectedDate.toDateString() ===
+						new Date(Date.UTC(result.year, result.month - 1, result.day)).toDateString()
+							? 'active'
+							: ''}"
+					>
+						<div class="search-result-content">
+							<div class="date">
+								{new Date(result.year, result.month - 1, result.day).toLocaleDateString('locale', {
+									day: '2-digit',
+									month: '2-digit',
+									year: 'numeric'
+								})}
+							</div>
+							<!-- <div class="search-separator"></div> -->
+							<div class="text">
+								{@html result.text}
+							</div>
 						</div>
-						<!-- <div class="search-separator"></div> -->
-						<div class="text">
-							{@html result.text}
-						</div>
-					</div>
-				</button>
-			{/each}
+					</button>
+				{/each}
+			{:else}
+				<span class="noResult">Keine Ergebnisse</span>
+			{/if}
 		</div>
 	</div>
 </div>
 
 <style>
+	.btnSearchPopover {
+		border-bottom-left-radius: 0px;
+	}
+
+	:global(.datepicker) {
+		margin-bottom: 3rem;
+	}
+
+	.noResult {
+		font-size: 25pt;
+		font-weight: 750;
+		color: #ccc;
+		text-align: center;
+		padding: 1rem;
+	}
+
+	:global(.kbd) {
+		font-family: monospace;
+		border: 1px solid #ccc;
+		border-radius: 3px;
+		padding: 0 5px;
+		background-color: #eee;
+	}
+
 	.searchTagDropdown {
 		position: absolute;
 		background-color: white;
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
 		left: 60px;
-		max-height: 150px;
+		margin-top: 38px;
+		max-height: 200px;
 		overflow-y: scroll;
 		overflow-x: hidden;
 		display: flex;
