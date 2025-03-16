@@ -5,18 +5,26 @@
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
-	let { editTag = $bindable(), createTag = false, saveNewTag, isSaving = false } = $props();
+	let {
+		editTag = $bindable(),
+		createTag = false,
+		saveNewTag,
+		saveEditedTag,
+		isSaving = false
+	} = $props();
+
+	let modalElement;
 
 	function open() {
 		// hide tag picker
 		document.querySelector('.tooltip').classList.remove('shown');
 
-		let modal = new bootstrap.Modal(document.getElementById('modalTag'));
+		let modal = new bootstrap.Modal(modalElement);
 		modal.show();
 	}
 
 	function close() {
-		let modal = bootstrap.Modal.getInstance(document.getElementById('modalTag'));
+		let modal = bootstrap.Modal.getInstance(modalElement);
 		modal.hide();
 	}
 
@@ -34,7 +42,7 @@
 	}
 </script>
 
-<div class="modal fade" id="modalTag" tabindex="-1">
+<div bind:this={modalElement} class="modal fade" id="modalTag" tabindex="-1">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -118,7 +126,9 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
 				<button
-					onclick={saveNewTag}
+					onclick={() => {
+						createTag ? saveNewTag() : saveEditedTag();
+					}}
 					type="button"
 					class="btn btn-primary"
 					disabled={!editTag.name || isSaving}

@@ -69,7 +69,7 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
         if not found:
             content["days"].append({"day": day, "text": encrypted_text, "date_written": encrypted_date_written})
 
-    if not fileHandling.writeDay(cookie["user_id"], year, month, content):
+    if not fileHandling.writeMonth(cookie["user_id"], year, month, content):
         logger.error(f"Failed to save log for {cookie['user_id']} on {year}-{month:02d}-{day:02d}")
         return {"success": False}
 
@@ -320,7 +320,7 @@ async def uploadFile(day: Annotated[int, Form()], month: Annotated[int, Form()],
         if not found:
             content["days"].append({"day": day, "files": [new_file]})
     
-    if not fileHandling.writeDay(cookie["user_id"], year, month, content):
+    if not fileHandling.writeMonth(cookie["user_id"], year, month, content):
         fileHandling.removeFile(cookie["user_id"], uuid)
         return {"success": False}
 
@@ -343,7 +343,7 @@ async def deleteFile(uuid: str, day: int, month: int, year: int, cookie = Depend
                 if not fileHandling.removeFile(cookie["user_id"], uuid):
                     raise HTTPException(status_code=500, detail="Failed to delete file")
                 dayLog["files"].remove(file)
-                if not fileHandling.writeDay(cookie["user_id"], year, month, content):
+                if not fileHandling.writeMonth(cookie["user_id"], year, month, content):
                     raise HTTPException(status_code=500, detail="Failed to write changes of deleted file!")
                 return {"success": True}
 
@@ -402,7 +402,63 @@ async def saveNewTag(tag: NewTag, cookie = Depends(users.isLoggedIn)):
         return {"success": False}
     else:
         return {"success": True}
+
+
+class EditTag(BaseModel):
+    id: int
+    icon: str
+    name: str
+    color: str
+
+@router.post("/editTag")
+async def editTag(editTag: EditTag, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
     
+    content:dict = fileHandling.getTags(cookie["user_id"])
+    
+    if not 'tags' in content:
+        raise HTTPException(status_code=500, detail="Tag not found - json error")
+    
+    for tag in content['tags']:
+        if tag['id'] == editTag.id:
+            tag['icon'] = security.encrypt_text(editTag.icon, enc_key)
+            tag['name'] = security.encrypt_text(editTag.name, enc_key)
+            tag['color'] = security.encrypt_text(editTag.color, enc_key)
+            if not fileHandling.writeTags(cookie["user_id"], content):
+                raise HTTPException(status_code=500, detail="Failed to write tag - error writing tags")
+            else:
+                return {"success": True}
+    
+    raise HTTPException(status_code=500, detail="Tag not found - not in tags")
+
+@router.get("/deleteTag")
+async def deleteTag(id: int, cookie = Depends(users.isLoggedIn)):
+    # remove from every log if present
+    for year in fileHandling.get_years(cookie["user_id"]):
+        for month in fileHandling.get_months(cookie["user_id"], year):
+            content:dict = fileHandling.getMonth(cookie["user_id"], year, int(month))
+            if "days" not in content.keys():
+                continue
+            for dayLog in content["days"]:
+                if "tags" in dayLog.keys() and id in dayLog["tags"]:
+                    dayLog["tags"].remove(id)
+            if not fileHandling.writeMonth(cookie["user_id"], year, int(month), content):
+                raise HTTPException(status_code=500, detail="Failed to delete tag - error writing log")
+    
+    # remove from tags
+    content:dict = fileHandling.getTags(cookie["user_id"])
+    if not 'tags' in content:
+        raise HTTPException(status_code=500, detail="Tag not found - json error")
+    
+    for tag in content['tags']:
+        if tag['id'] == id:
+            content['tags'].remove(tag)
+            if not fileHandling.writeTags(cookie["user_id"], content):
+                raise HTTPException(status_code=500, detail="Failed to delete tag - error writing tags")
+            else:
+                return {"success": True}
+    
+    raise HTTPException(status_code=500, detail="Tag not found - not in tags")
 
 class AddTagToLog(BaseModel):
     day: int
@@ -432,7 +488,7 @@ async def addTagToLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)):
     if not dayFound:
         content["days"].append({"day": data.day, "tags": [data.tag_id]})
     
-    if not fileHandling.writeDay(cookie["user_id"], data.year, data.month, content):
+    if not fileHandling.writeMonth(cookie["user_id"], data.year, data.month, content):
         raise HTTPException(status_code=500, detail="Failed to write tag - error writing log")
     return {"success": True}
 
@@ -450,7 +506,7 @@ async def removeTagFromLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)
         if not data.tag_id in dayLog["tags"]:
             raise HTTPException(status_code=500, detail="Failed to remove tag - not found in log")
         dayLog["tags"].remove(data.tag_id)
-        if not fileHandling.writeDay(cookie["user_id"], data.year, data.month, content):
+        if not fileHandling.writeMonth(cookie["user_id"], data.year, data.month, content):
             raise HTTPException(status_code=500, detail="Failed to remove tag - error writing log")
         return {"success": True}
     

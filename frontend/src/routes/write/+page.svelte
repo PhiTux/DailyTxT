@@ -763,19 +763,15 @@
 			});
 	}
 
-	let editTag = $state({});
+	let newTag = $state({});
 	let tagModal;
 
-	function openTagModal(tag) {
-		if (tag === null) {
-			editTag = {
-				icon: '',
-				name: '',
-				color: '#f57c00'
-			};
-		} else {
-			editTag = tag;
-		}
+	function openTagModal() {
+		newTag = {
+			icon: '',
+			name: '',
+			color: '#f57c00'
+		};
 
 		tagModal.open();
 	}
@@ -785,9 +781,9 @@
 		isSavingNewTag = true;
 		axios
 			.post(API_URL + '/logs/saveNewTag', {
-				icon: editTag.icon,
-				name: editTag.name,
-				color: editTag.color
+				icon: newTag.icon,
+				name: newTag.name,
+				color: newTag.color
 			})
 			.then((response) => {
 				if (response.data.success) {
@@ -933,12 +929,7 @@
 					id="tag-input"
 					placeholder="Tag..."
 				/>
-				<button
-					class="newTagBtn btn btn-outline-secondary ms-2"
-					onclick={() => {
-						openTagModal(null);
-					}}
-				>
+				<button class="newTagBtn btn btn-outline-secondary ms-2" onclick={openTagModal}>
 					<Fa icon={faSquarePlus} fw /> Neu
 				</button>
 			</div>
@@ -1192,7 +1183,7 @@
 
 	<TagModal
 		bind:this={tagModal}
-		bind:editTag
+		bind:editTag={newTag}
 		createTag="true"
 		isSaving={isSavingNewTag}
 		{saveNewTag}

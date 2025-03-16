@@ -1,7 +1,7 @@
 <script>
 	import Fa from 'svelte-fa';
 	import { faTrash, faPencil, faXmark } from '@fortawesome/free-solid-svg-icons';
-	let { tag, removeTag, isEditable, isRemovable, isDeletable } = $props();
+	let { tag, removeTag, deleteTag, editTag, isEditable, isRemovable, isDeletable } = $props();
 
 	let fontColor = $state('#111');
 	$effect(() => {
@@ -22,7 +22,7 @@
 	<div class="d-flex flex-row">
 		<div>{tag.icon} #{tag.name}</div>
 		{#if isEditable}
-			<button class="button btnEdit">
+			<button onclick={() => editTag(tag.id)} class="button btnEdit">
 				<Fa icon={faPencil} fw />
 			</button>
 		{/if}
@@ -32,7 +32,7 @@
 			</button>
 		{/if}
 		{#if isDeletable}
-			<button class="button btnRemove">
+			<button onclick={() => deleteTag(tag.id)} class="button btnRemove">
 				<Fa icon={faTrash} fw />
 			</button>
 		{/if}

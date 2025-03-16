@@ -51,7 +51,7 @@ def writeUsers(content):
             f.write(json.dumps(content, indent=4))
             return True
         
-def writeDay(user_id, year, month, content):
+def writeMonth(user_id, year, month, content):
     try:
         os.makedirs(os.path.join(settings.data_path, f"{user_id}/{year}"), exist_ok=True)
         f = open(os.path.join(settings.data_path, f"{user_id}/{year}/{month:02d}.json"), "w")

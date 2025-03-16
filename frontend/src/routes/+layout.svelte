@@ -1,5 +1,5 @@
 <script>
-	import { fade, blur, slide } from 'svelte/transition';
+	import { blur } from 'svelte/transition';
 	import axios from 'axios';
 	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -12,13 +12,17 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import trianglify from 'trianglify';
 	import { useTrianglify, trianglifyOpacity, autoLoadImages } from '$lib/settingsStore.js';
+	import { tags } from '$lib/tagStore.js';
+	import TagModal from '$lib/TagModal.svelte';
 
 	import {
 		faRightFromBracket,
 		faGlasses,
 		faPencil,
-		faSliders
+		faSliders,
+		faTriangleExclamation
 	} from '@fortawesome/free-solid-svg-icons';
+	import Tag from '$lib/Tag.svelte';
 
 	let { children } = $props();
 	let inDuration = 150;
@@ -68,6 +72,12 @@
 		}
 	}
 
+	let settingsModal;
+	function openSettingsModal() {
+		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
+		settingsModal.show();
+	}
+
 	$effect(() => {
 		if ($trianglifyOpacity) {
 			if (document.querySelector('canvas')) {
@@ -75,6 +85,13 @@
 			}
 		}
 	});
+
+	/* Important for development: convenient modal-handling with HMR */
+	if (import.meta.hot) {
+		import.meta.hot.dispose(() => {
+			document.querySelectorAll('.modal-backdrop').forEach((el) => el.remove());
+		});
+	}
 
 	onMount(() => {
 		createBackground();
@@ -93,6 +110,92 @@
 			}, 200);
 		});
 	});
+
+	let editTagModal;
+	let editTag = $state({});
+	let isSavingEditedTag = $state(false);
+
+	function openTagModal(tagId) {
+		$tags.forEach((tag) => {
+			if (tag.id === tagId) {
+				editTag.name = tag.name;
+				editTag.color = tag.color;
+				editTag.icon = tag.icon;
+				editTag.id = tag.id;
+				return;
+			}
+		});
+
+		settingsModal.hide();
+		editTagModal.open();
+	}
+
+	let deleteTagId = $state(null);
+	function askDeleteTag(tagId) {
+		if (deleteTagId === tagId) deleteTagId = null;
+		else deleteTagId = tagId;
+	}
+
+	let isDeletingTag = $state(false);
+	function deleteTag(tagId) {
+		if (isDeletingTag) return;
+		isDeletingTag = true;
+
+		axios
+			.get(API_URL + '/logs/deleteTag', { params: { id: tagId } })
+			.then((response) => {
+				if (response.data.success) {
+					$tags = $tags.filter((tag) => tag.id !== tagId);
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeleteTag'));
+				toast.show();
+			})
+			.finally(() => {
+				deleteTagId = null;
+				isDeletingTag = false;
+			});
+	}
+
+	function saveEditedTag() {
+		if (isSavingEditedTag) return;
+		isSavingEditedTag = true;
+
+		axios
+			.post(API_URL + '/logs/editTag', editTag)
+			.then((response) => {
+				if (response.data.success) {
+					$tags = $tags.map((tag) => {
+						if (tag.id === editTag.id) {
+							tag.name = editTag.name;
+							tag.color = editTag.color;
+							tag.icon = editTag.icon;
+						}
+						return tag;
+					});
+
+					// show toast
+					const toast = new bootstrap.Toast(document.getElementById('toastSuccessEditTag'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorEditTag'));
+				toast.show();
+			})
+			.finally(() => {
+				isSavingEditedTag = false;
+				editTagModal.close();
+				settingsModal.show();
+			});
+	}
 </script>
 
 <main class="d-flex flex-column">
@@ -128,10 +231,8 @@
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
-				<button
-					class="btn btn-outline-secondary me-2"
-					data-bs-toggle="modal"
-					data-bs-target="#settingsModal"><Fa icon={faSliders} /></button
+				<button class="btn btn-outline-secondary me-2" onclick={openSettingsModal}
+					><Fa icon={faSliders} /></button
 				>
 				<button class="btn btn-outline-secondary" onclick={logout}
 					><Fa icon={faRightFromBracket} /></button
@@ -151,6 +252,14 @@
 			</div>
 		{/key}
 	</div>
+
+	<TagModal
+		bind:this={editTagModal}
+		createTag={false}
+		bind:editTag
+		isSaving={isSavingEditedTag}
+		{saveEditedTag}
+	/>
 
 	<!-- Full screen modal -->
 	<div class="modal fade" data-bs-backdrop="static" id="settingsModal">
@@ -295,7 +404,50 @@
 									blub <br />
 								</div>
 
-								<div id="tags"><h4>Tags</h4></div>
+								<h3 id="tags" class="text-primary">Tags</h3>
+								<div>
+									Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
+									<div class="d-flex flex-column tagColumn mt-1">
+										{#each $tags as tag}
+											<Tag
+												{tag}
+												isEditable
+												editTag={openTagModal}
+												isDeletable
+												deleteTag={askDeleteTag}
+											/>
+											{#if deleteTagId === tag.id}
+												<div class="alert alert-danger align-items-center" role="alert">
+													<div>
+														<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b> Dies
+														kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
+														durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen
+														im Browser angezeigt.
+													</div>
+													<!-- svelte-ignore a11y_consider_explicit_label -->
+													<div class="d-flex flex-row mt-2">
+														<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
+															>Abbrechen
+														</button>
+														<button
+															disabled={isDeletingTag}
+															class="btn btn-danger ms-3"
+															onclick={() => deleteTag(tag.id)}
+															>Löschen
+															{#if isDeletingTag}
+																<span
+																	class="spinner-border spinner-border-sm ms-2"
+																	role="status"
+																	aria-hidden="true"
+																></span>
+															{/if}
+														</button>
+													</div>
+												</div>
+											{/if}
+										{/each}
+									</div>
+								</div>
 
 								<div id="templates"><h4>Vorlagen</h4></div>
 
@@ -330,9 +482,56 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div
+			id="toastSuccessEditTag"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Änderungen wurden gespeichert!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorEditTag"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorDeleteTag"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen des Tags!</div>
+			</div>
+		</div>
+	</div>
 </main>
 
 <style>
+	:global(.tagColumn > span) {
+		width: min-content;
+	}
+
+	.tagColumn {
+		gap: 0.5rem;
+		/* width: min-content; */
+	}
+
 	#selectMode:checked {
 		border-color: #da880e;
 		background-color: #da880e;
