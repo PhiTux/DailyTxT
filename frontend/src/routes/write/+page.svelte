@@ -14,7 +14,6 @@
 	import {
 		faCloudArrowUp,
 		faCloudArrowDown,
-		faTrash,
 		faSquarePlus,
 		faQuestionCircle
 	} from '@fortawesome/free-solid-svg-icons';
@@ -25,6 +24,8 @@
 	import { tags } from '$lib/tagStore';
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
+	import FileList from '$lib/FileList.svelte';
+	import { formatBytes } from '$lib/helpers.js';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -457,18 +458,6 @@
 			});
 	}
 
-	function formatBytes(bytes) {
-		if (!+bytes) return '0 Bytes';
-
-		const k = 1024;
-		//const dm = 2; // decimal places
-		const sizes = ['B', 'KB', 'MB', 'GB'];
-
-		const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-		return `${parseFloat((bytes / Math.pow(k, i)).toFixed(0))} ${sizes[i]}`;
-	}
-
 	function downloadFile(uuid) {
 		// check if present in filesOfDay
 		let file = filesOfDay.find((file) => file.uuid_filename === uuid);
@@ -492,7 +481,6 @@
 				filesOfDay = filesOfDay.map((file) => {
 					if (file.uuid_filename === uuid) {
 						file.downloadProgress = Math.round((progressEvent.loaded / file.size) * 100);
-						console.log(progressEvent);
 					}
 					return file;
 				});
@@ -550,7 +538,6 @@
 		a.href = file.src;
 		a.download = file.filename;
 		document.body.appendChild(a);
-		console.log(a);
 		a.click();
 		document.body.removeChild(a);
 	}
@@ -851,15 +838,18 @@
 			<div id="editor"></div>
 		</div>
 		{#if images.length > 0}
-			{#if !$autoLoadImages && !images.find((image) => image.src || image.loading)}
+			{#if !$autoLoadImages && images.find((image) => !image.src && !image.loading)}
 				<div class="d-flex flex-row">
-					<button type="button" id="loadImageBtn" onclick={() => loadImages()}>
+					<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
 						<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
 						{#if images.length === 1}
 							1 Bild laden
 						{:else}
 							{images.length} Bilder laden
 						{/if}
+						({formatBytes(
+							images.filter((i) => !i.src).reduce((sum, image) => sum + (image.size || 0), 0)
+						)})
 					</button>
 				</div>
 			{:else}
@@ -975,48 +965,7 @@
 			>
 			<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
-			{#each filesOfDay as file (file.uuid_filename)}
-				<div class="btn-group file mt-2" transition:slide>
-					<button
-						onclick={() => downloadFile(file.uuid_filename)}
-						class="p-2 fileBtn d-flex flex-column flex-fill"
-					>
-						<div class="d-flex flex-row align-items-center">
-							<div class="filename filenameWeight">{file.filename}</div>
-							<span class="filesize">({formatBytes(file.size)})</span>
-						</div>
-						{#if file.downloadProgress >= 0}
-							<div
-								class="progress"
-								role="progressbar"
-								aria-label="Download progress"
-								aria-valuemin="0"
-								aria-valuemax="100"
-							>
-								<div
-									class="progress-bar overflow-visible bg-info {file.downloadProgress === 0
-										? 'progress-bar-striped progress-bar-animated'
-										: ''}"
-									style:width={file.downloadProgress + '%'}
-									aria-valuenow={file.downloadProgress}
-									aria-valuemax="100"
-								>
-									{#if file.downloadProgress === 0}
-										<span class="text-dark">Wird entschlüsselt...</span>
-									{:else}
-										<span class="text-dark">Download: {file.downloadProgress}%</span>
-									{/if}
-								</div>
-							</div>
-						{/if}
-					</button>
-					<button
-						class="p-2 fileBtn deleteFileBtn"
-						onclick={() => askDeleteFile(file.uuid_filename, file.filename)}
-						><Fa icon={faTrash} fw /></button
-					>
-				</div>
-			{/each}
+			<FileList files={filesOfDay} {downloadFile} {askDeleteFile} deleteAllowed />
 			{#each uploadingFiles as file}
 				<div>
 					{file.name}
@@ -1311,7 +1260,7 @@
 		border-radius: 10px;
 	}
 
-	#loadImageBtn {
+	.loadImageBtn {
 		padding: 0.5rem 1rem;
 		border: none;
 		margin-top: 0.5rem;
@@ -1379,41 +1328,6 @@
 
 	.filenameWeight {
 		font-weight: 550;
-	}
-
-	.filename {
-		padding-right: 0.5rem;
-		word-break: break-word;
-	}
-
-	.filesize {
-		opacity: 0.7;
-		font-size: 0.8rem;
-		white-space: nowrap;
-	}
-
-	.fileBtn {
-		border: 0;
-		background-color: rgba(0, 0, 0, 0);
-		transition: all ease 0.3s;
-	}
-
-	.fileBtn:hover {
-		background-color: rgba(0, 0, 0, 0.1);
-	}
-
-	.deleteFileBtn {
-		border-left: 1px solid rgba(92, 92, 92, 0.445);
-	}
-
-	.deleteFileBtn:hover {
-		color: rgb(165, 0, 0);
-	}
-
-	.file {
-		background-color: rgba(117, 117, 117, 0.45);
-		border: 0px solid #ececec77;
-		border-radius: 5px;
 	}
 
 	.files {

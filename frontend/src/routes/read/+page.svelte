@@ -6,6 +6,13 @@
 	import Sidenav from '$lib/Sidenav.svelte';
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
+	import Tag from '$lib/Tag.svelte';
+	import { tags } from '$lib/tagStore.js';
+	import FileList from '$lib/FileList.svelte';
+	import { autoLoadImages } from '$lib/settingsStore';
+	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
+	import { Fa } from 'svelte-fa';
+	import { fade, slide } from 'svelte/transition';
 
 	marked.use({
 		breaks: true,
@@ -45,6 +52,9 @@
 	let currentYear = $cal.currentYear;
 	$effect(() => {
 		if ($cal.currentMonth !== currentMonth || $cal.currentYear !== currentYear) {
+			cancelDownload.abort();
+			cancelDownload = new AbortController();
+
 			loadMonthForReading();
 			currentMonth = $cal.currentMonth;
 			currentYear = $cal.currentYear;
@@ -60,8 +70,213 @@
 		}
 	});
 
-	//#TODO Muss in die separate /read page (diese hier in /write umbenennen)
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
+	//TODO: support svg? -> minsize is necessary...
+
+	// copy of files, which are images
+	$effect(() => {
+		if (logs) {
+			logs.forEach((log) => {
+				if (log.files) {
+					if (!log.images) {
+						log.images = [];
+					}
+
+					log.files.forEach((file) => {
+						if (
+							imageExtensions.includes(file.filename.split('.').pop().toLowerCase()) &&
+							!log.images.find((image) => image.uuid_filename === file.uuid_filename)
+						) {
+							log.images = [...log.images, file];
+
+							if ($autoLoadImages) {
+								loadImage(file.uuid_filename);
+							}
+						}
+					});
+				}
+			});
+		}
+	});
+
+	function loadImage(uuid) {
+		for (let i = 0; i < logs.length; i++) {
+			let log = logs[i];
+
+			// skip log if file not in this day/log
+			if (!log.images) {
+				continue;
+			}
+			let image = log.images.find((image) => image.uuid_filename === uuid);
+			if (!image) {
+				continue;
+			}
+
+			log.images = log.images.map((image) => {
+				if (image.uuid_filename === uuid) {
+					image.loading = true;
+				}
+				return image;
+			});
+
+			axios
+				.get(API_URL + '/logs/downloadFile', {
+					params: { uuid: uuid },
+					responseType: 'blob',
+					signal: cancelDownload.signal
+				})
+				.then((response) => {
+					const url = URL.createObjectURL(new Blob([response.data]));
+					log.images = log.images.map((image) => {
+						if (image.uuid_filename === uuid) {
+							image.src = url;
+							image.loading = false;
+						}
+						return image;
+					});
+
+					log.files = log.files.map((file) => {
+						if (file.uuid_filename === uuid) {
+							file.src = url;
+						}
+						return file;
+					});
+				})
+				.catch((error) => {
+					if (error.name == 'CanceledError') {
+						return;
+					}
+
+					console.error(error);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
+					toast.show();
+				});
+		}
+	}
+
+	function loadImages() {
+		for (let i = 0; i < logs.length; i++) {
+			let log = logs[i];
+
+			// skip log if no images in this day/log
+			if (!log.images) {
+				continue;
+			}
+
+			log.images.forEach((image) => {
+				if (!image.src) {
+					loadImage(image.uuid_filename);
+				}
+			});
+		}
+	}
+
+	let cancelDownload = new AbortController();
+
+	function downloadFile(uuid) {
+		for (let i = 0; i < logs.length; i++) {
+			let log = logs[i];
+
+			// skip log if file not in this day/log
+			if (!log.files) {
+				continue;
+			}
+			let file = log.files.find((file) => file.uuid_filename === uuid);
+			if (!file) {
+				continue;
+			}
+
+			// check if src is present in files
+			if (file.src) {
+				triggerAutomaticDownload(uuid);
+				return;
+			}
+
+			// otherwise: download from server
+			log.files = log.files.map((f) => {
+				if (f.uuid_filename === uuid) {
+					f.downloadProgress = 0;
+				}
+				return f;
+			});
+
+			const config = {
+				params: { uuid: uuid },
+				onDownloadProgress: (progressEvent) => {
+					log.files = log.files.map((file) => {
+						if (file.uuid_filename === uuid) {
+							file.downloadProgress = Math.round((progressEvent.loaded / file.size) * 100);
+						}
+						return file;
+					});
+				},
+				signal: cancelDownload.signal,
+				responseType: 'blob'
+			};
+
+			axios
+				.get(API_URL + '/logs/downloadFile', {
+					...config
+				})
+				.then((response) => {
+					const url = URL.createObjectURL(new Blob([response.data]));
+					log.files = log.files.map((f) => {
+						if (f.uuid_filename === uuid) {
+							f.src = url;
+						}
+						return f;
+					});
+				})
+				.catch((error) => {
+					if (error.name == 'CanceledError') {
+						return;
+					}
+
+					console.error(error);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingFile'));
+					toast.show();
+				})
+				.finally(() => {
+					// remove progress
+					log.files = log.files.map((f) => {
+						if (f.uuid_filename === uuid) {
+							f.downloadProgress = -1;
+						}
+						return f;
+					});
+
+					triggerAutomaticDownload(uuid);
+				});
+		}
+	}
+
+	//#TODO Anpassen
+	function triggerAutomaticDownload(uuid) {
+		for (let i = 0; i < logs.length; i++) {
+			let log = logs[i];
+
+			// skip log if file not in this day/log
+			if (!log.files) {
+				continue;
+			}
+			let file = log.files.find((file) => file.uuid_filename === uuid);
+			if (!file) {
+				continue;
+			}
+
+			const a = document.createElement('a');
+			a.href = file.src;
+			a.download = file.filename;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+		}
+	}
+
 	let isLoadingMonthForReading = false;
+
 	function loadMonthForReading() {
 		if (isLoadingMonthForReading) {
 			return;
@@ -116,8 +331,8 @@
 	</div>
 
 	<!-- Center -->
-	<div class="d-flex flex-column my-4 mx-4 flex-fill overflow-y-auto" id="scrollArea">
-		{#each logs as log}
+	<div class="d-flex flex-column my-4 ms-4 flex-fill overflow-y-auto" id="scrollArea">
+		{#each logs as log (log.day)}
 			<!-- Log-Area -->
 			<div class="log mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
 				<div class="date me-3 d-flex flex-column align-items-center">
@@ -130,17 +345,113 @@
 						</b>
 					</p>
 				</div>
-				<div>
-					{@html marked.parse(log.text)}
+				<div class="flex-grow-1">
+					{#if log.text && log.text !== ''}
+						<div class="text">
+							{@html marked.parse(log.text)}
+						</div>
+					{/if}
+					{#if log.tags?.length > 0}
+						<div class="tags d-flex flex-row flex-wrap">
+							{#each log.tags as t}
+								<Tag tag={$tags.find((tag) => tag.id === t)} />
+							{/each}
+						</div>
+					{/if}
+					{#if log.images?.length > 0}
+						{#if !$autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
+							<div class="d-flex flex-row">
+								<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
+									<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+									Bilder laden
+								</button>
+							</div>
+						{:else}
+							<div class="d-flex flex-row images mt-3">
+								{#each log.images as image (image.uuid_filename)}
+									<button
+										type="button"
+										onclick={() => {
+											viewImage(image.uuid_filename);
+										}}
+										class="imageContainer d-flex align-items-center position-relative"
+										transition:slide={{ axis: 'x' }}
+									>
+										{#if image.src}
+											<img transition:fade class="image" alt={image.filename} src={image.src} />
+										{:else}
+											<div class="spinner-border" role="status">
+												<span class="visually-hidden">Loading...</span>
+											</div>
+										{/if}
+									</button>
+								{/each}
+							</div>
+						{/if}
+					{/if}
 				</div>
+
+				{#if log.files && log.files.length > 0}
+					<div class="d-flex flex-column">
+						<FileList files={log.files} {downloadFile} />
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
-
-	<div id="right">Right</div>
 </div>
 
 <style>
+	.loadImageBtn {
+		padding: 0.5rem 1rem;
+		border: none;
+		margin-top: 0.5rem;
+		border-radius: 5px;
+		transition: all ease 0.2s;
+		background-color: #ccc;
+	}
+
+	.loadImageBtn:hover {
+		background-color: #bbb;
+	}
+
+	.images {
+		gap: 1rem;
+		overflow-x: auto;
+	}
+
+	.image,
+	.imageContainer {
+		border-radius: 8px;
+	}
+
+	.imageContainer {
+		min-height: 80px;
+		padding: 0px;
+		border: 0px;
+		background-color: transparent;
+		overflow: clip;
+	}
+
+	.image:hover {
+		transform: scale(1.1);
+		box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.2);
+	}
+
+	.image {
+		max-width: 250px;
+		max-height: 150px;
+		transition: all ease 0.3s;
+	}
+
+	.text {
+		word-wrap: anywhere;
+	}
+
+	.tags {
+		gap: 0.5rem;
+	}
+
 	.log {
 		backdrop-filter: blur(10px) saturate(150%);
 		background-color: rgba(199, 199, 201, 0.329);
@@ -157,5 +468,9 @@
 
 	.dateDay {
 		opacity: 0.7;
+	}
+
+	#scrollArea {
+		padding-right: 1rem;
 	}
 </style>

@@ -277,10 +277,21 @@ async def loadMonthForReading(month: int, year: int, cookie = Depends(users.isLo
     days = []
     enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
     for dayLog in content["days"]:
+        day = {"day": dayLog["day"]}
         if "text" in dayLog.keys():
-            days.append({"day": dayLog["day"], 
-                         "text": security.decrypt_text(dayLog["text"], enc_key), 
-                         "date_written": security.decrypt_text(dayLog["date_written"], enc_key)})
+            day["text"] = security.decrypt_text(dayLog["text"], enc_key)
+            day["date_written"] = security.decrypt_text(dayLog["date_written"], enc_key)
+        if "tags" in dayLog.keys():
+            day["tags"] = dayLog["tags"]
+        if "files" in dayLog.keys():
+            day["files"] = []
+            for file in dayLog["files"]:
+                file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
+                day["files"].append(file)
+
+        # if one of the keys is in day: 
+        if "text" in day or "files" in day or "tags" in day:
+            days.append(day)
     
     days.sort(key=lambda x: x["day"])
 
