@@ -13,6 +13,7 @@
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import { fade, slide } from 'svelte/transition';
+	import ImageViewer from '$lib/ImageViewer.svelte';
 
 	marked.use({
 		breaks: true,
@@ -63,6 +64,9 @@
 
 	$effect(() => {
 		if ($selectedDate) {
+			$cal.currentYear = $selectedDate.getFullYear();
+			$cal.currentMonth = $selectedDate.getMonth();
+
 			let el = document.querySelector(`.log[data-log-day="${$selectedDate.getDate()}"]`);
 			if (el) {
 				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -345,7 +349,7 @@
 						</b>
 					</p>
 				</div>
-				<div class="flex-grow-1">
+				<div class="flex-grow-1 middle">
 					{#if log.text && log.text !== ''}
 						<div class="text">
 							{@html marked.parse(log.text)}
@@ -367,32 +371,13 @@
 								</button>
 							</div>
 						{:else}
-							<div class="d-flex flex-row images mt-3">
-								{#each log.images as image (image.uuid_filename)}
-									<button
-										type="button"
-										onclick={() => {
-											viewImage(image.uuid_filename);
-										}}
-										class="imageContainer d-flex align-items-center position-relative"
-										transition:slide={{ axis: 'x' }}
-									>
-										{#if image.src}
-											<img transition:fade class="image" alt={image.filename} src={image.src} />
-										{:else}
-											<div class="spinner-border" role="status">
-												<span class="visually-hidden">Loading...</span>
-											</div>
-										{/if}
-									</button>
-								{/each}
-							</div>
+							<ImageViewer images={log.images} />
 						{/if}
 					{/if}
 				</div>
 
 				{#if log.files && log.files.length > 0}
-					<div class="d-flex flex-column">
+					<div class="d-flex flex-column ms-3 files">
 						<FileList files={log.files} {downloadFile} />
 					</div>
 				{/if}
@@ -402,6 +387,14 @@
 </div>
 
 <style>
+	.files {
+		max-width: 350px;
+	}
+
+	.middle {
+		overflow-x: auto;
+	}
+
 	.loadImageBtn {
 		padding: 0.5rem 1rem;
 		border: none;
@@ -413,35 +406,6 @@
 
 	.loadImageBtn:hover {
 		background-color: #bbb;
-	}
-
-	.images {
-		gap: 1rem;
-		overflow-x: auto;
-	}
-
-	.image,
-	.imageContainer {
-		border-radius: 8px;
-	}
-
-	.imageContainer {
-		min-height: 80px;
-		padding: 0px;
-		border: 0px;
-		background-color: transparent;
-		overflow: clip;
-	}
-
-	.image:hover {
-		transform: scale(1.1);
-		box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.2);
-	}
-
-	.image {
-		max-width: 250px;
-		max-height: 150px;
-		transition: all ease 0.3s;
 	}
 
 	.text {

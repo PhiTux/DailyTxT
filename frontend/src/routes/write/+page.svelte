@@ -26,6 +26,7 @@
 	import TagModal from '$lib/TagModal.svelte';
 	import FileList from '$lib/FileList.svelte';
 	import { formatBytes } from '$lib/helpers.js';
+	import ImageViewer from '$lib/ImageViewer.svelte';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -572,32 +573,6 @@
 			});
 	}
 
-	function viewImage(uuid) {
-		// set active image
-		document.querySelectorAll('.carousel-item').forEach((item) => {
-			item.classList.remove('active');
-			if (
-				item.id ===
-				'carousel-item-' + images.findIndex((image) => image.uuid_filename === uuid)
-			) {
-				item.classList.add('active');
-			}
-		});
-		// set active image-button-indicator
-		document.querySelectorAll('.carousel-button').forEach((button) => {
-			button.classList.remove('active');
-			if (
-				button.id ===
-				'carousel-button-' + images.findIndex((image) => image.uuid_filename === uuid)
-			) {
-				button.classList.add('active');
-			}
-		});
-
-		const modal = new bootstrap.Modal(document.getElementById('modalImages'));
-		modal.show();
-	}
-
 	let searchTab = $state('');
 	let showTagDropdown = $state(false);
 
@@ -853,7 +828,8 @@
 					</button>
 				</div>
 			{:else}
-				<div class="d-flex flex-row images mt-3">
+				<ImageViewer {images} />
+				<!-- <div class="d-flex flex-row images mt-3">
 					{#each images as image (image.uuid_filename)}
 						<button
 							type="button"
@@ -872,7 +848,7 @@
 							{/if}
 						</button>
 					{/each}
-				</div>
+				</div> -->
 			{/if}
 		{/if}
 		{$selectedDate}<br />
@@ -1137,77 +1113,6 @@
 		isSaving={isSavingNewTag}
 		{saveNewTag}
 	/>
-
-	<div
-		class="modal fade"
-		id="modalImages"
-		tabindex="-1"
-		aria-labelledby="modalImagesLabel"
-		aria-hidden="true"
-	>
-		<div class="modal-dialog modal-xl modal-fullscreen-sm-down">
-			<div class="modal-content">
-				<div class="modal-header d-none d-sm-flex">
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-					></button>
-				</div>
-
-				<div class="modal-body">
-					<div id="imageCarousel" class="carousel slide carousel-fade">
-						<div class="carousel-indicators">
-							{#each images as image, i (image.uuid_filename)}
-								<button
-									type="button"
-									data-bs-target="#imageCarousel"
-									data-bs-slide-to={i}
-									aria-label="Slide {i}"
-									class="carousel-button"
-									id="carousel-button-{i}"
-								></button>
-							{/each}
-						</div>
-						<div class="carousel-inner">
-							{#each images as image, i (image.uuid_filename)}
-								<div id="carousel-item-{i}" class="carousel-item">
-									<img src={image.src} class="d-block w-100" alt={image.filename} />
-									<div class="carousel-caption d-none d-md-block">
-										<span class="imageLabelCarousel">{image.filename}</span>
-										<button
-											class="btn btn-primary"
-											onclick={() => downloadFile(image.uuid_filename)}
-										>
-											Download
-										</button>
-									</div>
-								</div>
-							{/each}
-						</div>
-						<button
-							class="carousel-control-prev"
-							type="button"
-							data-bs-target="#imageCarousel"
-							data-bs-slide="prev"
-						>
-							<span class="carousel-control-prev-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Previous</span>
-						</button>
-						<button
-							class="carousel-control-next"
-							type="button"
-							data-bs-target="#imageCarousel"
-							data-bs-slide="next"
-						>
-							<span class="carousel-control-next-icon" aria-hidden="true"></span>
-							<span class="visually-hidden">Next</span>
-						</button>
-					</div>
-				</div>
-				<div class="modal-footer d-block d-sm-none">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 
 <style>
@@ -1266,54 +1171,6 @@
 		margin-top: 0.5rem;
 		border-radius: 5px;
 		transition: all ease 0.2s;
-	}
-
-	.carousel-item > img {
-		transition: all ease 0.3s;
-	}
-
-	#middle {
-		min-width: 400px;
-	}
-
-	.imageLabelCarousel {
-		font-size: 20px;
-		transition: background-color ease 0.3s;
-		padding: 5px;
-		border-radius: 5px;
-	}
-
-	.carousel-caption:hover > .imageLabelCarousel {
-		background-color: rgba(0, 0, 0, 0.4);
-	}
-
-	.image,
-	.imageContainer {
-		border-radius: 8px;
-	}
-
-	.imageContainer {
-		min-height: 80px;
-		padding: 0px;
-		border: 0px;
-		background-color: transparent;
-		overflow: clip;
-	}
-
-	.image:hover {
-		transform: scale(1.1);
-		box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.2);
-	}
-
-	.image {
-		max-width: 250px;
-		max-height: 150px;
-		transition: all ease 0.3s;
-	}
-
-	.images {
-		gap: 1rem;
-		overflow-x: auto;
 	}
 
 	:global(.modal.show) {
