@@ -14,6 +14,7 @@
 	import { useTrianglify, trianglifyOpacity, autoLoadImages } from '$lib/settingsStore.js';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
+	import { alwaysShowSidenav } from '$lib/helpers.js';
 
 	import {
 		faRightFromBracket,
@@ -93,8 +94,22 @@
 		});
 	}
 
+	function calculateResize() {
+		if (window.innerWidth > 840) {
+			$alwaysShowSidenav = true;
+		} else {
+			$alwaysShowSidenav = false;
+		}
+	}
+
+	/* trigger on window-resize */
+	window.addEventListener('resize', () => {
+		calculateResize();
+	});
+
 	onMount(() => {
 		createBackground();
+		calculateResize();
 
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
 			const height = document.getElementById('modal-body').clientHeight;
@@ -202,13 +217,15 @@
 	<nav class="navbar navbar-expand-lg bg-body-tertiary">
 		<div class="row w-100">
 			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start align-items-center">
-				<button
-					class="btn d-md-none"
-					type="button"
-					data-bs-toggle="offcanvas"
-					data-bs-target="#sidenav"
-					aria-controls="sidenav">menü</button
-				>
+				{#if !$alwaysShowSidenav}
+					<button
+						class="btn d-xl-none"
+						type="button"
+						data-bs-toggle="offcanvas"
+						data-bs-target="#sidenav"
+						aria-controls="sidenav">menü</button
+					>
+				{/if}
 
 				<div class="form-check form-switch d-flex flex-row">
 					<label class="me-3" for="selectMode"><Fa icon={faPencil} size="1.5x" /></label>

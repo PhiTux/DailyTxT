@@ -42,26 +42,36 @@
 		}
 	}
 
-	// Variablen für die Swipe-Erkennung
+	// Variables for touch events
 	let touchStartX = 0;
 	let touchEndX = 0;
 
 	// Swipe-Handler
 	function handleTouchStart(event) {
-		touchStartX = event.touches[0].clientX; // X-Position des Touch-Starts speichern
+		touchStartX = event.touches[0].clientX; // save the initial touch position
+		touchEndX = touchStartX;
 	}
 
 	function handleTouchMove(event) {
-		touchEndX = event.touches[0].clientX; // X-Position während der Bewegung speichern
+		console.log('move');
+		touchEndX = event.touches[0].clientX; // update the touch position
 	}
 
-	function handleTouchEnd() {
-		// Prüfen, ob der Swipe nach links oder rechts ging
+	function handleTouchEnd(event) {
+		console.log(event.target.classList);
+		if (
+			event.target.classList.contains('fullscreen-scroll') ||
+			event.target.classList.contains('image')
+		) {
+			return; // do nothing if the touch ends on the scroll area
+		}
+
+		// calculate the swipe distance
 		if (touchStartX - touchEndX > 50) {
-			// Swipe nach links
+			// Swipe left
 			nextImage();
 		} else if (touchEndX - touchStartX > 50) {
-			// Swipe nach rechts
+			// Swipe right
 			prevImage();
 		}
 	}
@@ -147,20 +157,18 @@
 	</div>
 {/if}
 
-<div class="image-gallery">
-	<!-- Horizontal Scrollbar -->
-	<div class="horizontal-scroll px-2">
-		{#each images as image, index (image.uuid_filename)}
-			<button
-				type="button"
-				class="image-container"
-				onclick={() => openFullscreen(index)}
-				transition:slide={{ axis: 'x' }}
-			>
-				<img class="image" alt={image.filename} src={image.src} transition:fade />
-			</button>
-		{/each}
-	</div>
+<!-- <div class="image-gallery"> -->
+<div class="horizontal-scroll px-2">
+	{#each images as image, index (image.uuid_filename)}
+		<button
+			type="button"
+			class="image-container"
+			onclick={() => openFullscreen(index)}
+			transition:slide={{ axis: 'x' }}
+		>
+			<img class="image" alt={image.filename} src={image.src} transition:fade />
+		</button>
+	{/each}
 </div>
 
 <style>
@@ -204,12 +212,6 @@
 		background: rgba(255, 255, 255, 0.4);
 	}
 
-	.image-gallery {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
 	.horizontal-scroll {
 		display: flex;
 		gap: 1rem;
@@ -250,6 +252,7 @@
 		align-items: center;
 		z-index: 9999;
 		color: white;
+		pointer-events: all;
 	}
 
 	.fullscreen-image-container {

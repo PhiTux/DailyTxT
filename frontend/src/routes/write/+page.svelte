@@ -25,7 +25,7 @@
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
 	import FileList from '$lib/FileList.svelte';
-	import { formatBytes } from '$lib/helpers.js';
+	import { formatBytes, alwaysShowSidenav } from '$lib/helpers.js';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 
 	axios.interceptors.request.use((config) => {
@@ -768,8 +768,9 @@
 <DatepickerLogic />
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
+<!-- offcanvas-md d-md-none -->
 <!-- shown on small Screen, when triggered -->
-<div class="offcanvas-md d-md-none offcanvas-start p-3" id="sidenav" tabindex="-1">
+<div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">
 	<div class="offcanvas-header">
 		<button
 			type="button"
@@ -782,54 +783,58 @@
 	<Sidenav {searchForString} {searchForTag} />
 </div>
 
-<div class="d-flex flex-row justify-content-between h-100">
+<div class="d-flex flex-row justify-content-between h-100 main-row">
 	<!-- shown on large Screen -->
-	<div class="d-md-block d-none sidenav p-3">
-		<Sidenav {searchForString} {searchForTag} />
-	</div>
+	{#if $alwaysShowSidenav}
+		<!-- d-md-block d-none-->
+		<div class="  sidenav p-3">
+			<Sidenav {searchForString} {searchForTag} />
+		</div>
+	{/if}
 
-	<!-- Center -->
-	<div class="d-flex flex-column mt-4 mx-4 flex-fill" id="middle">
-		<!-- Input-Area -->
-		<!-- <div class="d-flex flex-column"> -->
-		<div class="d-flex flex-row textAreaHeader">
-			<div class="flex-fill textAreaDate">
-				{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-				{$selectedDate.toLocaleDateString('locale', {
-					day: '2-digit',
-					month: '2-digit',
-					year: 'numeric'
-				})}
-			</div>
-			<div class="flex-fill textAreaWrittenAt">
-				<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
-				{logDateWritten}
-			</div>
-			<div class="textAreaHistory">history</div>
-			<div class="textAreaDelete">delete</div>
-		</div>
-		<div id="log" class="focus-ring">
-			<div id="toolbar"></div>
-			<div id="editor"></div>
-		</div>
-		{#if images.length > 0}
-			{#if !$autoLoadImages && images.find((image) => !image.src && !image.loading)}
-				<div class="d-flex flex-row">
-					<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
-						<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-						{#if images.length === 1}
-							1 Bild laden
-						{:else}
-							{images.length} Bilder laden
-						{/if}
-						({formatBytes(
-							images.filter((i) => !i.src).reduce((sum, image) => sum + (image.size || 0), 0)
-						)})
-					</button>
+	<div class="d-flex flex-row middle-right">
+		<!-- Center -->
+		<div class="d-flex flex-column pt-4 px-4 flex-fill" id="middle">
+			<!-- Input-Area -->
+			<!-- <div class="d-flex flex-column"> -->
+			<div class="d-flex flex-row textAreaHeader">
+				<div class="flex-fill textAreaDate">
+					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
+					{$selectedDate.toLocaleDateString('locale', {
+						day: '2-digit',
+						month: '2-digit',
+						year: 'numeric'
+					})}
 				</div>
-			{:else}
-				<ImageViewer {images} />
-				<!-- <div class="d-flex flex-row images mt-3">
+				<div class="flex-fill textAreaWrittenAt">
+					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+					{logDateWritten}
+				</div>
+				<div class="textAreaHistory">history</div>
+				<div class="textAreaDelete">delete</div>
+			</div>
+			<div id="log" class="focus-ring">
+				<div id="toolbar"></div>
+				<div id="editor"></div>
+			</div>
+			{#if images.length > 0}
+				{#if !$autoLoadImages && images.find((image) => !image.src && !image.loading)}
+					<div class="d-flex flex-row">
+						<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
+							<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+							{#if images.length === 1}
+								1 Bild laden
+							{:else}
+								{images.length} Bilder laden
+							{/if}
+							({formatBytes(
+								images.filter((i) => !i.src).reduce((sum, image) => sum + (image.size || 0), 0)
+							)})
+						</button>
+					</div>
+				{:else}
+					<ImageViewer {images} />
+					<!-- <div class="d-flex flex-row images mt-3">
 					{#each images as image (image.uuid_filename)}
 						<button
 							type="button"
@@ -849,124 +854,123 @@
 						</button>
 					{/each}
 				</div> -->
+				{/if}
 			{/if}
-		{/if}
-		{$selectedDate}<br />
-		{lastSelectedDate}
-		<!-- </div> -->
-	</div>
+			<!-- </div> -->
+		</div>
 
-	<div id="right" class="d-flex flex-column">
-		<div class="tags">
-			<div class="d-flex flex-row justify-content-between">
-				<div class="d-flex flex-row">
-					<h3>Tags</h3>
-					{#if showTagLoading}
-						<div class="spinner-border ms-3" role="status">
-							<span class="visually-hidden">Loading...</span>
-						</div>
-					{/if}
+		<div id="right" class="d-flex flex-column">
+			<div class="tags">
+				<div class="d-flex flex-row justify-content-between">
+					<div class="d-flex flex-row">
+						<h3>Tags</h3>
+						{#if showTagLoading}
+							<div class="spinner-border ms-3" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{/if}
+					</div>
+					<!-- svelte-ignore a11y_missing_attribute -->
+					<a
+						tabindex="-1"
+						type="button"
+						class="btn"
+						data-bs-toggle="popover"
+						data-bs-title="Tags"
+						data-bs-content="Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln."
+					>
+						<Fa icon={faQuestionCircle} fw /></a
+					>
 				</div>
-				<!-- svelte-ignore a11y_missing_attribute -->
-				<a
-					tabindex="-1"
-					type="button"
-					class="btn"
-					data-bs-toggle="popover"
-					data-bs-title="Tags"
-					data-bs-content="Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln."
-				>
-					<Fa icon={faQuestionCircle} fw /></a
-				>
-			</div>
-			<div class="tagRow d-flex flex-row">
-				<input
-					bind:value={searchTab}
-					onfocus={() => {
-						showTagDropdown = true;
-						selectedTagIndex = 0;
-					}}
-					onfocusout={() => {
-						setTimeout(() => (showTagDropdown = false), 150);
-					}}
-					onkeydown={handleKeyDown}
-					type="text"
-					class="form-control"
-					id="tag-input"
-					placeholder="Tag..."
-				/>
-				<button class="newTagBtn btn btn-outline-secondary ms-2" onclick={openTagModal}>
-					<Fa icon={faSquarePlus} fw /> Neu
-				</button>
-			</div>
-			{#if showTagDropdown}
-				<div id="tagDropdown">
-					{#if filteredTags.length === 0}
-						<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
-					{:else}
-						{#each filteredTags as tag, index (tag.id)}
-							<!-- svelte-ignore a11y_click_events_have_key_events -->
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
-							<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-							<div
-								role="button"
-								tabindex="0"
-								onclick={() => selectTag(tag.id)}
-								onmouseover={() => (selectedTagIndex = index)}
-								class="tag-item {index === selectedTagIndex ? 'selected' : ''}"
-							>
-								<Tag {tag} />
+				<div class="tagRow d-flex flex-row">
+					<input
+						bind:value={searchTab}
+						onfocus={() => {
+							showTagDropdown = true;
+							selectedTagIndex = 0;
+						}}
+						onfocusout={() => {
+							setTimeout(() => (showTagDropdown = false), 150);
+						}}
+						onkeydown={handleKeyDown}
+						type="text"
+						class="form-control"
+						id="tag-input"
+						placeholder="Tag..."
+					/>
+					<button class="newTagBtn btn btn-outline-secondary ms-2" onclick={openTagModal}>
+						<Fa icon={faSquarePlus} fw /> Neu
+					</button>
+				</div>
+				{#if showTagDropdown}
+					<div id="tagDropdown">
+						{#if filteredTags.length === 0}
+							<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
+						{:else}
+							{#each filteredTags as tag, index (tag.id)}
+								<!-- svelte-ignore a11y_click_events_have_key_events -->
+								<!-- svelte-ignore a11y_no_static_element_interactions -->
+								<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+								<div
+									role="button"
+									tabindex="0"
+									onclick={() => selectTag(tag.id)}
+									onmouseover={() => (selectedTagIndex = index)}
+									class="tag-item {index === selectedTagIndex ? 'selected' : ''}"
+								>
+									<Tag {tag} />
+								</div>
+							{/each}
+						{/if}
+					</div>
+				{/if}
+				<div class="selectedTags d-flex flex-row flex-wrap">
+					{#if $tags.length !== 0}
+						{#each selectedTags as tag_id (tag_id)}
+							<div transition:slide={{ axis: 'x' }}>
+								<Tag tag={$tags.find((tag) => tag.id === tag_id)} {removeTag} isRemovable="true" />
 							</div>
 						{/each}
 					{/if}
 				</div>
-			{/if}
-			<div class="selectedTags d-flex flex-row flex-wrap">
-				{#if $tags.length !== 0}
-					{#each selectedTags as tag_id (tag_id)}
-						<div transition:slide={{ axis: 'x' }}>
-							<Tag tag={$tags.find((tag) => tag.id === tag_id)} {removeTag} isRemovable="true" />
-						</div>
-					{/each}
-				{/if}
 			</div>
-		</div>
 
-		<div class="files d-flex flex-column">
-			<button
-				class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
-				id="uploadBtn"
-				onclick={triggerFileInput}
-				><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
-			>
-			<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
+			<div class="files d-flex flex-column">
+				<button
+					class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
+					id="uploadBtn"
+					onclick={triggerFileInput}
+					><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
+				>
+				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
-			<FileList files={filesOfDay} {downloadFile} {askDeleteFile} deleteAllowed />
-			{#each uploadingFiles as file}
-				<div>
-					{file.name}
-					<div
-						class="progress"
-						role="progressbar"
-						aria-label="Upload progress"
-						aria-valuemin="0"
-						aria-valuemax="100"
-					>
+				<FileList files={filesOfDay} {downloadFile} {askDeleteFile} deleteAllowed />
+				{#each uploadingFiles as file}
+					<div>
+						{file.name}
 						<div
-							class="progress-bar {file.progress === 100
-								? 'progress-bar-striped progress-bar-animated'
-								: ''}"
-							style:width={file.progress + '%'}
+							class="progress"
+							role="progressbar"
+							aria-label="Upload progress"
+							aria-valuemin="0"
+							aria-valuemax="100"
 						>
-							{#if file.progress !== 100}
-								{file.progress}%
-							{:else}
-								Wird verschlüsselt...
-							{/if}
+							<div
+								class="progress-bar {file.progress === 100
+									? 'progress-bar-striped progress-bar-animated'
+									: ''}"
+								style:width={file.progress + '%'}
+							>
+								{#if file.progress !== 100}
+									{file.progress}%
+								{:else}
+									Wird verschlüsselt...
+								{/if}
+							</div>
 						</div>
 					</div>
-				</div>
-			{/each}
+				{/each}
+			</div>
 		</div>
 	</div>
 
@@ -1116,6 +1120,37 @@
 </div>
 
 <style>
+	@media (max-width: 1150px) {
+		.middle-right {
+			flex-direction: column !important;
+			align-items: center;
+		}
+
+		#middle {
+			flex: none !important;
+		}
+
+		#right {
+			padding-right: 0 !important;
+		}
+	}
+
+	.main-row {
+		max-width: 100vw;
+		flex-wrap: wrap;
+	}
+
+	.middle-right {
+		flex: 1 0;
+		/* flex-wrap: wrap; */
+		justify-content: center;
+		width: 100%;
+	}
+
+	#middle {
+		width: 100%;
+	}
+
 	.tagRow {
 		width: 100%;
 	}
@@ -1157,7 +1192,7 @@
 	.tags {
 		z-index: 10;
 		padding: 0.5rem;
-		margin-right: 2rem;
+		/* margin-right: 2rem; */
 		margin-bottom: 2rem;
 		backdrop-filter: blur(8px) saturate(150%);
 		background-color: rgba(219, 219, 219, 0.45);
@@ -1188,7 +1223,8 @@
 	}
 
 	.files {
-		margin-right: 2rem;
+		/* margin-right: 2rem; */
+		margin-bottom: 1rem;
 		border-radius: 10px;
 		padding: 1rem;
 		backdrop-filter: blur(8px) saturate(150%);
@@ -1208,6 +1244,8 @@
 		border-top: 1px solid #ccc;
 		border-left: 1px solid #ccc;
 		border-right: 1px solid #ccc;
+		height: auto;
+		flex-wrap: wrap;
 	}
 
 	#editor {
@@ -1270,5 +1308,6 @@
 		margin-top: 1.5rem !important;
 		min-width: 300px;
 		max-width: 400px;
+		padding-right: 2rem;
 	}
 </style>

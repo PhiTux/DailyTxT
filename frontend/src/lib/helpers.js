@@ -1,3 +1,5 @@
+import {writable} from 'svelte/store';
+
 function formatBytes(bytes) {
 	if (!+bytes) return '0 Bytes';
 
@@ -10,4 +12,7 @@ function formatBytes(bytes) {
 	return `${parseFloat((bytes / Math.pow(k, i)).toFixed(0))} ${sizes[i]}`;
 }
 
+export let alwaysShowSidenav = writable(true);
+
 export { formatBytes };
+
