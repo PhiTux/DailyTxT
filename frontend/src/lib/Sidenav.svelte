@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as bootstrap from 'bootstrap';
 	import Tag from './Tag.svelte';
+	import { offcanvasIsOpen } from '$lib/helpers.js';
 
 	let { searchForString, searchForTag } = $props();
 
@@ -17,6 +18,14 @@
 			(popoverTriggerEl) =>
 				new bootstrap.Popover(popoverTriggerEl, { html: true, trigger: 'focus' })
 		);
+
+		oc = document.querySelector('.offcanvas');
+		oc.addEventListener('hidden.bs.offcanvas', () => {
+			$offcanvasIsOpen = false;
+		});
+		oc.addEventListener('shown.bs.offcanvas', () => {
+			$offcanvasIsOpen = true;
+		});
 	});
 
 	let searchInput = $state(null);
@@ -128,6 +137,19 @@
 		$searchTag = {};
 		$searchResults = [];
 	}
+
+	let oc;
+	function selectDate(date) {
+		$selectedDate = date;
+
+		// close offcanvas/sidenav if open
+		if (oc) {
+			const bsOffcanvas = bootstrap.Offcanvas.getInstance(oc);
+			if ($offcanvasIsOpen) {
+				bsOffcanvas.hide();
+			}
+		}
+	}
 </script>
 
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
@@ -228,7 +250,8 @@
 					<button
 						type="button"
 						onclick={() => {
-							$selectedDate = new Date(Date.UTC(result.year, result.month - 1, result.day));
+							/* $selectedDate = new Date(Date.UTC(result.year, result.month - 1, result.day)); */
+							selectDate(new Date(Date.UTC(result.year, result.month - 1, result.day)));
 						}}
 						class="list-group-item list-group-item-action {$selectedDate.toDateString() ===
 						new Date(Date.UTC(result.year, result.month - 1, result.day)).toDateString()

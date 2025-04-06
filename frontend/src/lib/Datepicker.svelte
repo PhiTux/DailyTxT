@@ -2,6 +2,8 @@
 	import { cal, selectedDate, readingDate } from '$lib/calendarStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import * as bootstrap from 'bootstrap';
+	import { offcanvasIsOpen } from '$lib/helpers.js';
 
 	let days = $state([]);
 
@@ -69,12 +71,30 @@
 		$cal.currentYear += increment;
 	};
 
+	let oc;
+
 	const onDateClick = (date) => {
 		$selectedDate = date;
+
+		// close offcanvas/sidenav if open
+		if (oc) {
+			const bsOffcanvas = bootstrap.Offcanvas.getInstance(oc);
+			if ($offcanvasIsOpen) {
+				bsOffcanvas.hide();
+			}
+		}
 	};
 
 	onMount(() => {
 		days = updateCalendar();
+
+		oc = document.querySelector('.offcanvas');
+		oc.addEventListener('hidden.bs.offcanvas', () => {
+			$offcanvasIsOpen = false;
+		});
+		oc.addEventListener('shown.bs.offcanvas', () => {
+			$offcanvasIsOpen = true;
+		});
 	});
 
 	let months = Array.from({ length: 12 }, (_, i) =>
