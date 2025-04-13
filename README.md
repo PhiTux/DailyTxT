@@ -6,7 +6,7 @@
 # DailyTxT
 
 > [!NOTE]
-> I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before ~~March~~ April 2025.
+> I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before Summer 2025. Sorry for the delay...
 > I'm adressing several new features like dark-mode, "on-this-day", viewing mode, Markdown support ...
 > It's written in Svelte & Bootstrap for the frontend and Python Fastapi for the backend.
 > Progress is happening on the branch `version2`.
