@@ -48,7 +48,7 @@ def writeUsers(content):
         return e
     else:
         with f:
-            f.write(json.dumps(content, indent=4))
+            f.write(json.dumps(content, indent=settings.indent))
             return True
         
 def writeMonth(user_id, year, month, content):
@@ -60,7 +60,7 @@ def writeMonth(user_id, year, month, content):
         return False
     else:
         with f:
-            f.write(json.dumps(content, indent=4))
+            f.write(json.dumps(content, indent=settings.indent))
             return True
         
 def get_years(user_id):
@@ -131,5 +131,30 @@ def writeTags(user_id, content):
         return False
     else:
         with f:
-            f.write(json.dumps(content, indent=4))
+            f.write(json.dumps(content, indent=settings.indent))
+            return True
+        
+def getUserSettings(user_id):
+    try:
+        f = open(os.path.join(settings.data_path, str(user_id), "settings.encrypted"), "r")
+    except FileNotFoundError:
+        logger.info(f"{user_id}/settings.encrypted - File not found")
+        return {}
+    except Exception as e:
+        logger.exception(e)
+        raise HTTPException(status_code=500, detail="Internal Server Error when trying to open settings.json")
+    else:
+        with f:
+            s = f.read()
+            return s
+        
+def writeUserSettings(user_id, content):
+    try:
+        f = open(os.path.join(settings.data_path, str(user_id), "settings.encrypted"), "w")
+    except Exception as e:
+        logger.exception(e)
+        return False
+    else:
+        with f:
+            f.write(content)
             return True

@@ -7,14 +7,21 @@
 	import '../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
 	import Fa from 'svelte-fa';
-	import { readingMode } from '$lib/settingsStore.js';
+	import {
+		readingMode,
+		settings,
+		tempSettings,
+		autoLoadImagesThisDevice,
+		useTrianglify,
+		trianglifyOpacity
+	} from '$lib/settingsStore.js';
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
 	import trianglify from 'trianglify';
-	import { useTrianglify, trianglifyOpacity, autoLoadImages } from '$lib/settingsStore.js';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { slide } from 'svelte/transition';
 
 	import {
 		faRightFromBracket,
@@ -75,6 +82,8 @@
 
 	let settingsModal;
 	function openSettingsModal() {
+		$tempSettings = JSON.parse(JSON.stringify($settings));
+
 		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
 		settingsModal.show();
 	}
@@ -107,9 +116,58 @@
 		calculateResize();
 	});
 
+	function getUserSettings() {
+		axios
+			.get(API_URL + '/users/getUserSettings')
+			.then((response) => {
+				$settings = response.data;
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				if ($autoLoadImagesThisDevice === null || $autoLoadImagesThisDevice === undefined) {
+					$autoLoadImagesThisDevice = $settings.autoloadImagesByDefault;
+				}
+			});
+	}
+
+	let isSaving = $state(false);
+	function saveUserSettings() {
+		if (isSaving) return;
+		isSaving = true;
+
+		axios
+			.post(API_URL + '/users/saveUserSettings', $tempSettings)
+			.then((response) => {
+				if (response.data.success) {
+					$settings = $tempSettings;
+
+					// show toast
+					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveSettings'));
+					toast.show();
+
+					settingsModal.hide();
+				} else {
+					throw new Error('Error saving settings');
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSaveSettings'));
+				toast.show();
+			})
+			.finally(() => {
+				isSaving = false;
+			});
+	}
+
 	onMount(() => {
 		createBackground();
 		calculateResize();
+		getUserSettings();
 
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
 			const height = document.getElementById('modal-body').clientHeight;
@@ -208,9 +266,17 @@
 			.finally(() => {
 				isSavingEditedTag = false;
 				editTagModal.close();
-				settingsModal.show();
+				openSettingsModal();
 			});
 	}
+
+	$effect(() => {
+		if ($autoLoadImagesThisDevice === null || $autoLoadImagesThisDevice === undefined) {
+			return;
+		}
+
+		localStorage.setItem('autoLoadImagesThisDevice', $autoLoadImagesThisDevice);
+	});
 </script>
 
 <main class="d-flex flex-column">
@@ -365,6 +431,10 @@
 								<h3 id="functions" class="text-primary">Funktionen</h3>
 
 								<div id="autoLoadImages">
+									{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
+										<div class="unsaved-changes" transition:slide></div>
+									{/if}
+
 									<h5>Bilder automatisch laden</h5>
 									<ul>
 										<li>
@@ -377,16 +447,49 @@
 									<div class="form-check form-switch">
 										<input
 											class="form-check-input"
-											bind:checked={$autoLoadImages}
+											bind:checked={$tempSettings.setAutoloadImagesPerDevice}
+											type="checkbox"
+											role="switch"
+											id="setImageLoadingPerDeviceSwitch"
+										/>
+										<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
+											Für jedes Gerät einzeln festlegen, ob die Bilder automatisch geladen werden
+											sollen</label
+										>
+									</div>
+
+									<div class="form-check form-switch ms-3">
+										<input
+											class="form-check-input"
+											bind:checked={$autoLoadImagesThisDevice}
+											type="checkbox"
+											role="switch"
+											id="loadImagesThisDeviceSwitch"
+											disabled={!$tempSettings.setAutoloadImagesPerDevice}
+										/>
+										<label class="form-check-label" for="loadImagesThisDeviceSwitch">
+											{#if $autoLoadImagesThisDevice}
+												Bilder werden auf <b>diesem Gerät</b> automatisch geladen
+											{:else}
+												Bilder werden auf <b>diesem Gerät <u>nicht</u></b> automatisch geladen
+											{/if}</label
+										>
+									</div>
+
+									<div class="form-check form-switch mt-3">
+										<input
+											class="form-check-input"
+											bind:checked={$tempSettings.autoloadImagesByDefault}
 											type="checkbox"
 											role="switch"
 											id="autoLoadImagesSwitch"
+											disabled={$tempSettings.setAutoloadImagesPerDevice}
 										/>
 										<label class="form-check-label" for="autoLoadImagesSwitch">
-											{#if $autoLoadImages}
-												Bilder werden automatisch geladen
+											{#if $tempSettings.autoloadImagesByDefault}
+												Bilder werden (auf jedem Gerät) automatisch geladen
 											{:else}
-												Bilder werden nicht automatisch geladen
+												Bilder werden (auf jedem Gerät) <b>nicht</b> automatisch geladen
 											{/if}</label
 										>
 									</div>
@@ -494,7 +597,17 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
-					<button type="button" class="btn btn-primary">Speichern</button>
+					<button
+						type="button"
+						class="btn btn-primary"
+						onclick={saveUserSettings}
+						disabled={isSaving}
+						>Speichern
+						{#if isSaving}
+							<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
+							></span>
+						{/if}
+					</button>
 				</div>
 			</div>
 		</div>
@@ -536,10 +649,53 @@
 				<div class="toast-body">Fehler beim Löschen des Tags!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastSuccessSaveSettings"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Einstellungen gespeichert!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorSaveSettings"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
+			</div>
+		</div>
 	</div>
 </main>
 
 <style>
+	div:has(> .unsaved-changes) {
+		outline: 1px solid orange;
+	}
+
+	.unsaved-changes {
+		background-color: orange;
+		margin-top: -0.5rem;
+		margin-left: -0.5rem;
+		margin-right: -0.5rem;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
+		padding-left: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	.unsaved-changes::before {
+		content: 'Ungespeicherte Änderungen';
+	}
+
 	:global(.tagColumn > span) {
 		width: min-content;
 	}
@@ -557,6 +713,10 @@
 	#selectMode:not(:checked) {
 		background-color: #2196f3;
 		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255, 255, 255, 1)'/></svg>");
+	}
+
+	.settings-content {
+		padding: 0.5rem;
 	}
 
 	#settings-content > div {

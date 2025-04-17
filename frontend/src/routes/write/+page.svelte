@@ -20,7 +20,7 @@
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
-	import { autoLoadImages } from '$lib/settingsStore';
+	import { settings, autoLoadImagesThisDevice } from '$lib/settingsStore';
 	import { tags } from '$lib/tagStore';
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
@@ -246,13 +246,18 @@
 				) {
 					images = [...images, file];
 
-					if ($autoLoadImages) {
+					if (autoLoadImages) {
 						loadImage(file);
 					}
 				}
 			});
 		}
 	});
+
+	let autoLoadImages = $derived(
+		($settings.setAutoloadImagesPerDevice && $autoLoadImagesThisDevice) ||
+			(!$settings.setAutoloadImagesPerDevice && $settings.autoloadImagesByDefault)
+	);
 
 	function loadImage(file) {
 		images.map((image) => {
@@ -796,7 +801,6 @@
 		<!-- Center -->
 		<div class="d-flex flex-column pt-4 px-4 flex-fill" id="middle">
 			<!-- Input-Area -->
-			<!-- <div class="d-flex flex-column"> -->
 			<div class="d-flex flex-row textAreaHeader">
 				<div class="flex-fill textAreaDate">
 					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
@@ -818,7 +822,7 @@
 				<div id="editor"></div>
 			</div>
 			{#if images.length > 0}
-				{#if !$autoLoadImages && images.find((image) => !image.src && !image.loading)}
+				{#if !autoLoadImages && images.find((image) => !image.src && !image.loading)}
 					<div class="d-flex flex-row">
 						<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
 							<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
@@ -834,29 +838,8 @@
 					</div>
 				{:else}
 					<ImageViewer {images} />
-					<!-- <div class="d-flex flex-row images mt-3">
-					{#each images as image (image.uuid_filename)}
-						<button
-							type="button"
-							onclick={() => {
-								viewImage(image.uuid_filename);
-							}}
-							class="imageContainer d-flex align-items-center position-relative"
-							transition:slide={{ axis: 'x' }}
-						>
-							{#if image.src}
-								<img transition:fade class="image" alt={image.filename} src={image.src} />
-							{:else}
-								<div class="spinner-border" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</div>
-							{/if}
-						</button>
-					{/each}
-				</div> -->
 				{/if}
 			{/if}
-			<!-- </div> -->
 		</div>
 
 		<div id="right" class="d-flex flex-column">

@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import json
 import secrets
-from fastapi import APIRouter, Cookie, HTTPException, Response
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response
 from pydantic import BaseModel
 from ..utils import fileHandling
 from ..utils import security
@@ -121,6 +121,76 @@ async def register(register: Register):
         raise HTTPException(status_code=500, detail="Internal Server Error when trying to write users.json") from e
     else:
         return {"success": True}
+
+def get_default_user_settings():
+    return {
+        "autoloadImagesByDefault": False,
+        "setAutoloadImagesPerDevice": True,
+    }
+
+@router.get("/getUserSettings")
+async def get_user_settings(cookie = Depends(isLoggedIn)):
+    user_id = cookie["user_id"]
+    content_enc = fileHandling.getUserSettings(user_id)   
+
+    if len(content_enc) > 0:
+        # decrypt settings
+        enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+        content = json.loads(security.decrypt_text(content_enc, enc_key))
+    else:
+        content = {}
+
+    default = get_default_user_settings()
+
+    for key in default.keys():
+        if key not in content.keys():
+            content[key] = default[key]
+    
+    return content
+
+
+@router.post("/saveUserSettings")
+async def save_user_settings(settings: dict, cookie = Depends(isLoggedIn)):
+    user_id = cookie["user_id"]
+    content = fileHandling.getUserSettings(user_id)   
+    
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    if len(content) > 0:
+        # decrypt settings
+        content = json.loads(security.decrypt_text(content, enc_key))
+    else:
+        content = {}
+
+    # if content is empty dict
+    if content is None or len(content) == 0:
+        content = get_default_user_settings()
+    
+    # update settings
+    for key in settings.keys():
+        content[key] = settings[key]
+
+    # encrypt settings
+    content_enc = security.encrypt_text(json.dumps(content), enc_key)
+
+    try:
+        fileHandling.writeUserSettings(user_id, content_enc)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal Server Error when trying to write users.json") from e
+    else:
+        return {"success": True}
+
+
+"""
+export const defaultSettings = writable({
+  useTrianglify: true,
+  trianglifyOpacity: 0.4,
+  trianglifyColor: '',
+  backgroundColor: '',
+  autoloadImagesDefault: true,
+  saveAutoloadImagesPerDevice: true,
+});
+"""
+
 
 
 """

@@ -3,6 +3,7 @@ from .routers import users, logs
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 from sys import stdout
+from .utils.settings import settings
 
 logger = logging.getLogger("dailytxtLogger")
 consoleHandler = logging.StreamHandler(stdout)
@@ -12,14 +13,7 @@ logger.setLevel(logging.DEBUG)
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:5173",
-    "localhost:5173",
-    "http://192.168.1.35:5173",
-    "192.168.1.35:5173",
-    "http://100.100.87.111:5173",
-    "http://lab:5173"
-]
+origins = settings.allowed_hosts
 
 app.add_middleware(
     CORSMiddleware,
