@@ -792,14 +792,14 @@
 	<!-- shown on large Screen -->
 	{#if $alwaysShowSidenav}
 		<!-- d-md-block d-none-->
-		<div class="  sidenav p-3">
+		<div class="sidenav p-3">
 			<Sidenav {searchForString} {searchForTag} />
 		</div>
 	{/if}
 
-	<div class="d-flex flex-row middle-right">
+	<div class="d-flex flex-row middle-right flex-grow-1">
 		<!-- Center -->
-		<div class="d-flex flex-column pt-4 px-4 flex-fill" id="middle">
+		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
 			<div class="d-flex flex-row textAreaHeader">
 				<div class="flex-fill textAreaDate">
@@ -1135,11 +1135,9 @@
 
 	.main-row {
 		max-width: 100vw;
-		/* flex-wrap: wrap; */
 	}
 
 	.middle-right {
-		flex: 1 0;
 		justify-content: center;
 		width: 100%;
 	}
@@ -1246,6 +1244,8 @@
 
 	#editor {
 		height: 400px;
+		overflow-y: scroll;
+		word-break: break-word;
 	}
 
 	:global(.TinyMDE) {
