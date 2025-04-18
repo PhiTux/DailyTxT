@@ -1,5 +1,5 @@
 <script>
-	import { blur } from 'svelte/transition';
+	import { blur, slide, fade } from 'svelte/transition';
 	import axios from 'axios';
 	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
@@ -21,14 +21,15 @@
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
-	import { slide } from 'svelte/transition';
+	import { templates } from '$lib/templateStore';
 
 	import {
 		faRightFromBracket,
 		faGlasses,
 		faPencil,
 		faSliders,
-		faTriangleExclamation
+		faTriangleExclamation,
+		faTrash
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 
@@ -168,6 +169,7 @@
 		createBackground();
 		calculateResize();
 		getUserSettings();
+		getTemplates();
 
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
 			const height = document.getElementById('modal-body').clientHeight;
@@ -201,6 +203,148 @@
 
 		settingsModal.hide();
 		editTagModal.open();
+	}
+
+	let selectedTemplate = $state(null);
+	let templateName = $state('');
+	let templateText = $state('');
+	let oldTemplateName = $state('');
+	let oldTemplateText = $state('');
+	let confirmDeleteTemplate = $state(false);
+
+	function getTemplates() {
+		axios
+			.get(API_URL + '/logs/getTemplates')
+			.then((response) => {
+				$templates = response.data;
+
+				// add "new template" option to start
+				$templates.unshift({ name: 'Neue Vorlage erstellen...', text: '' });
+
+				selectedTemplate = null;
+				updateSelectedTemplate();
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
+
+	let isSavingTemplate = $state(false);
+	function saveTemplate() {
+		// check if name or text is empty
+		if (templateName === '' || templateText === '') {
+			// show toast
+			const toast = new bootstrap.Toast(document.getElementById('toastErrorInvalidTemplateEmpty'));
+			toast.show();
+			return;
+		}
+
+		// check if template name already exists
+		for (let i = 0; i < $templates.length; i++) {
+			if ($templates[i].name === templateName && selectedTemplate !== i) {
+				// show toast
+				const toast = new bootstrap.Toast(
+					document.getElementById('toastErrorInvalidTemplateDouble')
+				);
+				toast.show();
+				return;
+			}
+		}
+
+		if (isSavingTemplate) return;
+		isSavingTemplate = true;
+
+		if (selectedTemplate === 0) {
+			// add new template
+			$templates.push({ name: templateName, text: templateText });
+		} else {
+			// update existing template
+			$templates[selectedTemplate].name = templateName;
+			$templates[selectedTemplate].text = templateText;
+		}
+
+		// remove first "new template" option
+		$templates.shift();
+
+		axios
+			.post(API_URL + '/logs/saveTemplates', {
+				templates: $templates
+			})
+			.then((response) => {
+				if (response.data.success) {
+					getTemplates();
+
+					// show toast
+					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveTemplate'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSaveTemplates'));
+				toast.show();
+			})
+			.finally(() => {
+				isSavingTemplate = false;
+			});
+	}
+
+	let isDeletingTemplate = $state(false);
+	function deleteTemplate() {
+		if (selectedTemplate === null || selectedTemplate === 0) return;
+
+		if (isDeletingTemplate) return;
+		isDeletingTemplate = true;
+
+		// remove template from list
+		$templates.splice(selectedTemplate, 1);
+
+		// remove first "new template" option
+		$templates.shift();
+
+		axios
+			.post(API_URL + '/logs/saveTemplates', {
+				templates: $templates
+			})
+			.then((response) => {
+				if (response.data.success) {
+					getTemplates();
+
+					// show toast
+					const toast = new bootstrap.Toast(
+						document.getElementById('toastSuccessDeletingTemplate')
+					);
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletingTemplate'));
+				toast.show();
+			})
+			.finally(() => {
+				isDeletingTemplate = false;
+				confirmDeleteTemplate = false;
+			});
+	}
+
+	function updateSelectedTemplate() {
+		if (selectedTemplate === 0 || selectedTemplate === null) {
+			// new template
+			templateName = '';
+			templateText = '';
+		} else {
+			// existing template
+			templateName = $templates[selectedTemplate].name;
+			templateText = $templates[selectedTemplate].text;
+		}
+		oldTemplateName = templateName;
+		oldTemplateText = templateText;
+
+		confirmDeleteTemplate = false;
 	}
 
 	let deleteTagId = $state(null);
@@ -397,131 +541,135 @@
 								data-bs-smooth-scroll="true"
 								id="settings-content"
 							>
-								<h3 id="appearance" class="text-primary">Aussehen</h3>
-								<div id="lightdark">
-									<h5>Light/Dark-Mode</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
-								</div>
-								<div id="background">
-									<h5>Hintergrund</h5>
-									<div class="d-flex flex-row justify-content-start">
-										<label for="trianglifyOpacity" class="form-label"
-											>Transparenz der Dreiecke</label
-										>
-										<input
-											bind:value={$trianglifyOpacity}
-											type="range"
-											class="mx-3 form-range"
-											id="trianglifyOpacity"
-											min="0"
-											max="1"
-											step="0.01"
-										/>
-										<input
-											bind:value={$trianglifyOpacity}
-											type="number"
-											id="trianglifyOpacityNumber"
-										/>
+								<div id="appearance">
+									<h3 id="" class="text-primary">Aussehen</h3>
+									<div id="lightdark">
+										<h5>Light/Dark-Mode</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
+									</div>
+									<div id="background">
+										<h5>Hintergrund</h5>
+										<div class="d-flex flex-row justify-content-start">
+											<label for="trianglifyOpacity" class="form-label"
+												>Transparenz der Dreiecke</label
+											>
+											<input
+												bind:value={$trianglifyOpacity}
+												type="range"
+												class="mx-3 form-range"
+												id="trianglifyOpacity"
+												min="0"
+												max="1"
+												step="0.01"
+											/>
+											<input
+												bind:value={$trianglifyOpacity}
+												type="number"
+												id="trianglifyOpacityNumber"
+											/>
+										</div>
 									</div>
 								</div>
 
-								<h3 id="functions" class="text-primary">Funktionen</h3>
+								<div id="functions">
+									<h3 id="" class="text-primary">Funktionen</h3>
 
-								<div id="autoLoadImages">
-									{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
-										<div class="unsaved-changes" transition:slide></div>
-									{/if}
+									<div id="autoLoadImages">
+										{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
+											<div class="unsaved-changes" transition:slide></div>
+										{/if}
 
-									<h5>Bilder automatisch laden</h5>
-									<ul>
-										<li>
-											Beim Laden eines Textes können hochgeladene Bilder (sofern vorhanden)
-											automatisch geladen werden. <em>Erhöhter Datenverbrauch!</em>
-										</li>
-										<li>Alternativ wird ein Button zum Nachladen aller Bilder angezeigt.</li>
-									</ul>
+										<h5>Bilder automatisch laden</h5>
+										<ul>
+											<li>
+												Beim Laden eines Textes können hochgeladene Bilder (sofern vorhanden)
+												automatisch geladen werden. <em>Erhöhter Datenverbrauch!</em>
+											</li>
+											<li>Alternativ wird ein Button zum Nachladen aller Bilder angezeigt.</li>
+										</ul>
 
-									<div class="form-check form-switch">
-										<input
-											class="form-check-input"
-											bind:checked={$tempSettings.setAutoloadImagesPerDevice}
-											type="checkbox"
-											role="switch"
-											id="setImageLoadingPerDeviceSwitch"
-										/>
-										<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
-											Für jedes Gerät einzeln festlegen, ob die Bilder automatisch geladen werden
-											sollen</label
-										>
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.setAutoloadImagesPerDevice}
+												type="checkbox"
+												role="switch"
+												id="setImageLoadingPerDeviceSwitch"
+											/>
+											<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
+												Für jedes Gerät einzeln festlegen, ob die Bilder automatisch geladen werden
+												sollen</label
+											>
+										</div>
+
+										<div class="form-check form-switch ms-3">
+											<input
+												class="form-check-input"
+												bind:checked={$autoLoadImagesThisDevice}
+												type="checkbox"
+												role="switch"
+												id="loadImagesThisDeviceSwitch"
+												disabled={!$tempSettings.setAutoloadImagesPerDevice}
+											/>
+											<label class="form-check-label" for="loadImagesThisDeviceSwitch">
+												{#if $autoLoadImagesThisDevice}
+													Bilder werden auf <b>diesem Gerät</b> automatisch geladen
+												{:else}
+													Bilder werden auf <b>diesem Gerät <u>nicht</u></b> automatisch geladen
+												{/if}</label
+											>
+										</div>
+
+										<div class="form-check form-switch mt-3">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.autoloadImagesByDefault}
+												type="checkbox"
+												role="switch"
+												id="autoLoadImagesSwitch"
+												disabled={$tempSettings.setAutoloadImagesPerDevice}
+											/>
+											<label class="form-check-label" for="autoLoadImagesSwitch">
+												{#if $tempSettings.autoloadImagesByDefault}
+													Bilder werden (auf jedem Gerät) automatisch geladen
+												{:else}
+													Bilder werden (auf jedem Gerät) <b>nicht</b> automatisch geladen
+												{/if}</label
+											>
+										</div>
 									</div>
 
-									<div class="form-check form-switch ms-3">
-										<input
-											class="form-check-input"
-											bind:checked={$autoLoadImagesThisDevice}
-											type="checkbox"
-											role="switch"
-											id="loadImagesThisDeviceSwitch"
-											disabled={!$tempSettings.setAutoloadImagesPerDevice}
-										/>
-										<label class="form-check-label" for="loadImagesThisDeviceSwitch">
-											{#if $autoLoadImagesThisDevice}
-												Bilder werden auf <b>diesem Gerät</b> automatisch geladen
-											{:else}
-												Bilder werden auf <b>diesem Gerät <u>nicht</u></b> automatisch geladen
-											{/if}</label
-										>
+									<div id="language">
+										<h5>Sprache</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
 									</div>
-
-									<div class="form-check form-switch mt-3">
-										<input
-											class="form-check-input"
-											bind:checked={$tempSettings.autoloadImagesByDefault}
-											type="checkbox"
-											role="switch"
-											id="autoLoadImagesSwitch"
-											disabled={$tempSettings.setAutoloadImagesPerDevice}
-										/>
-										<label class="form-check-label" for="autoLoadImagesSwitch">
-											{#if $tempSettings.autoloadImagesByDefault}
-												Bilder werden (auf jedem Gerät) automatisch geladen
-											{:else}
-												Bilder werden (auf jedem Gerät) <b>nicht</b> automatisch geladen
-											{/if}</label
-										>
+									<div id="timezone">
+										<h5>Zeitzone</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
 									</div>
-								</div>
-
-								<div id="language">
-									<h5>Sprache</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
-								</div>
-								<div id="timezone">
-									<h5>Zeitzone</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
-								</div>
-								<div id="onthisday">
-									<h5>An diesem Tag</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
-								</div>
-								<div id="loginonreload">
-									<h5>Login bei Reload</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
+									<div id="onthisday">
+										<h5>An diesem Tag</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
+									</div>
+									<div id="loginonreload">
+										<h5>Login bei Reload</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
+									</div>
 								</div>
 
 								<h3 id="tags" class="text-primary">Tags</h3>
@@ -569,7 +717,104 @@
 									</div>
 								</div>
 
-								<div id="templates"><h4>Vorlagen</h4></div>
+								<div id="templates">
+									<h3 class="text-primary">Vorlagen</h3>
+									<div>
+										{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
+											<div class="unsaved-changes" transition:slide></div>
+										{/if}
+
+										<div class="d-flex flex-column">
+											<select
+												bind:value={selectedTemplate}
+												class="form-select"
+												aria-label="Select template"
+												onchange={updateSelectedTemplate}
+											>
+												{#each $templates as template, index}
+													<option value={index} selected={index === selectedTemplate}>
+														{template.name}
+													</option>
+												{/each}
+											</select>
+										</div>
+
+										<hr />
+
+										{#if confirmDeleteTemplate}
+											<div transition:slide class="d-flex flex-row align-items-center mb-2">
+												<span
+													>Vorlage <b>{$templates[selectedTemplate].name}</b> wirklich löschen?</span
+												>
+												<button
+													type="button"
+													class="btn btn-secondary ms-2"
+													onclick={() => (confirmDeleteTemplate = false)}>Abbrechen</button
+												>
+												<button
+													type="button"
+													class="btn btn-danger ms-2"
+													onclick={() => {
+														deleteTemplate();
+													}}
+													disabled={isDeletingTemplate}
+													>Löschen
+													{#if isDeletingTemplate}
+														<span
+															class="spinner-border spinner-border-sm ms-2"
+															role="status"
+															aria-hidden="true"
+														></span>
+													{/if}
+												</button>
+											</div>
+										{/if}
+										<div class="d-flex flex-row">
+											<input
+												disabled={selectedTemplate === null}
+												type="text"
+												bind:value={templateName}
+												class="form-control"
+												placeholder="Name der Vorlage"
+											/>
+											<button
+												disabled={selectedTemplate === 0 || selectedTemplate === null}
+												type="button"
+												class="btn btn-outline-danger ms-5"
+												onclick={() => {
+													confirmDeleteTemplate = !confirmDeleteTemplate;
+												}}><Fa fw icon={faTrash} /></button
+											>
+										</div>
+										<textarea
+											disabled={selectedTemplate === null}
+											bind:value={templateText}
+											class="form-control mt-2"
+											rows="10"
+											placeholder="Inhalt der Vorlage"
+										>
+										</textarea>
+										<div class="d-flex justify-content-end">
+											<button
+												disabled={(oldTemplateName === templateName &&
+													oldTemplateText === templateText) ||
+													isSavingTemplate}
+												type="button"
+												class="btn btn-primary mt-2"
+												onclick={saveTemplate}
+											>
+												Vorlage speichern
+												{#if isSavingTemplate}
+													<span
+														class="spinner-border spinner-border-sm ms-2"
+														role="status"
+														aria-hidden="true"
+													></span>
+												{/if}
+											</button>
+										</div>
+									</div>
+								</div>
 
 								<div id="data">
 									<h4>Daten</h4>
@@ -596,12 +841,17 @@
 					</div>
 				</div>
 				<div class="modal-footer">
+					{#if JSON.stringify($tempSettings) !== JSON.stringify($settings)}
+						<div class="footer-unsaved-changes" transition:fade={{ duration: 100 }}>
+							Ungespeicherte Änderungen!
+						</div>
+					{/if}
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
 					<button
 						type="button"
 						class="btn btn-primary"
 						onclick={saveUserSettings}
-						disabled={isSaving}
+						disabled={isSaving || JSON.stringify($tempSettings) === JSON.stringify($settings)}
 						>Speichern
 						{#if isSaving}
 							<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
@@ -673,10 +923,80 @@
 				<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastErrorInvalidTemplateEmpty"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorInvalidTemplateDouble"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Name der Vorlage existiert bereits</div>
+			</div>
+		</div>
+
+		<div
+			id="toastSuccessSaveTemplate"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Vorlage gespeichert</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorDeletingTemplate"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen der Vorlage</div>
+			</div>
+		</div>
+
+		<div
+			id="toastSuccessDeletingTemplate"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Vorlage gelöscht</div>
+			</div>
+		</div>
 	</div>
 </main>
 
 <style>
+	.footer-unsaved-changes {
+		background-color: orange;
+		color: black;
+		padding: 0.25rem 0.5rem;
+		border-radius: 10px;
+		margin-left: auto;
+		margin-right: 2rem;
+		font-style: italic;
+	}
+
 	div:has(> .unsaved-changes) {
 		outline: 1px solid orange;
 	}
@@ -719,7 +1039,7 @@
 		padding: 0.5rem;
 	}
 
-	#settings-content > div {
+	#settings-content > div > div {
 		background-color: #bdbdbd5d;
 		padding: 0.5rem;
 		border-radius: 10px;

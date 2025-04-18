@@ -521,3 +521,38 @@ async def removeTagFromLog(data: AddTagToLog, cookie = Depends(users.isLoggedIn)
             raise HTTPException(status_code=500, detail="Failed to remove tag - error writing log")
         return {"success": True}
     
+@router.get("/getTemplates")
+async def getTemplates(cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    content:dict = fileHandling.getTemplates(cookie["user_id"])
+
+    if not 'templates' in content:
+        return []
+    
+    else:
+        for template in content['templates']:
+            template['name'] = security.decrypt_text(template['name'], enc_key)
+            template['text'] = security.decrypt_text(template['text'], enc_key)
+        return content['templates']
+
+class Templates(BaseModel):
+    templates: list[dict]
+
+@router.post("/saveTemplates")
+async def saveTemplates(templates: Templates, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    content = {'templates': []}
+    
+    for template in templates.templates:
+        enc_name = security.encrypt_text(template["name"], enc_key)
+        enc_text = security.encrypt_text(template["text"], enc_key)
+
+        new_template = {"name": enc_name, "text": enc_text}
+        content['templates'].append(new_template)
+
+    if not fileHandling.writeTemplates(cookie["user_id"], content):
+        raise HTTPException(status_code=500, detail="Failed to write templates - error writing templates")
+    else:
+        return {"success": True}
