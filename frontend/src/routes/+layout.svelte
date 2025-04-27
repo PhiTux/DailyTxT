@@ -20,9 +20,8 @@
 	import trianglify from 'trianglify';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, offcanvasIsOpen } from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
-
 	import {
 		faRightFromBracket,
 		faGlasses,
@@ -37,10 +36,40 @@
 	let inDuration = 150;
 	let outDuration = 150;
 
+	axios.interceptors.request.use((config) => {
+		config.withCredentials = true;
+		return config;
+	});
+
+	axios.interceptors.response.use(
+		(response) => {
+			return response;
+		},
+		(error) => {
+			if (
+				error.response &&
+				error.response.status &&
+				(error.response.status == 401 || error.response.status == 440)
+			) {
+				// logout
+				axios
+					.get(API_URL + '/users/logout')
+					.then((response) => {
+						localStorage.removeItem('user');
+						goto(`/login?error=${error.response.status}`);
+					})
+					.catch((error) => {
+						console.error(error);
+					});
+			}
+			return Promise.reject(error);
+		}
+	);
+
 	$effect(() => {
-		if ($readingMode) {
+		if ($readingMode === true && page.url.pathname !== '/read') {
 			goto('/read');
-		} else {
+		} else if ($readingMode === false) {
 			goto('/write');
 		}
 	});
@@ -170,6 +199,12 @@
 		calculateResize();
 		getUserSettings();
 		getTemplates();
+
+		if (page.url.pathname === '/read') {
+			$readingMode = true;
+		} else if (page.url.pathname === '/write') {
+			$readingMode = false;
+		}
 
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
 			const height = document.getElementById('modal-body').clientHeight;
@@ -542,7 +577,7 @@
 								id="settings-content"
 							>
 								<div id="appearance">
-									<h3 id="" class="text-primary">Aussehen</h3>
+									<h3 class="text-primary">Aussehen</h3>
 									<div id="lightdark">
 										<h5>Light/Dark-Mode</h5>
 										Bla<br />
@@ -575,7 +610,7 @@
 								</div>
 
 								<div id="functions">
-									<h3 id="" class="text-primary">Funktionen</h3>
+									<h3 class="text-primary">Funktionen</h3>
 
 									<div id="autoLoadImages">
 										{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}

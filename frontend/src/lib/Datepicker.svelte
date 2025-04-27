@@ -85,6 +85,20 @@
 		}
 	};
 
+	$effect(() => {
+		if (window.location.href) {
+			setTimeout(() => {
+				oc = document.querySelector('.offcanvas');
+				oc.addEventListener('hidden.bs.offcanvas', () => {
+					$offcanvasIsOpen = false;
+				});
+				oc.addEventListener('shown.bs.offcanvas', () => {
+					$offcanvasIsOpen = true;
+				});
+			}, 500);
+		}
+	});
+
 	onMount(() => {
 		days = updateCalendar();
 

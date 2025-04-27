@@ -6,7 +6,7 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { searchString, searchTag, searchResults, isSearching } from '$lib/searchStore.js';
+	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
@@ -32,31 +32,6 @@
 		config.withCredentials = true;
 		return config;
 	});
-
-	axios.interceptors.response.use(
-		(response) => {
-			return response;
-		},
-		(error) => {
-			if (
-				error.response &&
-				error.response.status &&
-				(error.response.status == 401 || error.response.status == 440)
-			) {
-				// logout
-				axios
-					.get(API_URL + '/users/logout')
-					.then((response) => {
-						localStorage.removeItem('user');
-						goto(`/login?error=${error.response.status}`);
-					})
-					.catch((error) => {
-						console.error(error);
-					});
-			}
-			return Promise.reject(error);
-		}
-	);
 
 	let cancelDownload = new AbortController();
 
@@ -358,57 +333,6 @@
 			$searchResults = [];
 		}
 	});
-
-	function searchForString() {
-		if ($isSearching) {
-			return;
-		}
-		$isSearching = true;
-
-		axios
-			.get(API_URL + '/logs/searchString', {
-				params: {
-					searchString: $searchString
-				}
-			})
-			.then((response) => {
-				$searchResults = [...response.data];
-				$isSearching = false;
-			})
-			.catch((error) => {
-				$searchResults = [];
-				console.error(error);
-				$isSearching = false;
-
-				// toast
-				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
-				toast.show();
-			});
-	}
-
-	function searchForTag() {
-		$searchString = '';
-		if ($isSearching) {
-			return;
-		}
-		$isSearching = true;
-
-		axios
-			.get(API_URL + '/logs/searchTag', { params: { tag_id: $searchTag.id } })
-			.then((response) => {
-				$searchResults = [...response.data];
-				$isSearching = false;
-			})
-			.catch((error) => {
-				$isSearching = false;
-				$searchResults = [];
-
-				console.error(error);
-				// toast
-				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
-				toast.show();
-			});
-	}
 
 	function triggerFileInput() {
 		document.getElementById('fileInput').click();
@@ -773,7 +697,6 @@
 <DatepickerLogic />
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
-<!-- offcanvas-md d-md-none -->
 <!-- shown on small Screen, when triggered -->
 <div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">
 	<div class="offcanvas-header">
@@ -785,15 +708,14 @@
 			aria-label="Close"
 		></button>
 	</div>
-	<Sidenav {searchForString} {searchForTag} />
+	<Sidenav />
 </div>
 
 <div class="d-flex flex-row justify-content-between h-100 main-row">
 	<!-- shown on large Screen -->
 	{#if $alwaysShowSidenav}
-		<!-- d-md-block d-none-->
 		<div class="sidenav p-3">
-			<Sidenav {searchForString} {searchForTag} />
+			<Sidenav />
 		</div>
 	{/if}
 
@@ -1019,18 +941,6 @@
 		</div>
 
 		<div
-			id="toastErrorSearching"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Fehler beim Suchen!</div>
-			</div>
-		</div>
-
-		<div
 			id="toastErrorSavingFile"
 			class="toast align-items-center text-bg-danger"
 			role="alert"
@@ -1244,7 +1154,6 @@
 
 	#editor {
 		height: 400px;
-		overflow-y: scroll;
 		word-break: break-word;
 	}
 
@@ -1271,7 +1180,6 @@
 	}
 
 	.sidenav {
-		/* max-width: 430px; */
 		width: 380px;
 		min-width: 380px;
 	}

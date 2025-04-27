@@ -1,6 +1,6 @@
 import {writable} from 'svelte/store';
 
-export const readingMode = writable(false);
+export const readingMode = writable('');
 
 // old, to be deleted
 export const useTrianglify = writable(true);

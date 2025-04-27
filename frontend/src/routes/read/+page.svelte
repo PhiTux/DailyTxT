@@ -9,11 +9,17 @@
 	import Tag from '$lib/Tag.svelte';
 	import { tags } from '$lib/tagStore.js';
 	import FileList from '$lib/FileList.svelte';
-	import { autoLoadImages } from '$lib/settingsStore';
+	import { autoLoadImagesThisDevice, settings } from '$lib/settingsStore';
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import { fade, slide } from 'svelte/transition';
 	import ImageViewer from '$lib/ImageViewer.svelte';
+	import { alwaysShowSidenav } from '$lib/helpers.js';
+
+	axios.interceptors.request.use((config) => {
+		config.withCredentials = true;
+		return config;
+	});
 
 	marked.use({
 		breaks: true,
@@ -93,7 +99,7 @@
 						) {
 							log.images = [...log.images, file];
 
-							if ($autoLoadImages) {
+							if (autoLoadImages) {
 								loadImage(file.uuid_filename);
 							}
 						}
@@ -102,6 +108,11 @@
 			});
 		}
 	});
+
+	let autoLoadImages = $derived(
+		($settings.setAutoloadImagesPerDevice && $autoLoadImagesThisDevice) ||
+			(!$settings.setAutoloadImagesPerDevice && $settings.autoloadImagesByDefault)
+	);
 
 	function loadImage(uuid) {
 		for (let i = 0; i < logs.length; i++) {
@@ -315,7 +326,7 @@
 <DatepickerLogic />
 
 <!-- shown on small Screen, when triggered -->
-<div class="offcanvas-md d-md-none offcanvas-start p-3" id="sidenav" tabindex="-1">
+<div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">
 	<div class="offcanvas-header">
 		<button
 			type="button"
@@ -325,68 +336,80 @@
 			aria-label="Close"
 		></button>
 	</div>
-	<Sidenav {search} />
+	<Sidenav />
 </div>
 
 <div class="d-flex flex-row justify-content-between h-100">
 	<!-- shown on large Screen -->
-	<div class="d-md-block d-none sidenav p-3">
-		<Sidenav {search} />
-	</div>
+	{#if $alwaysShowSidenav}
+		<div class="sidenav p-3">
+			<Sidenav />
+		</div>
+	{/if}
 
 	<!-- Center -->
 	<div class="d-flex flex-column my-4 ms-4 flex-fill overflow-y-auto" id="scrollArea">
 		{#each logs as log (log.day)}
 			<!-- Log-Area -->
-			<div class="log mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
-				<div class="date me-3 d-flex flex-column align-items-center">
-					<p class="dateNumber">{log.day}</p>
-					<p class="dateDay">
-						<b>
-							{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString('locale', {
-								weekday: 'long'
-							})}
-						</b>
-					</p>
-				</div>
-				<div class="flex-grow-1 middle">
-					{#if log.text && log.text !== ''}
-						<div class="text">
-							{@html marked.parse(log.text)}
-						</div>
-					{/if}
-					{#if log.tags?.length > 0}
-						<div class="tags d-flex flex-row flex-wrap">
-							{#each log.tags as t}
-								<Tag tag={$tags.find((tag) => tag.id === t)} />
-							{/each}
-						</div>
-					{/if}
-					{#if log.images?.length > 0}
-						{#if !$autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
-							<div class="d-flex flex-row">
-								<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
-									<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-									Bilder laden
-								</button>
-							</div>
-						{:else}
-							<ImageViewer images={log.images} />
-						{/if}
-					{/if}
-				</div>
-
-				{#if log.files && log.files.length > 0}
-					<div class="d-flex flex-column ms-3 files">
-						<FileList files={log.files} {downloadFile} />
+			{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
+				<div class="log mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
+					<div class="date me-3 d-flex flex-column align-items-center">
+						<p class="dateNumber">{log.day}</p>
+						<p class="dateDay">
+							<b>
+								{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString(
+									'locale',
+									{
+										weekday: 'long'
+									}
+								)}
+							</b>
+						</p>
 					</div>
-				{/if}
-			</div>
+					<div class="flex-grow-1 middle">
+						{#if log.text && log.text !== ''}
+							<div class="text">
+								{@html marked.parse(log.text)}
+							</div>
+						{/if}
+						{#if log.tags?.length > 0}
+							<div class="tags d-flex flex-row flex-wrap">
+								{#each log.tags as t}
+									<Tag tag={$tags.find((tag) => tag.id === t)} />
+								{/each}
+							</div>
+						{/if}
+						{#if log.images?.length > 0}
+							{#if !autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
+								<div class="d-flex flex-row">
+									<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
+										<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+										Bilder laden
+									</button>
+								</div>
+							{:else}
+								<ImageViewer images={log.images} />
+							{/if}
+						{/if}
+					</div>
+
+					{#if log.files && log.files.length > 0}
+						<div class="d-flex flex-column ms-3 files">
+							<FileList files={log.files} {downloadFile} />
+						</div>
+					{/if}
+				</div>
+			{/if}
 		{/each}
 	</div>
 </div>
 
 <style>
+	.sidenav {
+		width: 380px;
+		min-width: 380px;
+	}
+
 	.files {
 		max-width: 350px;
 	}

@@ -9,8 +9,10 @@
 	import * as bootstrap from 'bootstrap';
 	import Tag from './Tag.svelte';
 	import { offcanvasIsOpen } from '$lib/helpers.js';
+	import { API_URL } from '$lib/APIurl.js';
+	import axios from 'axios';
 
-	let { searchForString, searchForTag } = $props();
+	let oc;
 
 	onMount(() => {
 		const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
@@ -49,6 +51,71 @@
 			event.preventDefault();
 			ctrlPressed = false;
 		}
+	}
+
+	$effect(() => {
+		if (window.location.href) {
+			setTimeout(() => {
+				oc = document.querySelector('.offcanvas');
+				oc.addEventListener('hidden.bs.offcanvas', () => {
+					$offcanvasIsOpen = false;
+				});
+				oc.addEventListener('shown.bs.offcanvas', () => {
+					$offcanvasIsOpen = true;
+				});
+			}, 1000);
+		}
+	});
+
+	function searchForString() {
+		if ($isSearching) {
+			return;
+		}
+		$isSearching = true;
+
+		axios
+			.get(API_URL + '/logs/searchString', {
+				params: {
+					searchString: $searchString
+				}
+			})
+			.then((response) => {
+				$searchResults = [...response.data];
+				$isSearching = false;
+			})
+			.catch((error) => {
+				$searchResults = [];
+				console.error(error);
+				$isSearching = false;
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
+				toast.show();
+			});
+	}
+
+	function searchForTag() {
+		$searchString = '';
+		if ($isSearching) {
+			return;
+		}
+		$isSearching = true;
+
+		axios
+			.get(API_URL + '/logs/searchTag', { params: { tag_id: $searchTag.id } })
+			.then((response) => {
+				$searchResults = [...response.data];
+				$isSearching = false;
+			})
+			.catch((error) => {
+				$isSearching = false;
+				$searchResults = [];
+
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorSearching'));
+				toast.show();
+			});
 	}
 
 	let showTagDropdown = $state(false);
@@ -138,7 +205,7 @@
 		$searchResults = [];
 	}
 
-	let oc;
+	// selects a search result
 	function selectDate(date) {
 		$selectedDate = date;
 
@@ -280,6 +347,20 @@
 	</div>
 </div>
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorSearching"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">Fehler beim Suchen!</div>
+		</div>
+	</div>
+</div>
+
 <style>
 	.btnSearchPopover {
 		border-bottom-left-radius: 0px;
@@ -295,6 +376,7 @@
 		color: #ccc;
 		text-align: center;
 		padding: 1rem;
+		user-select: none;
 	}
 
 	:global(.kbd) {
