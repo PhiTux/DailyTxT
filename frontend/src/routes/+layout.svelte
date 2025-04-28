@@ -20,7 +20,7 @@
 	import trianglify from 'trianglify';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav, offcanvasIsOpen } from '$lib/helpers.js';
+	import { alwaysShowSidenav } from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
 		faRightFromBracket,
@@ -253,9 +253,6 @@
 			.then((response) => {
 				$templates = response.data;
 
-				// add "new template" option to start
-				$templates.unshift({ name: 'Neue Vorlage erstellen...', text: '' });
-
 				selectedTemplate = null;
 				updateSelectedTemplate();
 			})
@@ -289,7 +286,7 @@
 		if (isSavingTemplate) return;
 		isSavingTemplate = true;
 
-		if (selectedTemplate === 0) {
+		if (selectedTemplate === '-1') {
 			// add new template
 			$templates.push({ name: templateName, text: templateText });
 		} else {
@@ -297,9 +294,6 @@
 			$templates[selectedTemplate].name = templateName;
 			$templates[selectedTemplate].text = templateText;
 		}
-
-		// remove first "new template" option
-		$templates.shift();
 
 		axios
 			.post(API_URL + '/logs/saveTemplates', {
@@ -328,16 +322,13 @@
 
 	let isDeletingTemplate = $state(false);
 	function deleteTemplate() {
-		if (selectedTemplate === null || selectedTemplate === 0) return;
+		if (selectedTemplate === null || selectedTemplate === '-1') return;
 
 		if (isDeletingTemplate) return;
 		isDeletingTemplate = true;
 
 		// remove template from list
 		$templates.splice(selectedTemplate, 1);
-
-		// remove first "new template" option
-		$templates.shift();
 
 		axios
 			.post(API_URL + '/logs/saveTemplates', {
@@ -367,7 +358,7 @@
 	}
 
 	function updateSelectedTemplate() {
-		if (selectedTemplate === 0 || selectedTemplate === null) {
+		if (selectedTemplate === '-1' || selectedTemplate === null) {
 			// new template
 			templateName = '';
 			templateText = '';
@@ -766,6 +757,9 @@
 												aria-label="Select template"
 												onchange={updateSelectedTemplate}
 											>
+												<option value="-1" selected={selectedTemplate === '-1'}>
+													Neue Vorlage erstellen...
+												</option>
 												{#each $templates as template, index}
 													<option value={index} selected={index === selectedTemplate}>
 														{template.name}
@@ -813,7 +807,7 @@
 												placeholder="Name der Vorlage"
 											/>
 											<button
-												disabled={selectedTemplate === 0 || selectedTemplate === null}
+												disabled={selectedTemplate === '-1' || selectedTemplate === null}
 												type="button"
 												class="btn btn-outline-danger ms-5"
 												onclick={() => {

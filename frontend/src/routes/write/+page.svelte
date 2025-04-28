@@ -5,7 +5,7 @@
 	import { selectedDate, cal, readingDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { mount, onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
 	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
@@ -27,6 +27,8 @@
 	import FileList from '$lib/FileList.svelte';
 	import { formatBytes, alwaysShowSidenav } from '$lib/helpers.js';
 	import ImageViewer from '$lib/ImageViewer.svelte';
+	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
+	import { templates, insertTemplate } from '$lib/templateStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -48,6 +50,10 @@
 			handleInput();
 		});
 
+		mount(TemplateDropdown, {
+			target: document.querySelector('.TMCommandBar')
+		});
+
 		loadTags();
 
 		getLog();
@@ -58,6 +64,15 @@
 			(popoverTriggerEl) =>
 				new bootstrap.Popover(popoverTriggerEl, { trigger: 'focus', html: true })
 		);
+	});
+
+	$effect(() => {
+		if ($insertTemplate) {
+			currentLog = currentLog + $insertTemplate;
+			tinyMDE.setContent(currentLog);
+
+			$insertTemplate = null;
+		}
 	});
 
 	function loadTags() {
