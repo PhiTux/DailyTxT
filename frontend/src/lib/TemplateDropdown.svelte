@@ -7,9 +7,9 @@
 	class="form-select form-select-sm"
 	aria-label="Select template"
 >
-	<option disabled selected>Vorlage einfügen...</option>
+	<option value="" disabled>Vorlage einfügen...</option>
 	{#each $templates as template}
-		<option value={template.text} selected={template.name === $insertTemplate}>
+		<option value={template.text}>
 			{template.name}
 		</option>
 	{/each}
@@ -17,9 +17,10 @@
 
 <style>
 	.form-select {
-		width: inherit !important;
+		width: 160px;
 		padding-top: 0;
 		padding-bottom: 0;
 		align-self: center;
+		margin-left: 0.5rem;
 	}
 </style>

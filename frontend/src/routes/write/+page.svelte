@@ -71,7 +71,7 @@
 			currentLog = currentLog + $insertTemplate;
 			tinyMDE.setContent(currentLog);
 
-			$insertTemplate = null;
+			$insertTemplate = '';
 		}
 	});
 

@@ -146,11 +146,13 @@
 		calculateResize();
 	});
 
+	let onThisDayYears = $state('');
 	function getUserSettings() {
 		axios
 			.get(API_URL + '/users/getUserSettings')
 			.then((response) => {
 				$settings = response.data;
+				onThisDayYears = $settings.onThisDayYears.toString();
 			})
 			.catch((error) => {
 				console.error(error);
@@ -162,10 +164,49 @@
 			});
 	}
 
+	let onThisDayYearsInvalid = $state(false);
+	// check if onThisDayYears is valid
+	$effect(() => {
+		onThisDayYearsInvalid = false;
+
+		//regex: years may only contain numbers and commas
+		if (onThisDayYears.match(/[^0-9,]/)) {
+			onThisDayYearsInvalid = true;
+			return;
+		}
+
+		onThisDayYears
+			.trim()
+			.split(',')
+			.forEach((year) => {
+				//if (isNaN(year.trim()) || year.trim() === '' || year.conta) {
+				if (!Number.isInteger(parseInt(year.trim()))) {
+					onThisDayYearsInvalid = true;
+				}
+				return year;
+			});
+	});
+
+	let settingsHaveChanged = $derived(
+		JSON.stringify($settings) !== JSON.stringify($tempSettings) ||
+			JSON.stringify($settings.onThisDayYears) !==
+				JSON.stringify(
+					onThisDayYears
+						.trim()
+						.split(',')
+						.map((year) => parseInt(year.trim()))
+				)
+	);
+
 	let isSaving = $state(false);
 	function saveUserSettings() {
 		if (isSaving) return;
 		isSaving = true;
+
+		$tempSettings.onThisDayYears = onThisDayYears
+			.trim()
+			.split(',')
+			.map((year) => parseInt(year.trim()));
 
 		axios
 			.post(API_URL + '/users/saveUserSettings', $tempSettings)
@@ -683,11 +724,66 @@
 										blub <br />
 									</div>
 									<div id="onthisday">
+										{#if $tempSettings.useOnThisDay !== $settings.useOnThisDay || JSON.stringify(onThisDayYears
+													.trim()
+													.split(',')
+													.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.onThisDayYears)}
+											<div class="unsaved-changes" transition:slide></div>
+										{/if}
+
 										<h5>An diesem Tag</h5>
-										Bla<br />
-										blub <br />
-										bla <br />
-										blub <br />
+										<ul>
+											<li>
+												Lege fest, aus welchen vergangenen Jahren Tagebucheinträge desselben
+												Kalendertags angezeigt werden sollen.
+											</li>
+											<li>Gilt nur für den Schreibmodus.</li>
+											<li>
+												Beispiel: <code>1,5,10</code> sorgt dafür, dass du unter dem Textfeld noch die
+												Einträge von vor 1 Jahr, vor 5 Jahren und vor 10 Jahren angezeigt bekommst (sofern
+												vorhanden).
+											</li>
+										</ul>
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.useOnThisDay}
+												type="checkbox"
+												role="switch"
+												id="useOnThisDaySwitch"
+											/>
+											<label class="form-check-label" for="useOnThisDaySwitch">
+												{#if $tempSettings.useOnThisDay}
+													Einträge desselben Tags aus der Vergangenheit anzeigen
+												{:else}
+													Einträge desselben Tags aus der Vergangenheit <b>nicht</b> anzeigen
+												{/if}</label
+											>
+										</div>
+
+										<div>
+											<!-- <label for="useOnThisDayYears" class="form-label">Jahre</label> -->
+											<input
+												type="text"
+												id="useOnThisDayYears"
+												class="form-control {onThisDayYearsInvalid ? 'is-invalid' : ''}"
+												aria-describedby="useOnThisDayHelpBlock"
+												disabled={!$tempSettings.useOnThisDay}
+												placeholder="Jahre, mit Komma getrennt"
+												bind:value={onThisDayYears}
+												invalid
+											/>
+											{#if onThisDayYearsInvalid}
+												<div class="alert alert-danger mt-2" role="alert" transition:slide>
+													Bitte nur Zahlen eingeben, die durch Kommas getrennt sind.
+												</div>
+											{/if}
+											<div id="useOnThisDayHelpBlock" class="form-text">
+												Trage hier alle vergangenen Jahre ein, die angezeigt werden sollen.
+												Beispiel: <code>1,5,10</code>. Benutze Komma zur Trennung, verzichte auf
+												Leerzeichen.
+											</div>
+										</div>
 									</div>
 									<div id="loginonreload">
 										<h5>Login bei Reload</h5>
@@ -696,99 +792,143 @@
 										bla <br />
 										blub <br />
 									</div>
-								</div>
 
-								<h3 id="tags" class="text-primary">Tags</h3>
-								<div>
-									Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
-									<div class="d-flex flex-column tagColumn mt-1">
-										{#each $tags as tag}
-											<Tag
-												{tag}
-												isEditable
-												editTag={openTagModal}
-												isDeletable
-												deleteTag={askDeleteTag}
-											/>
-											{#if deleteTagId === tag.id}
-												<div class="alert alert-danger align-items-center" role="alert">
-													<div>
-														<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b> Dies
-														kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
-														durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen
-														im Browser angezeigt.
+									<h3 id="tags" class="text-primary">Tags</h3>
+									<div>
+										Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
+										<div class="d-flex flex-column tagColumn mt-1">
+											{#each $tags as tag}
+												<Tag
+													{tag}
+													isEditable
+													editTag={openTagModal}
+													isDeletable
+													deleteTag={askDeleteTag}
+												/>
+												{#if deleteTagId === tag.id}
+													<div class="alert alert-danger align-items-center" role="alert">
+														<div>
+															<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b> Dies
+															kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
+															durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen
+															im Browser angezeigt.
+														</div>
+														<!-- svelte-ignore a11y_consider_explicit_label -->
+														<div class="d-flex flex-row mt-2">
+															<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
+																>Abbrechen
+															</button>
+															<button
+																disabled={isDeletingTag}
+																class="btn btn-danger ms-3"
+																onclick={() => deleteTag(tag.id)}
+																>Löschen
+																{#if isDeletingTag}
+																	<span
+																		class="spinner-border spinner-border-sm ms-2"
+																		role="status"
+																		aria-hidden="true"
+																	></span>
+																{/if}
+															</button>
+														</div>
 													</div>
-													<!-- svelte-ignore a11y_consider_explicit_label -->
-													<div class="d-flex flex-row mt-2">
-														<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
-															>Abbrechen
-														</button>
-														<button
-															disabled={isDeletingTag}
-															class="btn btn-danger ms-3"
-															onclick={() => deleteTag(tag.id)}
-															>Löschen
-															{#if isDeletingTag}
-																<span
-																	class="spinner-border spinner-border-sm ms-2"
-																	role="status"
-																	aria-hidden="true"
-																></span>
-															{/if}
-														</button>
-													</div>
+												{/if}
+											{/each}
+										</div>
+									</div>
+
+									<div id="templates">
+										<h3 class="text-primary">Vorlagen</h3>
+										<div>
+											{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
+												<div class="unsaved-changes" transition:slide></div>
+											{/if}
+
+											<div class="d-flex flex-column">
+												<select
+													bind:value={selectedTemplate}
+													class="form-select"
+													aria-label="Select template"
+													onchange={updateSelectedTemplate}
+												>
+													<option value="-1" selected={selectedTemplate === '-1'}>
+														Neue Vorlage erstellen...
+													</option>
+													{#each $templates as template, index}
+														<option value={index} selected={index === selectedTemplate}>
+															{template.name}
+														</option>
+													{/each}
+												</select>
+											</div>
+
+											<hr />
+
+											{#if confirmDeleteTemplate}
+												<div transition:slide class="d-flex flex-row align-items-center mb-2">
+													<span
+														>Vorlage <b>{$templates[selectedTemplate].name}</b> wirklich löschen?</span
+													>
+													<button
+														type="button"
+														class="btn btn-secondary ms-2"
+														onclick={() => (confirmDeleteTemplate = false)}>Abbrechen</button
+													>
+													<button
+														type="button"
+														class="btn btn-danger ms-2"
+														onclick={() => {
+															deleteTemplate();
+														}}
+														disabled={isDeletingTemplate}
+														>Löschen
+														{#if isDeletingTemplate}
+															<span
+																class="spinner-border spinner-border-sm ms-2"
+																role="status"
+																aria-hidden="true"
+															></span>
+														{/if}
+													</button>
 												</div>
 											{/if}
-										{/each}
-									</div>
-								</div>
-
-								<div id="templates">
-									<h3 class="text-primary">Vorlagen</h3>
-									<div>
-										{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
-											<div class="unsaved-changes" transition:slide></div>
-										{/if}
-
-										<div class="d-flex flex-column">
-											<select
-												bind:value={selectedTemplate}
-												class="form-select"
-												aria-label="Select template"
-												onchange={updateSelectedTemplate}
-											>
-												<option value="-1" selected={selectedTemplate === '-1'}>
-													Neue Vorlage erstellen...
-												</option>
-												{#each $templates as template, index}
-													<option value={index} selected={index === selectedTemplate}>
-														{template.name}
-													</option>
-												{/each}
-											</select>
-										</div>
-
-										<hr />
-
-										{#if confirmDeleteTemplate}
-											<div transition:slide class="d-flex flex-row align-items-center mb-2">
-												<span
-													>Vorlage <b>{$templates[selectedTemplate].name}</b> wirklich löschen?</span
-												>
+											<div class="d-flex flex-row">
+												<input
+													disabled={selectedTemplate === null}
+													type="text"
+													bind:value={templateName}
+													class="form-control"
+													placeholder="Name der Vorlage"
+												/>
 												<button
+													disabled={selectedTemplate === '-1' || selectedTemplate === null}
 													type="button"
-													class="btn btn-secondary ms-2"
-													onclick={() => (confirmDeleteTemplate = false)}>Abbrechen</button
-												>
-												<button
-													type="button"
-													class="btn btn-danger ms-2"
+													class="btn btn-outline-danger ms-5"
 													onclick={() => {
-														deleteTemplate();
-													}}
-													disabled={isDeletingTemplate}
-													>Löschen
-													{#if isDeletingTemplate}
+														confirmDeleteTemplate = !confirmDeleteTemplate;
+													}}><Fa fw icon={faTrash} /></button
+												>
+											</div>
+											<textarea
+												disabled={selectedTemplate === null}
+												bind:value={templateText}
+												class="form-control mt-2"
+												rows="10"
+												placeholder="Inhalt der Vorlage"
+											>
+											</textarea>
+											<div class="d-flex justify-content-end">
+												<button
+													disabled={(oldTemplateName === templateName &&
+														oldTemplateText === templateText) ||
+														isSavingTemplate}
+													type="button"
+													class="btn btn-primary mt-2"
+													onclick={saveTemplate}
+												>
+													Vorlage speichern
+													{#if isSavingTemplate}
 														<span
 															class="spinner-border spinner-border-sm ms-2"
 															role="status"
@@ -797,80 +937,36 @@
 													{/if}
 												</button>
 											</div>
-										{/if}
-										<div class="d-flex flex-row">
-											<input
-												disabled={selectedTemplate === null}
-												type="text"
-												bind:value={templateName}
-												class="form-control"
-												placeholder="Name der Vorlage"
-											/>
-											<button
-												disabled={selectedTemplate === '-1' || selectedTemplate === null}
-												type="button"
-												class="btn btn-outline-danger ms-5"
-												onclick={() => {
-													confirmDeleteTemplate = !confirmDeleteTemplate;
-												}}><Fa fw icon={faTrash} /></button
-											>
-										</div>
-										<textarea
-											disabled={selectedTemplate === null}
-											bind:value={templateText}
-											class="form-control mt-2"
-											rows="10"
-											placeholder="Inhalt der Vorlage"
-										>
-										</textarea>
-										<div class="d-flex justify-content-end">
-											<button
-												disabled={(oldTemplateName === templateName &&
-													oldTemplateText === templateText) ||
-													isSavingTemplate}
-												type="button"
-												class="btn btn-primary mt-2"
-												onclick={saveTemplate}
-											>
-												Vorlage speichern
-												{#if isSavingTemplate}
-													<span
-														class="spinner-border spinner-border-sm ms-2"
-														role="status"
-														aria-hidden="true"
-													></span>
-												{/if}
-											</button>
 										</div>
 									</div>
-								</div>
 
-								<div id="data">
-									<h4>Daten</h4>
-									<div id="export"><h5>Export</h5></div>
-									<div id="import"><h5>Import</h5></div>
-								</div>
+									<div id="data">
+										<h4>Daten</h4>
+										<div id="export"><h5>Export</h5></div>
+										<div id="import"><h5>Import</h5></div>
+									</div>
 
-								<div id="security">
-									<h4>Sicherheit</h4>
-									<div id="password"><h5>Password ändern</h5></div>
-									<div id="backupkeys"><h5>Backup-Keys</h5></div>
-									<div id="username"><h5>Username ändern</h5></div>
-									<div id="deleteaccount"><h5>Konto löschen</h5></div>
-								</div>
+									<div id="security">
+										<h4>Sicherheit</h4>
+										<div id="password"><h5>Password ändern</h5></div>
+										<div id="backupkeys"><h5>Backup-Keys</h5></div>
+										<div id="username"><h5>Username ändern</h5></div>
+										<div id="deleteaccount"><h5>Konto löschen</h5></div>
+									</div>
 
-								<div id="about">
-									<h4>About</h4>
-									Version:<br />
-									Changelog: <br />
-									Link zu github
+									<div id="about">
+										<h4>About</h4>
+										Version:<br />
+										Changelog: <br />
+										Link zu github
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 				<div class="modal-footer">
-					{#if JSON.stringify($tempSettings) !== JSON.stringify($settings)}
+					{#if settingsHaveChanged}
 						<div class="footer-unsaved-changes" transition:fade={{ duration: 100 }}>
 							Ungespeicherte Änderungen!
 						</div>
@@ -880,7 +976,7 @@
 						type="button"
 						class="btn btn-primary"
 						onclick={saveUserSettings}
-						disabled={isSaving || JSON.stringify($tempSettings) === JSON.stringify($settings)}
+						disabled={isSaving || !settingsHaveChanged}
 						>Speichern
 						{#if isSaving}
 							<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
@@ -888,128 +984,129 @@
 						{/if}
 					</button>
 				</div>
-			</div>
-		</div>
-	</div>
-
-	<div class="toast-container position-fixed bottom-0 end-0 p-3">
-		<div
-			id="toastSuccessEditTag"
-			class="toast align-items-center text-bg-success"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Änderungen wurden gespeichert!</div>
+				<!-- </div> -->
 			</div>
 		</div>
 
-		<div
-			id="toastErrorEditTag"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+			<div
+				id="toastSuccessEditTag"
+				class="toast align-items-center text-bg-success"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Änderungen wurden gespeichert!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastErrorDeleteTag"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Fehler beim Löschen des Tags!</div>
+			<div
+				id="toastErrorEditTag"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastSuccessSaveSettings"
-			class="toast align-items-center text-bg-success"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Einstellungen gespeichert!</div>
+			<div
+				id="toastErrorDeleteTag"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Fehler beim Löschen des Tags!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastErrorSaveSettings"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
+			<div
+				id="toastSuccessSaveSettings"
+				class="toast align-items-center text-bg-success"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Einstellungen gespeichert!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastErrorInvalidTemplateEmpty"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
+			<div
+				id="toastErrorSaveSettings"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastErrorInvalidTemplateDouble"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Name der Vorlage existiert bereits</div>
+			<div
+				id="toastErrorInvalidTemplateEmpty"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastSuccessSaveTemplate"
-			class="toast align-items-center text-bg-success"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Vorlage gespeichert</div>
+			<div
+				id="toastErrorInvalidTemplateDouble"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Name der Vorlage existiert bereits</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastErrorDeletingTemplate"
-			class="toast align-items-center text-bg-danger"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Fehler beim Löschen der Vorlage</div>
+			<div
+				id="toastSuccessSaveTemplate"
+				class="toast align-items-center text-bg-success"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Vorlage gespeichert</div>
+				</div>
 			</div>
-		</div>
 
-		<div
-			id="toastSuccessDeletingTemplate"
-			class="toast align-items-center text-bg-success"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Vorlage gelöscht</div>
+			<div
+				id="toastErrorDeletingTemplate"
+				class="toast align-items-center text-bg-danger"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Fehler beim Löschen der Vorlage</div>
+				</div>
+			</div>
+
+			<div
+				id="toastSuccessDeletingTemplate"
+				class="toast align-items-center text-bg-success"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Vorlage gelöscht</div>
+				</div>
 			</div>
 		</div>
 	</div>

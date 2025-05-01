@@ -126,6 +126,8 @@ def get_default_user_settings():
     return {
         "autoloadImagesByDefault": False,
         "setAutoloadImagesPerDevice": True,
+        "useOnThisDay": True,
+        "onThisDayYears": [1,5,10]
     }
 
 @router.get("/getUserSettings")
