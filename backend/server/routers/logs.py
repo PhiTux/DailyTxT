@@ -17,15 +17,17 @@ router = APIRouter()
 
 
 class Log(BaseModel):
-    date: str
+    day: int
+    month: int
+    year: int
     text: str
     date_written: str
 
 @router.post("/saveLog")
 async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
-    year = datetime.datetime.fromisoformat(log.date).year
-    month = datetime.datetime.fromisoformat(log.date).month
-    day = datetime.datetime.fromisoformat(log.date).day
+    year = log.year
+    month = log.month
+    day = log.day
 
     content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     
@@ -77,12 +79,8 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
 
 
 @router.get("/getLog")
-async def getLog(date: str, cookie = Depends(users.isLoggedIn)):
+async def getLog(day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
     
-    year = datetime.datetime.fromisoformat(date).year
-    month = datetime.datetime.fromisoformat(date).month
-    day = datetime.datetime.fromisoformat(date).day
-
     content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     
     dummy = {"text": "", "date_written": "", "files": [], "tags": []}
@@ -556,3 +554,33 @@ async def saveTemplates(templates: Templates, cookie = Depends(users.isLoggedIn)
         raise HTTPException(status_code=500, detail="Failed to write templates - error writing templates")
     else:
         return {"success": True}
+
+""" class OnThisDay(BaseModel):
+    day: int
+    month: int
+    year: int
+    years: list[int] """
+
+@router.get("/getOnThisDay")
+async def getOnThisDay(day: int, month: int, year: int, last_years: str, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    results = []
+
+    old_years = [year - int(y) for y in last_years.split(",") if y.isdigit()]
+
+    for old_year in old_years:
+        content:dict = fileHandling.getMonth(cookie["user_id"], old_year, month)
+
+        try:
+            for day_content in content['days']:
+                if day_content['day'] == day:
+                    text = security.decrypt_text(day_content['text'], enc_key) if 'text' in day_content else ''
+                    if text == '':
+                        continue
+                    results.append({'years_old': year - old_year, 'day': day, 'month': month, 'year': old_year, 'text': text})
+                    break
+        except:
+            continue
+        
+    return results

@@ -12,7 +12,6 @@
 	import { autoLoadImagesThisDevice, settings } from '$lib/settingsStore';
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
-	import { fade, slide } from 'svelte/transition';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
 

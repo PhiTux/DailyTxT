@@ -25,10 +25,11 @@
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
 	import FileList from '$lib/FileList.svelte';
-	import { formatBytes, alwaysShowSidenav } from '$lib/helpers.js';
+	import { formatBytes, alwaysShowSidenav, sameDate } from '$lib/helpers.js';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
 	import { templates, insertTemplate } from '$lib/templateStore';
+	import OnThisDay from '$lib/OnThisDay.svelte';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -103,7 +104,7 @@
 
 	let loading = false;
 	$effect(() => {
-		if ($selectedDate !== lastSelectedDate) {
+		if (!sameDate($selectedDate, lastSelectedDate)) {
 			cancelDownload.abort();
 			cancelDownload = new AbortController();
 
@@ -117,8 +118,8 @@
 			const result = getLog();
 			if (result) {
 				lastSelectedDate = $selectedDate;
-				$cal.currentYear = $selectedDate.getFullYear();
-				$cal.currentMonth = $selectedDate.getMonth();
+				$cal.currentYear = $selectedDate.year;
+				$cal.currentMonth = $selectedDate.month - 1;
 			} else {
 				$selectedDate = lastSelectedDate;
 			}
@@ -162,9 +163,11 @@
 	}
 
 	function changeDay(increment) {
-		const newDate = new Date($selectedDate);
-		newDate.setDate(newDate.getDate() + increment);
-		$selectedDate = newDate;
+		$selectedDate = {
+			day: $selectedDate.day + increment,
+			month: $selectedDate.month,
+			year: $selectedDate.year
+		};
 	}
 
 	let currentLog = $state('');
@@ -196,7 +199,9 @@
 		try {
 			const response = await axios.get(API_URL + '/logs/getLog', {
 				params: {
-					date: $selectedDate.toISOString()
+					day: $selectedDate.day,
+					month: $selectedDate.month,
+					year: $selectedDate.year
 				}
 			});
 
@@ -211,6 +216,8 @@
 
 			logDateWritten = response.data.date_written;
 
+			getOnThisDay();
+
 			return true;
 		} catch (error) {
 			console.error(error.response);
@@ -220,6 +227,31 @@
 
 			return false;
 		}
+	}
+
+	let onThisDay = $state([]);
+
+	function getOnThisDay() {
+		if (!$settings.useOnThisDay) {
+			onThisDay = [];
+			return;
+		}
+
+		axios
+			.get(API_URL + '/logs/getOnThisDay', {
+				params: {
+					day: $selectedDate.day,
+					month: $selectedDate.month,
+					year: $selectedDate.year,
+					last_years: $settings.onThisDayYears.join(',')
+				}
+			})
+			.then((response) => {
+				onThisDay = response.data;
+			})
+			.catch((error) => {
+				console.error(error);
+			});
 	}
 
 	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
@@ -312,7 +344,9 @@
 		let dateOfSave = lastSelectedDate;
 		try {
 			const response = await axios.post(API_URL + '/logs/saveLog', {
-				date: lastSelectedDate.toISOString(),
+				day: lastSelectedDate.day,
+				month: lastSelectedDate.month,
+				year: lastSelectedDate.year,
 				text: currentLog,
 				date_written: date_written
 			});
@@ -322,8 +356,8 @@
 				logDateWritten = date_written;
 
 				// add to $cal.daysWithLogs
-				if (!$cal.daysWithLogs.includes(lastSelectedDate.getDate())) {
-					$cal.daysWithLogs = [...$cal.daysWithLogs, dateOfSave.getDate()];
+				if (!$cal.daysWithLogs.includes(lastSelectedDate.day)) {
+					$cal.daysWithLogs = [...$cal.daysWithLogs, dateOfSave.day];
 				}
 
 				return true;
@@ -378,9 +412,9 @@
 		};
 
 		const formData = new FormData();
-		formData.append('day', $selectedDate.getDate());
-		formData.append('month', $selectedDate.getMonth() + 1);
-		formData.append('year', $selectedDate.getFullYear());
+		formData.append('day', $selectedDate.day);
+		formData.append('month', $selectedDate.month);
+		formData.append('year', $selectedDate.year);
 		formData.append('file', f);
 		formData.append('uuid', uuid);
 
@@ -500,9 +534,9 @@
 			.get(API_URL + '/logs/deleteFile', {
 				params: {
 					uuid: uuid,
-					year: $selectedDate.getFullYear(),
-					month: $selectedDate.getMonth() + 1,
-					day: $selectedDate.getDate()
+					year: $selectedDate.year,
+					month: $selectedDate.month,
+					day: $selectedDate.day
 				}
 			})
 			.then((response) => {
@@ -610,9 +644,9 @@
 
 		axios
 			.post(API_URL + '/logs/addTagToLog', {
-				day: $selectedDate.getDate(),
-				month: $selectedDate.getMonth() + 1,
-				year: $selectedDate.getFullYear(),
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year,
 				tag_id: id
 			})
 			.then((response) => {
@@ -642,9 +676,9 @@
 
 		axios
 			.post(API_URL + '/logs/removeTagFromLog', {
-				day: $selectedDate.getDate(),
-				month: $selectedDate.getMonth() + 1,
-				year: $selectedDate.getFullYear(),
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year,
 				tag_id: id
 			})
 			.then((response) => {
@@ -740,11 +774,16 @@
 			<!-- Input-Area -->
 			<div class="d-flex flex-row textAreaHeader">
 				<div class="flex-fill textAreaDate">
-					{$selectedDate.toLocaleDateString('locale', { weekday: 'long' })}<br />
-					{$selectedDate.toLocaleDateString('locale', {
+					{new Date(
+						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+					).toLocaleDateString('locale', { weekday: 'long', timeZone: 'UTC' })}<br />
+					{new Date(
+						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+					).toLocaleDateString('locale', {
 						day: '2-digit',
 						month: '2-digit',
-						year: 'numeric'
+						year: 'numeric',
+						timeZone: 'UTC'
 					})}
 				</div>
 				<div class="flex-fill textAreaWrittenAt">
@@ -776,6 +815,14 @@
 				{:else}
 					<ImageViewer {images} />
 				{/if}
+			{/if}
+
+			{#if $settings.useOnThisDay && onThisDay.length > 0}
+				<div class="mt-3 d-flex gap-2">
+					{#each onThisDay as log}
+						<OnThisDay {log} />
+					{/each}
+				</div>
 			{/if}
 		</div>
 

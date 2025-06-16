@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as bootstrap from 'bootstrap';
 	import Tag from './Tag.svelte';
-	import { offcanvasIsOpen } from '$lib/helpers.js';
+	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import axios from 'axios';
 
@@ -317,11 +317,17 @@
 					<button
 						type="button"
 						onclick={() => {
-							/* $selectedDate = new Date(Date.UTC(result.year, result.month - 1, result.day)); */
-							selectDate(new Date(Date.UTC(result.year, result.month - 1, result.day)));
+							selectDate({
+								year: parseInt(result.year),
+								month: parseInt(result.month),
+								day: result.day
+							});
 						}}
-						class="list-group-item list-group-item-action {$selectedDate.toDateString() ===
-						new Date(Date.UTC(result.year, result.month - 1, result.day)).toDateString()
+						class="list-group-item list-group-item-action {sameDate($selectedDate, {
+							year: parseInt(result.year),
+							month: parseInt(result.month),
+							day: result.day
+						})
 							? 'active'
 							: ''}"
 					>

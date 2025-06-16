@@ -168,6 +168,9 @@
 	// check if onThisDayYears is valid
 	$effect(() => {
 		onThisDayYearsInvalid = false;
+		if ($tempSettings.useOnThisDay === false) {
+			return;
+		}
 
 		//regex: years may only contain numbers and commas
 		if (onThisDayYears.match(/[^0-9,]/)) {
@@ -179,7 +182,6 @@
 			.trim()
 			.split(',')
 			.forEach((year) => {
-				//if (isNaN(year.trim()) || year.trim() === '' || year.conta) {
 				if (!Number.isInteger(parseInt(year.trim()))) {
 					onThisDayYearsInvalid = true;
 				}
@@ -731,7 +733,7 @@
 											<div class="unsaved-changes" transition:slide></div>
 										{/if}
 
-										<h5>An diesem Tag</h5>
+										<h5>Ein Blick zurück</h5>
 										<ul>
 											<li>
 												Lege fest, aus welchen vergangenen Jahren Tagebucheinträge desselben

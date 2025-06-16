@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
-	import { offcanvasIsOpen } from '$lib/helpers.js';
+	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
 
 	let days = $state([]);
 
@@ -32,8 +32,8 @@
 	const updateCalendar = () => {
 		const month = $cal.currentMonth;
 		const year = $cal.currentYear;
-		const firstDay = new Date(year, month, 1);
-		const lastDay = new Date(year, month + 1, 0);
+		const firstDay = new Date(Date.UTC(year, month, 1));
+		const lastDay = new Date(Date.UTC(year, month + 1, 0));
 
 		let tempDays = [];
 		// monday is first day
@@ -45,10 +45,7 @@
 		}
 
 		for (let i = 1; i <= lastDay.getDate(); i++) {
-			const dayKey = `${year}-${(month + 1).toString().padStart(2, '0')}-${i
-				.toString()
-				.padStart(2, '0')}`;
-			tempDays.push(new Date(Date.UTC(year, month, i)));
+			tempDays.push({ year: year, month: month + 1, day: i });
 		}
 
 		return tempDays;
@@ -179,15 +176,12 @@
 							in:fly={{ y: 100, duration: 200 }}
 							out:fly={{ y: -100, duration: 200 }}
 							class="day
-								{$cal.daysWithLogs.includes(day.getDate()) ? 'mark-background' : ''} 
-								{$cal.daysWithFiles.includes(day.getDate()) ? 'mark-dot' : ''} 
-								{(!$readingDate && $selectedDate.toDateString() === day.toDateString()) ||
-							$readingDate?.toDateString() === day.toDateString()
-								? 'selected'
-								: ''}"
+								{$cal.daysWithLogs.includes(day.day) ? 'mark-background' : ''} 
+								{$cal.daysWithFiles.includes(day.day) ? 'mark-dot' : ''} 
+								{(!$readingDate && sameDate($selectedDate, day)) || sameDate($readingDate, day) ? 'selected' : ''}"
 							onclick={() => onDateClick(day)}
 						>
-							{day.getDate()}
+							{day.day}
 						</div>
 					{:else}
 						<div class="day empty-slot"></div>
@@ -203,7 +197,11 @@
 			<button
 				class="btn btn-primary"
 				onclick={() => {
-					$selectedDate = new Date();
+					$selectedDate = {
+						day: new Date().getDate(),
+						month: new Date().getMonth() + 1,
+						year: new Date().getFullYear()
+					};
 				}}>Heute</button
 			>
 		</div>
