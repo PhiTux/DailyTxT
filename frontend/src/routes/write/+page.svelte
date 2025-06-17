@@ -15,7 +15,10 @@
 		faCloudArrowUp,
 		faCloudArrowDown,
 		faSquarePlus,
-		faQuestionCircle
+		faQuestionCircle,
+		faClockRotateLeft,
+		faArrowLeft,
+		faArrowRight
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
@@ -30,6 +33,7 @@
 	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
 	import { templates, insertTemplate } from '$lib/templateStore';
 	import OnThisDay from '$lib/OnThisDay.svelte';
+	import { marked } from 'marked';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -188,6 +192,7 @@
 		});
 	}
 
+	let historyAvailable = $state(false);
 	async function getLog() {
 		if (savedLog !== currentLog) {
 			const success = await saveLog();
@@ -208,6 +213,7 @@
 			currentLog = response.data.text;
 			filesOfDay = response.data.files;
 			selectedTags = response.data.tags;
+			historyAvailable = response.data.history_available;
 
 			savedLog = currentLog;
 
@@ -354,6 +360,7 @@
 			if (response.data.success) {
 				savedLog = currentLog;
 				logDateWritten = date_written;
+				historyAvailable = response.data.history_available;
 
 				// add to $cal.daysWithLogs
 				if (!$cal.daysWithLogs.includes(lastSelectedDate.day)) {
@@ -741,6 +748,52 @@
 				isSavingNewTag = false;
 			});
 	}
+
+	let history = $state([]);
+	let historySelected = $state(0);
+	function getHistory() {
+		axios
+			.get(API_URL + '/logs/getHistory', {
+				params: {
+					day: $selectedDate.day,
+					month: $selectedDate.month,
+					year: $selectedDate.year
+				}
+			})
+			.then((response) => {
+				if (response.data.length === 0) {
+					// no history
+					return;
+				}
+
+				history = response.data.map((log) => {
+					return {
+						text: log.text,
+						date_written: log.date_written
+					};
+				});
+				historySelected = history.length - 1;
+
+				// show history in a modal or something
+				const modal = new bootstrap.Modal(document.getElementById('modalHistory'));
+				modal.show();
+			})
+			.catch((error) => {
+				console.error(error);
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingLog'));
+				toast.show();
+			});
+	}
+
+	function selectHistory() {
+		if (historySelected < 0 || historySelected >= history.length) return;
+
+		currentLog = history[historySelected].text;
+		//logDateWritten = history[historySelected].date_written;
+
+		tinyMDE.setContent(currentLog);
+		tinyMDE.setSelection({ row: 0, col: 0 });
+	}
 </script>
 
 <DatepickerLogic />
@@ -790,7 +843,13 @@
 					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
 					{logDateWritten}
 				</div>
-				<div class="textAreaHistory">history</div>
+				{#if historyAvailable}
+					<div class="textAreaHistory d-flex flex-column justify-content-center">
+						<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
+							<Fa icon={faClockRotateLeft} class="" size="1.5x" fw />
+						</button>
+					</div>
+				{/if}
 				<div class="textAreaDelete">delete</div>
 			</div>
 			<div id="log" class="focus-ring">
@@ -1065,6 +1124,72 @@
 		</div>
 	</div>
 
+	<div class="modal fade" id="modalHistory" tabindex="-1">
+		<div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Verlauf</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					<div class="d-flex flex-row justify-content-center">
+						<button
+							disabled={historySelected <= 0}
+							class="btn btn-outline-secondary history-btn"
+							onclick={() => {
+								if (historySelected > 0) historySelected--;
+							}}
+						>
+							<Fa icon={faArrowLeft} class="me-2" fw />
+							Älter
+						</button>
+						<select
+							bind:value={historySelected}
+							class="form-select mx-2"
+							aria-label="Default select example"
+						>
+							{#each history as entry, index (index)}
+								<option value={index}>{entry.date_written}</option>
+							{/each}
+						</select>
+						<button
+							disabled={historySelected >= history.length - 1}
+							class="btn btn-outline-secondary history-btn"
+							onclick={() => {
+								if (historySelected < history.length - 1) historySelected++;
+							}}
+						>
+							<Fa icon={faArrowRight} class="me-2" fw />
+							Neuer
+						</button>
+					</div>
+					<div class="text mt-2">
+						{@html marked.parse(history[historySelected]?.text || 'Error!')}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="d-flex flex-column">
+						<div class="form-text">
+							Mit <b>Speichern</b> machst du den angezeigten älteren Text wieder zum aktuellen Haupttext.
+						</div>
+						<div class="d-flex flex-row justify-content-end mt-2">
+							<button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal"
+								>Schließen</button
+							>
+							<button
+								onclick={() => selectHistory()}
+								type="button"
+								class="btn btn-primary"
+								data-bs-dismiss="modal">Speichern</button
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<TagModal
 		bind:this={tagModal}
 		bind:editTag={newTag}
@@ -1075,6 +1200,45 @@
 </div>
 
 <style>
+	#modalHistory > div > div {
+		height: 80vh;
+	}
+
+	@media (max-width: 991px) {
+		#modalHistory > div > div {
+			height: 100vh;
+		}
+	}
+
+	#modalHistory > div > div > .modal-body {
+		height: 50%;
+		display: flex;
+		flex-direction: column;
+	}
+
+	#modalHistory > div > div > .modal-body > .text {
+		flex: 1 1 auto;
+		overflow-y: auto;
+	}
+
+	.text {
+		border: 1px solid #ccc;
+		border-radius: 15px;
+		padding: 1rem;
+		word-wrap: anywhere;
+		white-space: break-spaces;
+	}
+
+	.history-btn {
+		white-space: nowrap;
+	}
+
+	.btn-hover:hover {
+		backdrop-filter: blur(8px) saturate(150%);
+		background-color: rgba(219, 219, 219, 0.45);
+		border: 1px solid #adadad77;
+	}
+
 	@media (max-width: 1150px) {
 		.middle-right {
 			flex-direction: column !important;

@@ -113,6 +113,7 @@
 	let settingsModal;
 	function openSettingsModal() {
 		$tempSettings = JSON.parse(JSON.stringify($settings));
+		onThisDayYears = $settings.onThisDayYears.toString();
 
 		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
 		settingsModal.show();

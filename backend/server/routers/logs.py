@@ -31,10 +31,12 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
 
     content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
     
+    history_available = False
     # move old log to history
     if "days" in content.keys():
         for dayLog in content["days"]:
             if dayLog["day"] == day and "text" in dayLog.keys():
+                history_available = True
                 historyVersion = 0
                 if "history" not in dayLog.keys():
                     dayLog["history"] = []
@@ -52,7 +54,7 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
     ''' IMPORTANT: 
     Escaping html characters here is NOT possible, since it would break the appearance
     of html-code in the EDITOR. Code inside a markdown code-quote (`...`) will be auto-escaped.
-    Not a perfect solution, but actually any user can only load its own logs...
+    Not a perfect solution, but actually any user can only load its own logs (and so XSS himself)...
     '''
     encrypted_text = security.encrypt_text(log.text, enc_key)
     encrypted_date_written = security.encrypt_text(html.escape(log.date_written), enc_key)
@@ -75,7 +77,7 @@ async def saveLog(log: Log, cookie = Depends(users.isLoggedIn)):
         logger.error(f"Failed to save log for {cookie['user_id']} on {year}-{month:02d}-{day:02d}")
         return {"success": False}
 
-    return {"success": True}
+    return {"success": True, "history_available": history_available}
 
 
 @router.get("/getLog")
@@ -93,13 +95,16 @@ async def getLog(day: int, month: int, year: int, cookie = Depends(users.isLogge
             enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
             text = ""
             date_written = ""
+            history_available = False
             if "text" in dayLog.keys():
                 text = security.decrypt_text(dayLog["text"], enc_key)
                 date_written = security.decrypt_text(dayLog["date_written"], enc_key)
             if "files" in dayLog.keys():
                 for file in dayLog["files"]:
                     file["filename"] = security.decrypt_text(file["enc_filename"], enc_key)
-            return {"text": text, "date_written": date_written, "files": dayLog.get("files", []), "tags": dayLog.get("tags", [])}
+            if "history" in dayLog.keys() and len(dayLog["history"]) > 0:
+                history_available = True
+            return {"text": text, "date_written": date_written, "files": dayLog.get("files", []), "tags": dayLog.get("tags", []), "history_available": history_available}
 
     return dummy
 
@@ -555,11 +560,6 @@ async def saveTemplates(templates: Templates, cookie = Depends(users.isLoggedIn)
     else:
         return {"success": True}
 
-""" class OnThisDay(BaseModel):
-    day: int
-    month: int
-    year: int
-    years: list[int] """
 
 @router.get("/getOnThisDay")
 async def getOnThisDay(day: int, month: int, year: int, last_years: str, cookie = Depends(users.isLoggedIn)):
@@ -584,3 +584,25 @@ async def getOnThisDay(day: int, month: int, year: int, last_years: str, cookie 
             continue
         
     return results
+
+
+@router.get("/getHistory")
+async def getHistory(day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
+    enc_key = security.get_enc_key(cookie["user_id"], cookie["derived_key"])
+    
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
+    
+    if "days" not in content.keys():
+        return []
+
+    for dayLog in content["days"]:
+        if dayLog["day"] == day and "history" in dayLog.keys():
+            history = []
+            for historyLog in dayLog["history"]:
+                history.append({
+                    "text": security.decrypt_text(historyLog["text"], enc_key),
+                    "date_written": security.decrypt_text(historyLog["date_written"], enc_key)
+                })
+            return history
+    
+    return []
