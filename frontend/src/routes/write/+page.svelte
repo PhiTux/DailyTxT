@@ -338,8 +338,11 @@
 		}
 
 		// axios to backend
+		let timezone = $settings.useBrowserTimezone
+			? Intl.DateTimeFormat().resolvedOptions().timeZone
+			: $settings.timezone;
 		let date_written = new Date().toLocaleString('de-DE', {
-			timeZone: 'Europe/Berlin',
+			timeZone: timezone,
 			year: 'numeric',
 			month: '2-digit',
 			day: '2-digit',

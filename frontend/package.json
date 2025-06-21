@@ -39,6 +39,7 @@
 		"dayjs": "^1.11.13",
 		"emoji-picker-element": "^1.26.1",
 		"marked": "^15.0.6",
+		"svelte-multiselect": "^11.1.1",
 		"svelte-outside": "^0.0.3",
 		"tiny-markdown-editor": "^0.1.31",
 		"trianglify": "^4.1.1",

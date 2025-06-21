@@ -127,7 +127,9 @@ def get_default_user_settings():
         "autoloadImagesByDefault": False,
         "setAutoloadImagesPerDevice": True,
         "useOnThisDay": True,
-        "onThisDayYears": [1,5,10]
+        "onThisDayYears": [1,5,10],
+        "useBrowserTimezone": True,
+        "timezone": "UTC"
     }
 
 @router.get("/getUserSettings")
@@ -180,35 +182,3 @@ async def save_user_settings(settings: dict, cookie = Depends(isLoggedIn)):
         raise HTTPException(status_code=500, detail="Internal Server Error when trying to write users.json") from e
     else:
         return {"success": True}
-
-
-"""
-export const defaultSettings = writable({
-  useTrianglify: true,
-  trianglifyOpacity: 0.4,
-  trianglifyColor: '',
-  backgroundColor: '',
-  autoloadImagesDefault: true,
-  saveAutoloadImagesPerDevice: true,
-});
-"""
-
-
-
-"""
-{
-      "user_id": 1,
-      "dailytxt-version": 2,
-      "username": "Marco",
-      "password": "...",
-      "salt": "...",
-      "enc_enc_key": "...",
-      "LOGIN_ON_EACH_LOAD": false,
-      "backup_codes": [
-        {
-          "password": "...",
-          "salt": "...",
-          "enc_orig_password": "..."
-        }
-      ]
-    }"""
