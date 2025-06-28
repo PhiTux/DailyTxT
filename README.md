@@ -6,22 +6,20 @@
 # DailyTxT
 
 > [!NOTE]
-> I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before Summer 2025. Sorry for the delay...
+> I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before Summer/Autumn 2025. Sorry for the delay... It WILL eventually come!
 > I'm adressing several new features like dark-mode, "on-this-day", viewing mode, Markdown support ...
 > It's written in Svelte & Bootstrap for the frontend and Python Fastapi for the backend.
-> Progress is happening on the branch `version2`.
+> Progress is happening on the branch [version2](https://github.com/PhiTux/DailyTxT/tree/version2).
 
 DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
 It is written in [Python Flask](https://flask.palletsprojects.com/) (Backend) and [Vue.JS](https://vuejs.org/) (Frontend) and meant to be run by **[Docker](https://hub.docker.com/r/phitux/dailytxt/)** - supports AMD64 and ARM64.
 
 You should definitely take a quick look at [How to Use](#how-to-use) to see all the hidden features.
 
-> New features will now be added only rarely. However, the support remains and in a few years there will most likely be a completely rewritten version (including upgrade support).
+> 🗣 Please do NOT submit new translations right now. I will no longer update the "old" version of DailyTxT and the language files are <ins>not compatible</ins> to the new version
 
-> 💬 Please simply open a new issue if you have any information, problem, new feature idea, new translation or anything else!
+> 💬 Please simply open a new issue if you have any information, problem, new feature idea or anything else!
 > I usually reply quickly and the project will have long support - especially security support - (unless marked as deprecated) as I use it regularly myself.
-
-> ⚠️ Please note when submitting ideas: The basic text-layout will not be changed -> Only one plain text will be saved for each day, to keep things simple!
 
 ## Chapters
 
