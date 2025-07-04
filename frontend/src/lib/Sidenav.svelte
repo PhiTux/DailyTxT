@@ -11,6 +11,7 @@
 	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import axios from 'axios';
+	import { cal } from '$lib/calendarStore.js';
 
 	let oc;
 
@@ -217,12 +218,43 @@
 			}
 		}
 	}
+
+	function bookmarkDay() {
+		axios
+			.get(API_URL + '/logs/bookmarkDay', {
+				params: {
+					year: $selectedDate.year,
+					month: $selectedDate.month,
+					day: $selectedDate.day
+				}
+			})
+			.then((response) => {
+				if (response.data.success) {
+					if (response.data.bookmarked) {
+						$cal.daysBookmarked = [...$cal.daysBookmarked, $selectedDate.day];
+					} else {
+						$cal.daysBookmarked = $cal.daysBookmarked.filter((day) => day !== $selectedDate.day);
+					}
+				} else {
+					console.log('Error highlighting day:', response.data);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorHighlighting'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorHighlighting'));
+				toast.show();
+			});
+	}
 </script>
 
 <svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
 <div class="d-flex flex-column h-100">
-	<Datepicker />
+	<Datepicker {bookmarkDay} />
 	<br />
 
 	<div class="search d-flex flex-column">
@@ -363,6 +395,18 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">Fehler beim Suchen!</div>
+		</div>
+	</div>
+
+	<div
+		id="toastErrorBookmarking"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">Fehler beim Markieren des Tages!</div>
 		</div>
 	</div>
 </div>

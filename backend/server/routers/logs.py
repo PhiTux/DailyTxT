@@ -257,18 +257,21 @@ async def searchTag(tag_id: int, cookie = Depends(users.isLoggedIn)):
 async def getMarkedDays(month: str, year: str, cookie = Depends(users.isLoggedIn)):
     days_with_logs = []
     days_with_files = []
+    days_bookmarked = []
 
     content:dict = fileHandling.getMonth(cookie["user_id"], year, int(month))
     if "days" not in content.keys():
-        return {"days_with_logs": [], "days_with_files": []}
+        return {"days_with_logs": [], "days_with_files": [], "days_bookmarked": []}
 
     for dayLog in content["days"]:
         if "text" in dayLog.keys():
             days_with_logs.append(dayLog["day"])
         if "files" in dayLog.keys() and len(dayLog["files"]) > 0:
             days_with_files.append(dayLog["day"])
+        if "bookmarked" in dayLog.keys() and dayLog["bookmarked"]:
+            days_bookmarked.append(dayLog["day"])
     
-    return {"days_with_logs": days_with_logs, "days_with_files": days_with_files}
+    return {"days_with_logs": days_with_logs, "days_with_files": days_with_files, "days_bookmarked": days_bookmarked}
 
 
 @router.get("/loadMonthForReading")
@@ -606,3 +609,30 @@ async def getHistory(day: int, month: int, year: int, cookie = Depends(users.isL
             return history
     
     return []
+
+@router.get("/bookmarkDay")
+async def bookmarkDay(day: int, month: int, year: int, cookie = Depends(users.isLoggedIn)):
+    content:dict = fileHandling.getMonth(cookie["user_id"], year, month)
+    
+    if "days" not in content.keys():
+        content["days"] = []
+    
+    day_found = False
+    bookmarked = True
+    for dayLog in content["days"]:
+        if dayLog["day"] == day:
+            day_found = True
+            if "bookmarked" in dayLog and dayLog["bookmarked"]:
+                dayLog["bookmarked"] = False
+                bookmarked = False
+            else:
+                dayLog["bookmarked"] = True
+            break
+    
+    if not day_found:
+        content["days"].append({"day": day, "bookmarked": True})
+    
+    if not fileHandling.writeMonth(cookie["user_id"], year, month, content):
+        raise HTTPException(status_code=500, detail="Failed to bookmark day - error writing log")
+    
+    return {"success": True, "bookmarked": bookmarked}

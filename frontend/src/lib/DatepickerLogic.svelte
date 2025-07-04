@@ -32,6 +32,7 @@
 			.then((response) => {
 				$cal.daysWithLogs = [...response.data.days_with_logs];
 				$cal.daysWithFiles = [...response.data.days_with_files];
+				$cal.daysBookmarked = [...response.data.days_bookmarked];
 			})
 			.catch((error) => {
 				console.error(error);

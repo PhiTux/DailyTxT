@@ -11,6 +11,7 @@ export let selectedDate = writable({
 export let cal = writable({
   daysWithLogs: [],
   daysWithFiles: [],
+  daysBookmarked: [],
   currentMonth: date.getMonth(),
   currentYear: date.getFullYear(),
 });

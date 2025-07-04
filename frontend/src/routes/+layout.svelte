@@ -613,7 +613,7 @@
 								id="settings-content"
 							>
 								<div id="appearance">
-									<h3 class="text-primary">Aussehen</h3>
+									<h3 class="text-primary">🎨 Aussehen</h3>
 									<div id="lightdark">
 										<h5>Light/Dark-Mode</h5>
 										Bla<br />
@@ -646,7 +646,7 @@
 								</div>
 
 								<div id="functions">
-									<h3 class="text-primary">Funktionen</h3>
+									<h3 class="text-primary">🛠️ Funktionen</h3>
 
 									<div id="autoLoadImages">
 										{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
@@ -845,7 +845,7 @@
 								</div>
 
 								<div id="tags">
-									<h3 class="text-primary">Tags</h3>
+									<h3 class="text-primary">#️⃣ Tags</h3>
 									<div>
 										Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
 										<div class="d-flex flex-column tagColumn mt-1">
@@ -892,7 +892,7 @@
 								</div>
 
 								<div id="templates">
-									<h3 class="text-primary">Vorlagen</h3>
+									<h3 class="text-primary">📝 Vorlagen</h3>
 									<div>
 										{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
 											<div class="unsaved-changes" transition:slide></div>
@@ -994,13 +994,13 @@
 								</div>
 
 								<div id="data">
-									<h4>Daten</h4>
+									<h3 class="text-primary">📁 Daten</h3>
 									<div id="export"><h5>Export</h5></div>
 									<div id="import"><h5>Import</h5></div>
 								</div>
 
 								<div id="security">
-									<h4>Sicherheit</h4>
+									<h3 class="text-primary">🔒 Sicherheit</h3>
 									<div id="password"><h5>Password ändern</h5></div>
 									<div id="backupkeys"><h5>Backup-Keys</h5></div>
 									<div id="username"><h5>Username ändern</h5></div>
@@ -1008,7 +1008,7 @@
 								</div>
 
 								<div id="about">
-									<h4>About</h4>
+									<h3 class="text-primary">💡 About</h3>
 									Version:<br />
 									Changelog: <br />
 									Link zu github

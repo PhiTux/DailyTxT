@@ -27,7 +27,7 @@ def getMonth(user_id, year, month):
     try:
         f = open(os.path.join(settings.data_path, f"{user_id}/{year}/{month:02d}.json"), "r")
     except FileNotFoundError:
-        logger.info(f"{user_id}/{year}/{month:02d}.json - File not found")
+        logger.debug(f"{user_id}/{year}/{month:02d}.json - File not found")
         return {}
     except Exception as e:
         logger.exception(e)

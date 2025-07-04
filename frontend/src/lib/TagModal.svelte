@@ -40,6 +40,13 @@
 		editTag.icon = ev.detail.unicode;
 		togglePicker();
 	}
+
+	window.addEventListener('freeze', () => {
+		const picker = document.querySelector('emoji-picker');
+		if (picker?.database?.close) {
+			picker.database.close();
+		}
+	});
 </script>
 
 <div bind:this={modalElement} class="modal fade" id="modalTag" tabindex="-1">
@@ -63,8 +70,12 @@
 					<div class="col-8">
 						{#if editTag.icon}
 							<span>{editTag.icon}</span>
-							<button class="removeBtn" type="button" onclick={(editTag.icon = '')}
-								><Fa icon={faTrash} fw /></button
+							<button
+								class="removeBtn"
+								type="button"
+								onclick={() => {
+									editTag.icon = '';
+								}}><Fa icon={faTrash} fw /></button
 							>
 						{:else}
 							<span><em>Kein Emoji ausgewählt...</em></span>
