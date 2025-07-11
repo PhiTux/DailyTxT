@@ -17,6 +17,7 @@
 	let show_registration_failed_with_message = $state(false);
 	let registration_failed_message = $state('');
 	let is_registering = $state(false);
+	let is_migrating = $state(false);
 
 	let registration_allowed = $state(true);
 
@@ -51,6 +52,7 @@
 
 		show_login_failed = false;
 		show_login_warning_empty_fields = false;
+		is_migrating = false;
 
 		const username = document.getElementById('loginUsername').value;
 		const password = document.getElementById('loginPassword').value;
@@ -66,8 +68,12 @@
 		axios
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
-				localStorage.setItem('user', JSON.stringify(response.data.username));
-				goto('/write');
+				if (response.data.migration_started) {
+					is_migrating = true;
+				} else {
+					localStorage.setItem('user', JSON.stringify(response.data.username));
+					goto('/write');
+				}
 			})
 			.catch((error) => {
 				if (error.response.status === 404) {
@@ -174,6 +180,16 @@
 								/>
 								<label for="loginPassword">Password</label>
 							</div>
+							{#if is_migrating}
+								<div class="alert alert-info" role="alert">
+									Daten-Migration wurde gestartet. Dies kann einige Minuten dauern.<br />
+									<div class="text-bg-danger p-2 my-2 rounded">
+										Währenddessen die Seite nicht neu laden und nicht neu einloggen!
+									</div>
+									Fortschritt:
+									<br />
+								</div>
+							{/if}
 							{#if show_login_failed}
 								<div class="alert alert-danger" role="alert">
 									Login fehlgeschlagen!<br />

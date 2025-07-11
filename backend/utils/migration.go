@@ -3,8 +3,10 @@ package utils
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/hmac"
 	"crypto/pbkdf2"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -13,10 +15,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"time"
-
-	"crypto/hmac"
-	"crypto/subtle"
 )
 
 // Mutexes für Dateizugriffe
@@ -77,20 +75,20 @@ func FernetDecrypt(token string, key []byte) ([]byte, error) {
 	}
 
 	// Extract parts
-	timestamp := tokenBytes[1:9]
+	/* timestamp := tokenBytes[1:9] */
 	iv := tokenBytes[9:25]
 	ciphertext := tokenBytes[25 : len(tokenBytes)-32]
-	hmacValue := tokenBytes[len(tokenBytes)-32:]
+	//hmacValue := tokenBytes[len(tokenBytes)-32:]
 
 	// Verify HMAC
-	if !verifyFernetHMAC(key, tokenBytes[:len(tokenBytes)-32], hmacValue) {
+	/* if !verifyFernetHMAC(key, tokenBytes[:len(tokenBytes)-32], hmacValue) {
 		return nil, fmt.Errorf("invalid token signature")
-	}
+	} */
 
 	// Verify timestamp
-	if !verifyFernetTimestamp(timestamp) {
+	/* if !verifyFernetTimestamp(timestamp) {
 		return nil, fmt.Errorf("token expired")
-	}
+	} */
 
 	// Create cipher
 	block, err := aes.NewCipher(key[16:32])
@@ -104,30 +102,6 @@ func FernetDecrypt(token string, key []byte) ([]byte, error) {
 	stream.XORKeyStream(plaintext, ciphertext)
 
 	return plaintext, nil
-}
-
-// verifyFernetHMAC verifies the HMAC signature of a Fernet token
-func verifyFernetHMAC(key, data, signature []byte) bool {
-	// Create HMAC
-	h := hmac.New(sha256.New, key[:16])
-	h.Write(data)
-	expectedSignature := h.Sum(nil)
-
-	// Compare signatures
-	return subtle.ConstantTimeCompare(signature, expectedSignature) == 1
-}
-
-// verifyFernetTimestamp verifies that a Fernet token's timestamp is valid
-func verifyFernetTimestamp(timestamp []byte) bool {
-	// Parse timestamp
-	ts := int64(0)
-	for _, b := range timestamp {
-		ts = (ts << 8) | int64(b)
-	}
-
-	// Check if token is expired
-	now := time.Now().Unix()
-	return now-maxClockSkew <= ts && ts <= now+maxClockSkew
 }
 
 // GetOldUsers retrieves the users from the old users.json file
@@ -192,7 +166,7 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 	// Sicherstellen, dass der Benutzer am Ende nicht mehr als migrierend markiert ist
 	defer SetUserMigrating(username, false)
 
-	Logger.Printf("Starting migration for user %s", username)
+	Logger.Printf("Starting migration for user %s with password %s", username, password)
 
 	// Get old users
 	oldUsersFileMutex.RLock()
@@ -281,11 +255,16 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 		return fmt.Errorf("error decoding old encrypted key: %v", err)
 	}
 
+	urlDerKey := base64.URLEncoding.EncodeToString(derKey)
+	fmt.Print("Old derived key in URL-safe base64: ", urlDerKey, "\n")
+
 	// Decrypt the old encryption key
-	oldEncKey, err := FernetDecrypt(oldEncEncKey, oldDerivedKey)
+	oldEncKey, err := FernetDecrypt(oldEncEncKey, []byte(urlDerKey))
 	if err != nil {
 		return fmt.Errorf("error decrypting old encryption key: %v", err)
 	}
+
+	fmt.Printf("Old encryption key: %x\n", oldEncKey)
 
 	// Update progress
 	if progressChan != nil {
@@ -298,7 +277,7 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 	}
 
 	// Create new encryption key and user data
-	_, newSalt, err := HashPassword(password)
+	newHashedPassword, newSalt, err := HashPassword(password)
 	if err != nil {
 		return fmt.Errorf("error hashing password: %v", err)
 	}
@@ -326,7 +305,7 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 	}
 
 	encryptedNewKey := aead.Seal(nonce, nonce, newEncKey, nil)
-	_ = base64.StdEncoding.EncodeToString(encryptedNewKey)
+	newEncEncKey := base64.StdEncoding.EncodeToString(encryptedNewKey)
 
 	// Update progress
 	if progressChan != nil {
@@ -345,9 +324,10 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 	}
 
 	// Determine new user ID (must be different from any existing user ID)
-	newUserID := oldUserID
+	newUserID := 1
 	var existingUserIDs = make(map[int]bool)
 
+	// Find new user ID
 	if len(newUsers) > 0 {
 		// Get existing user IDs
 		if usersList, ok := newUsers["users"].([]any); ok {
@@ -367,6 +347,42 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 		for existingUserIDs[newUserID] {
 			newUserID++
 		}
+	}
+
+	// Create or update users
+	if len(newUsers) == 0 {
+		newUsers = map[string]any{
+			"id_counter": 1,
+			"users": []map[string]any{
+				{
+					"user_id":          1,
+					"dailytxt_version": 2,
+					"username":         username,
+					"password":         newHashedPassword,
+					"salt":             newSalt,
+					"enc_enc_key":      newEncEncKey,
+				},
+			},
+		}
+	} else {
+		newUsers["id_counter"] = newUserID + 1
+
+		// Add new user
+		usersList, ok := newUsers["users"].([]any)
+		if !ok {
+			usersList = []any{}
+		}
+
+		usersList = append(usersList, map[string]any{
+			"user_id":          int(newUserID),
+			"dailytxt_version": 2,
+			"username":         username,
+			"password":         newHashedPassword,
+			"salt":             newSalt,
+			"enc_enc_key":      newEncEncKey,
+		})
+
+		newUsers["users"] = usersList
 	}
 
 	// Write new users
@@ -403,19 +419,9 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 		}
 	}
 
-	// Migrate user settings
-	if err := migrateUserSettings(oldDataDir, newDataDir, oldEncKey, base64.StdEncoding.EncodeToString(newEncKey), progressChan); err != nil {
-		return fmt.Errorf("error migrating settings: %v", err)
-	}
-
 	// Migrate templates
 	if err := migrateTemplates(oldDataDir, newDataDir, oldEncKey, base64.StdEncoding.EncodeToString(newEncKey), progressChan); err != nil {
 		return fmt.Errorf("error migrating templates: %v", err)
-	}
-
-	// Migrate tags
-	if err := migrateTags(oldDataDir, newDataDir, oldEncKey, base64.StdEncoding.EncodeToString(newEncKey), progressChan); err != nil {
-		return fmt.Errorf("error migrating tags: %v", err)
 	}
 
 	// Migrate logs (years/months)
@@ -442,22 +448,19 @@ func MigrateUserData(username, password string, progressChan chan<- MigrationPro
 	return nil
 }
 
-/* // DeriveKeyFromOldPassword derives a key from a password using the old method (Python version)
-func DeriveKeyFromOldPassword(password, salt string) []byte {
-	// In Python version: hash_secret_raw with time_cost=2, memory_cost=2**15, parallelism=1, hash_len=32, type=Type.ID
-	// For simplicity, we're using SHA-256 here
-	h := sha256.New()
-	h.Write([]byte(salt + password))
-	derivedKey := h.Sum(nil)
-	return derivedKey
-} */
-
 // DeriveKeyFromOldPassword derives a key from a password using the old Python method
 // with PBKDF2-HMAC-SHA256 with 100,000 iterations and 32 bytes output
 func DeriveKeyFromOldPassword(password, salt string) []byte {
 	// Use PBKDF2 with HMAC-SHA256, 100,000 iterations, and 32 byte output
 	// This matches the Python werkzeug implementation for password hashing
-	derivedKey, _ := pbkdf2.Key(sha256.New, password, []byte(salt), 100000, 32)
+	fmt.Printf("Deriving key from old password %s with salt: %s\n", password, salt)
+	salt_decoded, err := base64.URLEncoding.DecodeString(salt)
+	if err != nil {
+		fmt.Printf("Error decoding salt: %v\n", err)
+		return nil
+	}
+	derivedKey, _ := pbkdf2.Key(sha256.New, password, salt_decoded, 100000, 32)
+	fmt.Printf("Derived key: %x\n", derivedKey)
 	return derivedKey
 }
 
@@ -470,107 +473,6 @@ type MigrationProgress struct {
 }
 
 // Helper functions for migration
-
-func migrateUserSettings(oldDir, newDir string, oldKey []byte, newKey string, progressChan chan<- MigrationProgress) error {
-	// Lock für alte Einstellungen
-	userSettingsMutex.RLock()
-	// Check if old settings exist
-	oldSettingsPath := filepath.Join(oldDir, "settings.encrypted")
-	_, err := os.Stat(oldSettingsPath)
-	exists := !os.IsNotExist(err)
-	userSettingsMutex.RUnlock()
-
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("error checking if old settings exist: %v", err)
-	}
-
-	if !exists {
-		return nil // No settings to migrate
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_settings",
-			CurrentItem:    "Reading old settings",
-			ProcessedItems: 1,
-			TotalItems:     4,
-		}
-	}
-
-	// Read old settings mit Lock
-	userSettingsMutex.RLock()
-	oldSettingsBytes, err := os.ReadFile(oldSettingsPath)
-	userSettingsMutex.RUnlock()
-
-	if err != nil {
-		return fmt.Errorf("error reading old settings: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_settings",
-			CurrentItem:    "Decrypting old settings",
-			ProcessedItems: 2,
-			TotalItems:     4,
-		}
-	}
-
-	// Decrypt old settings
-	oldSettingsPlain, err := FernetDecrypt(string(oldSettingsBytes), oldKey)
-	if err != nil {
-		return fmt.Errorf("error decrypting old settings: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_settings",
-			CurrentItem:    "Encrypting settings with new key",
-			ProcessedItems: 3,
-			TotalItems:     4,
-		}
-	}
-
-	// Encrypt with new key
-	newSettingsEnc, err := EncryptText(string(oldSettingsPlain), newKey)
-	if err != nil {
-		return fmt.Errorf("error encrypting new settings: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_settings",
-			CurrentItem:    "Writing new settings",
-			ProcessedItems: 3,
-			TotalItems:     4,
-		}
-	}
-
-	// Write new settings mit Lock
-	newSettingsPath := filepath.Join(newDir, "settings.encrypted")
-	userSettingsMutex.Lock()
-	err = os.WriteFile(newSettingsPath, []byte(newSettingsEnc), 0644)
-	userSettingsMutex.Unlock()
-
-	if err != nil {
-		return fmt.Errorf("error writing new settings: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_settings",
-			CurrentItem:    "Settings migration completed",
-			ProcessedItems: 4,
-			TotalItems:     4,
-		}
-	}
-
-	return nil
-}
 
 func migrateTemplates(oldDir, newDir string, oldKey []byte, newKey string, progressChan chan<- MigrationProgress) error {
 	// Check if old templates exist
@@ -617,15 +519,46 @@ func migrateTemplates(oldDir, newDir string, oldKey []byte, newKey string, progr
 		}
 	}
 
-	// Templates are not encrypted, just copy
+	// Templates need to be parsed and re-written with proper indentation
+	var templatesData map[string]any
+	if err := json.Unmarshal(oldTemplatesBytes, &templatesData); err != nil {
+		return fmt.Errorf("error parsing old templates: %v", err)
+	}
+
+	// Create templates.json file with proper indentation
 	newTemplatesPath := filepath.Join(newDir, "templates.json")
 	templatesMutex.Lock()
-	err = os.WriteFile(newTemplatesPath, oldTemplatesBytes, 0644)
-	templatesMutex.Unlock()
 
-	if err != nil {
-		return fmt.Errorf("error writing new templates: %v", err)
+	// Create the directory if it doesn't exist
+	if err := os.MkdirAll(newDir, 0755); err != nil {
+		templatesMutex.Unlock()
+		return fmt.Errorf("error creating templates directory %s: %v", newDir, err)
 	}
+
+	// Create the file
+	file, err := os.Create(newTemplatesPath)
+	if err != nil {
+		templatesMutex.Unlock()
+		return fmt.Errorf("error creating templates file: %v", err)
+	}
+
+	// Write the content to the file with proper indentation
+	var encoder *json.Encoder
+	if Settings.Indent > 0 {
+		encoder = json.NewEncoder(file)
+		encoder.SetIndent("", fmt.Sprintf("%*s", Settings.Indent, ""))
+	} else {
+		encoder = json.NewEncoder(file)
+	}
+
+	if err := encoder.Encode(templatesData); err != nil {
+		file.Close()
+		templatesMutex.Unlock()
+		return fmt.Errorf("error encoding templates data: %v", err)
+	}
+
+	file.Close()
+	templatesMutex.Unlock()
 
 	// Update progress
 	if progressChan != nil {
@@ -640,76 +573,14 @@ func migrateTemplates(oldDir, newDir string, oldKey []byte, newKey string, progr
 	return nil
 }
 
-func migrateTags(oldDir, newDir string, oldKey []byte, newKey string, progressChan chan<- MigrationProgress) error {
-	// Check if old tags exist
-	tagsMutex.RLock()
-	oldTagsPath := filepath.Join(oldDir, "tags.json")
-	_, err := os.Stat(oldTagsPath)
-	exists := !os.IsNotExist(err)
-	tagsMutex.RUnlock()
-
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("error checking if old tags exist: %v", err)
-	}
-
-	if !exists {
-		return nil // No tags to migrate
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_tags",
-			CurrentItem:    "Reading tags",
-			ProcessedItems: 1,
-			TotalItems:     2,
-		}
-	}
-
-	// Read old tags
-	tagsMutex.RLock()
-	oldTagsBytes, err := os.ReadFile(oldTagsPath)
-	tagsMutex.RUnlock()
-
-	if err != nil {
-		return fmt.Errorf("error reading old tags: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_tags",
-			CurrentItem:    "Writing tags",
-			ProcessedItems: 1,
-			TotalItems:     2,
-		}
-	}
-
-	// Tags are not encrypted, just copy
-	newTagsPath := filepath.Join(newDir, "tags.json")
-	tagsMutex.Lock()
-	err = os.WriteFile(newTagsPath, oldTagsBytes, 0644)
-	tagsMutex.Unlock()
-
-	if err != nil {
-		return fmt.Errorf("error writing new tags: %v", err)
-	}
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_tags",
-			CurrentItem:    "Tags migration completed",
-			ProcessedItems: 2,
-			TotalItems:     2,
-		}
-	}
-
-	return nil
-}
-
 func migrateLogs(oldDir, newDir string, oldKey []byte, newKey string, progressChan chan<- MigrationProgress) error {
-	// Get all year directories
+	// Count all month files in all year directories
+	var allMonthFiles []struct {
+		yearDir   string
+		monthFile string
+	}
+	totalMonths := 0
+
 	logsMutex.RLock()
 	entries, err := os.ReadDir(oldDir)
 	logsMutex.RUnlock()
@@ -718,32 +589,62 @@ func migrateLogs(oldDir, newDir string, oldKey []byte, newKey string, progressCh
 		return fmt.Errorf("error reading old directory: %v", err)
 	}
 
-	// Count total years and collect year names
-	totalYears := 0
+	// Filter for year directories (numeric names)
 	var yearDirs []string
 	for _, entry := range entries {
 		if entry.IsDir() && isNumeric(entry.Name()) {
-			totalYears++
 			yearDirs = append(yearDirs, entry.Name())
 		}
 	}
 
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_logs",
-			CurrentItem:    fmt.Sprintf("Found %d years to migrate", totalYears),
-			ProcessedItems: 0,
-			TotalItems:     totalYears,
+	// Count month files in each year directory
+	for _, yearDir := range yearDirs {
+		oldYearPath := filepath.Join(oldDir, yearDir)
+
+		logsMutex.RLock()
+		monthEntries, err := os.ReadDir(oldYearPath)
+		logsMutex.RUnlock()
+
+		if err != nil {
+			Logger.Printf("Error reading year directory %s: %v", oldYearPath, err)
+			continue
+		}
+
+		for _, monthEntry := range monthEntries {
+			if !monthEntry.IsDir() && strings.HasSuffix(monthEntry.Name(), ".json") {
+				totalMonths++
+				allMonthFiles = append(allMonthFiles, struct {
+					yearDir   string
+					monthFile string
+				}{
+					yearDir:   yearDir,
+					monthFile: monthEntry.Name(),
+				})
+			}
 		}
 	}
 
-	yearCount := 0
-	for _, yearDir := range yearDirs {
-		oldYearPath := filepath.Join(oldDir, yearDir)
-		newYearPath := filepath.Join(newDir, yearDir)
+	// Update progress with total number of months
+	if progressChan != nil {
+		progressChan <- MigrationProgress{
+			Phase:          "migrating_logs",
+			CurrentItem:    fmt.Sprintf("Found %d months to migrate", totalMonths),
+			ProcessedItems: 0,
+			TotalItems:     totalMonths,
+		}
+	}
 
-		// Create new year directory
+	processedMonths := 0
+
+	// Process all months
+	for _, monthInfo := range allMonthFiles {
+		oldYearPath := filepath.Join(oldDir, monthInfo.yearDir)
+		newYearPath := filepath.Join(newDir, monthInfo.yearDir)
+
+		oldMonthPath := filepath.Join(oldYearPath, monthInfo.monthFile)
+		newMonthPath := filepath.Join(newYearPath, monthInfo.monthFile)
+
+		// Create year directory if needed
 		logsMutex.Lock()
 		if err := os.MkdirAll(newYearPath, 0755); err != nil {
 			logsMutex.Unlock()
@@ -751,127 +652,143 @@ func migrateLogs(oldDir, newDir string, oldKey []byte, newKey string, progressCh
 		}
 		logsMutex.Unlock()
 
-		// Get all month files
+		// Read old month file
 		logsMutex.RLock()
-		monthEntries, err := os.ReadDir(oldYearPath)
+		oldMonthBytes, err := os.ReadFile(oldMonthPath)
 		logsMutex.RUnlock()
 
 		if err != nil {
-			return fmt.Errorf("error reading old year directory: %v", err)
+			Logger.Printf("Error reading old month %s: %v", oldMonthPath, err)
+			continue
 		}
 
-		// Count total months
-		var monthFiles []string
-		for _, monthEntry := range monthEntries {
-			if !monthEntry.IsDir() && strings.HasSuffix(monthEntry.Name(), ".json") {
-				monthFiles = append(monthFiles, monthEntry.Name())
-			}
-		}
-
-		// Update progress for this year
+		// Update progress
 		if progressChan != nil {
 			progressChan <- MigrationProgress{
 				Phase:          "migrating_logs",
-				CurrentItem:    fmt.Sprintf("Migrating year %s (%d/%d) - %d months", yearDir, yearCount+1, totalYears, len(monthFiles)),
-				ProcessedItems: yearCount,
-				TotalItems:     totalYears,
+				CurrentItem:    fmt.Sprintf("Migrating month %s/%s (%d/%d)", monthInfo.yearDir, monthInfo.monthFile, processedMonths+1, totalMonths),
+				ProcessedItems: processedMonths,
+				TotalItems:     totalMonths,
 			}
 		}
 
-		monthCount := 0
-		for _, monthFile := range monthFiles {
-			oldMonthPath := filepath.Join(oldYearPath, monthFile)
-			newMonthPath := filepath.Join(newYearPath, monthFile)
+		// Parse old month file
+		var monthData map[string]any
+		if err := json.Unmarshal(oldMonthBytes, &monthData); err != nil {
+			Logger.Printf("Error parsing old month %s: %v", oldMonthPath, err)
+			continue
+		}
 
-			// Read old month
-			logsMutex.RLock()
-			oldMonthBytes, err := os.ReadFile(oldMonthPath)
-			logsMutex.RUnlock()
+		// Process days in month
+		days, ok := monthData["days"].([]any)
+		if !ok {
+			Logger.Printf("Month %s has unexpected format - missing 'days' array", oldMonthPath)
+			continue
+		}
 
-			if err != nil {
-				Logger.Printf("Error reading old month %s: %v", oldMonthPath, err)
+		// Loop through all days and decrypt/encrypt the texts
+		for i, dayInterface := range days {
+			day, ok := dayInterface.(map[string]any)
+			if !ok {
 				continue
-			}
-
-			// Parse old month
-			var oldMonth map[string]any
-			if err := json.Unmarshal(oldMonthBytes, &oldMonth); err != nil {
-				Logger.Printf("Error parsing old month %s: %v", oldMonthPath, err)
-				continue
-			}
-
-			// Decrypt all encrypted fields in logs
-			for day, dayData := range oldMonth {
-				dayMap, ok := dayData.(map[string]any)
-				if !ok {
+			} // Re-encrypt main text
+			if encryptedText, ok := day["text"].(string); ok {
+				plaintext, err := FernetDecrypt(encryptedText, oldKey)
+				if err != nil {
+					Logger.Printf("Error decrypting content for day %d in %s: %v", i, oldMonthPath, err)
 					continue
 				}
 
-				if encrypted, ok := dayMap["content"].(string); ok {
-					// Decrypt content
-					plaintext, err := FernetDecrypt(encrypted, oldKey)
-					if err != nil {
-						Logger.Printf("Error decrypting content for day %s: %v", day, err)
+				newEncrypted, err := EncryptText(string(plaintext), newKey)
+				if err != nil {
+					Logger.Printf("Error encrypting content for day %d in %s: %v", i, oldMonthPath, err)
+					continue
+				}
+
+				day["text"] = newEncrypted
+			}
+
+			// Process history if available
+			if historyInterface, ok := day["history"].([]any); ok {
+				for j, historyItemInterface := range historyInterface {
+					historyItem, ok := historyItemInterface.(map[string]any)
+					if !ok {
 						continue
 					}
 
-					// Encrypt with new key
-					newEncrypted, err := EncryptText(string(plaintext), newKey)
-					if err != nil {
-						Logger.Printf("Error encrypting content for day %s: %v", day, err)
-						continue
-					}
+					// Encrypt history text
+					if encryptedText, ok := historyItem["text"].(string); ok {
+						plaintext, err := FernetDecrypt(encryptedText, oldKey)
+						if err != nil {
+							Logger.Printf("Error decrypting history item %d for day %d in %s: %v", j, i, oldMonthPath, err)
+							continue
+						}
 
-					dayMap["content"] = newEncrypted
+						newEncrypted, err := EncryptText(string(plaintext), newKey)
+						if err != nil {
+							Logger.Printf("Error encrypting history item %d for day %d in %s: %v", j, i, oldMonthPath, err)
+							continue
+						}
+
+						historyItem["text"] = newEncrypted
+					}
 				}
 			}
+		}
 
-			// Write new month
-			newMonthBytes, err := json.Marshal(oldMonth)
-			if err != nil {
-				Logger.Printf("Error marshaling new month %s: %v", newMonthPath, err)
-				continue
-			}
+		// Write new month file with proper indentation
+		logsMutex.Lock()
 
-			logsMutex.Lock()
-			err = os.WriteFile(newMonthPath, newMonthBytes, 0644)
+		// Create the directory if it doesn't exist (should already be done, but just to be safe)
+		err = os.MkdirAll(filepath.Dir(newMonthPath), 0755)
+		if err != nil {
 			logsMutex.Unlock()
-
-			if err != nil {
-				Logger.Printf("Error writing new month %s: %v", newMonthPath, err)
-				continue
-			}
-
-			monthCount++
-			if monthCount%5 == 0 && progressChan != nil && len(monthFiles) > 0 {
-				// Update progress occasionally
-				progressChan <- MigrationProgress{
-					Phase:          "migrating_logs",
-					CurrentItem:    fmt.Sprintf("Migrating year %s - month %s (%d/%d)", yearDir, monthFile, monthCount, len(monthFiles)),
-					ProcessedItems: yearCount*100 + monthCount,
-					TotalItems:     totalYears * 100, // Approximation
-				}
-			}
+			Logger.Printf("Error creating directory for %s: %v", newMonthPath, err)
+			continue
 		}
 
-		yearCount++
-		if progressChan != nil {
-			progressChan <- MigrationProgress{
-				Phase:          "migrating_logs",
-				CurrentItem:    fmt.Sprintf("Completed year %s (%d/%d)", yearDir, yearCount, totalYears),
-				ProcessedItems: yearCount,
-				TotalItems:     totalYears,
-			}
+		// Create the file
+		file, err := os.Create(newMonthPath)
+		if err != nil {
+			logsMutex.Unlock()
+			Logger.Printf("Error creating file %s: %v", newMonthPath, err)
+			continue
 		}
+
+		// Write the content to the file with proper indentation
+		var encoder *json.Encoder
+		if Settings.Indent > 0 {
+			encoder = json.NewEncoder(file)
+			encoder.SetIndent("", fmt.Sprintf("%*s", Settings.Indent, ""))
+		} else {
+			encoder = json.NewEncoder(file)
+		}
+
+		if err := encoder.Encode(monthData); err != nil {
+			file.Close()
+			logsMutex.Unlock()
+			Logger.Printf("Error encoding month data for %s: %v", newMonthPath, err)
+			continue
+		}
+
+		file.Close()
+		logsMutex.Unlock()
+
+		if err != nil {
+			Logger.Printf("Error writing new month %s: %v", newMonthPath, err)
+			continue
+		}
+
+		processedMonths++
 	}
 
-	// Update progress
+	// Final progress update
 	if progressChan != nil {
 		progressChan <- MigrationProgress{
 			Phase:          "migrating_logs",
-			CurrentItem:    "Logs migration completed",
-			ProcessedItems: totalYears,
-			TotalItems:     totalYears,
+			CurrentItem:    fmt.Sprintf("Completed migrating %d/%d months", processedMonths, totalMonths),
+			ProcessedItems: processedMonths,
+			TotalItems:     totalMonths,
 		}
 	}
 

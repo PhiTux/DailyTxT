@@ -85,9 +85,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Find user in old data
-		var oldUser map[string]interface{}
+		var oldUser map[string]any
 		for _, u := range oldUsersList {
-			user, ok := u.(map[string]interface{})
+			user, ok := u.(map[string]any)
 			if !ok {
 				continue
 			}
@@ -181,10 +181,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		}()
 
 		// Return migration status to client
-		utils.JSONResponse(w, http.StatusAccepted, map[string]interface{}{
+		utils.JSONResponse(w, http.StatusAccepted, map[string]any{
 			"migration_started": true,
 			"username":          req.Username,
-			"message":           "User found in old data. Migration started. Please wait and retry login in a few moments.",
 		})
 		return
 	}
@@ -222,8 +221,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	})
 
 	// Return success
-	utils.JSONResponse(w, http.StatusOK, map[string]string{
-		"username": req.Username,
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"migration_started": false,
+		"username":          req.Username,
 	})
 }
 

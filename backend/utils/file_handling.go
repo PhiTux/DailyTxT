@@ -70,7 +70,7 @@ func WriteUsers(content map[string]any) error {
 
 	// Write the content to the file
 	var encoder *json.Encoder
-	if Settings.Development && Settings.Indent > 0 {
+	if Settings.Indent > 0 {
 		encoder = json.NewEncoder(file)
 		encoder.SetIndent("", fmt.Sprintf("%*s", Settings.Indent, ""))
 	} else {
@@ -133,7 +133,7 @@ func WriteMonth(userID int, year, month int, content map[string]any) error {
 
 	// Write the content to the file
 	var encoder *json.Encoder
-	if Settings.Development && Settings.Indent > 0 {
+	if Settings.Indent > 0 {
 		encoder = json.NewEncoder(file)
 		encoder.SetIndent("", fmt.Sprintf("%*s", Settings.Indent, ""))
 	} else {
