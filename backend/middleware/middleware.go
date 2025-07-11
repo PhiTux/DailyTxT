@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/phitux/dailytxt/backend/utils"
 )
@@ -73,6 +74,12 @@ func RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 // Logger middleware logs all requests
 func Logger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// If not in development mode, skip detailed logging
+		if !utils.Settings.Development {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// Skip logging for static files
 		if strings.HasPrefix(r.URL.Path, "/static/") {
 			next.ServeHTTP(w, r)
@@ -80,9 +87,28 @@ func Logger(next http.Handler) http.Handler {
 		}
 
 		// Log request
-		utils.Logger.Printf("Request: %s %s", r.Method, r.URL.Path)
+		startTime := time.Now()
 
-		// Continue with next handler
-		next.ServeHTTP(w, r)
+		// Create a response writer wrapper to capture the status code
+		rw := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+
+		// Call the next handler with our custom response writer
+		next.ServeHTTP(rw, r)
+
+		// Log response
+		duration := time.Since(startTime)
+		utils.Logger.Printf("%s %s - Status: %d - Duration: %v", r.Method, r.URL.Path, rw.statusCode, duration)
 	})
+}
+
+// responseWriter is a wrapper for http.ResponseWriter that captures the status code
+type responseWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
+
+// WriteHeader captures the status code and delegates to the underlying ResponseWriter
+func (rw *responseWriter) WriteHeader(statusCode int) {
+	rw.statusCode = statusCode
+	rw.ResponseWriter.WriteHeader(statusCode)
 }

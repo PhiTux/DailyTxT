@@ -24,16 +24,21 @@ func main() {
 		logger.Fatalf("Failed to initialize settings: %v", err)
 	}
 
+	// Check and handle old data migration if needed
+	utils.HandleOldData(logger)
+
 	// Create a new router
 	mux := http.NewServeMux()
 
 	// Register routes
 	mux.HandleFunc("POST /users/login", handlers.Login)
+	mux.HandleFunc("GET /users/isRegistrationAllowed", handlers.IsRegistrationAllowed)
 	mux.HandleFunc("POST /users/register", handlers.Register)
 	mux.HandleFunc("GET /users/logout", handlers.Logout)
 	mux.HandleFunc("GET /users/check", middleware.RequireAuth(handlers.CheckLogin))
 	mux.HandleFunc("GET /users/getUserSettings", middleware.RequireAuth(handlers.GetUserSettings))
 	mux.HandleFunc("POST /users/saveUserSettings", middleware.RequireAuth(handlers.SaveUserSettings))
+	mux.HandleFunc("POST /users/migrationProgress", handlers.GetMigrationProgress)
 
 	mux.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
 	mux.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))
@@ -56,8 +61,9 @@ func main() {
 	mux.HandleFunc("GET /logs/getHistory", middleware.RequireAuth(handlers.GetHistory))
 	mux.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
 
-	// Create a handler with CORS middleware
-	handler := middleware.CORS(mux)
+	// Create a handler chain with Logger and CORS middleware
+	// Logger middleware will be executed first, then CORS
+	handler := middleware.Logger(middleware.CORS(mux))
 
 	// Create the server
 	server := &http.Server{

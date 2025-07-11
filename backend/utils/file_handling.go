@@ -11,12 +11,22 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 
 	"golang.org/x/crypto/chacha20poly1305"
 )
 
+// Mutexes für Dateizugriffe
+var (
+	usersFileMutex    sync.RWMutex // Für users.json
+	userSettingsMutex sync.RWMutex // Für Benutzereinstellungen
+)
+
 // GetUsers retrieves the users from the users.json file
 func GetUsers() (map[string]any, error) {
+	usersFileMutex.RLock()
+	defer usersFileMutex.RUnlock()
+
 	// Try to open the users.json file
 	filePath := filepath.Join(Settings.DataPath, "users.json")
 	file, err := os.Open(filePath)
@@ -46,6 +56,9 @@ func GetUsers() (map[string]any, error) {
 
 // WriteUsers writes the users to the users.json file
 func WriteUsers(content map[string]any) error {
+	usersFileMutex.Lock()
+	defer usersFileMutex.Unlock()
+
 	// Create the users.json file
 	filePath := filepath.Join(Settings.DataPath, "users.json")
 	file, err := os.Create(filePath)
@@ -79,7 +92,6 @@ func GetMonth(userID int, year, month int) (map[string]any, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			Logger.Printf("%s - File not found", filePath)
 			return map[string]any{}, nil
 		}
 		Logger.Printf("Error opening %s: %v", filePath, err)
@@ -207,6 +219,9 @@ func RandRead(b []byte) (int, error) {
 
 // GetUserSettings retrieves the settings for a specific user
 func GetUserSettings(userID int) (string, error) {
+	userSettingsMutex.RLock()
+	defer userSettingsMutex.RUnlock()
+
 	// Try to open the settings.encrypted file
 	filePath := filepath.Join(Settings.DataPath, fmt.Sprintf("%d/settings.encrypted", userID))
 	file, err := os.Open(filePath)
@@ -232,6 +247,9 @@ func GetUserSettings(userID int) (string, error) {
 
 // WriteUserSettings writes the settings for a specific user
 func WriteUserSettings(userID int, content string) error {
+	userSettingsMutex.Lock()
+	defer userSettingsMutex.Unlock()
+
 	// Create the directory if it doesn't exist
 	dirPath := filepath.Join(Settings.DataPath, fmt.Sprintf("%d", userID))
 	if err := os.MkdirAll(dirPath, 0755); err != nil {

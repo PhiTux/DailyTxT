@@ -3,104 +3,13 @@ package utils
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"io"
-	"log"
-	"net/http"
-	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/argon2"
 )
-
-// Global logger
-var Logger *log.Logger
-
-func init() {
-	// Initialize logger
-	Logger = log.New(os.Stdout, "dailytxt: ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
-}
-
-// ContextKey is a type for context keys
-type ContextKey string
-
-// Context keys
-const (
-	UserIDKey     ContextKey = "userID"
-	UsernameKey   ContextKey = "username"
-	DerivedKeyKey ContextKey = "derivedKey"
-)
-
-// Settings holds the application settings
-type AppSettings struct {
-	DataPath        string   `json:"data_path"`
-	Development     bool     `json:"development"`
-	SecretToken     string   `json:"secret_token"`
-	LogoutAfterDays int      `json:"logout_after_days"`
-	AllowedHosts    []string `json:"allowed_hosts"`
-	Indent          int      `json:"indent"`
-}
-
-// Global settings
-var Settings AppSettings
-
-// InitSettings loads the application settings
-func InitSettings() error {
-	// Default settings
-	Settings = AppSettings{
-		DataPath:        "/data",
-		Development:     false,
-		SecretToken:     generateSecretToken(),
-		LogoutAfterDays: 30,
-		AllowedHosts:    []string{"http://localhost:5173", "http://127.0.0.1:5173"},
-		Indent:          0,
-	}
-
-	fmt.Print("\nDetected following settings:\n================\n")
-
-	// Override with environment variables if available
-	if dataPath := os.Getenv("DATA_PATH"); dataPath != "" {
-		Settings.DataPath = dataPath
-	}
-	fmt.Printf("Data Path: %s\n", Settings.DataPath)
-
-	if os.Getenv("DEVELOPMENT") == "true" {
-		Settings.Development = true
-	}
-	fmt.Printf("Development Mode: %t\n", Settings.Development)
-
-	if secretToken := os.Getenv("SECRET_TOKEN"); secretToken != "" {
-		Settings.SecretToken = secretToken
-	}
-	fmt.Printf("Secret Token: %s\n", Settings.SecretToken)
-
-	if logoutDays := os.Getenv("LOGOUT_AFTER_DAYS"); logoutDays != "" {
-		// Parse logoutDays to int
-		var days int
-		if _, err := fmt.Sscanf(logoutDays, "%d", &days); err == nil {
-			Settings.LogoutAfterDays = days
-		}
-	}
-	fmt.Printf("Logout After Days: %d\n", Settings.LogoutAfterDays)
-
-	if indent := os.Getenv("INDENT"); indent != "" {
-		// Parse indent to int
-		var ind int
-		if _, err := fmt.Sscanf(indent, "%d", &ind); err == nil {
-			Settings.Indent = ind
-		}
-	}
-	fmt.Printf("Indent: %d\n================\n\n", Settings.Indent)
-
-	// Create data directory if it doesn't exist
-	if err := os.MkdirAll(Settings.DataPath, 0755); err != nil {
-		return fmt.Errorf("failed to create data directory: %v", err)
-	}
-
-	return nil
-}
 
 // Claims represents the JWT claims
 type Claims struct {
@@ -212,32 +121,11 @@ func DeriveKeyFromPassword(password, saltBase64 string) ([]byte, error) {
 	return key, nil
 }
 
-// GenerateSecretToken generates a secure random token
-func generateSecretToken() string {
+// GenerateToken generates a secure random token
+func GenerateSecretToken() string {
 	b := make([]byte, 32)
 	if _, err := rand.Read(b); err != nil {
-		Logger.Fatalf("Failed to generate secret token: %v", err)
+		panic(fmt.Sprintf("Failed to generate secret token: %v", err))
 	}
 	return base64.URLEncoding.EncodeToString(b)
-}
-
-// JSONResponse sends a JSON response with the given status code and data
-func JSONResponse(w http.ResponseWriter, statusCode int, data any) {
-	// Set content type
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-
-	// Encode data to JSON
-	var encoder *json.Encoder
-	if Settings.Development && Settings.Indent > 0 {
-		encoder = json.NewEncoder(w)
-		encoder.SetIndent("", fmt.Sprintf("%*s", Settings.Indent, ""))
-	} else {
-		encoder = json.NewEncoder(w)
-	}
-
-	if err := encoder.Encode(data); err != nil {
-		Logger.Printf("Error encoding JSON response: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
 }

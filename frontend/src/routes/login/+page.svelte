@@ -18,6 +18,8 @@
 	let registration_failed_message = $state('');
 	let is_registering = $state(false);
 
+	let registration_allowed = $state(true);
+
 	onMount(() => {
 		// if params error=440 or error=401, show toast
 		if (window.location.search.includes('error=440')) {
@@ -27,7 +29,22 @@
 			const toast = new bootstrap.Toast(document.getElementById('toastLoginInvalid'));
 			toast.show();
 		}
+
+		// check if registration is allowed
+		checkRegistrationAllowed();
 	});
+
+	function checkRegistrationAllowed() {
+		axios
+			.get(API_URL + '/users/isRegistrationAllowed')
+			.then((response) => {
+				registration_allowed = response.data.registration_allowed;
+			})
+			.catch((error) => {
+				console.error('Error checking registration allowed:', error);
+				registration_allowed = false; // Default to false if there's an error
+			});
+	}
 
 	function handleLogin(event) {
 		event.preventDefault();
@@ -100,8 +117,8 @@
 				}
 			})
 			.catch((error) => {
-				console.error(error.response.data.detail);
-				registration_failed_message = error.response.data.detail;
+				console.error(error.response.data);
+				registration_failed_message = error.response.data;
 				show_registration_failed_with_message = true;
 			})
 			.finally(() => {
@@ -200,6 +217,7 @@
 						<form onsubmit={handleRegister}>
 							<div class="form-floating mb-3">
 								<input
+									disabled={!registration_allowed}
 									type="text"
 									class="form-control"
 									id="registerUsername"
@@ -209,6 +227,7 @@
 							</div>
 							<div class="form-floating mb-3">
 								<input
+									disabled={!registration_allowed}
 									type="password"
 									class="form-control"
 									id="registerPassword"
@@ -218,6 +237,7 @@
 							</div>
 							<div class="form-floating mb-3">
 								<input
+									disabled={!registration_allowed}
 									type="password"
 									class="form-control"
 									id="registerPassword2"
@@ -225,6 +245,11 @@
 								/>
 								<label for="registerPassword2">Password bestätigen</label>
 							</div>
+							{#if !registration_allowed}
+								<div class="alert alert-danger" role="alert">
+									Registrierung ist derzeit nicht erlaubt!
+								</div>
+							{/if}
 							{#if show_registration_failed_with_message}
 								<div class="alert alert-danger" role="alert">
 									Registrierung fehlgeschlagen!<br />
@@ -250,7 +275,11 @@
 								<div class="alert alert-danger" role="alert">Passwörter stimmen nicht überein!</div>
 							{/if}
 							<div class="d-flex justify-content-center">
-								<button type="submit" class="btn btn-primary" disabled={is_registering}>
+								<button
+									type="submit"
+									class="btn btn-primary"
+									disabled={is_registering || !registration_allowed}
+								>
 									{#if is_registering}
 										<div class="spinner-border spinner-border-sm" role="status">
 											<span class="visually-hidden">Loading...</span>

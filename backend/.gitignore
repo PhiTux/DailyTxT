@@ -1,2 +1,4 @@
 .envrc
 data/
+data.bak/
+backend

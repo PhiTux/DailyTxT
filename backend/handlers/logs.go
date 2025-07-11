@@ -738,12 +738,12 @@ func GetOnThisDay(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get parameters from URL
-	month, err := strconv.Atoi(r.PathValue("month"))
+	month, err := strconv.Atoi(r.URL.Query().Get("month"))
 	if err != nil {
 		http.Error(w, "Invalid month parameter", http.StatusBadRequest)
 		return
 	}
-	day, err := strconv.Atoi(r.PathValue("day"))
+	day, err := strconv.Atoi(r.URL.Query().Get("day"))
 	if err != nil {
 		http.Error(w, "Invalid day parameter", http.StatusBadRequest)
 		return
@@ -897,7 +897,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get query parameter
-	searchString := r.URL.Query().Get("q")
+	searchString := r.URL.Query().Get("searchString")
 	if searchString == "" {
 		http.Error(w, "Missing search parameter", http.StatusBadRequest)
 		return
