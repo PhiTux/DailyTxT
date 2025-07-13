@@ -33,7 +33,7 @@ func main() {
 	// Register routes
 	mux.HandleFunc("POST /users/login", handlers.Login)
 	mux.HandleFunc("GET /users/isRegistrationAllowed", handlers.IsRegistrationAllowed)
-	mux.HandleFunc("POST /users/register", handlers.Register)
+	mux.HandleFunc("POST /users/register", handlers.RegisterHandler)
 	mux.HandleFunc("GET /users/logout", handlers.Logout)
 	mux.HandleFunc("GET /users/check", middleware.RequireAuth(handlers.CheckLogin))
 	mux.HandleFunc("GET /users/getUserSettings", middleware.RequireAuth(handlers.GetUserSettings))

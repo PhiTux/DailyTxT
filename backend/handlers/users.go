@@ -162,7 +162,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				}
 			}()
 
-			err := utils.MigrateUserData(req.Username, req.Password, progressChan)
+			err := utils.MigrateUserData(req.Username, req.Password, Register, progressChan)
 			if err != nil {
 				utils.Logger.Printf("Migration failed for user '%s': %v", req.Username, err)
 				// Mark migration as completed even on error
@@ -241,7 +241,7 @@ type RegisterRequest struct {
 }
 
 // Register handles user registration
-func Register(w http.ResponseWriter, r *http.Request) {
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the request body
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -249,11 +249,22 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	result, err := Register(req.Username, req.Password)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Internal Server Error: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]bool{
+		"success": result,
+	})
+}
+
+func Register(username string, password string) (bool, error) {
 	// Get users
 	users, err := utils.GetUsers()
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	// Check if username already exists
@@ -261,8 +272,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		usersList, ok := users["users"].([]any)
 		if !ok {
 			utils.Logger.Printf("users.json is not in the correct format. Key 'users' is missing or not a list.")
-			http.Error(w, "users.json is not in the correct format", http.StatusInternalServerError)
-			return
+			return false, fmt.Errorf("users.json is not in the correct format: %d", http.StatusInternalServerError)
 		}
 
 		for _, u := range usersList {
@@ -271,46 +281,40 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			if username, ok := user["username"].(string); ok && username == req.Username {
-				utils.Logger.Printf("Registration failed. Username '%s' already exists", req.Username)
-				http.Error(w, "Username already exists", http.StatusBadRequest)
-				return
+			if username_from_file, ok := user["username"].(string); ok && username_from_file == username {
+				utils.Logger.Printf("Registration failed. Username '%s' already exists", username)
+				return false, fmt.Errorf("username already exists: %d", http.StatusBadRequest)
 			}
 		}
 	}
 
 	// Create new user data
-	hashedPassword, salt, err := utils.HashPassword(req.Password)
+	hashedPassword, salt, err := utils.HashPassword(password)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	// Create encryption key
-	derivedKey, err := utils.DeriveKeyFromPassword(req.Password, salt)
+	derivedKey, err := utils.DeriveKeyFromPassword(password, salt)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	// Generate a new random encryption key
 	encryptionKey := make([]byte, 32)
 	if _, err := utils.RandRead(encryptionKey); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	// Encrypt the encryption key with the derived key
 	aead, err := utils.CreateAEAD(derivedKey)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	nonce := make([]byte, aead.NonceSize())
 	if _, err := utils.RandRead(nonce); err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	encryptedKey := aead.Seal(nonce, nonce, encryptionKey, nil)
@@ -324,7 +328,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 				{
 					"user_id":          1,
 					"dailytxt_version": 2,
-					"username":         req.Username,
+					"username":         username,
 					"password":         hashedPassword,
 					"salt":             salt,
 					"enc_enc_key":      encEncKey,
@@ -349,7 +353,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		usersList = append(usersList, map[string]any{
 			"user_id":          int(idCounter),
 			"dailytxt_version": 2,
-			"username":         req.Username,
+			"username":         username,
 			"password":         hashedPassword,
 			"salt":             salt,
 			"enc_enc_key":      encEncKey,
@@ -360,14 +364,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// Write users to file
 	if err := utils.WriteUsers(users); err != nil {
-		http.Error(w, "Internal Server Error when trying to write users.json", http.StatusInternalServerError)
-		return
+		return false, fmt.Errorf("internal Server Error when trying to write users.json: %d", http.StatusInternalServerError)
 	}
 
 	// Return success
-	utils.JSONResponse(w, http.StatusOK, map[string]bool{
-		"success": true,
-	})
+	return true, nil
 }
 
 // Logout handles user logout

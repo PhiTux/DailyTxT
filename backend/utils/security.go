@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -128,4 +129,25 @@ func GenerateSecretToken() string {
 		panic(fmt.Sprintf("Failed to generate secret token: %v", err))
 	}
 	return base64.URLEncoding.EncodeToString(b)
+}
+
+// Generate a UUID v7 and base64-encode it (url-safe)
+func GenerateUUID() (string, error) {
+	// Generate a UUID v7
+	uuidObj, err := uuid.NewV7()
+	if err != nil {
+		return "", fmt.Errorf("failed to generate UUID v7: %v", err)
+	}
+
+	// convert UUID to binary
+	uuidBytes, err := uuidObj.MarshalBinary()
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal UUID to binary: %v", err)
+	}
+
+	// Kodiere die UUID als Base64URL ohne Padding
+	// für die Kompatibilität mit existierenden UUIDs wie "JVsDBnHCZbqoAjSKUPLgGn"
+	encodedUUID := base64.RawURLEncoding.EncodeToString(uuidBytes)
+
+	return encodedUUID, nil
 }

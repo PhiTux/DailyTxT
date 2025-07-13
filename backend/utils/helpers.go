@@ -110,6 +110,30 @@ func InitSettings() error {
 	return nil
 }
 
+func GetUserIDByUsername(username string) (int, error) {
+	// Get users
+	users, err := GetUsers()
+	if err != nil {
+		return 0, fmt.Errorf("failed to get users: %v", err)
+	}
+
+	// Find user by username
+	for _, user := range users {
+		user, ok := user.(map[string]any)
+		if !ok {
+			continue // Skip if user is not a map
+		}
+		if user["username"] == username {
+			if id, ok := user["id"].(int); ok {
+				return id, nil
+			}
+			return 0, fmt.Errorf("user ID not found for username: %s", username)
+		}
+	}
+
+	return 0, fmt.Errorf("user not found: %s", username)
+}
+
 // JSONResponse sends a JSON response with the given status code and data
 func JSONResponse(w http.ResponseWriter, statusCode int, data any) {
 	// Set content type
