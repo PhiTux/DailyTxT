@@ -346,14 +346,10 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 		return handleError("Error getting encryption key", err)
 	}
 
-	time.Sleep(800 * time.Millisecond) // Simulate some delay for migration
-
 	// Migrate templates
 	if err := migrateTemplates(oldDataDir, newDataDir, oldEncKey, encKey, &currentProgress, progressChan); err != nil {
 		return handleError("Error migrating templates", err)
 	}
-
-	time.Sleep(800 * time.Millisecond) // Simulate some delay for migration
 
 	// Migrate logs (years/months)
 	if err := migrateLogs(oldDataDir, newDataDir, oldEncKey, encKey, &currentProgress, progressChan); err != nil {
@@ -438,13 +434,91 @@ func migrateTemplates(oldDir, newDir string, oldKey string, newKey string, progr
 		return fmt.Errorf("error reading old templates: %v", err)
 	}
 
-	// Templates need to be parsed and re-written with proper indentation
+	// Templates need to be parsed
 	var templatesData map[string]any
 	if err := json.Unmarshal(oldTemplatesBytes, &templatesData); err != nil {
 		return fmt.Errorf("error parsing old templates: %v", err)
 	}
 
-	// Create templates.json file with proper indentation
+	// Decrypt and encrypt templates
+	oldKeyBytes, err := base64.URLEncoding.DecodeString(oldKey)
+	if err != nil {
+		Logger.Printf("Error decoding oldKey %v", err)
+		progress.ErrorCount++
+		return fmt.Errorf("error decoding oldKey: %v", err)
+	}
+
+	// Get the templates array
+	templatesArray, ok := templatesData["templates"].([]any)
+	if !ok {
+		return fmt.Errorf("invalid templates format - 'templates' is not an array")
+	}
+
+	// Create a new templates array for the migrated templates
+	newTemplatesArray := make([]map[string]any, 0)
+
+	// Process each template in the array
+	for _, templateItem := range templatesArray {
+		templateMap, ok := templateItem.(map[string]any)
+		if !ok {
+			Logger.Printf("Warning: template item is not a map: %v", templateItem)
+			progress.ErrorCount++
+			continue
+		}
+
+		// Create a new template without the 'number' field
+		newTemplate := make(map[string]any)
+
+		// Process encrypted name
+		if encName, ok := templateMap["name"].(string); ok && encName != "" {
+			// Decrypt with old key
+			decryptedName, err := FernetDecrypt(encName, oldKeyBytes)
+			if err != nil {
+				Logger.Printf("Error decrypting template name: %v", err)
+				progress.ErrorCount++
+				continue
+			}
+
+			// Encrypt with new key
+			newEncName, err := EncryptText(decryptedName, newKey)
+			if err != nil {
+				Logger.Printf("Error encrypting template name: %v", err)
+				progress.ErrorCount++
+				continue
+			}
+
+			newTemplate["name"] = newEncName
+		}
+
+		// Process encrypted text
+		if encText, ok := templateMap["text"].(string); ok && encText != "" {
+			// Decrypt with old key
+			decryptedText, err := FernetDecrypt(encText, oldKeyBytes)
+			if err != nil {
+				Logger.Printf("Error decrypting template text: %v", err)
+				progress.ErrorCount++
+				continue
+			}
+
+			// Encrypt with new key
+			newEncText, err := EncryptText(decryptedText, newKey)
+			if err != nil {
+				Logger.Printf("Error encrypting template text: %v", err)
+				progress.ErrorCount++
+				continue
+			}
+
+			newTemplate["text"] = newEncText
+		}
+
+		// Add the new template to the array
+		newTemplatesArray = append(newTemplatesArray, newTemplate)
+	}
+
+	// Replace the old templates array with the new one
+	templatesData["templates"] = newTemplatesArray
+
+	// Create templates.json file
 	newTemplatesPath := filepath.Join(newDir, "templates.json")
 	templatesMutex.Lock()
 
@@ -740,7 +814,6 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progress *
 		logsMutex.Unlock()
 
 		processedMonths++
-		time.Sleep(20 * time.Millisecond) // Simulate some delay for migration
 	}
 
 	// Final progress update
@@ -1004,7 +1077,6 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 				progressChan <- *progress
 			}
 		}
-		time.Sleep(100 * time.Millisecond) // Simulate some delay for migration
 	}
 
 	// Third pass: update all month files with new file IDs

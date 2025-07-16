@@ -20,7 +20,7 @@
 	import trianglify from 'trianglify';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, currentUser } from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
 		faRightFromBracket,
@@ -75,11 +75,22 @@
 		}
 	});
 
+	$effect(() => {
+		if ($currentUser !== null) {
+			getUserSettings();
+			getTemplates();
+		} else {
+			$settings = {};
+			$templates = [];
+		}
+	});
+
 	function logout() {
 		axios
 			.get(API_URL + '/users/logout')
 			.then((response) => {
 				localStorage.removeItem('user');
+				$currentUser = null;
 				goto('/login');
 			})
 			.catch((error) => {
@@ -403,7 +414,7 @@
 	}
 
 	function updateSelectedTemplate() {
-		if (selectedTemplate === '-1' || selectedTemplate === null) {
+		if (selectedTemplate === '-1' || selectedTemplate === null || $templates.length === 0) {
 			// new template
 			templateName = '';
 			templateText = '';
@@ -860,8 +871,8 @@
 												{#if deleteTagId === tag.id}
 													<div class="alert alert-danger align-items-center" role="alert">
 														<div>
-															<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b> Dies
-															kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
+															<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b>
+															Dies kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
 															durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen
 															im Browser angezeigt.
 														</div>
@@ -921,7 +932,7 @@
 										{#if confirmDeleteTemplate}
 											<div transition:slide class="d-flex flex-row align-items-center mb-2">
 												<span
-													>Vorlage <b>{$templates[selectedTemplate].name}</b> wirklich löschen?</span
+													>Vorlage <b>{$templates[selectedTemplate]?.name}</b> wirklich löschen?</span
 												>
 												<button
 													type="button"

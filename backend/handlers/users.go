@@ -47,6 +47,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var hashedPassword string
 	var salt string
 	found := false
+	var username string
 
 	for _, u := range usersList {
 		user, ok := u.(map[string]any)
@@ -54,7 +55,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if username, ok := user["username"].(string); ok && username == req.Username {
+		if username, ok = user["username"].(string); ok && strings.EqualFold(username, req.Username) {
 			found = true
 			if id, ok := user["user_id"].(float64); ok {
 				userID = int(id)
@@ -78,7 +79,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		oldUsersList, ok := oldUsers["users"].([]interface{})
+		oldUsersList, ok := oldUsers["users"].([]any)
 		if !ok || len(oldUsersList) == 0 {
 			utils.Logger.Printf("Login failed. User '%s' not found in new or old data", req.Username)
 			http.Error(w, "User/Password combination not found", http.StatusNotFound)
@@ -93,7 +94,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			if username, ok := user["username"].(string); ok && username == req.Username {
+			if username, ok = user["username"].(string); ok && strings.EqualFold(username, req.Username) {
 				oldUser = user
 				break
 			}
@@ -125,7 +126,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		// Check if there is already a migration in progress for this user
 		activeMigrationsMutex.RLock()
-		isActive := activeMigrations[req.Username]
+		isActive := activeMigrations[username]
 		activeMigrationsMutex.RUnlock()
 
 		if isActive {
@@ -138,7 +139,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		// Mark this user as having an active migration
 		activeMigrationsMutex.Lock()
-		activeMigrations[req.Username] = true
+		activeMigrations[username] = true
 		activeMigrationsMutex.Unlock()
 
 		// Create a channel to report progress
@@ -153,7 +154,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				for progress := range progressChan {
 					migrationProgressMutex.Lock()
 					// Convert from utils.MigrationProgress to handlers.MigrationProgress
-					migrationProgress[req.Username] = MigrationProgress{
+					migrationProgress[username] = MigrationProgress{
 						Phase:          progress.Phase,
 						ProcessedItems: progress.ProcessedItems,
 						TotalItems:     progress.TotalItems,
@@ -163,26 +164,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				}
 			}()
 
-			err := utils.MigrateUserData(req.Username, req.Password, Register, progressChan)
+			utils.Logger.Printf("Starting migration for user '%s'", username)
+
+			err := utils.MigrateUserData(username, req.Password, Register, progressChan)
 			if err != nil {
-				utils.Logger.Printf("Migration failed for user '%s': %v", req.Username, err)
+				utils.Logger.Printf("Migration failed for user '%s': %v", username, err)
 				// Mark migration as completed even on error
 				activeMigrationsMutex.Lock()
-				activeMigrations[req.Username] = false
+				activeMigrations[username] = false
 				activeMigrationsMutex.Unlock()
 				return
 			}
 
 			// Mark migration as completed
 			activeMigrationsMutex.Lock()
-			activeMigrations[req.Username] = false
+			activeMigrations[username] = false
 			activeMigrationsMutex.Unlock()
 		}()
 
 		// Return migration status to client
 		utils.JSONResponse(w, http.StatusAccepted, map[string]any{
 			"migration_started": true,
-			"username":          req.Username,
+			"username":          username,
 		})
 		return
 	}
@@ -222,7 +225,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// Return success
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"migration_started": false,
-		"username":          req.Username,
+		"username":          username,
 	})
 }
 

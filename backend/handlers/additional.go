@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -435,155 +439,6 @@ func RemoveTagFromLog(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// LoadMonthForReading handles loading a month for reading
-func LoadMonthForReading(w http.ResponseWriter, r *http.Request) {
-	// Get user ID and derived key from context
-	userID, ok := r.Context().Value(utils.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Get parameters from URL
-	monthStr := r.URL.Query().Get("month")
-	if monthStr == "" {
-		http.Error(w, "Missing month parameter", http.StatusBadRequest)
-		return
-	}
-	month, err := strconv.Atoi(monthStr)
-	if err != nil {
-		http.Error(w, "Invalid month parameter", http.StatusBadRequest)
-		return
-	}
-
-	yearStr := r.URL.Query().Get("year")
-	if yearStr == "" {
-		http.Error(w, "Missing year parameter", http.StatusBadRequest)
-		return
-	}
-	year, err := strconv.Atoi(yearStr)
-	if err != nil {
-		http.Error(w, "Invalid year parameter", http.StatusBadRequest)
-		return
-	}
-
-	// Get month data
-	content, err := utils.GetMonth(userID, year, month)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Get encryption key
-	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Check if days exist
-	days, ok := content["days"].([]any)
-	if !ok {
-		utils.JSONResponse(w, http.StatusOK, []any{})
-		return
-	}
-
-	// Process days
-	result := []any{}
-	for _, dayInterface := range days {
-		day, ok := dayInterface.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		dayNum, ok := day["day"].(float64)
-		if !ok {
-			continue
-		}
-
-		// Create result day
-		resultDay := map[string]any{
-			"day": int(dayNum),
-		}
-
-		// Decrypt text and date_written
-		if text, ok := day["text"].(string); ok && text != "" {
-			decryptedText, err := utils.DecryptText(text, encKey)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Error decrypting text: %v", err), http.StatusInternalServerError)
-				return
-			}
-			resultDay["text"] = decryptedText
-
-			if dateWritten, ok := day["date_written"].(string); ok && dateWritten != "" {
-				decryptedDate, err := utils.DecryptText(dateWritten, encKey)
-				if err != nil {
-					http.Error(w, fmt.Sprintf("Error decrypting date_written: %v", err), http.StatusInternalServerError)
-					return
-				}
-				resultDay["date_written"] = decryptedDate
-			}
-		}
-
-		// Get tags
-		if tags, ok := day["tags"].([]any); ok && len(tags) > 0 {
-			resultDay["tags"] = tags
-		}
-
-		// Decrypt filenames if files exist
-		if filesList, ok := day["files"].([]any); ok && len(filesList) > 0 {
-			files := []any{}
-			for _, fileInterface := range filesList {
-				file, ok := fileInterface.(map[string]any)
-				if !ok {
-					continue
-				}
-
-				if encFilename, ok := file["enc_filename"].(string); ok {
-					decryptedFilename, err := utils.DecryptText(encFilename, encKey)
-					if err != nil {
-						http.Error(w, fmt.Sprintf("Error decrypting filename: %v", err), http.StatusInternalServerError)
-						return
-					}
-					fileCopy := make(map[string]any)
-					for k, v := range file {
-						fileCopy[k] = v
-					}
-					fileCopy["filename"] = decryptedFilename
-					files = append(files, fileCopy)
-				}
-			}
-			resultDay["files"] = files
-		}
-
-		// Add day to result if it has content
-		if _, hasText := resultDay["text"]; hasText {
-			result = append(result, resultDay)
-		} else if _, hasFiles := resultDay["files"]; hasFiles {
-			result = append(result, resultDay)
-		} else if _, hasTags := resultDay["tags"]; hasTags {
-			result = append(result, resultDay)
-		}
-	}
-
-	// Sort by day
-	/*
-		sort.Slice(result, func(i, j int) bool {
-			dayI := result[i].(map[string]any)["day"].(int)
-			dayJ := result[j].(map[string]any)["day"].(int)
-			return dayI < dayJ
-		})
-	*/
-
-	// Return result
-	utils.JSONResponse(w, http.StatusOK, result)
-}
-
 // UploadFile handles uploading a file
 func UploadFile(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and derived key from context
@@ -940,140 +795,6 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetHistory handles retrieving log history
-func GetHistory(w http.ResponseWriter, r *http.Request) {
-	// Get user ID and derived key from context
-	userID, ok := r.Context().Value(utils.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Get parameters
-	dayStr := r.URL.Query().Get("day")
-	if dayStr == "" {
-		http.Error(w, "Missing day parameter", http.StatusBadRequest)
-		return
-	}
-	day, err := strconv.Atoi(dayStr)
-	if err != nil {
-		http.Error(w, "Invalid day parameter", http.StatusBadRequest)
-		return
-	}
-
-	monthStr := r.URL.Query().Get("month")
-	if monthStr == "" {
-		http.Error(w, "Missing month parameter", http.StatusBadRequest)
-		return
-	}
-	month, err := strconv.Atoi(monthStr)
-	if err != nil {
-		http.Error(w, "Invalid month parameter", http.StatusBadRequest)
-		return
-	}
-
-	yearStr := r.URL.Query().Get("year")
-	if yearStr == "" {
-		http.Error(w, "Missing year parameter", http.StatusBadRequest)
-		return
-	}
-	year, err := strconv.Atoi(yearStr)
-	if err != nil {
-		http.Error(w, "Invalid year parameter", http.StatusBadRequest)
-		return
-	}
-
-	// Get encryption key
-	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Get month data
-	content, err := utils.GetMonth(userID, year, month)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Check if days exist
-	days, ok := content["days"].([]any)
-	if !ok {
-		utils.JSONResponse(w, http.StatusOK, []any{})
-		return
-	}
-
-	// Find day
-	for _, dayInterface := range days {
-		dayObj, ok := dayInterface.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		dayNum, ok := dayObj["day"].(float64)
-		if !ok || int(dayNum) != day {
-			continue
-		}
-
-		// Check for history
-		history, ok := dayObj["history"].([]any)
-		if !ok || len(history) == 0 {
-			utils.JSONResponse(w, http.StatusOK, []any{})
-			return
-		}
-
-		// Decrypt history entries
-		result := []any{}
-		for _, historyInterface := range history {
-			historyEntry, ok := historyInterface.(map[string]any)
-			if !ok {
-				continue
-			}
-
-			text, ok := historyEntry["text"].(string)
-			if !ok {
-				continue
-			}
-
-			dateWritten, ok := historyEntry["date_written"].(string)
-			if !ok {
-				continue
-			}
-
-			// Decrypt text and date
-			decryptedText, err := utils.DecryptText(text, encKey)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Error decrypting history text: %v", err), http.StatusInternalServerError)
-				return
-			}
-
-			decryptedDate, err := utils.DecryptText(dateWritten, encKey)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Error decrypting history date: %v", err), http.StatusInternalServerError)
-				return
-			}
-
-			result = append(result, map[string]any{
-				"text":         decryptedText,
-				"date_written": decryptedDate,
-			})
-		}
-
-		// Return history
-		utils.JSONResponse(w, http.StatusOK, result)
-		return
-	}
-
-	// Day not found
-	utils.JSONResponse(w, http.StatusOK, []any{})
-}
-
 // BookmarkDay handles bookmarking a day
 func BookmarkDay(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
@@ -1146,11 +867,11 @@ func BookmarkDay(w http.ResponseWriter, r *http.Request) {
 
 		// Day found, toggle bookmark
 		dayFound = true
-		if bookmark, ok := dayObj["bookmarked"].(bool); ok && bookmark {
-			dayObj["bookmarked"] = false
+		if bookmark, ok := dayObj["isBookmarked"].(bool); ok && bookmark {
+			dayObj["isBookmarked"] = false
 			bookmarked = false
 		} else {
-			dayObj["bookmarked"] = true
+			dayObj["isBookmarked"] = true
 		}
 		days[i] = dayObj
 		break
@@ -1159,8 +880,8 @@ func BookmarkDay(w http.ResponseWriter, r *http.Request) {
 	if !dayFound {
 		// Create new day with bookmark
 		days = append(days, map[string]any{
-			"day":        day,
-			"bookmarked": true,
+			"day":          day,
+			"isBookmarked": true,
 		})
 	}
 
@@ -1321,6 +1042,464 @@ func SearchTag(w http.ResponseWriter, r *http.Request) {
 			return dayI < dayJ
 		})
 	*/
+
+	// Return results
+	utils.JSONResponse(w, http.StatusOK, results)
+}
+
+// GetTags handles retrieving a user's tags
+func GetTags(w http.ResponseWriter, r *http.Request) {
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Get tags
+	content, err := utils.GetTags(userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving tags: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// If no tags, return empty array
+	if tags, ok := content["tags"].([]any); !ok || len(tags) == 0 {
+		utils.JSONResponse(w, http.StatusOK, []any{})
+		return
+	}
+
+	// Get encryption key
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Decrypt tag data
+	tags := content["tags"].([]any)
+	result := []any{}
+
+	for _, tagInterface := range tags {
+		tag, ok := tagInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		// Decrypt icon, name, and color
+		if encIcon, ok := tag["icon"].(string); ok {
+			decryptedIcon, err := utils.DecryptText(encIcon, encKey)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Error decrypting tag icon: %v", err), http.StatusInternalServerError)
+				return
+			}
+			tag["icon"] = decryptedIcon
+		}
+
+		if encName, ok := tag["name"].(string); ok {
+			decryptedName, err := utils.DecryptText(encName, encKey)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Error decrypting tag name: %v", err), http.StatusInternalServerError)
+				return
+			}
+			tag["name"] = decryptedName
+		}
+
+		if encColor, ok := tag["color"].(string); ok {
+			decryptedColor, err := utils.DecryptText(encColor, encKey)
+			if err != nil {
+				http.Error(w, fmt.Sprintf("Error decrypting tag color: %v", err), http.StatusInternalServerError)
+				return
+			}
+			tag["color"] = decryptedColor
+		}
+
+		result = append(result, tag)
+	}
+
+	// Return tags
+	utils.JSONResponse(w, http.StatusOK, result)
+}
+
+// TagRequest represents a tag request
+type TagRequest struct {
+	Icon  string `json:"icon"`
+	Name  string `json:"name"`
+	Color string `json:"color"`
+}
+
+// SaveTags handles saving a new tag
+func SaveTags(w http.ResponseWriter, r *http.Request) {
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse request body
+	var req TagRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Get tags
+	content, err := utils.GetTags(userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving tags: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Create tags array if it doesn't exist
+	if _, ok := content["tags"]; !ok {
+		content["tags"] = []any{}
+	}
+	if _, ok := content["next_id"]; !ok {
+		content["next_id"] = 1
+	}
+
+	// Get encryption key
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Encrypt tag data
+	encIcon, err := utils.EncryptText(req.Icon, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting tag icon: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	encName, err := utils.EncryptText(req.Name, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting tag name: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	encColor, err := utils.EncryptText(req.Color, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting tag color: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Create new tag
+	nextID, ok := content["next_id"].(float64)
+	if !ok {
+		nextID = 1
+	}
+
+	newTag := map[string]any{
+		"id":    int(nextID),
+		"icon":  encIcon,
+		"name":  encName,
+		"color": encColor,
+	}
+
+	// Add tag to tags array
+	tags, ok := content["tags"].([]any)
+	if !ok {
+		tags = []any{}
+	}
+	tags = append(tags, newTag)
+	content["tags"] = tags
+	content["next_id"] = nextID + 1
+
+	// Write tags
+	if err := utils.WriteTags(userID, content); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing tags: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Return success
+	utils.JSONResponse(w, http.StatusOK, map[string]bool{
+		"success": true,
+	})
+}
+
+// Helper functions for search
+func getStartIndex(text string, index int) int {
+	if index == 0 {
+		return 0
+	}
+
+	for i := 0; i < 3; i++ {
+		startIndex := strings.LastIndex(text[:index-1], " ")
+		index = startIndex
+		if startIndex == -1 {
+			return 0
+		}
+	}
+
+	return index + 1
+}
+
+func getEndIndex(text string, index int) int {
+	if index == len(text)-1 {
+		return len(text)
+	}
+
+	for i := 0; i < 3; i++ {
+		endIndex := strings.Index(text[index+1:], " ")
+		if endIndex == -1 {
+			return len(text)
+		}
+		index = index + 1 + endIndex
+	}
+
+	return index
+}
+
+func getContext(text, searchString string, exact bool) string {
+	// Replace whitespace with non-breaking space
+	re := regexp.MustCompile(`\s+`)
+	text = re.ReplaceAllString(text, " ")
+
+	var pos int
+	if exact {
+		pos = strings.Index(text, searchString)
+	} else {
+		pos = strings.Index(strings.ToLower(text), strings.ToLower(searchString))
+	}
+
+	if pos == -1 {
+		return "<em>Dailytxt: Error formatting...</em>"
+	}
+
+	start := getStartIndex(text, pos)
+	end := getEndIndex(text, pos+len(searchString)-1)
+	return text[start:pos] + "<b>" + text[pos:pos+len(searchString)] + "</b>" + text[pos+len(searchString):end]
+}
+
+// Search handles searching logs for text
+func Search(w http.ResponseWriter, r *http.Request) {
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Get query parameter
+	searchString := r.URL.Query().Get("searchString")
+	if searchString == "" {
+		http.Error(w, "Missing search parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Get encryption key
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Get user directory
+	userDir := filepath.Join(utils.Settings.DataPath, strconv.Itoa(userID))
+	results := []any{}
+
+	// Traverse all years and months
+	yearEntries, err := os.ReadDir(userDir)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error reading user directory: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Regex to match year directories (4 digits)
+	yearRegex := regexp.MustCompile(`^\d{4}$`)
+
+	for _, yearEntry := range yearEntries {
+		if !yearEntry.IsDir() || !yearRegex.MatchString(yearEntry.Name()) {
+			continue
+		}
+		year := yearEntry.Name()
+
+		// Read month files in year directory
+		yearDir := filepath.Join(userDir, year)
+		monthEntries, err := os.ReadDir(yearDir)
+		if err != nil {
+			continue
+		}
+
+		// Regex to match month files (2 digits + .json)
+		monthRegex := regexp.MustCompile(`^(\d{2})\.json$`)
+
+		for _, monthEntry := range monthEntries {
+			if monthEntry.IsDir() {
+				continue
+			}
+
+			matches := monthRegex.FindStringSubmatch(monthEntry.Name())
+			if len(matches) != 2 {
+				continue
+			}
+			month := matches[1]
+
+			// Get month content
+			monthInt, _ := strconv.Atoi(month)
+			yearInt, _ := strconv.Atoi(year)
+			content, err := utils.GetMonth(userID, yearInt, monthInt)
+			if err != nil {
+				continue
+			}
+
+			days, ok := content["days"].([]any)
+			if !ok {
+				continue
+			}
+
+			// Process each day
+			for _, dayInterface := range days {
+				dayLog, ok := dayInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				dayNum, ok := dayLog["day"].(float64)
+				if !ok {
+					continue
+				}
+				day := int(dayNum)
+
+				// Check text
+				if text, ok := dayLog["text"].(string); ok {
+					decryptedText, err := utils.DecryptText(text, encKey)
+					if err != nil {
+						continue
+					}
+
+					// Apply search logic
+					if strings.HasPrefix(searchString, "\"") && strings.HasSuffix(searchString, "\"") {
+						// Exact match
+						searchTerm := searchString[1 : len(searchString)-1]
+						if strings.Contains(decryptedText, searchTerm) {
+							context := getContext(decryptedText, searchTerm, true)
+							results = append(results, map[string]any{
+								"year":  year,
+								"month": month,
+								"day":   day,
+								"text":  context,
+							})
+						}
+					} else if strings.Contains(searchString, "|") {
+						// OR search
+						words := strings.Split(searchString, "|")
+						for _, word := range words {
+							wordTrimmed := strings.TrimSpace(word)
+							if strings.Contains(strings.ToLower(decryptedText), strings.ToLower(wordTrimmed)) {
+								context := getContext(decryptedText, wordTrimmed, false)
+								results = append(results, map[string]any{
+									"year":  year,
+									"month": month,
+									"day":   day,
+									"text":  context,
+								})
+								break
+							}
+						}
+					} else if strings.Contains(searchString, " ") {
+						// AND search
+						words := strings.Split(searchString, " ")
+						allWordsMatch := true
+						for _, word := range words {
+							wordTrimmed := strings.TrimSpace(word)
+							if !strings.Contains(strings.ToLower(decryptedText), strings.ToLower(wordTrimmed)) {
+								allWordsMatch = false
+								break
+							}
+						}
+						if allWordsMatch {
+							context := getContext(decryptedText, strings.TrimSpace(words[0]), false)
+							results = append(results, map[string]any{
+								"year":  year,
+								"month": month,
+								"day":   day,
+								"text":  context,
+							})
+						}
+					} else {
+						// Simple search
+						if strings.Contains(strings.ToLower(decryptedText), strings.ToLower(searchString)) {
+							context := getContext(decryptedText, searchString, false)
+							results = append(results, map[string]any{
+								"year":  year,
+								"month": month,
+								"day":   day,
+								"text":  context,
+							})
+						}
+					}
+				}
+
+				// Check filenames
+				if files, ok := dayLog["files"].([]any); ok {
+					for _, fileInterface := range files {
+						file, ok := fileInterface.(map[string]any)
+						if !ok {
+							continue
+						}
+
+						if encFilename, ok := file["enc_filename"].(string); ok {
+							decryptedFilename, err := utils.DecryptText(encFilename, encKey)
+							if err != nil {
+								continue
+							}
+
+							if strings.Contains(strings.ToLower(decryptedFilename), strings.ToLower(searchString)) {
+								context := "📎 " + decryptedFilename
+								results = append(results, map[string]any{
+									"year":  year,
+									"month": month,
+									"day":   day,
+									"text":  context,
+								})
+								break
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Sort results by date
+	sort.Slice(results, func(i, j int) bool {
+		ri := results[i].(map[string]any)
+		rj := results[j].(map[string]any)
+
+		yearI, _ := strconv.Atoi(ri["year"].(string))
+		yearJ, _ := strconv.Atoi(rj["year"].(string))
+		if yearI != yearJ {
+			return yearI < yearJ
+		}
+
+		monthI, _ := strconv.Atoi(ri["month"].(string))
+		monthJ, _ := strconv.Atoi(rj["month"].(string))
+		if monthI != monthJ {
+			return monthI < monthJ
+		}
+
+		dayI := ri["day"].(int)
+		dayJ := rj["day"].(int)
+		return dayI < dayJ
+	})
 
 	// Return results
 	utils.JSONResponse(w, http.StatusOK, results)

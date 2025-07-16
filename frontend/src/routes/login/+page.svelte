@@ -5,6 +5,7 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { API_URL } from '$lib/APIurl.js';
+	import { currentUser } from '$lib/helpers';
 
 	let show_login_failed = $state(false);
 	let show_login_warning_empty_fields = $state(false);
@@ -119,11 +120,12 @@
 		}
 
 		is_logging_in = true;
-		console.log(API_URL);
 
 		axios
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
+				$currentUser = response.data.username;
+
 				if (response.data.migration_started) {
 					is_migrating = true;
 
@@ -242,9 +244,12 @@
 							{#if is_migrating || migration_phase == 'completed'}
 								<div class="alert alert-info" role="alert">
 									Daten-Migration wurde gestartet. Dies kann einige Momente dauern.<br />
-									<div class="text-bg-danger p-2 my-2 rounded">
-										Währenddessen die Seite nicht neu laden und nicht neu einloggen!
-									</div>
+									{#if migration_phase !== 'completed'}
+										<div class="text-bg-danger p-2 my-2 rounded">
+											Währenddessen die Seite nicht neu laden und nicht neu einloggen!
+										</div>
+									{/if}
+
 									Fortschritt:
 									<div class="progress-item {active_phase >= 0 ? 'active' : ''}">
 										<div class="d-flex">
@@ -279,7 +284,7 @@
 													✅
 												{/if}
 											</div>
-											Logs migrieren
+											Einträge migrieren
 										</div>
 
 										{#if active_phase === 2}
@@ -334,12 +339,12 @@
 											<div class="text-bg-success p-2 my-2 rounded">
 												Migration wurde ohne erkannte Fehler abgeschlossen! Bitte Login erneut
 												starten. <br />
-												Prüfen Sie anschließend, ob alle Daten korrekt migriert wurden.
+												Prüfe anschließend, ob alle Daten korrekt migriert wurden.
 											</div>
 										{:else}
 											<div class="text-bg-warning p-2 my-2 rounded">
 												Migration wurde mit {migration_error_count} erkannten Fehlern abgeschlossen!
-												Prüfen Sie die Server-Logs für Details!<br />
+												Prüfe die Server-Logs für Details!<br />
 												Falls der Login nicht funktioniert, oder die Daten fehlerhaft sind, so müssen
 												die migrierten Daten händisch entfernt werden.
 											</div>

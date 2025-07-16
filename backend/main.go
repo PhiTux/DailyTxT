@@ -32,7 +32,6 @@ func main() {
 
 	// Register routes
 	mux.HandleFunc("POST /users/login", handlers.Login)
-	mux.HandleFunc("GET /users/migrationWebSocket", handlers.HandleMigrationWebSocket)
 	mux.HandleFunc("GET /users/migrationProgress", handlers.GetMigrationProgress)
 	mux.HandleFunc("GET /users/isRegistrationAllowed", handlers.IsRegistrationAllowed)
 	mux.HandleFunc("POST /users/register", handlers.RegisterHandler)
