@@ -8,7 +8,7 @@
 > [!NOTE]
 > I started work on DailyTxT 2.0 on end of November 2024. The new, <ins>**compatible**</ins> version will not be available before Summer/Autumn 2025. Sorry for the delay... It WILL eventually come!
 > I'm adressing several new features like dark-mode, "on-this-day", viewing mode, Markdown support ...
-> It's written in Svelte & Bootstrap for the frontend and Python Fastapi for the backend.
+> It's written in [Svelte 5](https://svelte.dev/) & [Bootstrap 5.3](https://getbootstrap.com/) for the frontend and ~~Python Fastapi~~ [Go](https://go.dev/) for the backend.
 > Progress is happening on the branch [version2](https://github.com/PhiTux/DailyTxT/tree/version2).
 
 DailyTxT is an encrypted Diary Web-App to write down your stories of the day and to find them again easily.
