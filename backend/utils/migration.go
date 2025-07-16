@@ -10,7 +10,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -19,27 +18,26 @@ import (
 	"time"
 )
 
-// Mutexes für Dateizugriffe
+// Mutexes for file access
 var (
-	activeMigrationsMutex sync.RWMutex // Für die Map der aktiven Migrationen
-	oldUsersFileMutex     sync.RWMutex // Für old/users.json
-	templatesMutex        sync.RWMutex // Für templates.json
-	tagsMutex             sync.RWMutex // Für tags.json
-	logsMutex             sync.RWMutex // Für Logs
-	filesMutex            sync.RWMutex // Für Dateien im files-Verzeichnis
+	activeMigrationsMutex sync.RWMutex // For the map of active migrations
+	oldUsersFileMutex     sync.RWMutex // For old/users.json
+	templatesMutex        sync.RWMutex // For templates.json
+	logsMutex             sync.RWMutex // For logs
+	filesMutex            sync.RWMutex // For files in the files directory
 )
 
-// Map zur Verfolgung aktiver Migrationen (username -> bool)
+// Map to track active migrations (username -> bool)
 var activeMigrations = make(map[string]bool)
 
-// IsUserMigrating prüft, ob für einen Benutzer bereits eine Migration läuft
+// IsUserMigrating checks if a migration is already in progress for a user
 func IsUserMigrating(username string) bool {
 	activeMigrationsMutex.RLock()
 	defer activeMigrationsMutex.RUnlock()
 	return activeMigrations[username]
 }
 
-// SetUserMigrating markiert einen Benutzer als migrierend oder nicht migrierend
+// SetUserMigrating marks a user as migrating or not migrating
 func SetUserMigrating(username string, migrating bool) {
 	activeMigrationsMutex.Lock()
 	defer activeMigrationsMutex.Unlock()
@@ -187,19 +185,39 @@ func VerifyOldPassword(password, hash string) bool {
 
 // MigrateUserData migrates a user's data from the old format to the new format
 func MigrateUserData(username, password string, registerFunc RegisterUserFunc, progressChan chan<- MigrationProgress) error {
-	// Prüfen, ob bereits eine Migration für diesen Benutzer läuft
+	// Check if a migration is already in progress for this user
 	if IsUserMigrating(username) {
 		Logger.Printf("Migration for user %s is already in progress", username)
 		return fmt.Errorf("migration already in progress for user %s", username)
 	}
 
-	// Benutzer als migrierend markieren
+	// Mark user as migrating
 	SetUserMigrating(username, true)
-	// Sicherstellen, dass der Benutzer am Ende nicht mehr als migrierend markiert ist
+	// Ensure the user is no longer marked as migrating when this function ends
 	defer SetUserMigrating(username, false)
 
+	// Initialize migration progress
+	currentProgress := MigrationProgress{
+		Phase:          "creating_new_user",
+		ProcessedItems: 0,
+		ErrorCount:     0,
+	}
+
+	if progressChan != nil {
+		progressChan <- currentProgress // Send initial progress
+	}
+
+	// Error handling function for consistent error handling
+	handleError := func(errMsg string, err error) error {
+		errorMessage := fmt.Sprintf("%s: %v", errMsg, err)
+		Logger.Printf("Migration error for user %s: %s", username, errorMessage)
+
+		// Send final update with Success=false
+		return fmt.Errorf("%s: %v", errMsg, err)
+	}
+
 	start := time.Now()
-	Logger.Printf("Starting migration for user %s with password %s", username, password)
+	Logger.Printf("Starting migration for user %s", username)
 
 	// Get old users
 	oldUsersFileMutex.RLock()
@@ -208,13 +226,13 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 	oldUsersFileMutex.RUnlock()
 
 	if err != nil {
-		return fmt.Errorf("error reading old users: %v", err)
+		return handleError("Error reading old users", err)
 	}
 
 	// Parse old users
 	var oldUsers map[string]any
 	if err := json.Unmarshal(oldUsersBytes, &oldUsers); err != nil {
-		return fmt.Errorf("error parsing old users: %v", err)
+		return handleError("Error parsing old users", err)
 	}
 
 	// Find the old user by username
@@ -229,75 +247,62 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 	}
 
 	if oldUser == nil {
-		return fmt.Errorf("user %s not found in old data", username)
+		return handleError(fmt.Sprintf("User %s not found in old data", username), nil)
 	}
 
 	oldUserID = int(oldUser["user_id"].(float64))
-
 	Logger.Printf("Found old user ID: %d", oldUserID)
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "creating_new_user",
-			CurrentItem:    "",
-			ProcessedItems: 1,
-			TotalItems:     5,
-		}
-	}
 
 	// Verify username matches
 	oldUsername, ok := oldUser["username"].(string)
 	if !ok || oldUsername != username {
-		return fmt.Errorf("username mismatch: expected %s, got %s", username, oldUsername)
+		return handleError(fmt.Sprintf("Username mismatch: expected %s, got %s", username, oldUsername), nil)
 	}
 
 	// Get encryption related data from old user
 	oldSalt, ok := oldUser["salt"].(string)
 	if !ok {
-		return fmt.Errorf("old user data is missing salt")
+		return handleError("Old user data is missing salt", nil)
 	}
 
 	oldEncEncKey, ok := oldUser["enc_enc_key"].(string)
 	if !ok {
-		return fmt.Errorf("old user data is missing encrypted key")
+		return handleError("Old user data is missing encrypted key", nil)
 	}
 
 	// Derive key from password and salt
 	oldDerivedKey := DeriveKeyFromOldPassword(password, oldSalt)
 	_, err = base64.StdEncoding.DecodeString(base64.URLEncoding.EncodeToString(oldDerivedKey))
 	if err != nil {
-		return fmt.Errorf("error decoding old derived key: %v", err)
+		return handleError("Error decoding old derived key", err)
 	}
 
 	// Decode the old encrypted key (just for validation)
 	_, err = base64.URLEncoding.DecodeString(oldEncEncKey)
 	if err != nil {
-		return fmt.Errorf("error decoding old encrypted key: %v", err)
+		return handleError("Error decoding old encrypted key", err)
 	}
 
 	// Decrypt the old encryption key
 	oldEncKey, err := FernetDecrypt(oldEncEncKey, oldDerivedKey)
 	if err != nil {
-		return fmt.Errorf("error decrypting old encryption key: %v", err)
+		return handleError("Error decrypting old encryption key", err)
 	}
 
-	// Debug: Zeige den Schlüssel
-	fmt.Printf("Old encryption key: %s\n", oldEncKey)
-
-	// Registriere den Benutzer mit der übergebenen Funktion
+	// Register the user with the provided function
 	success, err := registerFunc(username, password)
 	if err != nil {
-		return fmt.Errorf("error registering new user: %v", err)
+		return handleError("Error registering new user", err)
 	}
 	if !success {
-		return fmt.Errorf("failed to register new user")
+		return handleError("Failed to register new user", nil)
 	}
 
 	users, err := GetUsers()
 	if err != nil {
-		return fmt.Errorf("error getting users: %v", err)
+		return handleError("Error getting users", err)
 	}
+
 	// Find the new user ID
 	newUserID := 0
 	newDerivedKey := ""
@@ -309,14 +314,13 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 
 				// Verify password
 				if !VerifyPassword(password, u["password"].(string), u["salt"].(string)) {
-					Logger.Printf("Login failed. Password for user '%s' is incorrect", username)
-					return fmt.Errorf("user/Password combination not found: %d", http.StatusNotFound)
+					return handleError(fmt.Sprintf("Login failed. Password for user '%s' is incorrect", username), nil)
 				}
 
 				// Get intermediate key
 				derivedKey, err := DeriveKeyFromPassword(password, u["salt"].(string))
 				if err != nil {
-					return fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
+					return handleError("Internal Server Error", err)
 				}
 				newDerivedKey = base64.StdEncoding.EncodeToString(derivedKey)
 
@@ -325,18 +329,7 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 		}
 	}
 	if newUserID <= 0 {
-		return fmt.Errorf("new user ID not found for username: %s", username)
-	}
-
-	fmt.Printf("New derived key: %s\n", newDerivedKey)
-
-	// Update progress
-	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "writing_user_data",
-			ProcessedItems: 3,
-			TotalItems:     5,
-		}
+		return handleError(fmt.Sprintf("New user ID not found for username: %s", username), nil)
 	}
 
 	// Now migrate all the data
@@ -345,38 +338,40 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 
 	// Create new data directory
 	if err := os.MkdirAll(newDataDir, 0755); err != nil {
-		return fmt.Errorf("error creating new data directory: %v", err)
+		return handleError("Error creating new data directory", err)
 	}
 
 	encKey, err := GetEncryptionKey(newUserID, string(newDerivedKey))
 	if err != nil {
-		return fmt.Errorf("error getting encryption key: %v", err)
+		return handleError("Error getting encryption key", err)
 	}
 
-	fmt.Printf("New encryption key: %s\n", encKey)
+	time.Sleep(800 * time.Millisecond) // Simulate some delay for migration
 
 	// Migrate templates
-	if err := migrateTemplates(oldDataDir, newDataDir, oldEncKey, encKey, progressChan); err != nil {
-		return fmt.Errorf("error migrating templates: %v", err)
+	if err := migrateTemplates(oldDataDir, newDataDir, oldEncKey, encKey, &currentProgress, progressChan); err != nil {
+		return handleError("Error migrating templates", err)
 	}
 
+	time.Sleep(800 * time.Millisecond) // Simulate some delay for migration
+
 	// Migrate logs (years/months)
-	if err := migrateLogs(oldDataDir, newDataDir, oldEncKey, encKey, progressChan); err != nil {
-		return fmt.Errorf("error migrating logs: %v", err)
+	if err := migrateLogs(oldDataDir, newDataDir, oldEncKey, encKey, &currentProgress, progressChan); err != nil {
+		return handleError("Error migrating logs", err)
 	}
 
 	// Migrate files
-	if err := migrateFiles(filepath.Join(Settings.DataPath, "old", "files"), newDataDir, oldEncKey, encKey, progressChan); err != nil {
-		return fmt.Errorf("error migrating files: %v", err)
+	if err := migrateFiles(filepath.Join(Settings.DataPath, "old", "files"), newDataDir, oldEncKey, encKey, &currentProgress, progressChan); err != nil {
+		return handleError("Error migrating files", err)
 	}
 
 	// Set final progress
+	currentProgress.Phase = "completed"
+	currentProgress.ProcessedItems = 0
+	currentProgress.TotalItems = 0
+
 	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "completed",
-			ProcessedItems: 5,
-			TotalItems:     5,
-		}
+		progressChan <- currentProgress // Send final progress update
 	}
 
 	Logger.Printf("Migration completed for user %s (Old ID: %d, New ID: %d) after %v", username, oldUserID, newUserID, time.Since(start))
@@ -398,9 +393,9 @@ func DeriveKeyFromOldPassword(password, salt string) []byte {
 // MigrationProgress contains information about the migration progress
 type MigrationProgress struct {
 	Phase          string `json:"phase"`           // Current migration phase
-	CurrentItem    string `json:"current_item"`    // Current item being migrated
 	ProcessedItems int    `json:"processed_items"` // Number of already processed items
 	TotalItems     int    `json:"total_items"`     // Total number of items to migrate
+	ErrorCount     int    `json:"error_count"`     // Number of errors encountered during migration
 }
 
 // RegisterUserFunc is a function type for user registration
@@ -408,7 +403,7 @@ type RegisterUserFunc func(username, password string) (bool, error)
 
 // Helper functions for migration
 
-func migrateTemplates(oldDir, newDir string, oldKey string, newKey string, progressChan chan<- MigrationProgress) error {
+func migrateTemplates(oldDir, newDir string, oldKey string, newKey string, progress *MigrationProgress, progressChan chan<- MigrationProgress) error {
 	// Check if old templates exist
 	templatesMutex.RLock()
 	oldTemplatesPath := filepath.Join(oldDir, "templates.json")
@@ -425,12 +420,13 @@ func migrateTemplates(oldDir, newDir string, oldKey string, newKey string, progr
 	}
 
 	// Update progress
+	progress.Phase = "migrating_templates"
+	progress.ProcessedItems = 0
+	progress.TotalItems = 1 // Just one template file to migrate
+
+	// Send initial progress update
 	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_templates",
-			ProcessedItems: 1,
-			TotalItems:     2,
-		}
+		progressChan <- *progress
 	}
 
 	// Read old templates
@@ -483,10 +479,16 @@ func migrateTemplates(oldDir, newDir string, oldKey string, newKey string, progr
 	file.Close()
 	templatesMutex.Unlock()
 
+	// Update progress and send final update
+	progress.ProcessedItems = 1
+	if progressChan != nil {
+		progressChan <- *progress
+	}
+
 	return nil
 }
 
-func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressChan chan<- MigrationProgress) error {
+func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progress *MigrationProgress, progressChan chan<- MigrationProgress) error {
 	// Count all month files in all year directories
 	var allMonthFiles []struct {
 		yearDir   string
@@ -538,12 +540,13 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 	}
 
 	// Update progress with total number of months
+	progress.Phase = "migrating_logs"
+	progress.ProcessedItems = 0
+	progress.TotalItems = totalMonths
+
+	// Send initial progress update
 	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_logs",
-			ProcessedItems: 0,
-			TotalItems:     totalMonths,
-		}
+		progressChan <- *progress
 	}
 
 	processedMonths := 0
@@ -551,12 +554,13 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 	// Process all months
 	for _, monthInfo := range allMonthFiles {
 
-		// Update progress with total number of months
-		if progressChan != nil && processedMonths%5 == 0 {
-			progressChan <- MigrationProgress{
-				Phase:          "migrating_logs",
-				ProcessedItems: processedMonths,
-				TotalItems:     totalMonths,
+		// Update progress with number of months
+		progress.ProcessedItems = processedMonths
+
+		// Send progress update every 5 months or at the end
+		if processedMonths%5 == 0 || processedMonths == totalMonths-1 {
+			if progressChan != nil {
+				progressChan <- *progress
 			}
 		}
 
@@ -581,6 +585,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 
 		if err != nil {
 			Logger.Printf("Error reading old month %s: %v", oldMonthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -588,6 +593,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 		var monthData map[string]any
 		if err := json.Unmarshal(oldMonthBytes, &monthData); err != nil {
 			Logger.Printf("Error parsing old month %s: %v", oldMonthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -595,12 +601,14 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 		days, ok := monthData["days"].([]any)
 		if !ok {
 			Logger.Printf("Month %s has unexpected format - missing 'days' array", oldMonthPath)
+			progress.ErrorCount++
 			continue
 		}
 
 		oldKeyBytes, err := base64.URLEncoding.DecodeString(oldKey)
 		if err != nil {
 			Logger.Printf("Error decoding oldKey %v", err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -618,6 +626,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 					plaintext, err = FernetDecrypt(encryptedText, oldKeyBytes)
 					if err != nil {
 						Logger.Printf("Error decrypting content for day %f in %s: %v", day["day"].(float64), oldMonthPath, err)
+						progress.ErrorCount++
 						continue
 					}
 				}
@@ -625,6 +634,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 				newEncrypted, err := EncryptText(plaintext, newKey)
 				if err != nil {
 					Logger.Printf("Error encrypting content for day %d in %s: %v", i, oldMonthPath, err)
+					progress.ErrorCount++
 					continue
 				}
 
@@ -636,6 +646,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 				newEncrypted, err := EncryptText(dateWritten, newKey)
 				if err != nil {
 					Logger.Printf("Error encrypting date_written for day %d in %s: %v", i, oldMonthPath, err)
+					progress.ErrorCount++
 					continue
 				}
 				day["date_written"] = newEncrypted
@@ -657,6 +668,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 							plaintext, err = FernetDecrypt(encryptedText, oldKeyBytes)
 							if err != nil {
 								Logger.Printf("Error decrypting history item %f for day %d in %s: %v", historyItem["version"].(float64), day["day"].(int), oldMonthPath, err)
+								progress.ErrorCount++
 								continue
 							}
 						}
@@ -665,6 +677,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 						newEncrypted, err := EncryptText(plaintext, newKey)
 						if err != nil {
 							Logger.Printf("Error encrypting history item %d for day %d in %s: %v", j, i, oldMonthPath, err)
+							progress.ErrorCount++
 							continue
 						}
 
@@ -676,6 +689,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 						newEncrypted, err := EncryptText(dateWritten, newKey)
 						if err != nil {
 							Logger.Printf("Error encrypting date_written for history item %d in day %d of %s: %v", j, i, oldMonthPath, err)
+							progress.ErrorCount++
 							continue
 						}
 						historyItem["date_written"] = newEncrypted
@@ -692,6 +706,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 		if err != nil {
 			logsMutex.Unlock()
 			Logger.Printf("Error creating directory for %s: %v", newMonthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -700,6 +715,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 		if err != nil {
 			logsMutex.Unlock()
 			Logger.Printf("Error creating file %s: %v", newMonthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -716,6 +732,7 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 			file.Close()
 			logsMutex.Unlock()
 			Logger.Printf("Error encoding month data for %s: %v", newMonthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -723,12 +740,19 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progressCh
 		logsMutex.Unlock()
 
 		processedMonths++
+		time.Sleep(20 * time.Millisecond) // Simulate some delay for migration
+	}
+
+	// Final progress update
+	progress.ProcessedItems = processedMonths
+	if progressChan != nil {
+		progressChan <- *progress
 	}
 
 	return nil
 }
 
-func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, progressChan chan<- MigrationProgress) error {
+func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, progress *MigrationProgress, progressChan chan<- MigrationProgress) error {
 	// Check if old files directory exists
 	filesMutex.RLock()
 	_, err := os.Stat(oldFilesDir)
@@ -749,6 +773,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	filesMutex.Lock()
 	if err := os.MkdirAll(newFilesDir, 0755); err != nil {
 		filesMutex.Unlock()
+		progress.ErrorCount++
 		return fmt.Errorf("error creating new files directory: %v", err)
 	}
 	filesMutex.Unlock()
@@ -756,6 +781,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	// Convert oldKey from base64 to []byte for decryption
 	oldKeyBytes, err := base64.URLEncoding.DecodeString(oldKey)
 	if err != nil {
+		progress.ErrorCount++
 		return fmt.Errorf("error decoding oldKey: %v", err)
 	}
 
@@ -764,6 +790,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	yearEntries, err := os.ReadDir(newDir)
 	logsMutex.RUnlock()
 	if err != nil {
+		progress.ErrorCount++
 		return fmt.Errorf("error reading new user directory: %v", err)
 	}
 
@@ -796,6 +823,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		monthEntries, err := os.ReadDir(yearPath)
 		logsMutex.RUnlock()
 		if err != nil {
+			progress.ErrorCount++
 			Logger.Printf("Error reading year directory %s: %v", yearPath, err)
 			continue
 		}
@@ -815,6 +843,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 			logsMutex.RUnlock()
 			if err != nil {
 				Logger.Printf("Error reading month file %s: %v", monthPath, err)
+				progress.ErrorCount++
 				continue
 			}
 
@@ -822,6 +851,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 			var monthData map[string]any
 			if err := json.Unmarshal(monthBytes, &monthData); err != nil {
 				Logger.Printf("Error parsing month data %s: %v", monthPath, err)
+				progress.ErrorCount++
 				continue
 			}
 
@@ -882,23 +912,16 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	totalFiles := len(fileRefs)
 	Logger.Printf("Found %d files to migrate", totalFiles)
 
-	if totalFiles == 0 {
-		if progressChan != nil {
-			progressChan <- MigrationProgress{
-				Phase:          "migrating_files",
-				ProcessedItems: 0,
-				TotalItems:     0,
-			}
-		}
-		return nil // No files to migrate
-	}
+	progress.Phase = "migrating_files"
+	progress.ProcessedItems = 0
+	progress.TotalItems = totalFiles
 
 	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_files",
-			ProcessedItems: 0,
-			TotalItems:     totalFiles,
-		}
+		progressChan <- *progress // Send initial progress update
+	}
+
+	if totalFiles == 0 {
+		return nil // No files to migrate
 	}
 
 	// Second pass: migrate each file
@@ -906,13 +929,9 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	fileIDMap := make(map[string]string) // Map original file IDs to new file IDs
 
 	for i, fileRef := range fileRefs {
-		// Update progress occasionally
-		if progressChan != nil && (i%5 == 0 || i == 0) {
-			progressChan <- MigrationProgress{
-				Phase:          "migrating_files",
-				ProcessedItems: processedFiles,
-				TotalItems:     totalFiles,
-			}
+		progress.ProcessedItems = processedFiles
+		if progressChan != nil {
+			progressChan <- *progress // Send progress update
 		}
 
 		// Check if we already have a mapping for this file ID
@@ -925,6 +944,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		NewUUID, err := GenerateUUID()
 		if err != nil {
 			Logger.Printf("Error generating UUID for file %s: %v", fileRef.OrigUUID, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -939,13 +959,15 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		filesMutex.RUnlock()
 		if err != nil {
 			Logger.Printf("Error reading old file %s: %v", oldFilePath, err)
+			progress.ErrorCount++
 			continue
 		}
 
-		// Decrypt file with old key - der Dateiinhalt ist bereits ein Fernet-Token
+		// Decrypt file with old key - the file content is already a Fernet token
 		plaintext, err := FernetDecrypt(string(oldFileBytes), oldKeyBytes)
 		if err != nil {
 			Logger.Printf("Error decrypting file %s: %v", fileRef.OrigUUID, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -958,6 +980,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		newEncrypted, err := EncryptFile(plaintextBytes, newKey)
 		if err != nil {
 			Logger.Printf("Error encrypting file %s: %v", fileRef.OrigUUID, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -968,10 +991,20 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		filesMutex.Unlock()
 		if err != nil {
 			Logger.Printf("Error writing new file %s: %v", newFilePath, err)
+			progress.ErrorCount++
 			continue
 		}
 
 		processedFiles++
+
+		// Update progress occasionally
+		if i%5 == 0 || i == len(fileRefs)-1 {
+			progress.ProcessedItems = processedFiles
+			if progressChan != nil {
+				progressChan <- *progress
+			}
+		}
+		time.Sleep(100 * time.Millisecond) // Simulate some delay for migration
 	}
 
 	// Third pass: update all month files with new file IDs
@@ -991,6 +1024,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		logsMutex.RUnlock()
 		if err != nil {
 			Logger.Printf("Error reading month file %s: %v", monthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -998,6 +1032,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 		var monthData map[string]any
 		if err := json.Unmarshal(monthBytes, &monthData); err != nil {
 			Logger.Printf("Error parsing month data %s: %v", monthPath, err)
+			progress.ErrorCount++
 			continue
 		}
 
@@ -1035,11 +1070,11 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 
 				// If we have a mapping for this file UUID, update it
 				if newID, exists := fileIDMap[fileUUID]; exists {
-					// Entferne das alte Format und ersetze es durch das neue Format
+					// Remove the old format and replace it with the new format
 					delete(file, "id")
 					file["uuid_filename"] = newID
 
-					// Finde die korrekte Größe für diese Datei
+					// Find the correct size for this file
 					var fileSize uint64
 					for _, ref := range fileRefs {
 						if ref.OrigUUID == fileUUID {
@@ -1057,6 +1092,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 						plainName, err = FernetDecrypt(encName, oldKeyBytes)
 						if err != nil {
 							Logger.Printf("Error decrypting filename for %s: %v", fileUUID, err)
+							progress.ErrorCount++
 							continue
 						}
 
@@ -1065,6 +1101,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 						newEncName, err = EncryptText(plainName, newKey)
 						if err != nil {
 							Logger.Printf("Error encrypting filename for %s: %v", fileUUID, err)
+							progress.ErrorCount++
 							continue
 						}
 
@@ -1096,6 +1133,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 			if err != nil {
 				logsMutex.Unlock()
 				Logger.Printf("Error creating file %s: %v", monthPath, err)
+				progress.ErrorCount++
 				continue
 			}
 
@@ -1112,6 +1150,7 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 				file.Close()
 				logsMutex.Unlock()
 				Logger.Printf("Error encoding month data for %s: %v", monthPath, err)
+				progress.ErrorCount++
 				continue
 			}
 
@@ -1124,12 +1163,9 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 	}
 
 	// Final progress update
+	progress.ProcessedItems = processedFiles
 	if progressChan != nil {
-		progressChan <- MigrationProgress{
-			Phase:          "migrating_files",
-			ProcessedItems: processedFiles,
-			TotalItems:     totalFiles,
-		}
+		progressChan <- *progress
 	}
 
 	Logger.Printf("Completed migrating %d/%d files", processedFiles, totalFiles)

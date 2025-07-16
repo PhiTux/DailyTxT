@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -154,9 +155,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 					// Convert from utils.MigrationProgress to handlers.MigrationProgress
 					migrationProgress[req.Username] = MigrationProgress{
 						Phase:          progress.Phase,
-						CurrentItem:    progress.CurrentItem,
 						ProcessedItems: progress.ProcessedItems,
 						TotalItems:     progress.TotalItems,
+						ErrorCount:     progress.ErrorCount,
 					}
 					migrationProgressMutex.Unlock()
 				}
@@ -171,8 +172,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				activeMigrationsMutex.Unlock()
 				return
 			}
-
-			utils.Logger.Printf("Migration completed for user '%s'", req.Username)
 
 			// Mark migration as completed
 			activeMigrationsMutex.Lock()
@@ -281,7 +280,7 @@ func Register(username string, password string) (bool, error) {
 				continue
 			}
 
-			if username_from_file, ok := user["username"].(string); ok && username_from_file == username {
+			if username_from_file, ok := user["username"].(string); ok && strings.EqualFold(username_from_file, username) {
 				utils.Logger.Printf("Registration failed. Username '%s' already exists", username)
 				return false, fmt.Errorf("username already exists: %d", http.StatusBadRequest)
 			}
@@ -583,9 +582,9 @@ func SaveUserSettings(w http.ResponseWriter, r *http.Request) {
 // MigrationProgress stores the progress of user data migration
 type MigrationProgress struct {
 	Phase          string `json:"phase"`           // Current migration phase
-	CurrentItem    string `json:"current_item"`    // Current item being migrated
 	ProcessedItems int    `json:"processed_items"` // Number of items processed
 	TotalItems     int    `json:"total_items"`     // Total number of items to process
+	ErrorCount     int    `json:"error_count"`     // Number of errors encountered during migration
 }
 
 // migrationProgress keeps track of migration progress for all users
@@ -594,84 +593,38 @@ var migrationProgressMutex sync.Mutex
 var activeMigrations = make(map[string]bool)
 var activeMigrationsMutex sync.RWMutex
 
-// CheckMigrationProgress checks the progress of a user migration
-func CheckMigrationProgress(w http.ResponseWriter, r *http.Request) {
-	// Get username from query parameters
-	username := r.URL.Query().Get("username")
-	if username == "" {
-		http.Error(w, "Username is required", http.StatusBadRequest)
-		return
-	}
-
-	// Get progress
-	migrationProgressMutex.Lock()
-	progress, exists := migrationProgress[username]
-	migrationProgressMutex.Unlock()
-
-	if !exists {
-		utils.JSONResponse(w, http.StatusOK, map[string]interface{}{
-			"progress": 0,
-			"status":   "not_started",
-		})
-		return
-	}
-
-	// Return progress
-	status := "in_progress"
-	if progress.TotalItems > 0 && progress.ProcessedItems >= progress.TotalItems {
-		status = "completed"
-	}
-
-	utils.JSONResponse(w, http.StatusOK, map[string]interface{}{
-		"progress": progress,
-		"status":   status,
-	})
-}
-
 // GetMigrationProgress returns the migration progress for a user
 func GetMigrationProgress(w http.ResponseWriter, r *http.Request) {
-	// Parse the request body
-	var req struct {
-		Username string `json:"username"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+	username := r.URL.Query().Get("username")
+	if username == "" {
+		utils.Logger.Printf("username: %s", username)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
 	// Get migration progress
 	migrationProgressMutex.Lock()
-	progress, exists := migrationProgress[req.Username]
+	progress, exists := migrationProgress[username]
 	migrationProgressMutex.Unlock()
 
 	// Check if migration is actually active
 	activeMigrationsMutex.RLock()
-	isActive := activeMigrations[req.Username]
+	isActive := activeMigrations[username]
 	activeMigrationsMutex.RUnlock()
 
 	if !exists {
-		utils.JSONResponse(w, http.StatusOK, map[string]interface{}{
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
 			"migration_in_progress": false,
-			"status":                "not_started",
+			"progress":              map[string]string{"phase": "not_started"},
 		})
 		return
 	}
 
 	// Check if migration is completed
-	migrationCompleted := progress.Phase == "completed" || (progress.ProcessedItems >= progress.TotalItems && progress.TotalItems > 0)
+	migrationCompleted := progress.Phase == "completed"
 
-	// Return progress
-	status := "in_progress"
-	if migrationCompleted {
-		status = "completed"
-	} else if !isActive {
-		// If migration is not active but not completed, it might have failed
-		status = "failed"
-	}
-
-	utils.JSONResponse(w, http.StatusOK, map[string]interface{}{
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"migration_in_progress": isActive && !migrationCompleted,
 		"progress":              progress,
-		"status":                status,
 	})
 }

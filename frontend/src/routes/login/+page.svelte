@@ -21,6 +21,24 @@
 
 	let registration_allowed = $state(true);
 
+	let migration_phases = $state([
+		'creating_new_user',
+		'migrating_templates',
+		'migrating_logs',
+		'migrating_files',
+		'completed'
+	]);
+
+	let migration_phase = $state('');
+	let migration_progress_total = $state(0);
+	let migration_progress = $state(0);
+	let migration_error_count = $state(0);
+
+	let active_phase = $derived(
+		// find the current phase in migration_phases
+		migration_phases.indexOf(migration_phase)
+	);
+
 	onMount(() => {
 		// if params error=440 or error=401, show toast
 		if (window.location.search.includes('error=440')) {
@@ -47,6 +65,43 @@
 			});
 	}
 
+	function handleMigrationProgress(username) {
+		// Poll the server for migration progress
+		const interval = setInterval(() => {
+			axios
+				.get(API_URL + '/users/migrationProgress', { params: { username } })
+				.then((response) => {
+					const progress = response.data.progress;
+					if (progress) {
+						migration_phase = progress.phase;
+						migration_progress_total = progress.total_items;
+						migration_progress = progress.processed_items;
+
+						// Stop polling when migration is complete
+						if (progress.phase === 'completed') {
+							console.log('Migration completed successfully');
+							is_migrating = false;
+							migration_error_count = progress.error_count;
+							clearInterval(interval);
+						}
+					}
+
+					if (
+						!response.data.migration_in_progress &&
+						!response.data.progress.phase === 'not_started'
+					) {
+						console.log('Migration stopped');
+						is_migrating = false;
+						clearInterval(interval);
+					}
+				})
+				.catch((error) => {
+					console.error('Error fetching migration progress:', error);
+					clearInterval(interval); // Stop polling on error
+				});
+		}, 500); // Poll every 500ms
+	}
+
 	function handleLogin(event) {
 		event.preventDefault();
 
@@ -64,18 +119,22 @@
 		}
 
 		is_logging_in = true;
+		console.log(API_URL);
 
 		axios
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
 				if (response.data.migration_started) {
 					is_migrating = true;
+
+					handleMigrationProgress(response.data.username);
 				} else {
 					localStorage.setItem('user', JSON.stringify(response.data.username));
 					goto('/write');
 				}
 			})
 			.catch((error) => {
+				console.log(error);
 				if (error.response.status === 404) {
 					show_login_failed = true;
 				}
@@ -180,14 +239,112 @@
 								/>
 								<label for="loginPassword">Password</label>
 							</div>
-							{#if is_migrating}
+							{#if is_migrating || migration_phase == 'completed'}
 								<div class="alert alert-info" role="alert">
-									Daten-Migration wurde gestartet. Dies kann einige Minuten dauern.<br />
+									Daten-Migration wurde gestartet. Dies kann einige Momente dauern.<br />
 									<div class="text-bg-danger p-2 my-2 rounded">
 										Währenddessen die Seite nicht neu laden und nicht neu einloggen!
 									</div>
 									Fortschritt:
-									<br />
+									<div class="progress-item {active_phase >= 0 ? 'active' : ''}">
+										<div class="d-flex">
+											<div class="emoji">
+												{#if active_phase <= 0}
+													➡️
+												{:else}
+													✅
+												{/if}
+											</div>
+											Account anlegen
+										</div>
+									</div>
+									<div class="progress-item {active_phase >= 1 ? 'active' : ''}">
+										<div class="d-flex">
+											<div class="emoji">
+												{#if active_phase <= 1}
+													➡️
+												{:else}
+													✅
+												{/if}
+											</div>
+											Vorlagen migrieren
+										</div>
+									</div>
+									<div class="progress-item {active_phase >= 2 ? 'active' : ''}">
+										<div class="d-flex">
+											<div class="emoji">
+												{#if active_phase <= 2}
+													➡️
+												{:else}
+													✅
+												{/if}
+											</div>
+											Logs migrieren
+										</div>
+
+										{#if active_phase === 2}
+											<div
+												class="progress"
+												role="progressbar"
+												aria-label="Progress"
+												aria-valuenow="0"
+												aria-valuemin="0"
+												aria-valuemax="100"
+											>
+												<div
+													class="progress-bar"
+													style="width: {(migration_progress / migration_progress_total) * 100}%"
+												>
+													{migration_progress}/{migration_progress_total}
+												</div>
+											</div>
+										{/if}
+									</div>
+									<div class="progress-item {active_phase >= 3 ? 'active' : ''}">
+										<div class="d-flex">
+											<div class="emoji">
+												{#if active_phase <= 3}
+													➡️
+												{:else}
+													✅
+												{/if}
+											</div>
+											Dateien migrieren
+										</div>
+										{#if active_phase === 3}
+											<div
+												class="progress"
+												role="progressbar"
+												aria-label="Progress"
+												aria-valuenow="0"
+												aria-valuemin="0"
+												aria-valuemax="100"
+											>
+												<div
+													class="progress-bar"
+													style="width: {(migration_progress / migration_progress_total) * 100}%"
+												>
+													{migration_progress}/{migration_progress_total}
+												</div>
+											</div>
+										{/if}
+									</div>
+									{#if migration_phase === 'completed'}
+										{#if migration_error_count == 0}
+											<div class="text-bg-success p-2 my-2 rounded">
+												Migration wurde ohne erkannte Fehler abgeschlossen! Bitte Login erneut
+												starten. <br />
+												Prüfen Sie anschließend, ob alle Daten korrekt migriert wurden.
+											</div>
+										{:else}
+											<div class="text-bg-warning p-2 my-2 rounded">
+												Migration wurde mit {migration_error_count} erkannten Fehlern abgeschlossen!
+												Prüfen Sie die Server-Logs für Details!<br />
+												Falls der Login nicht funktioniert, oder die Daten fehlerhaft sind, so müssen
+												die migrierten Daten händisch entfernt werden.
+											</div>
+										{/if}
+									{/if}
 								</div>
 							{/if}
 							{#if show_login_failed}
@@ -203,7 +360,7 @@
 							{/if}
 							<div class="d-flex justify-content-center">
 								<button type="submit" class="btn btn-primary" disabled={is_logging_in}>
-									{#if is_logging_in}
+									{#if is_logging_in || is_migrating}
 										<div class="spinner-border spinner-border-sm" role="status">
 											<span class="visually-hidden">Loading...</span>
 										</div>
@@ -339,6 +496,22 @@
 </div>
 
 <style>
+	.progress-item {
+		opacity: 0.5;
+	}
+
+	.progress-item.active {
+		opacity: 1;
+	}
+
+	.progress-item .emoji {
+		visibility: hidden;
+	}
+
+	.progress-item.active .emoji {
+		visibility: visible;
+	}
+
 	.logo-wrapper {
 		width: 50%;
 	}
