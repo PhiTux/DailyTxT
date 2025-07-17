@@ -235,7 +235,7 @@
 
 					settingsModal.hide();
 				} else {
-					throw new Error('Error saving settings');
+					console.error('Error saving settings');
 				}
 			})
 			.catch((error) => {
@@ -503,6 +503,55 @@
 
 		localStorage.setItem('autoLoadImagesThisDevice', $autoLoadImagesThisDevice);
 	});
+
+	let currentPassword = $state('');
+	let newPassword = $state('');
+	let confirmNewPassword = $state('');
+	let changePasswordNotEqual = $state(false);
+	let isChangingPassword = $state(false);
+	let changingPasswordSuccess = $state(false);
+	let changingPasswordError = $state(false);
+	let changingPasswordIncorrect = $state(false);
+
+	function changePassword() {
+		changePasswordNotEqual = false;
+		changingPasswordSuccess = false;
+		changingPasswordError = false;
+		changingPasswordIncorrect = false;
+
+		if (newPassword !== confirmNewPassword) {
+			changePasswordNotEqual = true;
+			return;
+		}
+
+		if (isChangingPassword) return;
+		isChangingPassword = true;
+
+		axios
+			.post(API_URL + '/users/changePassword', {
+				old_password: currentPassword,
+				new_password: newPassword
+			})
+			.then((response) => {
+				if (response.data.success) {
+					changingPasswordSuccess = true;
+				} else {
+					changingPasswordError = true;
+					console.error('Error changing password');
+					if (response.data.password_incorrect) {
+						changingPasswordIncorrect = true;
+					}
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				console.log('Error on Changing password:', error.response.data.message);
+				changingPasswordError = true;
+			})
+			.finally(() => {
+				isChangingPassword = false;
+			});
+	}
 </script>
 
 <main class="d-flex flex-column">
@@ -1012,7 +1061,71 @@
 
 								<div id="security">
 									<h3 class="text-primary">🔒 Sicherheit</h3>
-									<div id="password"><h5>Password ändern</h5></div>
+									<div id="password">
+										<h5>Password ändern</h5>
+										<form onsubmit={changePassword}>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="currentPassword"
+													placeholder="Aktuelles Passwort"
+													bind:value={currentPassword}
+												/>
+												<label for="currentPassword">Aktuelles Passwort</label>
+											</div>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="newPassword"
+													placeholder="Neues Passwort"
+													bind:value={newPassword}
+												/>
+												<label for="newPassword">Neues Passwort</label>
+											</div>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="confirmNewPassword"
+													placeholder="Neues Passwort bestätigen"
+													bind:value={confirmNewPassword}
+												/>
+												<label for="confirmNewPassword">Neues Passwort bestätigen</label>
+											</div>
+											<button class="btn btn-primary" onclick={changePassword}>
+												{#if isChangingPassword}
+													<!-- svelte-ignore a11y_no_static_element_interactions -->
+													<div class="spinner-border" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												{/if}
+												Passwort ändern
+											</button>
+										</form>
+										{#if changePasswordNotEqual}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												Die neuen Passwörter stimmen nicht überein!
+											</div>
+										{/if}
+										{#if changingPasswordSuccess}
+											<div class="alert alert-success mt-2" role="alert" transition:slide>
+												Das Passwort wurde erfolgreich geändert!<br />
+												Backup-Keys wurden ungültig gemacht (sofern vorhanden), und müssen neu erstellt
+												werden.
+											</div>
+										{/if}
+										{#if changingPasswordIncorrect}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												Das aktuelle Passwort ist falsch!
+											</div>
+										{:else if changingPasswordError}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												Fehler beim Ändern des Passworts!
+											</div>
+										{/if}
+									</div>
 									<div id="backupkeys"><h5>Backup-Keys</h5></div>
 									<div id="username"><h5>Username ändern</h5></div>
 									<div id="deleteaccount"><h5>Konto löschen</h5></div>
@@ -1048,127 +1161,127 @@
 					</button>
 				</div>
 			</div>
+		</div>
+	</div>
 
-			<div class="toast-container position-fixed bottom-0 end-0 p-3">
-				<div
-					id="toastSuccessEditTag"
-					class="toast align-items-center text-bg-success"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Änderungen wurden gespeichert!</div>
-					</div>
-				</div>
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div
+			id="toastSuccessEditTag"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Änderungen wurden gespeichert!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorEditTag"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorEditTag"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorDeleteTag"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Fehler beim Löschen des Tags!</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorDeleteTag"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen des Tags!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastSuccessSaveSettings"
-					class="toast align-items-center text-bg-success"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Einstellungen gespeichert!</div>
-					</div>
-				</div>
+		<div
+			id="toastSuccessSaveSettings"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Einstellungen gespeichert!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorSaveSettings"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorSaveSettings"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorInvalidTemplateEmpty"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorInvalidTemplateEmpty"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorInvalidTemplateDouble"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Name der Vorlage existiert bereits</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorInvalidTemplateDouble"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Name der Vorlage existiert bereits</div>
+			</div>
+		</div>
 
-				<div
-					id="toastSuccessSaveTemplate"
-					class="toast align-items-center text-bg-success"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Vorlage gespeichert</div>
-					</div>
-				</div>
+		<div
+			id="toastSuccessSaveTemplate"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Vorlage gespeichert</div>
+			</div>
+		</div>
 
-				<div
-					id="toastErrorDeletingTemplate"
-					class="toast align-items-center text-bg-danger"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Fehler beim Löschen der Vorlage</div>
-					</div>
-				</div>
+		<div
+			id="toastErrorDeletingTemplate"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen der Vorlage</div>
+			</div>
+		</div>
 
-				<div
-					id="toastSuccessDeletingTemplate"
-					class="toast align-items-center text-bg-success"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex">
-						<div class="toast-body">Vorlage gelöscht</div>
-					</div>
-				</div>
+		<div
+			id="toastSuccessDeletingTemplate"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Vorlage gelöscht</div>
 			</div>
 		</div>
 	</div>

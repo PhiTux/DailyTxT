@@ -313,7 +313,7 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 				newUserID = int(id)
 
 				// Verify password
-				if !VerifyPassword(password, u["password"].(string), u["salt"].(string)) {
+				if !VerifyPassword(password, u["password"].(string)) {
 					return handleError(fmt.Sprintf("Login failed. Password for user '%s' is incorrect", username), nil)
 				}
 

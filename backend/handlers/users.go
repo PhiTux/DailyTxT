@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -191,7 +192,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify password
-	if !utils.VerifyPassword(req.Password, hashedPassword, salt) {
+	if !utils.VerifyPassword(req.Password, hashedPassword) {
 		utils.Logger.Printf("Login failed. Password for user '%s' is incorrect", req.Username)
 		http.Error(w, "User/Password combination not found", http.StatusNotFound)
 		return
@@ -291,20 +292,28 @@ func Register(username string, password string) (bool, error) {
 	}
 
 	// Create new user data
-	hashedPassword, salt, err := utils.HashPassword(password)
+	hashedPassword, err := utils.HashPassword(password)
 	if err != nil {
 		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
+	// Generate a random salt
+	salt := make([]byte, 16)
+	if _, err := rand.Read(salt); err != nil {
+		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
+	}
+	// Convert salt to base64
+	saltBase64 := base64.StdEncoding.EncodeToString(salt)
+
 	// Create encryption key
-	derivedKey, err := utils.DeriveKeyFromPassword(password, salt)
+	derivedKey, err := utils.DeriveKeyFromPassword(password, saltBase64)
 	if err != nil {
 		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
 	// Generate a new random encryption key
 	encryptionKey := make([]byte, 32)
-	if _, err := utils.RandRead(encryptionKey); err != nil {
+	if _, err := rand.Read(encryptionKey); err != nil {
 		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
@@ -315,7 +324,7 @@ func Register(username string, password string) (bool, error) {
 	}
 
 	nonce := make([]byte, aead.NonceSize())
-	if _, err := utils.RandRead(nonce); err != nil {
+	if _, err := rand.Read(nonce); err != nil {
 		return false, fmt.Errorf("internal Server Error: %d", http.StatusInternalServerError)
 	}
 
@@ -629,5 +638,221 @@ func GetMigrationProgress(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"migration_in_progress": isActive && !migrationCompleted,
 		"progress":              progress,
+	})
+}
+
+// ChangePasswordRequest represents the change password request body
+type ChangePasswordRequest struct {
+	OldPassword string `json:"old_password"`
+	NewPassword string `json:"new_password"`
+}
+
+// ChangePassword changes the user's password
+func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// Get derived key from context
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// Parse request body
+	var req ChangePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	// Get user data
+	users, err := utils.GetUsers()
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error retrieving users: %v", err),
+		})
+		return
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": "Users data is not in the correct format",
+		})
+		return
+	}
+
+	var user map[string]any
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			user = uMap
+			break
+		}
+	}
+
+	if user == nil {
+		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
+			"success": false,
+			"message": "User not found",
+		})
+		return
+	}
+
+	currentPassword, ok := user["password"].(string)
+	if !ok {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": "Current hashed password not found for user",
+		})
+		return
+	}
+
+	if !utils.VerifyPassword(req.OldPassword, currentPassword) {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"message":            "Old password is incorrect",
+			"password_incorrect": true,
+		})
+		return
+	}
+
+	newHashedPassword, err := utils.HashPassword(req.NewPassword)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error hashing new password: %v", err),
+		})
+		return
+	}
+
+	// Update user data
+	user["password"] = newHashedPassword
+
+	// Decrypt the existing encryption key
+	// Get encryption key
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error getting encryption key: %v", err),
+		})
+		return
+	}
+	encKeyBytes, err := base64.URLEncoding.DecodeString(encKey)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error decoding encryption key: %v", err),
+		})
+		return
+	}
+
+	// Re-Encrypt the encryption key with the new password
+	// Generate a random salt
+	salt := make([]byte, 16)
+	_, err = rand.Read(salt)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error generating salt: %v", err),
+		})
+		return
+	}
+
+	saltBase64 := base64.StdEncoding.EncodeToString(salt)
+	newDerivedKey, err := utils.DeriveKeyFromPassword(req.NewPassword, saltBase64)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error deriving new key from password: %v", err),
+		})
+		return
+	}
+
+	// Encrypt the encryption key with the new derived key
+	aead, err := utils.CreateAEAD(newDerivedKey)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error creating AEAD: %v", err),
+		})
+		return
+	}
+	nonce := make([]byte, aead.NonceSize())
+	if _, err := rand.Read(nonce); err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error generating nonce: %v", err),
+		})
+		return
+	}
+	encryptedKey := aead.Seal(nonce, nonce, encKeyBytes, nil)
+	encEncKey := base64.StdEncoding.EncodeToString(encryptedKey)
+
+	// Update user data with new salt and encrypted key
+	user["salt"] = saltBase64
+	user["enc_enc_key"] = encEncKey
+
+	// Update users data
+	for i, u := range usersList {
+		if uMap, ok := u.(map[string]any); ok && uMap["user_id"] == userID {
+			usersList[i] = user
+			break
+		}
+	}
+	users["users"] = usersList
+	// Write updated users data to file
+	if err := utils.WriteUsers(users); err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error writing users data: %v", err),
+		})
+		return
+	}
+
+	// create new JWT token with updated derived key
+	token, err := utils.GenerateToken(userID, user["username"].(string), base64.StdEncoding.EncodeToString(newDerivedKey))
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error generating new token: %v", err),
+		})
+		return
+	}
+
+	// Set new token cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Path:     "/",
+		Expires:  time.Now().Add(time.Duration(utils.Settings.LogoutAfterDays) * 24 * time.Hour),
+	})
+
+	// Return success and return a new cookie
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success": true,
+		"message": "Password changed successfully",
 	})
 }

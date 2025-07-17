@@ -39,6 +39,7 @@ func main() {
 	mux.HandleFunc("GET /users/check", middleware.RequireAuth(handlers.CheckLogin))
 	mux.HandleFunc("GET /users/getUserSettings", middleware.RequireAuth(handlers.GetUserSettings))
 	mux.HandleFunc("POST /users/saveUserSettings", middleware.RequireAuth(handlers.SaveUserSettings))
+	mux.HandleFunc("POST /users/changePassword", middleware.RequireAuth(handlers.ChangePassword))
 
 	mux.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
 	mux.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))

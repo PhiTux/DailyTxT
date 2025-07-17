@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -206,11 +205,6 @@ func WriteTags(userID int, content map[string]any) error {
 	}
 
 	return nil
-}
-
-// RandRead is a helper function for reading random bytes
-func RandRead(b []byte) (int, error) {
-	return rand.Read(b)
 }
 
 // GetUserSettings retrieves the settings for a specific user
