@@ -1,5 +1,5 @@
 <script>
-	import '../../scss/styles.scss';
+	import '../../../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
 	import Sidenav from '$lib/Sidenav.svelte';
 	import { selectedDate, cal, readingDate } from '$lib/calendarStore.js';
@@ -8,7 +8,7 @@
 	import { mount, onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
-	import '../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
+	import '../../../../node_modules/tiny-markdown-editor/dist/tiny-mde.css';
 	import { API_URL } from '$lib/APIurl.js';
 	import DatepickerLogic from '$lib/DatepickerLogic.svelte';
 	import {

@@ -69,10 +69,10 @@
 
 	$effect(() => {
 		if ($selectedDate) {
-			$cal.currentYear = $selectedDate.getFullYear();
-			$cal.currentMonth = $selectedDate.getMonth();
+			$cal.currentYear = $selectedDate.year;
+			$cal.currentMonth = $selectedDate.month - 1;
 
-			let el = document.querySelector(`.log[data-log-day="${$selectedDate.getDate()}"]`);
+			let el = document.querySelector(`.log[data-log-day="${$selectedDate.day}"]`);
 			if (el) {
 				el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 			}

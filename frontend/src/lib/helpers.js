@@ -26,5 +26,3 @@ export let alwaysShowSidenav = writable(true);
 
 // check if offcanvas/sidenav is open
 export let offcanvasIsOpen = writable(false);
-
-export let currentUser = writable("")
