@@ -5,7 +5,6 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { API_URL } from '$lib/APIurl.js';
-	import { currentUser } from '$lib/helpers';
 
 	let show_login_failed = $state(false);
 	let show_login_warning_empty_fields = $state(false);
@@ -124,8 +123,6 @@
 		axios
 			.post(API_URL + '/users/login', { username, password })
 			.then((response) => {
-				$currentUser = response.data.username;
-
 				if (response.data.migration_started) {
 					is_migrating = true;
 

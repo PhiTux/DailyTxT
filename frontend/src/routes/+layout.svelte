@@ -9,7 +9,7 @@
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
 	import trianglify from 'trianglify';
-	import { alwaysShowSidenav, currentUser } from '$lib/helpers.js';
+	import { alwaysShowSidenav } from '$lib/helpers.js';
 
 	let { children } = $props();
 	let inDuration = 150;
@@ -35,7 +35,6 @@
 					.get(API_URL + '/users/logout')
 					.then((response) => {
 						localStorage.removeItem('user');
-						$currentUser = null;
 						goto(`/login?error=${error.response.status}`);
 					})
 					.catch((error) => {
