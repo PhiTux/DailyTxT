@@ -57,7 +57,6 @@
 		});
 
 		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
-			console.log("triggered 'shown.bs.modal' event");
 			const height = document.getElementById('modal-body').clientHeight;
 			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
 			document.getElementById('settings-nav').style.height = 'calc(' + height + 'px - 2rem)';
@@ -73,12 +72,16 @@
 		});
 	});
 
-	function logout() {
+	function logout(errorCode) {
 		axios
 			.get(API_URL + '/users/logout')
 			.then((response) => {
 				localStorage.removeItem('user');
-				goto('/login');
+				if (errorCode) {
+					goto(`/login?error=${errorCode}`);
+				} else {
+					goto('/login');
+				}
 			})
 			.catch((error) => {
 				console.error(error);
@@ -476,6 +479,46 @@
 				isChangingPassword = false;
 			});
 	}
+
+	let showConfirmDeleteAccount = $state(false);
+	let deleteAccountPassword = $state('');
+	let isDeletingAccount = $state(false);
+	let deleteAccountPasswordIncorrect = $state(false);
+	let showDeleteAccountSuccess = $state(false);
+
+	function deleteAccount() {
+		if (isDeletingAccount) return;
+		isDeletingAccount = true;
+
+		axios
+			.post(API_URL + '/users/deleteAccount', {
+				password: deleteAccountPassword
+			})
+			.then((response) => {
+				if (response.data.success) {
+					showDeleteAccountSuccess = true;
+
+					// close modal
+					settingsModal.hide();
+
+					logout(410); // HTTP 410 Gone => Account deleted
+				} else if (response.data.password_incorrect) {
+					deleteAccountPasswordIncorrect = true;
+				} else {
+					console.error('Error deleting account');
+					console.error(response.data);
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				deleteAccountPasswordIncorrect = true;
+			})
+			.finally(() => {
+				isDeletingAccount = false;
+				showConfirmDeleteAccount = false;
+				deleteAccountPassword = '';
+			});
+	}
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -516,7 +559,7 @@
 				<button class="btn btn-outline-secondary me-2" onclick={openSettingsModal}
 					><Fa icon={faSliders} /></button
 				>
-				<button class="btn btn-outline-secondary" onclick={logout}
+				<button class="btn btn-outline-secondary" onclick={logout(null)}
 					><Fa icon={faRightFromBracket} /></button
 				>
 			</div>
@@ -839,7 +882,11 @@
 												deleteTag={askDeleteTag}
 											/>
 											{#if deleteTagId === tag.id}
-												<div class="alert alert-danger align-items-center" role="alert">
+												<div
+													class="alert alert-danger align-items-center"
+													role="alert"
+													transition:slide
+												>
 													<div>
 														<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b>
 														Dies kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
@@ -1049,7 +1096,84 @@
 								</div>
 								<div id="backupkeys"><h5>Backup-Keys</h5></div>
 								<div id="username"><h5>Username ändern</h5></div>
-								<div id="deleteaccount"><h5>Konto löschen</h5></div>
+								<div id="deleteaccount">
+									<h5>Konto löschen</h5>
+									<p>
+										Dies löscht dein Konto und alle damit verbundenen Daten. Dies kann nicht
+										rückgängig gemacht werden!
+									</p>
+									<form
+										onsubmit={() => {
+											showConfirmDeleteAccount = true;
+										}}
+									>
+										<div class="form-floating mb-3">
+											<input
+												type="password"
+												class="form-control"
+												id="currentPassword"
+												placeholder="Aktuelles Passwort"
+												bind:value={deleteAccountPassword}
+											/>
+											<label for="currentPassword">Passwort bestätigen</label>
+										</div>
+										<button
+											class="btn btn-danger"
+											onclick={() => {
+												showConfirmDeleteAccount = true;
+											}}
+											data-sveltekit-noscroll
+										>
+											Konto löschen
+											{#if isDeletingAccount}
+												<!-- svelte-ignore a11y_no_static_element_interactions -->
+												<div class="spinner-border" role="status">
+													<span class="visually-hidden">Loading...</span>
+												</div>
+											{/if}
+										</button>
+									</form>
+									{#if showDeleteAccountSuccess}
+										<div class="alert alert-success mt-2" role="alert" transition:slide>
+											Dein Konto wurde erfolgreich gelöscht!<br />
+											Du solltest jetzt eigentlich automatisch ausgeloggt werden. Falls nicht, dann logge
+											dich bitte sebst aus.
+										</div>
+									{/if}
+									{#if deleteAccountPasswordIncorrect}
+										<div class="alert alert-danger mt-2" role="alert" transition:slide>
+											Das eingegebene Passwort ist falsch!
+										</div>
+									{/if}
+									{#if showConfirmDeleteAccount}
+										<div class="alert alert-danger mt-2" role="alert" transition:slide>
+											Bist du dir sicher, dass du dein Konto löschen möchtest? Dies kann nicht
+											rückgängig gemacht werden!
+											<div class="d-flex flex-row mt-2">
+												<button
+													class="btn btn-secondary"
+													onclick={() => {
+														showConfirmDeleteAccount = false;
+														deleteAccountPassword = '';
+													}}>Abbrechen</button
+												>
+												<button
+													class="btn btn-danger ms-3"
+													onclick={deleteAccount}
+													disabled={isDeletingAccount}
+													>Löschen bestätigen
+													{#if isDeletingAccount}
+														<span
+															class="spinner-border spinner-border-sm ms-2"
+															role="status"
+															aria-hidden="true"
+														></span>
+													{/if}
+												</button>
+											</div>
+										</div>
+									{/if}
+								</div>
 							</div>
 
 							<div id="about">

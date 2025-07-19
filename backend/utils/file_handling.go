@@ -447,3 +447,14 @@ func GetMonths(userID int, year string) ([]string, error) {
 
 	return months, nil
 }
+
+func DeleteUserData(userID int) error {
+	// Try to remove the user directory
+	dirPath := filepath.Join(Settings.DataPath, strconv.Itoa(userID))
+	if err := os.RemoveAll(dirPath); err != nil {
+		Logger.Printf("Error removing directory %s: %v", dirPath, err)
+		return fmt.Errorf("internal server error when trying to remove user data for ID %d", userID)
+	}
+
+	return nil
+}

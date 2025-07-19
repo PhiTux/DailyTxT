@@ -47,6 +47,9 @@
 		} else if (window.location.search.includes('error=401')) {
 			const toast = new bootstrap.Toast(document.getElementById('toastLoginInvalid'));
 			toast.show();
+		} else if (window.location.search.includes('error=410')) {
+			const toast = new bootstrap.Toast(document.getElementById('toastAccountDeleted'));
+			toast.show();
 		}
 
 		// check if registration is allowed
@@ -247,7 +250,7 @@
 										</div>
 									{/if}
 
-									Fortschritt:
+									<u>Fortschritt:</u>
 									<div class="progress-item {active_phase >= 0 ? 'active' : ''}">
 										<div class="d-flex">
 											<div class="emoji">
@@ -492,6 +495,18 @@
 		>
 			<div class="d-flex">
 				<div class="toast-body">Authentifizierung fehlgeschlagen. Bitte neu anmelden.</div>
+			</div>
+		</div>
+
+		<div
+			id="toastAccountDeleted"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Account erfolgreich gelöscht.</div>
 			</div>
 		</div>
 	</div>

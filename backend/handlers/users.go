@@ -856,3 +856,122 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		"message": "Password changed successfully",
 	})
 }
+
+type DeleteAccountRequest struct {
+	Password string `json:"password"`
+}
+
+func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// Parse request body
+	var req DeleteAccountRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	// Check if password is correct
+	users, err := utils.GetUsers()
+	if err != nil {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error retrieving users: %v", err),
+		})
+		return
+	}
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "Users data is not in the correct format",
+		})
+		return
+	}
+
+	var user map[string]any
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			user = uMap
+			break
+		}
+	}
+
+	if user == nil {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "User not found",
+		})
+		return
+	}
+
+	password, ok := user["password"].(string)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": "Current hashed password not found for user",
+		})
+		return
+	}
+
+	if !utils.VerifyPassword(req.Password, password) {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"message":            "Password is incorrect",
+			"password_incorrect": true,
+		})
+		return
+	}
+
+	// Remove user from users list
+	var newUsersList []any
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		// Keep all users, except the one with the same user_id
+		if id, ok := uMap["user_id"].(float64); !ok || int(id) != userID {
+			utils.Logger.Printf("Keeping user with ID %f (%d)", id, userID)
+			newUsersList = append(newUsersList, u)
+		}
+	}
+	users["users"] = newUsersList
+
+	if err := utils.WriteUsers(users); err != nil {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error writing users data: %v", err),
+		})
+		return
+	}
+
+	// Delete directory of the user with all his data
+	if err := utils.DeleteUserData(userID); err != nil {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error deleting user data of ID %d (account already deleted): %v", userID, err),
+		})
+		utils.Logger.Printf("Error deleting user data of ID %d (You can savely delete the directory with the same id): %v", userID, err)
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success": true,
+	})
+}
