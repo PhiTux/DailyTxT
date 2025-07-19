@@ -625,6 +625,12 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progress *
 
 	processedMonths := 0
 
+	oldKeyBytes, err := base64.URLEncoding.DecodeString(oldKey)
+	if err != nil {
+		Logger.Printf("Error decoding oldKey %v", err)
+		progress.ErrorCount++
+	}
+
 	// Process all months
 	for _, monthInfo := range allMonthFiles {
 
@@ -675,13 +681,6 @@ func migrateLogs(oldDir, newDir string, oldKey string, newKey string, progress *
 		days, ok := monthData["days"].([]any)
 		if !ok {
 			Logger.Printf("Month %s has unexpected format - missing 'days' array", oldMonthPath)
-			progress.ErrorCount++
-			continue
-		}
-
-		oldKeyBytes, err := base64.URLEncoding.DecodeString(oldKey)
-		if err != nil {
-			Logger.Printf("Error decoding oldKey %v", err)
 			progress.ErrorCount++
 			continue
 		}
@@ -1070,13 +1069,12 @@ func migrateFiles(oldFilesDir, newDir string, oldKey string, newKey string, prog
 
 		processedFiles++
 
-		// Update progress occasionally
-		if i%5 == 0 || i == len(fileRefs)-1 {
-			progress.ProcessedItems = processedFiles
-			if progressChan != nil {
-				progressChan <- *progress
-			}
+		// Update progress
+		progress.ProcessedItems = processedFiles
+		if progressChan != nil {
+			progressChan <- *progress
 		}
+
 	}
 
 	// Third pass: update all month files with new file IDs
