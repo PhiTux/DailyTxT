@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"io"
+	"math/big"
 	"runtime"
 	"strings"
 	"time"
@@ -85,14 +86,18 @@ type Argon2Configuration struct {
 	KeyLength  uint32
 }
 
-// HashPassword hashes a password using Argon2
-func HashPassword(password string) (string, error) {
-	config := &Argon2Configuration{
+func getArgon2Configuration() *Argon2Configuration {
+	return &Argon2Configuration{
 		TimeCost:   5,
 		MemoryCost: 64 * 1024,
 		Threads:    uint8(runtime.NumCPU()),
 		KeyLength:  32,
 	}
+}
+
+// HashPassword hashes a password using Argon2
+func HashPassword(password string) (string, error) {
+	config := getArgon2Configuration()
 
 	// Generate a random salt
 	salt := make([]byte, 16)
@@ -187,7 +192,7 @@ func DeriveKeyFromPassword(password, saltBase64 string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Derive key
+	// Derive key (don't use config from above, as a variable amount of thread will lead to different results)
 	key := argon2.IDKey([]byte(password), salt, 2, 64*1024, 4, 32)
 	return key, nil
 }
@@ -402,4 +407,121 @@ func GetEncryptionKey(userID int, derivedKey string) (string, error) {
 	}
 
 	return "", fmt.Errorf("user not found")
+}
+
+// CheckPasswordForUser checks if the provided password matches the user's password OR on of his backup codes
+// Returns true if the password matches, false otherwise
+// Return the amount of backup codes available for the user (-1 if password does not match)
+func CheckPasswordForUser(userID int, password string) (bool, int, error) {
+	// Get users
+	users, err := GetUsers()
+	if err != nil {
+		return false, -1, fmt.Errorf("error retrieving users: %v", err)
+	}
+
+	// Find user
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return false, -1, fmt.Errorf("users.json is not in the correct format")
+	}
+
+	for _, u := range usersList {
+		user, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		if id, ok := user["user_id"].(float64); ok && int(id) == userID {
+			passwordHash, ok := user["password"].(string)
+			if !ok {
+				return false, -1, fmt.Errorf("user data is not in the correct format")
+			}
+
+			if VerifyPassword(password, passwordHash) {
+				return true, -1, nil
+			}
+
+			// Check backup codes
+			backupCodes, ok := user["backup_codes"].([]any)
+			if !ok {
+				return false, -1, fmt.Errorf("user backup codes are not in the correct format")
+			}
+
+			for _, code := range backupCodes {
+				codeStr, ok := code.(string)
+				if !ok {
+					continue // Skip invalid codes
+				}
+				if VerifyPassword(password, codeStr) {
+					return true, -1, nil
+				}
+			}
+
+			return false, -1, nil // Password does not match
+		}
+	}
+
+	return false, -1, fmt.Errorf("user not found")
+}
+
+func CreatePasswordString() string {
+	var chars string = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/+-_*!?#$%&(){}[]=@~"
+	password := make([]byte, 10)
+
+	for i := range password {
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(chars))))
+		if err != nil {
+			panic(fmt.Sprintf("Failed to generate random index: %v", err))
+		}
+		password[i] = chars[n.Int64()]
+	}
+
+	return string(password)
+}
+
+// GenerateBackupCodes generates 6 backup codes for a user
+// With those backup-codes, the derived key gets encrypted
+func GenerateBackupCodes(derived_key string) ([]string, []map[string]any, error) {
+	backupCodes := make([]string, 6)
+	codeData := make([]map[string]any, 6)
+	for i := range 6 {
+		// Initialize the map for this index
+		codeData[i] = make(map[string]any)
+
+		// Generate a random backup code (=password (!= uuid))
+		code := CreatePasswordString()
+
+		// create hash
+		hash, err := HashPassword(code)
+		if err != nil {
+			return nil, nil, fmt.Errorf("error hashing backup code: %v", err)
+		}
+
+		// Generate a random salt
+		salt := make([]byte, 16)
+		if _, err := rand.Read(salt); err != nil {
+			return nil, nil, fmt.Errorf("error generating salt: %v", err)
+		}
+		// Convert salt to base64
+		saltBase64 := base64.StdEncoding.EncodeToString(salt)
+
+		// Create derived encryption key to later encrypt the original derived key
+		intermediateKey, err := DeriveKeyFromPassword(code, saltBase64)
+		if err != nil {
+			return nil, nil, fmt.Errorf("error deriving key from password: %v", err)
+		}
+
+		// Encrypt the derived key with the intermediate key from the backup code
+		encDerivedKey, err := EncryptText(derived_key, base64.URLEncoding.EncodeToString(intermediateKey))
+		if err != nil {
+			return nil, nil, fmt.Errorf("error encrypting derived key: %v", err)
+		}
+
+		backupCodes[i] = code
+		codeData[i]["password"] = hash
+		codeData[i]["salt"] = saltBase64
+		codeData[i]["enc_derived_key"] = encDerivedKey
+	}
+
+	return backupCodes, codeData, nil
 }

@@ -652,7 +652,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
+		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
 			"success": false,
 			"message": "User not authenticated",
 		})
@@ -662,7 +662,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	// Get derived key from context
 	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
 	if !ok {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
+		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
 			"success": false,
 			"message": "User not authenticated",
 		})
@@ -865,7 +865,7 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
+		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
 			"success": false,
 			"message": "User not authenticated",
 		})
@@ -973,5 +973,88 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"success": true,
+	})
+}
+
+type CreateBackupCodesRequest struct {
+	Password string `json:"password"`
+}
+
+// CreateBackupCodes creates 6 random backup codes for the user
+// Those are storing the encrypted derived key from the original password!
+func CreateBackupCodes(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
+			"success": false,
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// Parse request body
+	var req CreateBackupCodesRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "Invalid request body",
+		})
+		return
+	}
+
+	// Check if password is correct
+	correct, backupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil {
+		utils.Logger.Printf("Error checking password for user %d: %v", userID, err)
+
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success": false,
+			"message": err,
+		})
+		return
+	} else if !correct {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"message":            "Password is incorrect",
+			"password_incorrect": true,
+		})
+		return
+	}
+	// otherwise, we have the correct password
+
+	// Get derived key from context
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
+			"success": false,
+			"message": "User not authenticated",
+		})
+		return
+	}
+
+	// Generate backup codes
+	codes, codeData, err := utils.GenerateBackupCodes(derivedKey)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error generating backup codes: %v", err),
+		})
+		return
+	}
+
+	// Save backup codes to file
+	if err := utils.SaveBackupCodes(userID, codeData); err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error saving backup codes: %v", err),
+		})
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success":                true,
+		"backup_codes":           codes,
+		"available_backup_codes": backupCodes,
 	})
 }

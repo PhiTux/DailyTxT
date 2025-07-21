@@ -41,6 +41,7 @@ func main() {
 	mux.HandleFunc("POST /users/saveUserSettings", middleware.RequireAuth(handlers.SaveUserSettings))
 	mux.HandleFunc("POST /users/changePassword", middleware.RequireAuth(handlers.ChangePassword))
 	mux.HandleFunc("POST /users/deleteAccount", middleware.RequireAuth(handlers.DeleteAccount))
+	mux.HandleFunc("POST /users/createBackupCodes", middleware.RequireAuth(handlers.CreateBackupCodes))
 
 	mux.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
 	mux.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))

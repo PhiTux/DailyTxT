@@ -22,7 +22,9 @@
 		faPencil,
 		faSliders,
 		faTriangleExclamation,
-		faTrash
+		faTrash,
+		faCopy,
+		faCheck
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 	import SelectTimezone from '$lib/SelectTimezone.svelte';
@@ -69,6 +71,10 @@
 					scrollSpy.refresh();
 				});
 			}, 400);
+		});
+
+		document.getElementById('settingsModal').addEventListener('hidden.bs.modal', function () {
+			backupCodes = [];
 		});
 	});
 
@@ -519,6 +525,65 @@
 				deleteAccountPassword = '';
 			});
 	}
+
+	let backupCodesPassword = $state('');
+	let isGeneratingBackupCodes = $state(false);
+	let backupCodes = $state([]);
+	let showBackupCodesPasswordIncorrect = $state(false);
+	let codesCopiedSuccess = $state(false);
+	let showBackupCodesError = $state(false);
+
+	function createBackupCodes() {
+		if (isGeneratingBackupCodes) return;
+		isGeneratingBackupCodes = true;
+
+		showBackupCodesPasswordIncorrect = false;
+		showBackupCodesError = false;
+		backupCodes = [];
+
+		axios
+			.post(API_URL + '/users/createBackupCodes', {
+				password: backupCodesPassword
+			})
+			.then((response) => {
+				if (response.data.success) {
+					backupCodes = response.data.backup_codes;
+				} else if (response.data.password_incorrect) {
+					console.error('Error creating backup codes: Password incorrect');
+					showBackupCodesPasswordIncorrect = true;
+				} else {
+					console.error('Error creating backup codes');
+					console.error(response.data);
+					showBackupCodesError = true;
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorCreateBackupCodes'));
+				toast.show();
+			})
+			.finally(() => {
+				isGeneratingBackupCodes = false;
+			});
+	}
+
+	function copyBackupCodes() {
+		if (backupCodes.length === 0) return;
+
+		const codesText = backupCodes.join('\n');
+		navigator.clipboard.writeText(codesText).then(
+			() => {
+				// Show success checkmark for 3 seconds
+				codesCopiedSuccess = true;
+				setTimeout(() => {
+					codesCopiedSuccess = false;
+				}, 3000);
+			},
+			(err) => {
+				console.error('Failed to copy backup codes: ', err);
+			}
+		);
+	}
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -872,6 +937,11 @@
 								<h3 class="text-primary">#️⃣ Tags</h3>
 								<div>
 									Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
+									{#if $tags.length === 0}
+										<div class="alert alert-info my-2" role="alert">
+											Es sind noch keine Tags vorhanden. Erstelle einen neuen Tag im Schreibmodus.
+										</div>
+									{/if}
 									<div class="d-flex flex-column tagColumn mt-1">
 										{#each $tags as tag}
 											<Tag
@@ -1023,13 +1093,13 @@
 
 							<div id="data">
 								<h3 class="text-primary">📁 Daten</h3>
-								<div id="export"><h5>Export</h5></div>
-								<div id="import"><h5>Import</h5></div>
+								<div><h5>Export</h5></div>
+								<div><h5>Import</h5></div>
 							</div>
 
 							<div id="security">
 								<h3 class="text-primary">🔒 Sicherheit</h3>
-								<div id="password">
+								<div>
 									<h5>Password ändern</h5>
 									<form onsubmit={changePassword}>
 										<div class="form-floating mb-3">
@@ -1080,7 +1150,7 @@
 									{#if changingPasswordSuccess}
 										<div class="alert alert-success mt-2" role="alert" transition:slide>
 											Das Passwort wurde erfolgreich geändert!<br />
-											Backup-Keys wurden ungültig gemacht (sofern vorhanden), und müssen neu erstellt
+											Backup-Codes wurden ungültig gemacht (sofern vorhanden), und müssen neu erstellt
 											werden.
 										</div>
 									{/if}
@@ -1094,9 +1164,80 @@
 										</div>
 									{/if}
 								</div>
-								<div id="backupkeys"><h5>Backup-Keys</h5></div>
-								<div id="username"><h5>Username ändern</h5></div>
-								<div id="deleteaccount">
+								<div>
+									<h5>Backup-Codes</h5>
+									<ul>
+										<li>
+											Backup-Codes funktionieren wie Einmal-Passwörter. Sie können immer anstelle
+											des Passworts verwendet werden, allerdings sind sie jeweils nur einmal gültig
+											und werden anschließend gelöscht.
+										</li>
+										<li>
+											Es werden immer 6 Codes generiert, welche die vorherigen Codes (sofern
+											vorhanden) ersetzen.
+										</li>
+										<li>
+											Du musst dir die Codes nach der Erstellung direkt notieren, sie können nicht
+											erneut angezeigt werden!
+										</li>
+									</ul>
+
+									<form onsubmit={createBackupCodes}>
+										<div class="form-floating mb-3">
+											<input
+												type="password"
+												class="form-control"
+												id="currentPassword"
+												placeholder="Aktuelles Passwort"
+												bind:value={backupCodesPassword}
+											/>
+											<label for="currentPassword">Passwort bestätigen</label>
+										</div>
+										<button
+											class="btn btn-primary"
+											onclick={createBackupCodes}
+											data-sveltekit-noscroll
+										>
+											Backup-Codes generieren
+											{#if isGeneratingBackupCodes}
+												<!-- svelte-ignore a11y_no_static_element_interactions -->
+												<div class="spinner-border" role="status">
+													<span class="visually-hidden">Loading...</span>
+												</div>
+											{/if}
+										</button>
+									</form>
+									{#if showBackupCodesPasswordIncorrect}
+										<div class="alert alert-danger mt-2" role="alert" transition:slide>
+											Das eingegebene Passwort ist falsch!
+										</div>
+									{/if}
+									{#if backupCodes.length > 0}
+										<div class="alert alert-success alert-dismissible mt-3" transition:slide>
+											<h6>Deine Backup-Codes:</h6>
+											Notiere dir die Codes, können nach dem Schließen dieses Fenstern nicht erneut angezeigt
+											werden!
+											<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
+												<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
+												Codes kopieren
+											</button>
+											<ul class="list-group">
+												{#each backupCodes as code}
+													<li class="list-group-item backupCode">
+														<code>{code}</code>
+													</li>
+												{/each}
+											</ul>
+										</div>
+									{/if}
+									{#if showBackupCodesError}
+										<div class="alert alert-danger mt-2" role="alert" transition:slide>
+											Fehler beim Erstellen der Backup-Codes!
+										</div>
+									{/if}
+								</div>
+								<div><h5>Username ändern</h5></div>
+								<div>
 									<h5>Konto löschen</h5>
 									<p>
 										Dies löscht dein Konto und alle damit verbundenen Daten. Dies kann nicht
@@ -1344,6 +1485,10 @@
 </div>
 
 <style>
+	.backupCode {
+		font-size: 15pt;
+	}
+
 	.footer-unsaved-changes {
 		background-color: orange;
 		color: black;

@@ -458,3 +458,44 @@ func DeleteUserData(userID int) error {
 
 	return nil
 }
+
+// saves the hash, salt and encrypted derived key of the backup codes to the users.json file
+func SaveBackupCodes(userID int, codes []map[string]any) error {
+	// Get the current users
+	users, err := GetUsers()
+	if err != nil {
+		return fmt.Errorf("error getting users: %v", err)
+	}
+
+	// Find the user with the given ID in the users array
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return fmt.Errorf("invalid users format, 'users' is not an array")
+	}
+
+	var foundUser map[string]any
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			foundUser = uMap
+			break
+		}
+	}
+
+	if foundUser == nil {
+		return fmt.Errorf("user with ID %d does not exist", userID)
+	}
+
+	// Save the backup codes to the user's data
+	foundUser["backup_codes"] = codes
+
+	// Write the updated users back to the file
+	if err := WriteUsers(users); err != nil {
+		return fmt.Errorf("error writing users: %v", err)
+	}
+
+	return nil
+}
