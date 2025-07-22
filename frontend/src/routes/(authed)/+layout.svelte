@@ -548,9 +548,6 @@
 			.then((response) => {
 				if (response.data.success) {
 					backupCodes = response.data.backup_codes;
-				} else if (response.data.password_incorrect) {
-					console.error('Error creating backup codes: Password incorrect');
-					showBackupCodesPasswordIncorrect = true;
 				} else {
 					console.error('Error creating backup codes');
 					console.error(response.data);
@@ -624,7 +621,7 @@
 				<button class="btn btn-outline-secondary me-2" onclick={openSettingsModal}
 					><Fa icon={faSliders} /></button
 				>
-				<button class="btn btn-outline-secondary" onclick={logout(null)}
+				<button class="btn btn-outline-secondary" onclick={() => logout(null)}
 					><Fa icon={faRightFromBracket} /></button
 				>
 			</div>
@@ -1200,23 +1197,19 @@
 										>
 											Backup-Codes generieren
 											{#if isGeneratingBackupCodes}
-												<!-- svelte-ignore a11y_no_static_element_interactions -->
-												<div class="spinner-border" role="status">
+												<div class="spinner-border spinner-border-sm" role="status">
 													<span class="visually-hidden">Loading...</span>
 												</div>
 											{/if}
 										</button>
 									</form>
-									{#if showBackupCodesPasswordIncorrect}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Das eingegebene Passwort ist falsch!
-										</div>
-									{/if}
 									{#if backupCodes.length > 0}
 										<div class="alert alert-success alert-dismissible mt-3" transition:slide>
 											<h6>Deine Backup-Codes:</h6>
-											Notiere dir die Codes, können nach dem Schließen dieses Fenstern nicht erneut angezeigt
-											werden!
+											<p>
+												Notiere dir die Codes, sie können nach dem Schließen dieses Fenstern nicht
+												erneut angezeigt werden!
+											</p>
 											<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
 												<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
 												Codes kopieren
@@ -1232,7 +1225,7 @@
 									{/if}
 									{#if showBackupCodesError}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Fehler beim Erstellen der Backup-Codes!
+											Fehler beim Erstellen der Backup-Codes! Vielleicht stimmt das Passwort nicht?
 										</div>
 									{/if}
 								</div>

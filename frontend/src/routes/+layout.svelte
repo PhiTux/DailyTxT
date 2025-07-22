@@ -10,6 +10,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import trianglify from 'trianglify';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import * as bootstrap from 'bootstrap';
 
 	let { children } = $props();
 	let inDuration = 150;
@@ -20,8 +21,20 @@
 		return config;
 	});
 
+	let available_backup_codes = $state(0);
+
 	axios.interceptors.response.use(
 		(response) => {
+			if (response.data && response.data.available_backup_codes >= 0) {
+				available_backup_codes = response.data.available_backup_codes;
+				// show toast
+				if (available_backup_codes < 6) {
+					let toast = new bootstrap.Toast(
+						document.getElementById('toastAvailableBackupCodesWarning')
+					);
+					toast.show();
+				}
+			}
 			return response;
 		},
 		(error) => {
@@ -109,6 +122,22 @@
 				{@render children()}
 			</div>
 		{/key}
+	</div>
+
+	<div class="toast-container position-fixed bottom-0 end-0 p-3">
+		<div
+			id="toastAvailableBackupCodesWarning"
+			class="toast align-items-center {available_backup_codes > 3
+				? 'text-bg-warning'
+				: 'text-bg-danger'}"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Noch {available_backup_codes} Backup-Codes verfügbar!</div>
+			</div>
+		</div>
 	</div>
 </main>
 

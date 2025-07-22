@@ -45,8 +45,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Find user
 	var userID int
-	var hashedPassword string
-	var salt string
 	found := false
 	var username string
 
@@ -60,12 +58,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			found = true
 			if id, ok := user["user_id"].(float64); ok {
 				userID = int(id)
-			}
-			if pwd, ok := user["password"].(string); ok {
-				hashedPassword = pwd
-			}
-			if s, ok := user["salt"].(string); ok {
-				salt = s
 			}
 			break
 		}
@@ -191,23 +183,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Verify password
-	if !utils.VerifyPassword(req.Password, hashedPassword) {
+	derivedKey, availableBackupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil {
+		utils.Logger.Printf("Error checking password for user '%s': %v", req.Username, err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	} else if derivedKey == "" {
 		utils.Logger.Printf("Login failed. Password for user '%s' is incorrect", req.Username)
 		http.Error(w, "User/Password combination not found", http.StatusNotFound)
 		return
 	}
 
-	// Get intermediate key
-	derivedKey, err := utils.DeriveKeyFromPassword(req.Password, salt)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	derivedKeyBase64 := base64.StdEncoding.EncodeToString(derivedKey)
-
 	// Create JWT token
-	token, err := utils.GenerateToken(userID, req.Username, derivedKeyBase64)
+	token, err := utils.GenerateToken(userID, username, derivedKey)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -225,8 +213,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// Return success
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
-		"migration_started": false,
-		"username":          username,
+		"migration_started":      false,
+		"username":               username,
+		"available_backup_codes": availableBackupCodes,
 	})
 }
 
@@ -660,7 +649,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get derived key from context
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	_, ok = r.Context().Value(utils.DerivedKeyKey).(string)
 	if !ok {
 		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
 			"success": false,
@@ -675,6 +664,23 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
 			"success": false,
 			"message": "Invalid request body",
+		})
+		return
+	}
+
+	derivedKey, availableBackupCodes, err := utils.CheckPasswordForUser(userID, req.OldPassword)
+	if err != nil {
+		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
+			"success": false,
+			"message": fmt.Sprintf("Error checking old password: %v", err),
+		})
+		return
+	} else if len(derivedKey) == 0 {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":                false,
+			"message":                "Old password is incorrect",
+			"password_incorrect":     true,
+			"available_backup_codes": availableBackupCodes,
 		})
 		return
 	}
@@ -714,24 +720,6 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
 			"success": false,
 			"message": "User not found",
-		})
-		return
-	}
-
-	currentPassword, ok := user["password"].(string)
-	if !ok {
-		utils.JSONResponse(w, http.StatusInternalServerError, map[string]any{
-			"success": false,
-			"message": "Current hashed password not found for user",
-		})
-		return
-	}
-
-	if !utils.VerifyPassword(req.OldPassword, currentPassword) {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success":            false,
-			"message":            "Old password is incorrect",
-			"password_incorrect": true,
 		})
 		return
 	}
@@ -813,6 +801,9 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 	user["salt"] = saltBase64
 	user["enc_enc_key"] = encEncKey
 
+	// Remove backup codes if they exist
+	user["backup_codes"] = []any{}
+
 	// Update users data
 	for i, u := range usersList {
 		if uMap, ok := u.(map[string]any); ok && uMap["user_id"] == userID {
@@ -882,7 +873,17 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if password is correct
+	derived_key, _, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil || len(derived_key) == 0 {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"message":            "Error checking password",
+			"password_incorrect": true,
+		})
+		return
+	}
+
+	// Get User data
 	users, err := utils.GetUsers()
 	if err != nil {
 		utils.JSONResponse(w, http.StatusOK, map[string]any{
@@ -896,44 +897,6 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		utils.JSONResponse(w, http.StatusOK, map[string]any{
 			"success": false,
 			"message": "Users data is not in the correct format",
-		})
-		return
-	}
-
-	var user map[string]any
-	for _, u := range usersList {
-		uMap, ok := u.(map[string]any)
-		if !ok {
-			continue
-		}
-		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
-			user = uMap
-			break
-		}
-	}
-
-	if user == nil {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success": false,
-			"message": "User not found",
-		})
-		return
-	}
-
-	password, ok := user["password"].(string)
-	if !ok {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success": false,
-			"message": "Current hashed password not found for user",
-		})
-		return
-	}
-
-	if !utils.VerifyPassword(req.Password, password) {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success":            false,
-			"message":            "Password is incorrect",
-			"password_incorrect": true,
 		})
 		return
 	}
@@ -1004,34 +967,18 @@ func CreateBackupCodes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Check if password is correct
-	correct, backupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
-	if err != nil {
+	derivedKey, backup_codes, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil || len(derivedKey) == 0 {
 		utils.Logger.Printf("Error checking password for user %d: %v", userID, err)
 
 		utils.JSONResponse(w, http.StatusOK, map[string]any{
 			"success": false,
-			"message": err,
-		})
-		return
-	} else if !correct {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success":            false,
-			"message":            "Password is incorrect",
-			"password_incorrect": true,
+			"message": "Error checking password",
 		})
 		return
 	}
-	// otherwise, we have the correct password
 
-	// Get derived key from context
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
-	if !ok {
-		utils.JSONResponse(w, http.StatusUnauthorized, map[string]any{
-			"success": false,
-			"message": "User not authenticated",
-		})
-		return
-	}
+	// otherwise, we have the correct password
 
 	// Generate backup codes
 	codes, codeData, err := utils.GenerateBackupCodes(derivedKey)
@@ -1052,9 +999,14 @@ func CreateBackupCodes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	available_backup_codes := len(codes)
+	if backup_codes == -1 {
+		available_backup_codes = -1
+	}
+
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"success":                true,
 		"backup_codes":           codes,
-		"available_backup_codes": backupCodes,
+		"available_backup_codes": available_backup_codes,
 	})
 }

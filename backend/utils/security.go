@@ -409,20 +409,20 @@ func GetEncryptionKey(userID int, derivedKey string) (string, error) {
 	return "", fmt.Errorf("user not found")
 }
 
-// CheckPasswordForUser checks if the provided password matches the user's password OR on of his backup codes
-// Returns true if the password matches, false otherwise
-// Return the amount of backup codes available for the user (-1 if password does not match)
-func CheckPasswordForUser(userID int, password string) (bool, int, error) {
+// CheckPasswordForUser checks if the provided password matches the user's password OR on of his backup codes.
+// Returns the derivedKey, if successfully validating password, otherwise empty string
+// Return the amount of backup codes available for the user (-1 if password does not match or if backup code was NOT used).
+func CheckPasswordForUser(userID int, password string) (string, int, error) {
 	// Get users
 	users, err := GetUsers()
 	if err != nil {
-		return false, -1, fmt.Errorf("error retrieving users: %v", err)
+		return "", -1, fmt.Errorf("error retrieving users: %v", err)
 	}
 
 	// Find user
 	usersList, ok := users["users"].([]any)
 	if !ok {
-		return false, -1, fmt.Errorf("users.json is not in the correct format")
+		return "", -1, fmt.Errorf("users.json is not in the correct format")
 	}
 
 	for _, u := range usersList {
@@ -434,34 +434,64 @@ func CheckPasswordForUser(userID int, password string) (bool, int, error) {
 		if id, ok := user["user_id"].(float64); ok && int(id) == userID {
 			passwordHash, ok := user["password"].(string)
 			if !ok {
-				return false, -1, fmt.Errorf("user data is not in the correct format")
+				return "", -1, fmt.Errorf("user data is not in the correct format")
 			}
 
 			if VerifyPassword(password, passwordHash) {
-				return true, -1, nil
+				// Calculate derived key
+				derKey, err := DeriveKeyFromPassword(password, user["salt"].(string))
+				if err != nil {
+					return "", -1, fmt.Errorf("error deriving key from password: %v", err)
+				}
+
+				return base64.StdEncoding.EncodeToString(derKey), -1, nil
 			}
 
 			// Check backup codes
 			backupCodes, ok := user["backup_codes"].([]any)
 			if !ok {
-				return false, -1, fmt.Errorf("user backup codes are not in the correct format")
+				return "", -1, nil
 			}
 
-			for _, code := range backupCodes {
-				codeStr, ok := code.(string)
+			for i, code := range backupCodes {
+				codeStr, ok := code.(map[string]any)["password"].(string)
 				if !ok {
+					Logger.Printf("Invalid backup code format for user %d: %v", userID, code)
 					continue // Skip invalid codes
 				}
-				if VerifyPassword(password, codeStr) {
-					return true, -1, nil
+
+				if !VerifyPassword(password, codeStr) {
+					continue
 				}
+
+				// Password matched the code! Remove backup code
+				backupCodes = append(backupCodes[:i], backupCodes[i+1:]...)
+
+				// Update user data
+				user["backup_codes"] = backupCodes
+				if err := WriteUsers(users); err != nil {
+					return "", -1, fmt.Errorf("error saving updated user data: %v", err)
+				}
+
+				// Calculate derived key
+				tempKey, err := DeriveKeyFromPassword(password, code.(map[string]any)["salt"].(string))
+				if err != nil {
+					return "", -1, fmt.Errorf("error deriving key from password: %v", err)
+				}
+
+				derKey, err := DecryptText(code.(map[string]any)["enc_derived_key"].(string), base64.URLEncoding.EncodeToString(tempKey))
+				if err != nil {
+					return "", -1, fmt.Errorf("error decrypting derived key: %v", err)
+				}
+
+				return derKey, len(backupCodes), nil
 			}
 
-			return false, -1, nil // Password does not match
+			return "", -1, nil
 		}
 	}
 
-	return false, -1, fmt.Errorf("user not found")
+	return "", -1, nil
 }
 
 func CreatePasswordString() string {
