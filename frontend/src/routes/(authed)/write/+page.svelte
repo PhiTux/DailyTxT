@@ -18,7 +18,8 @@
 		faQuestionCircle,
 		faClockRotateLeft,
 		faArrowLeft,
-		faArrowRight
+		faArrowRight,
+		faTrash
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
@@ -797,6 +798,46 @@
 		tinyMDE.setContent(currentLog);
 		tinyMDE.setSelection({ row: 0, col: 0 });
 	}
+
+	function showDeleteDayModal() {
+		const modal = new bootstrap.Modal(document.getElementById('modalDeleteDay'));
+		modal.show();
+	}
+
+	function deleteDay() {
+		axios
+			.get(API_URL + '/logs/deleteDay', {
+				params: {
+					day: $selectedDate.day,
+					month: $selectedDate.month,
+					year: $selectedDate.year
+				}
+			})
+			.then((response) => {
+				if (response.data.success) {
+					currentLog = '';
+					tinyMDE.setContent(currentLog);
+					savedLog = '';
+					logDateWritten = '';
+
+					selectedTags = [];
+					history = [];
+					filesOfDay = [];
+					images = [];
+					$cal.daysBookmarked = $cal.daysBookmarked.filter((day) => day !== $selectedDate.day);
+					$cal.daysWithFiles = $cal.daysWithFiles.filter((day) => day !== $selectedDate.day);
+					$cal.daysWithLogs = $cal.daysWithLogs.filter((day) => day !== $selectedDate.day);
+				} else {
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletingDay'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletingDay'));
+				toast.show();
+			});
+	}
 </script>
 
 <DatepickerLogic />
@@ -853,7 +894,11 @@
 						</button>
 					</div>
 				{/if}
-				<div class="textAreaDelete">delete</div>
+				<div class="textAreaDelete d-flex flex-column justify-content-center">
+					<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
+						<Fa icon={faTrash} class="" size="1.5x" fw />
+					</button>
+				</div>
 			</div>
 			<div id="log" class="focus-ring">
 				<div id="toolbar"></div>
@@ -1099,6 +1144,18 @@
 				<div class="toast-body">Fehler beim Download einer Datei!</div>
 			</div>
 		</div>
+
+		<div
+			id="toastErrorDeletingDay"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">Fehler beim Löschen des Tages!</div>
+			</div>
+		</div>
 	</div>
 
 	<div class="modal fade" id="modalConfirmDeleteFile" tabindex="-1">
@@ -1188,6 +1245,55 @@
 							>
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalDeleteDay" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Tag vollständig löschen?</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					Du löschst <b><u>sämtliche Daten</u></b> vom
+					<b><u>{`${$selectedDate.day}.${$selectedDate.month}.${$selectedDate.year}`}</u></b>!<br
+					/><br />
+					Dies beinhaltet:
+					<ul>
+						{#snippet deleteDayBool(available, description)}
+							<li class={available ? 'text-decoration-underline' : 'text-muted fst-italic'}>
+								{#if available}✔️{:else}❌{/if}
+								{description}
+							</li>
+						{/snippet}
+
+						{#snippet deleteDayCount(item, description)}
+							<li class={item.length > 0 ? 'text-decoration-underline' : 'text-muted fst-italic'}>
+								{item.length}
+								{description}
+							</li>
+						{/snippet}
+
+						{@render deleteDayBool(logDateWritten !== '', 'Tagebucheintrag')}
+						{@render deleteDayBool(historyAvailable, 'Verlauf')}
+
+						{@render deleteDayCount(filesOfDay, 'Dateien')}
+						{@render deleteDayCount(selectedTags, 'Tags')}
+						{@render deleteDayBool($cal.daysBookmarked.includes($selectedDate.day), 'Lesezeichen')}
+					</ul>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+					<button
+						onclick={() => deleteDay()}
+						type="button"
+						class="btn btn-primary"
+						data-bs-dismiss="modal">Löschen</button
+					>
 				</div>
 			</div>
 		</div>
@@ -1425,6 +1531,10 @@
 	.textAreaWrittenAt,
 	.textAreaHistory {
 		border-right: 1px solid #ccc;
+		padding: 0.25em;
+	}
+
+	.textAreaDelete {
 		padding: 0.25em;
 	}
 

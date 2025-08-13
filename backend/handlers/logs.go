@@ -915,3 +915,92 @@ func GetHistory(w http.ResponseWriter, r *http.Request) {
 	// Day not found
 	utils.JSONResponse(w, http.StatusOK, []any{})
 }
+
+// DeleteDay deletes all data of the specified day
+// Also delete files, that might be uploaded
+func DeleteDay(w http.ResponseWriter, r *http.Request) {
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Get parameters from URL
+	year, err := strconv.Atoi(r.URL.Query().Get("year"))
+	if err != nil {
+		http.Error(w, "Invalid year parameter", http.StatusBadRequest)
+		return
+	}
+	month, err := strconv.Atoi(r.URL.Query().Get("month"))
+	if err != nil {
+		http.Error(w, "Invalid month parameter", http.StatusBadRequest)
+		return
+	}
+	dayValue, err := strconv.Atoi(r.URL.Query().Get("day"))
+	if err != nil {
+		http.Error(w, "Invalid day parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Get month data
+	content, err := utils.GetMonth(userID, year, month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	days, ok := content["days"].([]any)
+	if !ok {
+		utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
+		return
+	}
+
+	for i, dayInterface := range days {
+		day, ok := dayInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		dayNum, ok := day["day"].(float64)
+		if !ok || int(dayNum) != dayValue {
+			continue
+		}
+
+		// Delete associated files before removing the day entry
+		if filesList, ok := day["files"].([]any); ok && len(filesList) > 0 {
+			for _, fileInterface := range filesList {
+				file, ok := fileInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				if fileID, ok := file["uuid_filename"].(string); ok {
+					// Delete the actual file from the filesystem
+					err := utils.RemoveFile(userID, fileID)
+					if err != nil {
+						utils.Logger.Printf("Warning: Failed to delete file %s for user %d: %v", fileID, userID, err)
+						// Continue with deletion even if file removal fails
+					}
+				}
+			}
+		}
+
+		// Remove the day from the days array
+		days = append(days[:i], days[i+1:]...)
+		content["days"] = days
+
+		if err := utils.WriteMonth(userID, year, month, content); err != nil {
+			http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
+}

@@ -63,6 +63,7 @@ func main() {
 	mux.HandleFunc("GET /logs/deleteFile", middleware.RequireAuth(handlers.DeleteFile))
 	mux.HandleFunc("GET /logs/getHistory", middleware.RequireAuth(handlers.GetHistory))
 	mux.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
+	mux.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
 
 	// Create a handler chain with Logger and CORS middleware
 	// Logger middleware will be executed first, then CORS
