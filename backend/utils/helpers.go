@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
 // Global logger
@@ -80,6 +81,16 @@ func InitSettings() error {
 		}
 	}
 	fmt.Printf("Logout After Days: %d\n", Settings.LogoutAfterDays)
+
+	if allowedHosts := os.Getenv("ALLOWED_HOSTS"); allowedHosts != "" {
+		// Split allowedHosts by comma and trim spaces
+		hosts := strings.Split(allowedHosts, ",")
+		for i, host := range hosts {
+			hosts[i] = strings.TrimSpace(host)
+		}
+		Settings.AllowedHosts = hosts
+	}
+	fmt.Printf("Allowed Hosts: %v\n", Settings.AllowedHosts)
 
 	if indent := os.Getenv("INDENT"); indent != "" {
 		// Parse indent to int

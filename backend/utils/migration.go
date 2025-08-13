@@ -52,8 +52,7 @@ func SetUserMigrating(username string, migrating bool) {
 // Reference: https://github.com/fernet/spec/blob/master/Spec.md
 
 const (
-	fernetVersion byte  = 0x80
-	maxClockSkew  int64 = 60 // seconds
+	fernetVersion byte = 0x80
 )
 
 // FernetDecrypt decrypts a Fernet token using the given key
@@ -75,25 +74,11 @@ func FernetDecrypt(token string, key []byte) (string, error) {
 	}
 
 	// Extract parts
-	// timestamp := tokenBytes[1:9]
 	iv := tokenBytes[9:25]
 	ciphertext := tokenBytes[25 : len(tokenBytes)-32]
-	// hmacValue := tokenBytes[len(tokenBytes)-32:]
 
 	// Generate encryption key from the master key
-	// signingKey := key[:16] // Unused for now, will be needed if HMAC verification is enabled
 	encryptionKey := key[16:32]
-
-	// Verify HMAC (optional for migration, commented out for now)
-	// TODO: Uncomment if signature verification is needed
-	/*
-		h := hmac.New(sha256.New, signingKey)
-		h.Write(tokenBytes[:len(tokenBytes)-32])
-		calculatedHMAC := h.Sum(nil)
-		if subtle.ConstantTimeCompare(calculatedHMAC, hmacValue) != 1 {
-			return "", fmt.Errorf("invalid token signature")
-		}
-	*/
 
 	// Create cipher
 	block, err := aes.NewCipher(encryptionKey)

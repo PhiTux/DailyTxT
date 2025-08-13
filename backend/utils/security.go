@@ -413,6 +413,9 @@ func GetEncryptionKey(userID int, derivedKey string) (string, error) {
 // Returns the derivedKey, if successfully validating password, otherwise empty string
 // Return the amount of backup codes available for the user (-1 if password does not match or if backup code was NOT used).
 func CheckPasswordForUser(userID int, password string) (string, int, error) {
+	UsersFileMutex.Lock()
+	defer UsersFileMutex.Unlock()
+
 	// Get users
 	users, err := GetUsers()
 	if err != nil {

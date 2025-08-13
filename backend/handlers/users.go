@@ -39,8 +39,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	usersList, ok := users["users"].([]any)
 	if !ok || len(usersList) == 0 {
 		utils.Logger.Printf("Login failed. User '%s' not found", req.Username)
-		/* http.Error(w, "User/Password combination not found", http.StatusNotFound)
-		return */
 	}
 
 	// Find user
@@ -233,6 +231,7 @@ type RegisterRequest struct {
 }
 
 // Register handles user registration
+// The API endpoint
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the request body
 	var req RegisterRequest
@@ -252,7 +251,11 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// The actual register function (can also be called from migration)
 func Register(username string, password string) (bool, error) {
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
 	// Get users
 	users, err := utils.GetUsers()
 	if err != nil {
@@ -685,6 +688,9 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
 	// Get user data
 	users, err := utils.GetUsers()
 	if err != nil {
@@ -883,6 +889,9 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
 	// Get User data
 	users, err := utils.GetUsers()
 	if err != nil {
@@ -923,6 +932,8 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	utils.UsersFileMutex.Unlock()
 
 	// Delete directory of the user with all his data
 	if err := utils.DeleteUserData(userID); err != nil {

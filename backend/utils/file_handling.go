@@ -13,15 +13,12 @@ import (
 
 // Mutexes für Dateizugriffe
 var (
-	usersFileMutex    sync.RWMutex // Für users.json
+	UsersFileMutex    sync.RWMutex // Für users.json
 	userSettingsMutex sync.RWMutex // Für Benutzereinstellungen
 )
 
 // GetUsers retrieves the users from the users.json file
 func GetUsers() (map[string]any, error) {
-	usersFileMutex.RLock()
-	defer usersFileMutex.RUnlock()
-
 	// Try to open the users.json file
 	filePath := filepath.Join(Settings.DataPath, "users.json")
 	file, err := os.Open(filePath)
@@ -51,8 +48,6 @@ func GetUsers() (map[string]any, error) {
 
 // WriteUsers writes the users to the users.json file
 func WriteUsers(content map[string]any) error {
-	usersFileMutex.Lock()
-	defer usersFileMutex.Unlock()
 
 	// Create the users.json file
 	filePath := filepath.Join(Settings.DataPath, "users.json")
@@ -461,6 +456,9 @@ func DeleteUserData(userID int) error {
 
 // saves the hash, salt and encrypted derived key of the backup codes to the users.json file
 func SaveBackupCodes(userID int, codes []map[string]any) error {
+	UsersFileMutex.Lock()
+	defer UsersFileMutex.Unlock()
+
 	// Get the current users
 	users, err := GetUsers()
 	if err != nil {
