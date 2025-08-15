@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"strings"
 	"sync"
@@ -416,6 +417,18 @@ func CheckLogin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func GetDefaultSettings() map[string]any {
+	// Default settings
+	return map[string]any{
+		"autoloadImagesByDefault":    false,
+		"setAutoloadImagesPerDevice": true,
+		"useALookBack":               true,
+		"aLookBackYears":             []int{1, 5, 10},
+		"useBrowserTimezone":         true,
+		"timezone":                   "UTC",
+	}
+}
+
 // GetUserSettings retrieves user settings
 func GetUserSettings(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
@@ -440,14 +453,7 @@ func GetUserSettings(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Default settings
-	defaultSettings := map[string]any{
-		"autoloadImagesByDefault":    false,
-		"setAutoloadImagesPerDevice": true,
-		"useOnThisDay":               true,
-		"onThisDayYears":             []int{1, 5, 10},
-		"useBrowserTimezone":         true,
-		"timezone":                   "UTC",
-	}
+	defaultSettings := GetDefaultSettings()
 
 	// If no settings found, return defaults
 	if len(encryptedSettings) == 0 {
@@ -543,20 +549,11 @@ func SaveUserSettings(w http.ResponseWriter, r *http.Request) {
 
 	// If no settings or empty, use defaults
 	if len(currentSettings) == 0 {
-		currentSettings = map[string]any{
-			"autoloadImagesByDefault":    false,
-			"setAutoloadImagesPerDevice": true,
-			"useOnThisDay":               true,
-			"onThisDayYears":             []int{1, 5, 10},
-			"useBrowserTimezone":         true,
-			"timezone":                   "UTC",
-		}
+		currentSettings = GetDefaultSettings()
 	}
 
 	// Update settings
-	for key, value := range newSettings {
-		currentSettings[key] = value
-	}
+	maps.Copy(currentSettings, newSettings)
 
 	// Encrypt settings
 	settingsJSON, err := json.Marshal(currentSettings)

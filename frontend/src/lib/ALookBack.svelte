@@ -139,6 +139,7 @@
 		<button
 			onclick={() => {
 				$selectedDate = { year: log.year, month: log.month, day: log.day };
+				closeModal();
 			}}
 			class="btn btn-primary"
 			id="closeZoom">Öffnen</button

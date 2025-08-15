@@ -33,7 +33,7 @@
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
 	import { templates, insertTemplate } from '$lib/templateStore';
-	import OnThisDay from '$lib/OnThisDay.svelte';
+	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
 
 	axios.interceptors.request.use((config) => {
@@ -223,7 +223,7 @@
 
 			logDateWritten = response.data.date_written;
 
-			getOnThisDay();
+			getALookBack();
 
 			return true;
 		} catch (error) {
@@ -236,25 +236,25 @@
 		}
 	}
 
-	let onThisDay = $state([]);
+	let aLookBack = $state([]);
 
-	function getOnThisDay() {
-		if (!$settings.useOnThisDay) {
-			onThisDay = [];
+	function getALookBack() {
+		if (!$settings.useALookBack) {
+			aLookBack = [];
 			return;
 		}
 
 		axios
-			.get(API_URL + '/logs/getOnThisDay', {
+			.get(API_URL + '/logs/getALookBack', {
 				params: {
 					day: $selectedDate.day,
 					month: $selectedDate.month,
 					year: $selectedDate.year,
-					last_years: $settings.onThisDayYears.join(',')
+					last_years: $settings.aLookBackYears.join(',')
 				}
 			})
 			.then((response) => {
-				onThisDay = response.data;
+				aLookBack = response.data;
 			})
 			.catch((error) => {
 				console.error(error);
@@ -924,10 +924,10 @@
 				{/if}
 			{/if}
 
-			{#if $settings.useOnThisDay && onThisDay.length > 0}
+			{#if $settings.useALookBack && aLookBack.length > 0}
 				<div class="mt-3 d-flex gap-2">
-					{#each onThisDay as log}
-						<OnThisDay {log} />
+					{#each aLookBack as log}
+						<ALookBack {log} />
 					{/each}
 				</div>
 			{/if}
