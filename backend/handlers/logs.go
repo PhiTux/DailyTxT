@@ -537,8 +537,8 @@ func SaveTemplates(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// GetOnThisDay handles retrieving logs from previous years on the same day
-func GetOnThisDay(w http.ResponseWriter, r *http.Request) {
+// GetALookBack handles retrieving logs from previous years on the same day
+func GetALookBack(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {

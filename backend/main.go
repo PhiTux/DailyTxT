@@ -54,7 +54,7 @@ func main() {
 	mux.HandleFunc("POST /logs/removeTagFromLog", middleware.RequireAuth(handlers.RemoveTagFromLog))
 	mux.HandleFunc("GET /logs/getTemplates", middleware.RequireAuth(handlers.GetTemplates))
 	mux.HandleFunc("POST /logs/saveTemplates", middleware.RequireAuth(handlers.SaveTemplates))
-	mux.HandleFunc("GET /logs/getOnThisDay", middleware.RequireAuth(handlers.GetOnThisDay))
+	mux.HandleFunc("GET /logs/getALookBack", middleware.RequireAuth(handlers.GetALookBack))
 	mux.HandleFunc("GET /logs/searchString", middleware.RequireAuth(handlers.Search))
 	mux.HandleFunc("GET /logs/searchTag", middleware.RequireAuth(handlers.SearchTag))
 	mux.HandleFunc("GET /logs/loadMonthForReading", middleware.RequireAuth(handlers.LoadMonthForReading))

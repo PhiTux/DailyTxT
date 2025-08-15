@@ -101,7 +101,7 @@
 	let settingsModal;
 	function openSettingsModal() {
 		$tempSettings = JSON.parse(JSON.stringify($settings));
-		onThisDayYears = $settings.onThisDayYears.toString();
+		aLookBackYears = $settings.aLookBackYears.toString();
 
 		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
 		settingsModal.show();
@@ -114,7 +114,7 @@
 		});
 	}
 
-	let onThisDayYears = $state('');
+	let aLookBackYears = $state('');
 	let isGettingUserSettings = $state(false);
 	function getUserSettings() {
 		if (isGettingUserSettings) return;
@@ -124,7 +124,7 @@
 			.get(API_URL + '/users/getUserSettings')
 			.then((response) => {
 				$settings = response.data;
-				onThisDayYears = $settings.onThisDayYears.toString();
+				aLookBackYears = $settings.aLookBackYears.toString();
 			})
 			.catch((error) => {
 				console.error(error);
@@ -137,26 +137,26 @@
 			});
 	}
 
-	let onThisDayYearsInvalid = $state(false);
-	// check if onThisDayYears is valid
+	let aLookBackYearsInvalid = $state(false);
+	// check if aLookBackYears is valid
 	$effect(() => {
-		onThisDayYearsInvalid = false;
-		if ($tempSettings.useOnThisDay === false) {
+		aLookBackYearsInvalid = false;
+		if ($tempSettings.useALookBack === false) {
 			return;
 		}
 
 		//regex: years may only contain numbers and commas
-		if (onThisDayYears.match(/[^0-9,]/)) {
-			onThisDayYearsInvalid = true;
+		if (aLookBackYears.match(/[^0-9,]/)) {
+			aLookBackYearsInvalid = true;
 			return;
 		}
 
-		onThisDayYears
+		aLookBackYears
 			.trim()
 			.split(',')
 			.forEach((year) => {
 				if (!Number.isInteger(parseInt(year.trim()))) {
-					onThisDayYearsInvalid = true;
+					aLookBackYearsInvalid = true;
 				}
 				return year;
 			});
@@ -164,9 +164,9 @@
 
 	let settingsHaveChanged = $derived(
 		JSON.stringify($settings) !== JSON.stringify($tempSettings) ||
-			JSON.stringify($settings.onThisDayYears) !==
+			JSON.stringify($settings.aLookBackYears) !==
 				JSON.stringify(
-					onThisDayYears
+					aLookBackYears
 						.trim()
 						.split(',')
 						.map((year) => parseInt(year.trim()))
@@ -178,7 +178,7 @@
 		if (isSaving) return;
 		isSaving = true;
 
-		$tempSettings.onThisDayYears = onThisDayYears
+		$tempSettings.aLookBackYears = aLookBackYears
 			.trim()
 			.split(',')
 			.map((year) => parseInt(year.trim()));
@@ -664,29 +664,12 @@
 						<nav class="flex-column align-items-stretch" id="settings-nav">
 							<nav class="nav nav-pills flex-column">
 								<a class="nav-link mb-1" href="#appearance">Aussehen</a>
-								<!-- <a href="#lightdark" class="ms-3 mb-1 nav-link">Light/Dark-Mode</a>
-									<a href="#background" class="ms-3 mb-1 nav-link">Hintergrund</a> -->
 								<a class="nav-link mb-1" href="#functions">Funktionen</a>
-								<!-- <nav class="nav nav-pills flex-column">
-										<a href="#language" class="ms-3 mb-1 nav-link">Sprache</a>
-										<a href="#timezone" class="ms-3 mb-1 nav-link">Zeitzone</a>
-										<a href="#onthisday" class="ms-3 mb-1 nav-link">An diesem Tag</a>
-										<a href="#loginonreload" class="ms-3 mb-1 nav-link">Login bei Reload</a>
-									</nav> -->
+
 								<a class="nav-link mb-1" href="#tags">Tags</a>
 								<a class="nav-link mb-1" href="#templates">Vorlagen</a>
 								<a class="nav-link mb-1" href="#data">Daten</a>
-								<!-- <nav class="nav nav-pills flex-column">
-										<a href="#export" class="ms-3 nav-link mb-1">Export</a>
-										<a href="#import" class="ms-3 nav-link mb-1">Import</a>
-									</nav> -->
 								<a class="nav-link mb-1" href="#security">Sicherheit</a>
-								<!-- <nav class="nav nav-pills flex-column">
-										<a href="#password" class="ms-3 mb-1 nav-link">Password ändern</a>
-										<a href="#backupkeys" class="ms-3 mb-1 nav-link">Backup-Keys</a>
-										<a href="#username" class="ms-3 mb-1 nav-link">Username ändern</a>
-										<a href="#deleteaccount" class="ms-3 mb-1 nav-link">Konto löschen</a>
-									</nav> -->
 								<a class="nav-link mb-1" href="#about">About</a>
 							</nav>
 						</nav>
@@ -859,11 +842,11 @@
 									</div>
 								</div>
 
-								<div id="onthisday">
-									{#if $tempSettings.useOnThisDay !== $settings.useOnThisDay || JSON.stringify(onThisDayYears
+								<div id="aLookBack">
+									{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
 												.trim()
 												.split(',')
-												.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.onThisDayYears)}
+												.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.aLookBackYears)}
 										<div class="unsaved-changes" transition:slide></div>
 									{/if}
 
@@ -883,13 +866,13 @@
 									<div class="form-check form-switch">
 										<input
 											class="form-check-input"
-											bind:checked={$tempSettings.useOnThisDay}
+											bind:checked={$tempSettings.useALookBack}
 											type="checkbox"
 											role="switch"
-											id="useOnThisDaySwitch"
+											id="useALookBackSwitch"
 										/>
-										<label class="form-check-label" for="useOnThisDaySwitch">
-											{#if $tempSettings.useOnThisDay}
+										<label class="form-check-label" for="useALookBackSwitch">
+											{#if $tempSettings.useALookBack}
 												Einträge desselben Tags aus der Vergangenheit anzeigen
 											{:else}
 												Einträge desselben Tags aus der Vergangenheit <b>nicht</b> anzeigen
@@ -898,23 +881,22 @@
 									</div>
 
 									<div>
-										<!-- <label for="useOnThisDayYears" class="form-label">Jahre</label> -->
 										<input
 											type="text"
-											id="useOnThisDayYears"
-											class="form-control {onThisDayYearsInvalid ? 'is-invalid' : ''}"
-											aria-describedby="useOnThisDayHelpBlock"
-											disabled={!$tempSettings.useOnThisDay}
+											id="useALookBackYears"
+											class="form-control {aLookBackYearsInvalid ? 'is-invalid' : ''}"
+											aria-describedby="useALookBackHelpBlock"
+											disabled={!$tempSettings.useALookBack}
 											placeholder="Jahre, mit Komma getrennt"
-											bind:value={onThisDayYears}
+											bind:value={aLookBackYears}
 											invalid
 										/>
-										{#if onThisDayYearsInvalid}
+										{#if aLookBackYearsInvalid}
 											<div class="alert alert-danger mt-2" role="alert" transition:slide>
 												Bitte nur Zahlen eingeben, die durch Kommas getrennt sind.
 											</div>
 										{/if}
-										<div id="useOnThisDayHelpBlock" class="form-text">
+										<div id="useALookBackHelpBlock" class="form-text">
 											Trage hier alle vergangenen Jahre ein, die angezeigt werden sollen. Beispiel: <code
 												>1,5,10</code
 											>. Benutze Komma zur Trennung, verzichte auf Leerzeichen.
