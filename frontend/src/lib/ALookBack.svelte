@@ -123,6 +123,7 @@
 					log?.month - 1,
 					log?.day
 				).toLocaleDateString('locale', {
+					weekday: 'long',
 					day: '2-digit',
 					month: '2-digit',
 					year: 'numeric'
