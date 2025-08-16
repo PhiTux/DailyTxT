@@ -1299,7 +1299,7 @@ func getContext(text, searchString string, exact bool) string {
 	}
 
 	if pos == -1 {
-		return "<em>Dailytxt: Error formatting...</em>"
+		return "<em>DailyTxT: Error formatting...</em>"
 	}
 
 	start := getStartIndex(text, pos)
@@ -1622,10 +1622,10 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	// Set response headers for ZIP download
 	var filename string
 	if period == "periodAll" {
-		filename = fmt.Sprintf("diary_export_all_%s.zip", time.Now().Format("2006-01-02"))
+		filename = fmt.Sprintf("DailyTxT_export_%s_all_%s.zip", utils.GetUsernameByID(userID), time.Now().Format("2006-01-02"))
 	} else {
-		filename = fmt.Sprintf("diary_export_%d-%02d-%02d_to_%d-%02d-%02d.zip",
-			startYear, startMonth, startDay,
+		filename = fmt.Sprintf("DailyTxT_export_%s_%d-%02d-%02d_to_%d-%02d-%02d.zip",
+			utils.GetUsernameByID(userID), startYear, startMonth, startDay,
 			endYear, endMonth, endDay)
 	}
 
@@ -1835,7 +1835,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for month %s: %v", monthKey, err)
 				} else {
-					fileName := fmt.Sprintf("diary_%s.html", monthKey)
+					fileName := fmt.Sprintf("DailyTxT_%s.html", monthKey)
 					htmlWriter, err := zipWriter.Create(fileName)
 					if err != nil {
 						utils.Logger.Printf("Error creating month HTML in ZIP %s: %v", fileName, err)
@@ -1857,7 +1857,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for year %d: %v", year, err)
 				} else {
-					fileName := fmt.Sprintf("diary_%d.html", year)
+					fileName := fmt.Sprintf("DailyTxT_%d.html", year)
 					htmlWriter, err := zipWriter.Create(fileName)
 					if err != nil {
 						utils.Logger.Printf("Error creating year HTML in ZIP %s: %v", fileName, err)
@@ -1879,7 +1879,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 				utils.Logger.Printf("Error generating HTML: %v", err)
 			} else {
 				// Add HTML to ZIP
-				htmlWriter, err := zipWriter.Create("diary_export.html")
+				htmlWriter, err := zipWriter.Create("DailyTxT_export.html")
 				if err != nil {
 					utils.Logger.Printf("Error creating HTML in ZIP: %v", err)
 				} else {
