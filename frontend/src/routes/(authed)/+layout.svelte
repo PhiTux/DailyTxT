@@ -611,7 +611,17 @@
 				const url = window.URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = url;
-				a.download = `DailyTxT_Export_${localStorage.getItem('users')}.zip`;
+
+				const contentDisposition = response.headers['content-disposition'];
+				let filename = 'DailyTxT_Export.zip';
+				if (contentDisposition) {
+					const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+					if (filenameMatch) {
+						filename = filenameMatch[1];
+					}
+				}
+
+				a.download = filename;
 				document.body.appendChild(a);
 				a.click();
 				a.remove();
