@@ -14,6 +14,29 @@ import (
 	"github.com/phitux/dailytxt/backend/utils"
 )
 
+// longTimeoutEndpoints defines endpoints that need extended timeouts
+var longTimeoutEndpoints = map[string]bool{
+	"/logs/uploadFile":   true,
+	"/logs/downloadFile": true,
+	"/logs/exportData":   true,
+	"/users/login":       true,
+}
+
+// timeoutMiddleware applies different timeouts based on the endpoint
+func timeoutMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Check if this endpoint needs a long timeout
+		if longTimeoutEndpoints[r.URL.Path] {
+			// No timeout for these endpoints - let them run as long as needed
+			next.ServeHTTP(w, r)
+		} else {
+			// Apply 15 second timeout for normal endpoints
+			handler := http.TimeoutHandler(next, 15*time.Second, "Request timeout")
+			handler.ServeHTTP(w, r)
+		}
+	})
+}
+
 func main() {
 	// Setup logging
 	logger := log.New(os.Stdout, "dailytxt: ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
@@ -66,17 +89,15 @@ func main() {
 	mux.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
 	mux.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
 
-	// Create a handler chain with Logger and CORS middleware
-	// Logger middleware will be executed first, then CORS
-	handler := middleware.Logger(middleware.CORS(mux))
+	// Create a handler chain with Timeout, Logger and CORS middleware
+	// Timeout middleware will be executed first, then Logger, then CORS
+	handler := timeoutMiddleware(middleware.Logger(middleware.CORS(mux)))
 
-	// Create the server
+	// Create the server without ReadTimeout/WriteTimeout (managed by middleware)
 	server := &http.Server{
-		Addr:         ":8000",
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		Addr:        ":8000",
+		Handler:     handler,
+		IdleTimeout: 60 * time.Second, // Keep IdleTimeout for cleanup
 	}
 
 	// Start the server in a goroutine

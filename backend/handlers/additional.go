@@ -514,19 +514,21 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Read file
-	fileBytes, err := io.ReadAll(file)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Get encryption key
+	// Get encryption key first (before reading large file)
 	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
 		return
 	}
+
+	// Read file into a buffer (more memory efficient)
+	fileBytes, err := io.ReadAll(file)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// Ensure fileBytes is cleared when function exits
+	defer func() { fileBytes = nil }()
 
 	// Encrypt file
 	encryptedFile, err := utils.EncryptFile(fileBytes, encKey)
@@ -534,12 +536,20 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error encrypting file: %v", err), http.StatusInternalServerError)
 		return
 	}
+	// Ensure encryptedFile is cleared when function exits
+	defer func() { encryptedFile = nil }()
+
+	// Clear original file data from memory immediately after encryption
+	fileBytes = nil
 
 	// Write file
 	if err := utils.WriteFile(encryptedFile, userID, uuid); err != nil {
 		http.Error(w, fmt.Sprintf("Error writing file: %v", err), http.StatusInternalServerError)
 		return
 	}
+
+	// Clear encrypted data from memory immediately after writing
+	encryptedFile = nil
 
 	// Get month data
 	content, err := utils.GetMonth(userID, year, month)
@@ -651,6 +661,8 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error reading file: %v", err), http.StatusInternalServerError)
 		return
 	}
+	// Ensure encryptedFile is cleared when function exits
+	defer func() { encryptedFile = nil }()
 
 	// Decrypt file
 	decryptedFile, err := utils.DecryptFile(encryptedFile, encKey)
@@ -658,6 +670,11 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, fmt.Sprintf("Error decrypting file: %v", err), http.StatusInternalServerError)
 		return
 	}
+	// Ensure decryptedFile is cleared when function exits
+	defer func() { decryptedFile = nil }()
+
+	// Clear encrypted data from memory immediately after decryption
+	encryptedFile = nil
 
 	// Set response headers for streaming
 	w.Header().Set("Content-Type", "application/octet-stream")
