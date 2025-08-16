@@ -581,6 +581,53 @@
 			}
 		);
 	}
+
+	let exportPeriod = $state('periodAll');
+	let exportStartDate = $state('');
+	let exportEndDate = $state('');
+	let exportImagesInHTML = $state(true);
+	let exportSplit = $state('aio');
+	let exportTagsInHTML = $state(true);
+	let isExporting = $state(false);
+
+	function exportData() {
+		if (isExporting) return;
+		isExporting = true;
+
+		axios
+			.get(API_URL + '/logs/exportData', {
+				params: {
+					period: exportPeriod,
+					startDate: exportStartDate,
+					endDate: exportEndDate,
+					imagesInHTML: exportImagesInHTML,
+					split: exportSplit,
+					tagsInHTML: exportTagsInHTML
+				},
+				responseType: 'blob' // Expect a binary response
+			})
+			.then((response) => {
+				const blob = new Blob([response.data], { type: 'application/zip' });
+				const url = window.URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = url;
+				a.download = `DailyTxT_Export_${localStorage.getItem('users')}.zip`;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				window.URL.revokeObjectURL(url);
+			})
+			.catch((error) => {
+				console.error(error);
+
+				// show toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorExportData'));
+				toast.show();
+			})
+			.finally(() => {
+				isExporting = false;
+			});
+	}
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -1072,7 +1119,152 @@
 
 							<div id="data">
 								<h3 class="text-primary">📁 Daten</h3>
-								<div><h5>Export</h5></div>
+								<div>
+									<h5>Export</h5>
+									Exportiere deine Einträge in einer formatierten HTML-Datei. Bilder werden wahlweise
+									in der HTML eingebunden. Alle Dateien werden außerdem in einer Zip-Datei bereitgestellt.
+
+									<h6>Zeitraum</h6>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="period"
+											value="periodAll"
+											id="periodAll"
+											bind:group={exportPeriod}
+										/>
+										<label class="form-check-label" for="periodAll">Gesamter Zeitraum</label>
+									</div>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="period"
+											value="periodVariable"
+											id="periodVariable"
+											bind:group={exportPeriod}
+										/>
+										<label class="form-check-label" for="periodVariable">Variabler Zeitraum</label>
+										{#if exportPeriod === 'periodVariable'}
+											<div class="d-flex flex-row" transition:slide>
+												<div class="me-2">
+													<label for="exportStartDate">Von:</label>
+													<input
+														type="date"
+														class="form-control me-2"
+														id="exportStartDate"
+														bind:value={exportStartDate}
+													/>
+												</div>
+												<div>
+													<label for="exportEndDate">Bis:</label>
+													<input
+														type="date"
+														class="form-control"
+														id="exportEndDate"
+														bind:value={exportEndDate}
+													/>
+												</div>
+											</div>
+											{#if exportStartDate !== '' && exportEndDate !== '' && exportStartDate > exportEndDate}
+												<div class="alert alert-danger mt-2" role="alert" transition:slide>
+													Das Startdatum muss vor dem Enddatum liegen!
+												</div>
+											{/if}
+										{/if}
+									</div>
+
+									<h6>Anzahl der HTML-Dokumente</h6>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="split"
+											value="aio"
+											id="splitAIO"
+											bind:group={exportSplit}
+										/>
+										<label class="form-check-label" for="splitAIO">Eine einzige HTML</label>
+									</div>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="split"
+											value="year"
+											id="splitYear"
+											bind:group={exportSplit}
+										/>
+										<label class="form-check-label" for="splitYear">Eine HTML pro Jahr</label>
+									</div>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="split"
+											value="month"
+											id="splitMonth"
+											bind:group={exportSplit}
+										/>
+										<label class="form-check-label" for="splitMonth">Eine HTML pro Monat</label>
+									</div>
+
+									<h6>Bilder in HTML anzeigen</h6>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="checkbox"
+											name="images"
+											id="exportImagesInHTML"
+											bind:checked={exportImagesInHTML}
+										/>
+										<label class="form-check-label" for="exportImagesInHTML">
+											Bilder direkt unter dem Text anzeigen <em
+												>(werden zudem immer als Link bereitgestellt)</em
+											>
+										</label>
+									</div>
+
+									<h6>Tags drucken</h6>
+									<div class="form-check">
+										<input
+											class="form-check-input"
+											type="checkbox"
+											id="exportTagsInHTML"
+											bind:checked={exportTagsInHTML}
+										/>
+										<label class="form-check-label" for="exportTagsInHTML"
+											>Tags in der HTML anzeigen</label
+										>
+									</div>
+
+									<div class="form-text">
+										<u>Hinweise:</u>
+										<ul>
+											<li>Die HTML wird keinen Verlauf der einzelnen Tage enthalten.</li>
+											<li>
+												Ein Re-Import ist nicht möglich. Diese Funktion dient nicht dem Backup,
+												sondern rein dem Export, um eine einfach lesbare HTML-Datei zu erhalten.
+											</li>
+										</ul>
+									</div>
+									<button
+										class="btn btn-primary mt-3"
+										onclick={exportData}
+										data-sveltekit-noscroll
+										disabled={isExporting ||
+											(exportPeriod === 'periodVariable' &&
+												(exportStartDate === '' || exportEndDate === ''))}
+									>
+										Exportieren
+										{#if isExporting}
+											<div class="spinner-border spinner-border-sm ms-2" role="status">
+												<span class="visually-hidden">Loading...</span>
+											</div>
+										{/if}
+									</button>
+								</div>
 								<div><h5>Import</h5></div>
 							</div>
 
@@ -1457,9 +1649,32 @@
 			<div class="toast-body">Fehler beim Logout</div>
 		</div>
 	</div>
+
+	<div
+		id="toastErrorExportData"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">Fehler beim Exportieren!</div>
+		</div>
+	</div>
 </div>
 
 <style>
+	h5,
+	h6 {
+		font-weight: 600;
+		text-decoration: underline;
+		text-decoration-color: #0d6efd;
+	}
+
+	h6 {
+		margin-top: 0.7rem;
+	}
+
 	.backupCode {
 		font-size: 15pt;
 	}

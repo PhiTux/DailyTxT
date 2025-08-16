@@ -4,11 +4,11 @@ go 1.24
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
+	github.com/google/uuid v1.6.0
 	golang.org/x/crypto v0.19.0
 )
 
 require (
-	github.com/google/uuid v1.6.0 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
+	github.com/gomarkdown/markdown v0.0.0-20250810172220-2e2c11897d1a // indirect
 	golang.org/x/sys v0.17.0 // indirect
 )
