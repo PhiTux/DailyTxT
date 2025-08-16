@@ -1641,6 +1641,9 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	var yearlyEntries map[int][]LogEntry = make(map[int][]LogEntry)
 	var monthlyEntries map[string][]LogEntry = make(map[string][]LogEntry)
 
+	// Track used filenames per directory to avoid conflicts
+	var usedFilenamesPerDay map[string]map[string]bool = make(map[string]map[string]bool)
+
 	// Helper function to check if a date is within range
 	isDateInRange := func(year, month, day int) bool {
 		if period == "periodAll" {
@@ -1773,8 +1776,15 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 							continue
 						}
 
-						// Add file to ZIP
-						filePath := fmt.Sprintf("files/%d-%02d-%02d/%s", year, month, dayInt, decryptedFilename)
+						// Create unique filename to avoid conflicts in ZIP
+						dayKey := fmt.Sprintf("%d-%02d-%02d", year, month, dayInt)
+						if usedFilenamesPerDay[dayKey] == nil {
+							usedFilenamesPerDay[dayKey] = make(map[string]bool)
+						}
+						uniqueFilename := generateUniqueFilename(usedFilenamesPerDay[dayKey], decryptedFilename)
+
+						// Add file to ZIP with unique filename
+						filePath := fmt.Sprintf("files/%d-%02d-%02d/%s", year, month, dayInt, uniqueFilename)
 						fileWriter, err := zipWriter.Create(filePath)
 						if err != nil {
 							utils.Logger.Printf("Error creating file in ZIP %s: %v", filePath, err)
@@ -1787,7 +1797,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 							continue
 						}
 
-						entry.Files = append(entry.Files, decryptedFilename)
+						entry.Files = append(entry.Files, uniqueFilename)
 					}
 				}
 
@@ -2518,6 +2528,29 @@ func loadAndDecryptTags(userID int, derivedKey string) (map[int]Tag, error) {
 	}
 
 	return tagMap, nil
+}
+
+// generateUniqueFilename creates a unique filename by appending (2), (3), etc. if conflicts exist
+func generateUniqueFilename(usedFilenames map[string]bool, originalFilename string) string {
+	if !usedFilenames[originalFilename] {
+		usedFilenames[originalFilename] = true
+		return originalFilename
+	}
+
+	// Extract file extension
+	ext := filepath.Ext(originalFilename)
+	nameWithoutExt := strings.TrimSuffix(originalFilename, ext)
+
+	// Try appending (2), (3), etc.
+	counter := 2
+	for {
+		newFilename := fmt.Sprintf("%s (%d)%s", nameWithoutExt, counter, ext)
+		if !usedFilenames[newFilename] {
+			usedFilenames[newFilename] = true
+			return newFilename
+		}
+		counter++
+	}
 }
 
 // renderMarkdownToHTML converts markdown to HTML using gomarkdown library
