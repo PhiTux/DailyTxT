@@ -2278,7 +2278,7 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 	// Header
 	html.WriteString(`    <div class="header">
         <h1>DailyTxT Export</h1>`)
-	html.WriteString(fmt.Sprintf(`        <p>Benutzer ID: %d</p>`, userID))
+	html.WriteString(fmt.Sprintf(`        <p>Benutzer: %s</p>`, utils.GetUsernameByID(userID)))
 	html.WriteString(fmt.Sprintf(`        <p>Exportiert am: %s</p>`, time.Now().Format("02.01.2006 15:04:05")))
 	html.WriteString(fmt.Sprintf(`        <p>Anzahl Einträge: %d</p>`, len(entries)))
 	html.WriteString(`    </div>

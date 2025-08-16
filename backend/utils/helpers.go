@@ -367,3 +367,31 @@ func CopyDir(src, dst string, logger *log.Logger) error {
 	logger.Printf("Copied directory from %s to %s", src, dst)
 	return nil
 }
+
+func GetUsernameByID(userID int) string {
+	// Get users
+	users, err := GetUsers()
+	if err != nil {
+		fmt.Printf("failed to get users: %v", err)
+		return ""
+	}
+
+	// Find user by ID
+	for _, userInterface := range users["users"].([]any) {
+		user, ok := userInterface.(map[string]any)
+		if !ok {
+			continue // Skip if user is not a map
+		}
+		id := int(user["user_id"].(float64))
+		if id == userID {
+			if username, ok := user["username"].(string); ok {
+				return username
+			}
+			fmt.Printf("username not found for user ID: %d\n", userID)
+			return ""
+		}
+	}
+
+	fmt.Printf("user not found with ID: %d\n", userID)
+	return ""
+}
