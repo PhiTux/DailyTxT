@@ -35,6 +35,9 @@
 	import { templates, insertTemplate } from '$lib/templateStore';
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
+	import { T, getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -1254,15 +1257,18 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Tag vollständig löschen?</h5>
+					<h5 class="modal-title">{$t('modal.deleteDay.title')}</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
 					></button>
 				</div>
 				<div class="modal-body">
-					Du löschst <b><u>sämtliche Daten</u></b> vom
-					<b><u>{`${$selectedDate.day}.${$selectedDate.month}.${$selectedDate.year}`}</u></b>!<br
-					/><br />
-					Dies beinhaltet:
+					{@html $t('modal.deleteDay.description', {
+						day: $selectedDate.day,
+						month: $selectedDate.month,
+						year: $selectedDate.year
+					})}
+					<br /><br />
+					{$t('modal.deleteDay.thisIncludes')}
 					<ul>
 						{#snippet deleteDayBool(available, description)}
 							<li class={available ? 'text-decoration-underline' : 'text-muted fst-italic'}>
@@ -1273,26 +1279,36 @@
 
 						{#snippet deleteDayCount(item, description)}
 							<li class={item.length > 0 ? 'text-decoration-underline' : 'text-muted fst-italic'}>
-								{item.length}
 								{description}
 							</li>
 						{/snippet}
 
-						{@render deleteDayBool(logDateWritten !== '', 'Tagebucheintrag')}
-						{@render deleteDayBool(historyAvailable, 'Verlauf')}
+						{@render deleteDayBool(logDateWritten !== '', $t('modal.deleteDay.logEntry'))}
+						{@render deleteDayBool(historyAvailable, $t('modal.deleteDay.history'))}
 
-						{@render deleteDayCount(filesOfDay, 'Dateien')}
-						{@render deleteDayCount(selectedTags, 'Tags')}
-						{@render deleteDayBool($cal.daysBookmarked.includes($selectedDate.day), 'Lesezeichen')}
+						{@render deleteDayCount(
+							filesOfDay,
+							$t('modal.deleteDay.files', { files: filesOfDay.length })
+						)}
+						{@render deleteDayCount(
+							selectedTags,
+							$t('modal.deleteDay.tags', { tags: selectedTags.length })
+						)}
+						{@render deleteDayBool(
+							$cal.daysBookmarked.includes($selectedDate.day),
+							$t('modal.deleteDay.bookmark')
+						)}
 					</ul>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+						>{$t('modal.deleteDay.button_close')}</button
+					>
 					<button
 						onclick={() => deleteDay()}
 						type="button"
-						class="btn btn-primary"
-						data-bs-dismiss="modal">Löschen</button
+						class="btn btn-danger"
+						data-bs-dismiss="modal">{$t('modal.deleteDay.button_delete')}</button
 					>
 				</div>
 			</div>

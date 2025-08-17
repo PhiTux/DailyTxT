@@ -1,4 +1,5 @@
 import {writable} from 'svelte/store';
+import json from '../i18n/flags.json';
 
 function formatBytes(bytes) {
 	if (!+bytes) return '0 Bytes';
@@ -20,7 +21,11 @@ function sameDate(date1, date2) {
 	);
 }
 
-export { formatBytes, sameDate };
+function loadFlagEmoji(language) {
+	return json[language] || '';
+}
+
+export { formatBytes, sameDate, loadFlagEmoji };
 
 export let alwaysShowSidenav = writable(true);
 

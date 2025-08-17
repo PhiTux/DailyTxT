@@ -14,7 +14,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, loadFlagEmoji } from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
 		faRightFromBracket,
@@ -31,6 +31,10 @@
 	import axios from 'axios';
 	import { page } from '$app/state';
 	import { blur, slide, fade } from 'svelte/transition';
+	import { T, getTranslate, getTolgee } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	let { children } = $props();
 	let inDuration = 150;
@@ -125,6 +129,7 @@
 			.then((response) => {
 				$settings = response.data;
 				aLookBackYears = $settings.aLookBackYears.toString();
+				updateLanguage();
 			})
 			.catch((error) => {
 				console.error(error);
@@ -162,6 +167,7 @@
 			});
 	});
 
+	// check if settings have changed (special parsing of aLookBackYears needed)
 	let settingsHaveChanged = $derived(
 		JSON.stringify($settings) !== JSON.stringify($tempSettings) ||
 			JSON.stringify($settings.aLookBackYears) !==
@@ -172,6 +178,41 @@
 						.map((year) => parseInt(year.trim()))
 				)
 	);
+
+	function updateLanguage() {
+		console.log('updateLanguage()');
+		if ($settings.useBrowserLanguage) {
+			let browserLanguage = tolgeesMatchForBrowserLanguage();
+			$tolgee.changeLanguage(
+				browserLanguage === '' ? $tolgee.getInitialOptions().defaultLanguage : browserLanguage
+			);
+		} else {
+			$tolgee.changeLanguage($settings.language);
+		}
+	}
+
+	// Check if Tolgee contains the browser language
+	// returns "" if the browser language is not available
+	// return the language code if it is available
+	function tolgeesMatchForBrowserLanguage() {
+		const browserLanguage = window.navigator.language;
+		const availableLanguages = $tolgee
+			.getInitialOptions()
+			.availableLanguages.map((lang) => lang.toLowerCase());
+
+		// check if tolgee contains an exact match for the browser language OR a match for the first two characters (e.g., 'en' for 'en-US')
+		if (availableLanguages.includes(browserLanguage.toLowerCase())) {
+			return browserLanguage;
+		}
+		if (browserLanguage.length > 2) {
+			const shortBrowserLanguage = browserLanguage.slice(0, 2);
+			if (availableLanguages.includes(shortBrowserLanguage.toLowerCase())) {
+				return shortBrowserLanguage;
+			}
+		}
+
+		return '';
+	}
 
 	let isSaving = $state(false);
 	function saveUserSettings() {
@@ -188,6 +229,9 @@
 			.then((response) => {
 				if (response.data.success) {
 					$settings = $tempSettings;
+
+					// update language
+					updateLanguage();
 
 					// show toast
 					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveSettings'));
@@ -712,7 +756,7 @@
 		<!--  -->
 		<div class="modal-content shadow-lg">
 			<div class="modal-header">
-				<h1>Settings</h1>
+				<h1>{$t('settings.title')}</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body" id="modal-body">
@@ -841,11 +885,66 @@
 								</div>
 
 								<div id="language">
-									<h5>Sprache</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
+									{#if $tempSettings.useBrowserLanguage !== $settings.useBrowserLanguage || $tempSettings.language !== $settings.language}
+										<div class="unsaved-changes" transition:slide></div>
+									{/if}
+									<h5>🌐 Sprache</h5>
+									<div class="form-check mt-2">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="language"
+											id="language_auto"
+											value={true}
+											bind:group={$tempSettings.useBrowserLanguage}
+										/>
+										<label class="form-check-label" for="language_auto">
+											Sprache anhand des Browsers ermitteln (aktuell: <code
+												>{window.navigator.language}</code
+											>
+											{#if tolgeesMatchForBrowserLanguage() !== '' && tolgeesMatchForBrowserLanguage() !== window.navigator.language}
+												➔ <code>{tolgeesMatchForBrowserLanguage()}</code> wird verwendet
+											{/if}
+											)
+										</label>
+										{#if $tempSettings.useBrowserLanguage && tolgeesMatchForBrowserLanguage() === ''}
+											<div
+												transition:slide
+												disabled={!$settings.useBrowserLanguage}
+												class="alert alert-danger"
+												role="alert"
+											>
+												Die Sprache <code>{window.navigator.language}</code> ist nicht verfügbar. Es
+												wird die Standardsprache
+												<code>{$tolgee.getInitialOptions().defaultLanguage}</code> verwendet.
+											</div>
+										{/if}
+									</div>
+									<div class="form-check mt-2">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="language"
+											id="language_manual"
+											value={false}
+											bind:group={$tempSettings.useBrowserLanguage}
+										/>
+										<label class="form-check-label" for="language_manual">
+											Sprache dauerhaft festlegen
+											{#if !$tempSettings.useBrowserLanguage}
+												<select
+													transition:slide
+													class="form-select"
+													bind:value={$tempSettings.language}
+													disabled={$tempSettings.useBrowserLanguage}
+												>
+													{#each $tolgee.getInitialOptions().availableLanguages as lang}
+														<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+													{/each}
+												</select>
+											{/if}
+										</label>
+									</div>
 								</div>
 								<div id="timezone">
 									{#if $tempSettings.useBrowserTimezone !== $settings.useBrowserTimezone || ($tempSettings.timezone !== undefined && $tempSettings.timezone?.value !== $settings.timezone?.value)}

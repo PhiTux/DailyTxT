@@ -426,6 +426,8 @@ func GetDefaultSettings() map[string]any {
 		"aLookBackYears":             []int{1, 5, 10},
 		"useBrowserTimezone":         true,
 		"timezone":                   "UTC",
+		"useBrowserLanguage":         true,
+		"language":                   "en",
 	}
 }
 

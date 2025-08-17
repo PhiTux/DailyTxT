@@ -4,6 +4,9 @@
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
 	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let { bookmarkDay } = $props();
 
@@ -205,7 +208,7 @@
 						month: new Date().getMonth() + 1,
 						year: new Date().getFullYear()
 					};
-				}}>Heute</button
+				}}>{$t('calendar.button_today')}</button
 			>
 		</div>
 		<div class="col-4 d-flex justify-content-end">

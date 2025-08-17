@@ -11,6 +11,28 @@
 	import trianglify from 'trianglify';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
 	import * as bootstrap from 'bootstrap';
+	import {
+		TolgeeProvider,
+		Tolgee,
+		DevTools,
+		LanguageDetector,
+		LanguageStorage
+	} from '@tolgee/svelte';
+	import { FormatIcu } from '@tolgee/format-icu';
+	import { use } from 'marked';
+
+	const tolgee = Tolgee()
+		.use(DevTools())
+		.use(FormatIcu())
+		.use(LanguageStorage())
+		.init({
+			availableLanguages: ['en', 'de', 'fr'],
+			defaultLanguage: 'en',
+
+			// for development
+			apiUrl: import.meta.env.VITE_TOLGEE_API_URL,
+			apiKey: import.meta.env.VITE_TOLGEE_API_KEY
+		});
 
 	let { children } = $props();
 	let inDuration = 150;
@@ -111,35 +133,37 @@
 	let routeToFromLoginKey = $derived(page.url.pathname === '/login');
 </script>
 
-<main class="d-flex flex-column">
-	<div class="wrapper h-100">
-		{#key routeToFromLoginKey}
-			<div
-				class="transition-wrapper h-100"
-				out:blur={{ duration: outDuration }}
-				in:blur={{ duration: inDuration, delay: outDuration }}
-			>
-				{@render children()}
-			</div>
-		{/key}
-	</div>
+<TolgeeProvider {tolgee}>
+	<main class="d-flex flex-column">
+		<div class="wrapper h-100">
+			{#key routeToFromLoginKey}
+				<div
+					class="transition-wrapper h-100"
+					out:blur={{ duration: outDuration }}
+					in:blur={{ duration: inDuration, delay: outDuration }}
+				>
+					{@render children()}
+				</div>
+			{/key}
+		</div>
 
-	<div class="toast-container position-fixed bottom-0 end-0 p-3">
-		<div
-			id="toastAvailableBackupCodesWarning"
-			class="toast align-items-center {available_backup_codes > 3
-				? 'text-bg-warning'
-				: 'text-bg-danger'}"
-			role="alert"
-			aria-live="assertive"
-			aria-atomic="true"
-		>
-			<div class="d-flex">
-				<div class="toast-body">Noch {available_backup_codes} Backup-Codes verfügbar!</div>
+		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+			<div
+				id="toastAvailableBackupCodesWarning"
+				class="toast align-items-center {available_backup_codes > 3
+					? 'text-bg-warning'
+					: 'text-bg-danger'}"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex">
+					<div class="toast-body">Noch {available_backup_codes} Backup-Codes verfügbar!</div>
+				</div>
 			</div>
 		</div>
-	</div>
-</main>
+	</main>
+</TolgeeProvider>
 
 <style>
 	main {

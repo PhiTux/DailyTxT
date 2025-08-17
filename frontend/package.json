@@ -34,6 +34,8 @@
 	"dependencies": {
 		"@fortawesome/free-solid-svg-icons": "^6.7.2",
 		"@popperjs/core": "^2.11.8",
+		"@tolgee/format-icu": "^6.2.7",
+		"@tolgee/svelte": "^6.2.7",
 		"axios": "^1.7.8",
 		"bootstrap": "^5.3.3",
 		"dayjs": "^1.11.13",

@@ -5,6 +5,12 @@
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
 	import { API_URL } from '$lib/APIurl.js';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
+	import { loadFlagEmoji } from '$lib/helpers.js';
+
+	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
+	let selectedLanguage = $state('');
 
 	let show_login_failed = $state(false);
 	let show_login_warning_empty_fields = $state(false);
@@ -39,7 +45,36 @@
 		migration_phases.indexOf(migration_phase)
 	);
 
+	// Check if Tolgee contains the browser language
+	// returns "" if the browser language is not available
+	// return the language code if it is available
+	function tolgeesMatchForBrowserLanguage() {
+		const browserLanguage = window.navigator.language;
+		const availableLanguages = $tolgee
+			.getInitialOptions()
+			.availableLanguages.map((lang) => lang.toLowerCase());
+
+		// check if tolgee contains an exact match for the browser language OR a match for the first two characters (e.g., 'en' for 'en-US')
+		if (availableLanguages.includes(browserLanguage.toLowerCase())) {
+			return browserLanguage;
+		}
+		if (browserLanguage.length > 2) {
+			const shortBrowserLanguage = browserLanguage.slice(0, 2);
+			if (availableLanguages.includes(shortBrowserLanguage.toLowerCase())) {
+				return shortBrowserLanguage;
+			}
+		}
+
+		return '';
+	}
+
 	onMount(() => {
+		selectedLanguage = tolgeesMatchForBrowserLanguage();
+		if (selectedLanguage === '') {
+			selectedLanguage = $tolgee.getInitialOptions().defaultLanguage;
+		}
+		$tolgee.changeLanguage(selectedLanguage);
+
 		// if params error=440 or error=401, show toast
 		if (window.location.search.includes('error=440')) {
 			const toast = new bootstrap.Toast(document.getElementById('toastLoginExpired'));
@@ -230,7 +265,7 @@
 									placeholder="Username"
 									autofocus
 								/>
-								<label for="loginUsername">Username</label>
+								<label for="loginUsername">{$t('login.username')}</label>
 							</div>
 							<div class="form-floating mb-3">
 								<input
@@ -239,7 +274,7 @@
 									id="loginPassword"
 									placeholder="Password"
 								/>
-								<label for="loginPassword">Password</label>
+								<label for="loginPassword">{$t('login.password')}</label>
 							</div>
 							{#if is_migrating || migration_phase == 'completed'}
 								<div class="alert alert-info" role="alert">
@@ -370,7 +405,7 @@
 											<span class="visually-hidden">Loading...</span>
 										</div>
 									{/if}
-									Login
+									{$t('login.login')}
 								</button>
 							</div>
 						</form>
@@ -387,7 +422,7 @@
 						aria-expanded="false"
 						aria-controls="collapseTwo"
 					>
-						Registrierung
+						{$t('login.create_account')}
 					</button>
 				</h2>
 				<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#loginAccordion">
@@ -401,7 +436,7 @@
 									id="registerUsername"
 									placeholder="Username"
 								/>
-								<label for="registerUsername">Username</label>
+								<label for="registerUsername">{$t('login.username')}</label>
 							</div>
 							<div class="form-floating mb-3">
 								<input
@@ -411,7 +446,7 @@
 									id="registerPassword"
 									placeholder="Password"
 								/>
-								<label for="registerPassword">Password</label>
+								<label for="registerPassword">{$t('login.password')}</label>
 							</div>
 							<div class="form-floating mb-3">
 								<input
@@ -421,7 +456,7 @@
 									id="registerPassword2"
 									placeholder="Password bestätigen"
 								/>
-								<label for="registerPassword2">Password bestätigen</label>
+								<label for="registerPassword2">{$t('login.confirm_password')}</label>
 							</div>
 							{#if !registration_allowed}
 								<div class="alert alert-danger" role="alert">
@@ -473,6 +508,23 @@
 		</div>
 	</div>
 
+	<div class="language-select-wrapper">
+		<div class="input-group mb-3">
+			<span class="input-group-text" id="basic-addon1">🌐</span>
+			<select
+				class="form-select"
+				bind:value={selectedLanguage}
+				onchange={() => {
+					$tolgee.changeLanguage(selectedLanguage);
+				}}
+			>
+				{#each $tolgee.getInitialOptions().availableLanguages as lang}
+					<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+				{/each}
+			</select>
+		</div>
+	</div>
+
 	<div class="toast-container position-fixed bottom-0 end-0 p-3">
 		<div
 			id="toastLoginExpired"
@@ -513,6 +565,12 @@
 </div>
 
 <style>
+	.language-select-wrapper {
+		position: absolute;
+		top: 10px;
+		right: 10px;
+	}
+
 	.progress-item {
 		opacity: 0.5;
 	}
