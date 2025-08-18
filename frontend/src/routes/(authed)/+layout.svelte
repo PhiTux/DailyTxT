@@ -14,7 +14,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav, loadFlagEmoji } from '$lib/helpers.js';
+	import { alwaysShowSidenav, generateNeonMesh, loadFlagEmoji } from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
 		faRightFromBracket,
@@ -24,7 +24,9 @@
 		faTriangleExclamation,
 		faTrash,
 		faCopy,
-		faCheck
+		faCheck,
+		faSun,
+		faMoon
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 	import SelectTimezone from '$lib/SelectTimezone.svelte';
@@ -128,8 +130,12 @@
 			.get(API_URL + '/users/getUserSettings')
 			.then((response) => {
 				$settings = response.data;
+				$tempSettings = JSON.parse(JSON.stringify($settings));
 				aLookBackYears = $settings.aLookBackYears.toString();
 				updateLanguage();
+
+				// set background
+				setBackground();
 			})
 			.catch((error) => {
 				console.error(error);
@@ -180,7 +186,6 @@
 	);
 
 	function updateLanguage() {
-		console.log('updateLanguage()');
 		if ($settings.useBrowserLanguage) {
 			let browserLanguage = tolgeesMatchForBrowserLanguage();
 			$tolgee.changeLanguage(
@@ -214,6 +219,16 @@
 		return '';
 	}
 
+	function setBackground() {
+		if ($settings.background === 'monochrome') {
+			document.querySelector('.background').style.background = '';
+			document.body.style.backgroundColor = $settings.monochromeBackgroundColor;
+		} else if ($settings.background === 'gradient') {
+			document.body.style.backgroundColor = '';
+			generateNeonMesh();
+		}
+	}
+
 	let isSaving = $state(false);
 	function saveUserSettings() {
 		if (isSaving) return;
@@ -232,6 +247,9 @@
 
 					// update language
 					updateLanguage();
+
+					// set background
+					setBackground();
 
 					// show toast
 					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveSettings'));
@@ -685,7 +703,7 @@
 </script>
 
 <div class="d-flex flex-column h-100">
-	<nav class="navbar navbar-expand-lg bg-body-tertiary">
+	<nav class="navbar navbar-expand-lg glass">
 		<div class="row w-100">
 			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start align-items-center">
 				{#if !$alwaysShowSidenav}
@@ -754,7 +772,7 @@
 		class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-sm-down"
 	>
 		<!--  -->
-		<div class="modal-content shadow-lg">
+		<div class="modal-content shadow-lg glass">
 			<div class="modal-header">
 				<h1>{$t('settings.title')}</h1>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -786,32 +804,96 @@
 							<div id="appearance">
 								<h3 class="text-primary">🎨 Aussehen</h3>
 								<div id="lightdark">
-									<h5>Light/Dark-Mode</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
+									{#if $tempSettings.darkModeAutoDetect !== $settings.darkModeAutoDetect || $tempSettings.useDarkMode !== $settings.useDarkMode}
+										<div class="unsaved-changes" transition:slide></div>
+									{/if}
+									<h5>Light-/Dark-Mode</h5>
+									<div class="form-check mt-2">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="darkMode"
+											id="darkModeAutoTrue"
+											value={true}
+											bind:group={$tempSettings.darkModeAutoDetect}
+										/>
+										<label class="form-check-label" for="darkModeAutoTrue">
+											Light-/Dark-Mode automatisch erkennen (aktuell:
+											{#if window.matchMedia('(prefers-color-scheme: dark)').matches}
+												<b>Dark <Fa icon={faMoon} /></b>
+											{:else}
+												<b>Light <Fa icon={faSun} /></b>
+											{/if})
+										</label>
+									</div>
+									<div class="form-check mt-2">
+										<input
+											class="form-check-input"
+											type="radio"
+											name="darkMode"
+											id="darkModeAutoFalse"
+											value={false}
+											bind:group={$tempSettings.darkModeAutoDetect}
+										/>
+										<label class="form-check-label" for="darkModeAutoFalse">
+											Light-/Dark-Mode manuell festlegen
+										</label>
+										{#if $tempSettings.darkModeAutoDetect === false}
+											<div class="form-check form-switch d-flex flex-row ps-0" transition:slide>
+												<label class="form-check-label me-5" for="darkModeSwitch">
+													<Fa icon={faSun} />
+												</label>
+												<input
+													class="form-check-input"
+													bind:checked={$tempSettings.useDarkMode}
+													type="checkbox"
+													role="switch"
+													id="darkModeSwitch"
+												/>
+												<label class="form-check-label ms-2" for="darkModeSwitch">
+													<Fa icon={faMoon} />
+												</label>
+											</div>
+										{/if}
+									</div>
 								</div>
 								<div id="background">
+									{#if $tempSettings.background !== $settings.background || $tempSettings.monochromeBackgroundColor !== $settings.monochromeBackgroundColor}
+										<div class="unsaved-changes" transition:slide></div>
+									{/if}
+
 									<h5>Hintergrund</h5>
-									<div class="d-flex flex-row justify-content-start">
-										<label for="trianglifyOpacity" class="form-label"
-											>Transparenz der Dreiecke</label
-										>
+									<div class="form-check mt-2">
 										<input
-											bind:value={$trianglifyOpacity}
-											type="range"
-											class="mx-3 form-range"
-											id="trianglifyOpacity"
-											min="0"
-											max="1"
-											step="0.01"
+											class="form-check-input"
+											type="radio"
+											name="background"
+											id="background_gradient"
+											value={'gradient'}
+											bind:group={$tempSettings.background}
 										/>
+										<label class="form-check-label" for="background_gradient">
+											Farbverlauf (wird bei jedem Seitenaufruf neu generiert)
+										</label>
+									</div>
+									<div class="form-check mt-2">
 										<input
-											bind:value={$trianglifyOpacity}
-											type="number"
-											id="trianglifyOpacityNumber"
+											class="form-check-input"
+											type="radio"
+											name="background"
+											id="background_monochrome"
+											value={'monochrome'}
+											bind:group={$tempSettings.background}
 										/>
+										<label class="form-check-label" for="background_monochrome"> Einfarbig </label>
+										{#if $tempSettings.background === 'monochrome'}
+											<input
+												transition:slide
+												class="form-control form-control-color"
+												bind:value={$tempSettings.monochromeBackgroundColor}
+												type="color"
+											/>
+										{/if}
 									</div>
 								</div>
 							</div>
@@ -1870,9 +1952,10 @@
 	}
 
 	.modal-content {
-		backdrop-filter: blur(10px) saturate(150%);
+		/* backdrop-filter: blur(10px) saturate(150%);
+		background-color: rgba(208, 208, 208, 0.61); */
+
 		/* background-color: rgba(43, 56, 78, 0.75); */
-		background-color: rgba(208, 208, 208, 0.61);
 		/* color: rgb(22, 22, 22); */
 	}
 

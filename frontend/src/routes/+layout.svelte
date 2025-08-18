@@ -1,25 +1,16 @@
 <script>
 	import { blur } from 'svelte/transition';
 	import axios from 'axios';
-	//import { dev } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../scss/styles.scss';
-	import { useTrianglify, trianglifyOpacity } from '$lib/settingsStore.js';
+	import { trianglifyOpacity } from '$lib/settingsStore.js';
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
-	import trianglify from 'trianglify';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, generateNeonMesh } from '$lib/helpers.js';
 	import * as bootstrap from 'bootstrap';
-	import {
-		TolgeeProvider,
-		Tolgee,
-		DevTools,
-		LanguageDetector,
-		LanguageStorage
-	} from '@tolgee/svelte';
+	import { TolgeeProvider, Tolgee, DevTools, LanguageStorage } from '@tolgee/svelte';
 	import { FormatIcu } from '@tolgee/format-icu';
-	import { use } from 'marked';
 
 	const tolgee = Tolgee()
 		.use(DevTools())
@@ -80,30 +71,6 @@
 		}
 	);
 
-	function createBackground() {
-		if ($useTrianglify) {
-			//remove old canvas
-			const oldCanvas = document.querySelector('canvas');
-			if (oldCanvas) {
-				oldCanvas.remove();
-			}
-
-			//xColors: ['#F3F3F3', '#FEFEFE', '#E5E5E5'],
-			const canvas = trianglify({
-				width: window.innerWidth,
-				height: window.innerHeight,
-				xColors: ['#FA2'],
-				fill: false,
-				strokeWidth: 1,
-				cellSize: 100
-			});
-
-			document.body.appendChild(canvas.toCanvas());
-			document.querySelector('canvas').style =
-				'position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.4; width: 100%; height: 100%; background-color: #eaeaea;';
-		}
-	}
-
 	$effect(() => {
 		if ($trianglifyOpacity) {
 			if (document.querySelector('canvas')) {
@@ -126,16 +93,20 @@
 	});
 
 	onMount(() => {
-		createBackground();
 		calculateResize();
+
+		// if on login page, generate neon mesh
+		if (page.url.pathname === '/login') {
+			generateNeonMesh();
+		}
 	});
 
 	let routeToFromLoginKey = $derived(page.url.pathname === '/login');
 </script>
 
-<TolgeeProvider {tolgee}>
-	<main class="d-flex flex-column">
-		<div class="wrapper h-100">
+<main class="d-flex flex-column background" use:focus={generateNeonMesh}>
+	<TolgeeProvider {tolgee}>
+		<div class="wrapper h-100" transition:blur={{ duration: inDuration * 2 }}>
 			{#key routeToFromLoginKey}
 				<div
 					class="transition-wrapper h-100"
@@ -162,16 +133,12 @@
 				</div>
 			</div>
 		</div>
-	</main>
-</TolgeeProvider>
+	</TolgeeProvider>
+</main>
 
 <style>
 	main {
 		height: 100vh;
-
-		/* background-image: linear-gradient(#ff8a00, #e52e71); */
-		/* background-image: linear-gradient(to right, violet, darkred, purple); */
-		/* background: linear-gradient(40deg, #38bdf8, #fb7185, #84cc16); */
 	}
 
 	.wrapper {
@@ -184,5 +151,21 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+	}
+
+	:global(.glass) {
+		backdrop-filter: blur(12px) saturate(130%);
+		/* background-color: rgba(219, 219, 219, 0.45); */
+		background-color: rgba(83, 83, 83, 0.73);
+		border: 1px solid #62626278;
+		color: #ececec;
+	}
+
+	:global(.glassLight) {
+		backdrop-filter: blur(8px) saturate(130%);
+		/* background-color: rgba(219, 219, 219, 0.45); */
+		background-color: rgba(83, 83, 83, 0.445);
+		border: 1px solid #62626278;
+		color: #ececec;
 	}
 </style>

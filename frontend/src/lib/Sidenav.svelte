@@ -260,7 +260,7 @@
 	<div class="search d-flex flex-column">
 		<form onsubmit={searchForString} class="input-group">
 			<button
-				class="btnSearchPopover btn btn-outline-secondary"
+				class="btnSearchPopover btn btn-outline-secondary glassLight"
 				data-bs-toggle="popover"
 				data-bs-title="Suche"
 				data-bs-content="Du kannst nach <b>Text</b>, <b>Dateinamen</b> und <b>Tags</b> suchen.<br>
@@ -312,7 +312,7 @@
 						setTimeout(() => (showTagDropdown = false), 150);
 					}}
 				/>
-				<button class="btn btn-outline-secondary" type="submit" id="search-button">
+				<button class="btn btn-outline-secondary glassLight" type="submit" id="search-button">
 					{#if $isSearching}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 					{:else}
@@ -322,7 +322,7 @@
 			{/if}
 		</form>
 		{#if showTagDropdown}
-			<div class="searchTagDropdown">
+			<div class="searchTagDropdown glass">
 				{#if filteredTags.length === 0}
 					<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
 				{:else}
@@ -343,7 +343,7 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="list-group flex-grow-1 mb-2">
+		<div class="list-group flex-grow-1 mb-2 glassLight">
 			{#if $searchResults.length > 0}
 				{#each $searchResults as result}
 					<button
@@ -439,13 +439,13 @@
 
 	.searchTagDropdown {
 		position: absolute;
-		background-color: white;
+		/* background-color: white; */
 		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 		z-index: 1000;
 		left: 60px;
 		margin-top: 38px;
 		max-height: 200px;
-		overflow-y: scroll;
+		overflow-y: auto;
 		overflow-x: hidden;
 		display: flex;
 		flex-direction: column;
@@ -490,9 +490,9 @@
 		border-top-right-radius: 0;
 		overflow-y: auto;
 		min-height: 250px;
-		backdrop-filter: blur(8px) saturate(150%);
+		/* backdrop-filter: blur(8px) saturate(150%);
 		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77;
+		border: 1px solid #ececec77; */
 	}
 
 	.input-group {

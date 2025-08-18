@@ -428,6 +428,10 @@ func GetDefaultSettings() map[string]any {
 		"timezone":                   "UTC",
 		"useBrowserLanguage":         true,
 		"language":                   "en",
+		"darkModeAutoDetect":         true,
+		"useDarkMode":                false,
+		"background":                 "gradient",
+		"monochromeBackgroundColor":  "#ececec",
 	}
 }
 

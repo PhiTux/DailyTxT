@@ -872,7 +872,7 @@
 		<!-- Center -->
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
-			<div class="d-flex flex-row textAreaHeader">
+			<div class="d-flex flex-row textAreaHeader glassLight">
 				<div class="flex-fill textAreaDate">
 					{new Date(
 						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
@@ -937,7 +937,7 @@
 		</div>
 
 		<div id="right" class="d-flex flex-column">
-			<div class="tags">
+			<div class="tags glass">
 				<div class="d-flex flex-row justify-content-between">
 					<div class="d-flex flex-row">
 						<h3>Tags</h3>
@@ -1012,7 +1012,7 @@
 				</div>
 			</div>
 
-			<div class="files d-flex flex-column">
+			<div class="files d-flex flex-column glass">
 				<button
 					class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
 					id="uploadBtn"
@@ -1449,10 +1449,11 @@
 		z-index: 10;
 		padding: 0.5rem;
 		margin-bottom: 2rem;
-		backdrop-filter: blur(8px) saturate(150%);
+		/* backdrop-filter: blur(8px) saturate(150%);
 		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77;
+		border: 1px solid #ececec77; */
 		border-radius: 10px;
+		/* color: #ececec; */
 	}
 
 	.loadImageBtn {
@@ -1482,9 +1483,9 @@
 		margin-bottom: 1rem;
 		border-radius: 10px;
 		padding: 1rem;
-		backdrop-filter: blur(8px) saturate(150%);
+		/* backdrop-filter: blur(8px) saturate(150%);
 		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77;
+		border: 1px solid #ececec77; */
 	}
 
 	:global(#uploadIcon) {
@@ -1536,9 +1537,9 @@
 	}
 
 	.textAreaHeader {
-		border-left: 1px solid #ccc;
-		border-top: 1px solid #ccc;
-		border-right: 1px solid #ccc;
+		border-left: 1px solid #6a6a6a;
+		border-top: 1px solid #6a6a6a;
+		border-right: 1px solid #6a6a6a;
 		border-top-left-radius: 5px;
 		border-top-right-radius: 5px;
 	}
@@ -1546,7 +1547,7 @@
 	.textAreaDate,
 	.textAreaWrittenAt,
 	.textAreaHistory {
-		border-right: 1px solid #ccc;
+		border-right: 1px solid #6a6a6a;
 		padding: 0.25em;
 	}
 
