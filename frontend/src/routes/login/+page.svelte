@@ -246,7 +246,7 @@
 						aria-expanded="true"
 						aria-controls="collapseOne"
 					>
-						Login
+						{$t('login.login')}
 					</button>
 				</h2>
 				<div
@@ -278,14 +278,14 @@
 							</div>
 							{#if is_migrating || migration_phase == 'completed'}
 								<div class="alert alert-info" role="alert">
-									Daten-Migration wurde gestartet. Dies kann einige Momente dauern.<br />
+									{$t('login.migration.start_message')}
 									{#if migration_phase !== 'completed'}
 										<div class="text-bg-danger p-2 my-2 rounded">
-											Währenddessen die Seite nicht neu laden und nicht neu einloggen!
+											{$t('login.migration.warning')}
 										</div>
 									{/if}
 
-									<u>Fortschritt:</u>
+									<u>{$t('login.migration.progress')}</u>
 									<div class="progress-item {active_phase >= 0 ? 'active' : ''}">
 										<div class="d-flex">
 											<div class="emoji">
@@ -295,7 +295,7 @@
 													✅
 												{/if}
 											</div>
-											Account anlegen
+											{$t('login.migration.create_account')}
 										</div>
 									</div>
 									<div class="progress-item {active_phase >= 1 ? 'active' : ''}">
@@ -307,7 +307,7 @@
 													✅
 												{/if}
 											</div>
-											Vorlagen migrieren
+											{$t('login.migration.migrate_templates')}
 										</div>
 									</div>
 									<div class="progress-item {active_phase >= 2 ? 'active' : ''}">
@@ -319,7 +319,7 @@
 													✅
 												{/if}
 											</div>
-											Einträge migrieren
+											{$t('login.migration.migrate_logs')}
 										</div>
 
 										{#if active_phase === 2}
@@ -349,7 +349,7 @@
 													✅
 												{/if}
 											</div>
-											Dateien migrieren
+											{$t('login.migration.migrate_files')}
 										</div>
 										{#if active_phase === 3}
 											<div
@@ -372,16 +372,14 @@
 									{#if migration_phase === 'completed'}
 										{#if migration_error_count == 0}
 											<div class="text-bg-success p-2 my-2 rounded">
-												Migration wurde ohne erkannte Fehler abgeschlossen! Bitte Login erneut
-												starten. <br />
-												Prüfe anschließend, ob alle Daten korrekt migriert wurden.
+												{@html $t('login.migration.success_message')}
 											</div>
 										{:else}
 											<div class="text-bg-warning p-2 my-2 rounded">
-												Migration wurde mit {migration_error_count} erkannten Fehlern abgeschlossen!
-												Prüfe die Server-Logs für Details!<br />
-												Falls der Login nicht funktioniert, oder die Daten fehlerhaft sind, so müssen
-												die migrierten Daten händisch entfernt werden.
+												{@html ($t('login.migration.completed_with_errors'),
+												{
+													error_count: migration_error_count
+												})}
 											</div>
 										{/if}
 									{/if}
@@ -389,13 +387,12 @@
 							{/if}
 							{#if show_login_failed}
 								<div class="alert alert-danger" role="alert">
-									Login fehlgeschlagen!<br />
-									Bitte Eingabedaten überprüfen.
+									{@html $t('login.alert.login_failed')}
 								</div>
 							{/if}
 							{#if show_login_warning_empty_fields}
 								<div class="alert alert-danger" role="alert">
-									Eingabefelder dürfen nicht leer sein!
+									{$t('login.alert.empty_fields')}
 								</div>
 							{/if}
 							<div class="d-flex justify-content-center">
@@ -434,7 +431,7 @@
 									type="text"
 									class="form-control"
 									id="registerUsername"
-									placeholder="Username"
+									placeholder={$t('login.username')}
 								/>
 								<label for="registerUsername">{$t('login.username')}</label>
 							</div>
@@ -444,7 +441,7 @@
 									type="password"
 									class="form-control"
 									id="registerPassword"
-									placeholder="Password"
+									placeholder={$t('login.password')}
 								/>
 								<label for="registerPassword">{$t('login.password')}</label>
 							</div>
@@ -454,38 +451,42 @@
 									type="password"
 									class="form-control"
 									id="registerPassword2"
-									placeholder="Password bestätigen"
+									placeholder={$t('login.confirm_password')}
 								/>
 								<label for="registerPassword2">{$t('login.confirm_password')}</label>
 							</div>
 							{#if !registration_allowed}
 								<div class="alert alert-danger" role="alert">
-									Registrierung ist derzeit nicht erlaubt!
+									{t('login.alert.registration_not_allowed')}
 								</div>
 							{/if}
 							{#if show_registration_failed_with_message}
 								<div class="alert alert-danger" role="alert">
-									Registrierung fehlgeschlagen!<br />
-									Fehlermeldung: <i>{registration_failed_message}</i>
+									{@html (t('login.alert.registration_failed_with_message'),
+									{
+										message: registration_failed_message
+									})}
 								</div>
 							{/if}
 							{#if show_registration_failed}
 								<div class="alert alert-danger" role="alert">
-									Registrierung fehlgeschlagen - bitte Fehlermeldungen analysieren!
+									{$t('login.alert.registration_failed')}
 								</div>
 							{/if}
 							{#if show_registration_success}
 								<div class="alert alert-success" role="alert">
-									Registrierung erfolgreich - bitte einloggen!
+									{$t('login.alert.registration_success')}
 								</div>
 							{/if}
 							{#if show_registration_warning_empty_fields}
 								<div class="alert alert-danger" role="alert">
-									Eingabefelder dürfen nicht leer sein!
+									{$t('login.alert.empty_fields')}
 								</div>
 							{/if}
 							{#if show_warning_passwords_do_not_match}
-								<div class="alert alert-danger" role="alert">Passwörter stimmen nicht überein!</div>
+								<div class="alert alert-danger" role="alert">
+									{$t('login.alert.passwords_do_not_match')}
+								</div>
 							{/if}
 							<div class="d-flex justify-content-center">
 								<button
@@ -498,7 +499,7 @@
 											<span class="visually-hidden">Loading...</span>
 										</div>
 									{/if}
-									Registrieren
+									{$t('login.create_account')}
 								</button>
 							</div>
 						</form>
@@ -534,7 +535,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Der Login ist abgelaufen. Bitte neu anmelden.</div>
+				<div class="toast-body">
+					{$t('login.toast.login_expired')}
+				</div>
 			</div>
 		</div>
 
@@ -546,7 +549,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Authentifizierung fehlgeschlagen. Bitte neu anmelden.</div>
+				<div class="toast-body">
+					{$t('login.toast.login_invalid')}
+				</div>
 			</div>
 		</div>
 
@@ -558,7 +563,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Account erfolgreich gelöscht.</div>
+				<div class="toast-body">
+					{$t('login.toast.account_deleted')}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -577,6 +584,10 @@
 
 	.progress-item.active {
 		opacity: 1;
+	}
+
+	.emoji {
+		margin-right: 0.25em;
 	}
 
 	.progress-item .emoji {
