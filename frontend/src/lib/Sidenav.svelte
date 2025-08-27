@@ -12,6 +12,9 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import axios from 'axios';
 	import { cal } from '$lib/calendarStore.js';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let oc;
 
@@ -263,21 +266,10 @@
 				class="btnSearchPopover btn btn-outline-secondary glassLight"
 				data-bs-toggle="popover"
 				data-bs-title="Suche"
-				data-bs-content="Du kannst nach <b>Text</b>, <b>Dateinamen</b> und <b>Tags</b> suchen.<br>
-				Mit <span class='kbd'>Ctrl</span> + <span class='kbd'>F</span> wird das Suchfeld fokussiert.<br>
-				<ul>
-					<li><b><u>Text</u></b>: Bei Verwendung von mehreren Suchbegriffen gelten folgende Regeln:
-						<ul>
-							<li><b>EXAKT</b>: Setze den kompletten Suchbegriff in <u>doppelte Anführungszeichen</u>, um die exakte Wortfolge zu suchen.</li>
-							<li><b>ODER</b>: Trenne Suchbegriffe mit <b>|</b>, um Einträge zu finden, bei denen mindestens ein Begriff verwendet wurde.</li>
-							<li><b>UND</b>: Trenne Suchbegriffe mit <u>Leerzeichen</u>, um Einträge zu finden, bei denen alle Begriffe verwendet wurden. Die Reihenfolge der Begriffe ist dabei irrelevant, genauso wie die Distanz zwischen den Begriffen.</li>
-						</ul>
-					</li>
-					<li><b><u>Dateinamen</u></b>: Wenn der Suchbegriff nur aus <u>einem Wort</u> besteht, dann wird nicht nur nach Text, sondern auch nach Dateinamen gesucht.</li>
-					<li><b><u>Tags</u></b>: Der Suchbegriff muss mit <b>#</b> beginnen. Es wird nach jedem Datum gesucht, das mit dem Tag markiert ist.</li>
-				</ul>"
+				data-bs-content={$t('search.description')}
 				onclick={(event) => event.preventDefault()}><Fa icon={faQuestionCircle} /></button
 			>
+			<!--TODO: Description not working (html?!)! -->
 			{#if $searchTag.id}
 				<!-- If a tag is selected ... -->
 				<div class="ms-1 align-content-center">
@@ -298,7 +290,7 @@
 					type="text"
 					class="form-control"
 					placeholder="Suche"
-					aria-label="Suche"
+					aria-label={$t('search.search')}
 					aria-describedby="search-button"
 					onkeydown={handleKeyDown}
 					autocomplete="off"
@@ -316,7 +308,7 @@
 					{#if $isSearching}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 					{:else}
-						Suche
+						{$t('search.search')}
 					{/if}
 				</button>
 			{/if}
@@ -324,7 +316,9 @@
 		{#if showTagDropdown}
 			<div class="searchTagDropdown glass">
 				{#if filteredTags.length === 0}
-					<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
+					<em style="padding: 0.2rem;">
+						{$t('tags.no_tags_found')}
+					</em>
 				{:else}
 					{#each filteredTags as tag, index (tag.id)}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -379,7 +373,9 @@
 					</button>
 				{/each}
 			{:else}
-				<span class="noResult">Keine Ergebnisse</span>
+				<span class="noResult">
+					{$t('search.no_results')}
+				</span>
 			{/if}
 		</div>
 	</div>
@@ -394,7 +390,9 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Suchen!</div>
+			<div class="toast-body">
+				{$t('search.toast.error')}
+			</div>
 		</div>
 	</div>
 
@@ -406,7 +404,9 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Markieren des Tages!</div>
+			<div class="toast-body">
+				{$t('calendar.toast.error_bookmarking')}
+			</div>
 		</div>
 	</div>
 </div>

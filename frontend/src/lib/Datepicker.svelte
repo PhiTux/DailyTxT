@@ -131,7 +131,15 @@
 	};
 
 	// weekdays
-	const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+	const weekDays = [
+		$t('calendar.day_short.monday'),
+		$t('calendar.day_short.tuesday'),
+		$t('calendar.day_short.wednesday'),
+		$t('calendar.day_short.thursday'),
+		$t('calendar.day_short.friday'),
+		$t('calendar.day_short.saturday'),
+		$t('calendar.day_short.sunday')
+	];
 </script>
 
 <div class="datepicker glassLight">
@@ -226,7 +234,7 @@
 								fill-rule: evenodd;
 							}
 						</style></defs
-					><title>add-bookmark</title>
+					><title>{$t('calendar.button_bookmark')}</title>
 					{#if !$cal.daysBookmarked.includes($selectedDate.day)}
 						<path
 							class="cls-1"

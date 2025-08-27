@@ -4,7 +4,6 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import '../scss/styles.scss';
-	import { trianglifyOpacity } from '$lib/settingsStore.js';
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
 	import { alwaysShowSidenav, generateNeonMesh } from '$lib/helpers.js';
@@ -70,14 +69,6 @@
 			return Promise.reject(error);
 		}
 	);
-
-	$effect(() => {
-		if ($trianglifyOpacity) {
-			if (document.querySelector('canvas')) {
-				document.querySelector('canvas').style.opacity = $trianglifyOpacity;
-			}
-		}
-	});
 
 	function calculateResize() {
 		if (window.innerWidth > 840) {

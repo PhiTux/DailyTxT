@@ -7,9 +7,7 @@
 		readingMode,
 		settings,
 		tempSettings,
-		autoLoadImagesThisDevice,
-		useTrianglify,
-		trianglifyOpacity
+		autoLoadImagesThisDevice
 	} from '$lib/settingsStore.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags } from '$lib/tagStore.js';
@@ -1939,24 +1937,8 @@
 		border-radius: 5px;
 	}
 
-	#trianglifyOpacity {
-		max-width: 300px;
-	}
-
-	#trianglifyOpacityNumber {
-		width: 80px;
-	}
-
 	.modal-body {
 		overflow-y: hidden;
-	}
-
-	.modal-content {
-		/* backdrop-filter: blur(10px) saturate(150%);
-		background-color: rgba(208, 208, 208, 0.61); */
-
-		/* background-color: rgba(43, 56, 78, 0.75); */
-		/* color: rgb(22, 22, 22); */
 	}
 
 	.modal-header {
