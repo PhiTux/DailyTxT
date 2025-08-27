@@ -1,6 +1,9 @@
 <script>
 	import { marked } from 'marked';
 	import { selectedDate } from './calendarStore';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	marked.use({
 		breaks: true,
@@ -118,7 +121,7 @@
 	<div bind:this={content} class="zoom-content">
 		<div class="zoom-content-header">
 			<span
-				>Vor {log?.years_old} Jahren | {new Date(
+				>{$t('aLookBack.header_X_years_ago', { years_old: log?.years_old })} | {new Date(
 					log?.year,
 					log?.month - 1,
 					log?.day
@@ -143,7 +146,7 @@
 				closeModal();
 			}}
 			class="btn btn-primary"
-			id="closeZoom">Öffnen</button
+			id="closeZoom">{$t('aLookBack.open')}</button
 		>
 	</div>
 </div>

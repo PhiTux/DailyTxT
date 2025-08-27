@@ -1025,6 +1025,9 @@
 											{/if}
 										</label>
 									</div>
+									<div class="form-text">
+										{$t('settings.language.reload_info')}
+									</div>
 								</div>
 								<div id="timezone">
 									{#if $tempSettings.useBrowserTimezone !== $settings.useBrowserTimezone || ($tempSettings.timezone !== undefined && $tempSettings.timezone?.value !== $settings.timezone?.value)}

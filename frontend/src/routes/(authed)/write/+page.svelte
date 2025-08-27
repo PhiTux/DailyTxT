@@ -887,7 +887,7 @@
 					})}
 				</div>
 				<div class="flex-fill textAreaWrittenAt">
-					<div class={logDateWritten ? '' : 'opacity-50'}>Geschrieben am:</div>
+					<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
 					{logDateWritten}
 				</div>
 				{#if historyAvailable}
@@ -912,11 +912,7 @@
 					<div class="d-flex flex-row">
 						<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
 							<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-							{#if images.length === 1}
-								1 Bild laden
-							{:else}
-								{images.length} Bilder laden
-							{/if}
+							{$t('log.load_images', { amount: images.length })}
 							({formatBytes(
 								images.filter((i) => !i.src).reduce((sum, image) => sum + (image.size || 0), 0)
 							)})
@@ -940,7 +936,7 @@
 			<div class="tags glass">
 				<div class="d-flex flex-row justify-content-between">
 					<div class="d-flex flex-row">
-						<h3>Tags</h3>
+						<h3>{$t('tags.tags')}</h3>
 						{#if showTagLoading}
 							<div class="spinner-border ms-3" role="status">
 								<span class="visually-hidden">Loading...</span>
@@ -953,8 +949,8 @@
 						type="button"
 						class="btn"
 						data-bs-toggle="popover"
-						data-bs-title="Tags"
-						data-bs-content="Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln."
+						data-bs-title={$t('tags.tags')}
+						data-bs-content={$t('tags.description')}
 					>
 						<Fa icon={faQuestionCircle} fw /></a
 					>
@@ -973,16 +969,17 @@
 						type="text"
 						class="form-control"
 						id="tag-input"
-						placeholder="Tag..."
+						placeholder={$t('tags.input')}
 					/>
 					<button class="newTagBtn btn btn-outline-secondary ms-2" onclick={openTagModal}>
-						<Fa icon={faSquarePlus} fw /> Neu
+						<Fa icon={faSquarePlus} fw />
+						{$t('tags.new_tag')}
 					</button>
 				</div>
 				{#if showTagDropdown}
 					<div id="tagDropdown">
 						{#if filteredTags.length === 0}
-							<em style="padding: 0.2rem;">Kein Tag gefunden...</em>
+							<em style="padding: 0.2rem;">{$t('tags.no_tags_found')}</em>
 						{:else}
 							{#each filteredTags as tag, index (tag.id)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -1017,7 +1014,7 @@
 					class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
 					id="uploadBtn"
 					onclick={triggerFileInput}
-					><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />Upload</button
+					><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />{$t('files.upload')}</button
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
@@ -1041,7 +1038,7 @@
 								{#if file.progress !== 100}
 									{file.progress}%
 								{:else}
-									Wird verschlüsselt...
+									{$t('files.encrypting')}
 								{/if}
 							</div>
 						</div>
@@ -1060,7 +1057,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Enfternen des Tags!</div>
+				<div class="toast-body">
+					{$t('tags.toast.error_removing')}
+				</div>
 			</div>
 		</div>
 
@@ -1072,7 +1071,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Hinzufügen des Tags zum ausgewählten Datum!</div>
+				<div class="toast-body">
+					{$t('tags.toast.error_adding')}
+				</div>
 			</div>
 		</div>
 
@@ -1084,7 +1085,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Speichern des Tags!</div>
+				<div class="toast-body">
+					{$t('tags.toast.error_saving')}
+				</div>
 			</div>
 		</div>
 
@@ -1096,7 +1099,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Speichern des Textes!</div>
+				<div class="toast-body">
+					{$t('log.toast.error_saving')}
+				</div>
 			</div>
 		</div>
 
@@ -1108,7 +1113,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Laden des Textes!</div>
+				<div class="toast-body">
+					{$t('log.toast.error_loading')}
+				</div>
 			</div>
 		</div>
 
@@ -1120,7 +1127,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Speichern einer Datei!</div>
+				<div class="toast-body">
+					{$t('files.toast.error_saving')}
+				</div>
 			</div>
 		</div>
 
@@ -1132,7 +1141,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Löschen einer Datei!</div>
+				<div class="toast-body">
+					{$t('files.toast.error_deleting')}
+				</div>
 			</div>
 		</div>
 
@@ -1144,7 +1155,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Download einer Datei!</div>
+				<div class="toast-body">
+					{$t('files.toast.error_loading')}
+				</div>
 			</div>
 		</div>
 
@@ -1156,7 +1169,9 @@
 			aria-atomic="true"
 		>
 			<div class="d-flex">
-				<div class="toast-body">Fehler beim Löschen des Tages!</div>
+				<div class="toast-body">
+					{$t('log.toast.error_deleting_day')}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -1165,22 +1180,24 @@
 		<div class="modal-dialog modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Datei löschen?</h5>
+					<h5 class="modal-title">{$t('modal.deleteFile.title')}</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
 					></button>
 				</div>
 				<div class="modal-body">
 					<p>
-						Datei <u><span class="filenameWeight">{confirmDelete.filename}</span></u> wirklich löschen?
+						{@html $t('modal.deleteFile.body', { file: confirmDelete.filename })}
 					</p>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+						>{$t('modal.close')}</button
+					>
 					<button
 						onclick={() => deleteFile(confirmDelete.uuid)}
 						type="button"
 						class="btn btn-primary"
-						data-bs-dismiss="modal">Löschen</button
+						data-bs-dismiss="modal">{$t('modal.deleteFile.delete')}</button
 					>
 				</div>
 			</div>
@@ -1191,7 +1208,7 @@
 		<div class="modal-dialog modal-lg modal-fullscreen-lg-down modal-dialog-centered">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title">Verlauf</h5>
+					<h5 class="modal-title">{$t('modal.history.title')}</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
 					></button>
 				</div>
@@ -1205,7 +1222,7 @@
 							}}
 						>
 							<Fa icon={faArrowLeft} class="me-2" fw />
-							Älter
+							{$t('modal.history.older')}
 						</button>
 						<select
 							bind:value={historySelected}
@@ -1224,7 +1241,7 @@
 							}}
 						>
 							<Fa icon={faArrowRight} class="me-2" fw />
-							Neuer
+							{$t('modal.history.newer')}
 						</button>
 					</div>
 					<div class="text mt-2">
@@ -1234,17 +1251,17 @@
 				<div class="modal-footer">
 					<div class="d-flex flex-column">
 						<div class="form-text">
-							Mit <b>Speichern</b> machst du den angezeigten älteren Text wieder zum aktuellen Haupttext.
+							{@html $t('modal.history.description')}
 						</div>
 						<div class="d-flex flex-row justify-content-end mt-2">
 							<button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal"
-								>Schließen</button
+								>{$t('modal.close')}</button
 							>
 							<button
 								onclick={() => selectHistory()}
 								type="button"
 								class="btn btn-primary"
-								data-bs-dismiss="modal">Speichern</button
+								data-bs-dismiss="modal">{$t('modal.save')}</button
 							>
 						</div>
 					</div>

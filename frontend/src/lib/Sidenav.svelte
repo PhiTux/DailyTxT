@@ -429,7 +429,7 @@
 		user-select: none;
 	}
 
-	:global(.kbd) {
+	:global(.popover-body > span) {
 		font-family: monospace;
 		border: 1px solid #ccc;
 		border-radius: 3px;
