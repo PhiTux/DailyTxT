@@ -269,7 +269,6 @@
 				data-bs-content={$t('search.description')}
 				onclick={(event) => event.preventDefault()}><Fa icon={faQuestionCircle} /></button
 			>
-			<!--TODO: Description not working (html?!)! -->
 			{#if $searchTag.id}
 				<!-- If a tag is selected ... -->
 				<div class="ms-1 align-content-center">

@@ -1,6 +1,9 @@
 <script>
 	import { MultiSelect } from 'svelte-multiselect';
 	import { tempSettings } from '$lib/settingsStore';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let value = $state(null);
 
@@ -24,7 +27,7 @@
 	bind:value
 	options={timezones}
 	maxSelect={1}
-	placeholder="Zeitzone auswählen"
+	placeholder={$t('settings.selectTimezone')}
 	disabled={$tempSettings.useBrowserTimezone}
 	id="selectTimezone"
 />

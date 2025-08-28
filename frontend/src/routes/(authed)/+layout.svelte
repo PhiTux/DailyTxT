@@ -764,6 +764,10 @@
 	{saveEditedTag}
 />
 
+{#snippet unsavedChanges()}
+	<div class="unsaved-changes" data-content={$t('settings.unsaved_changes')} transition:slide></div>
+{/snippet}
+
 <!-- Full screen modal -->
 <div class="modal fade" data-bs-backdrop="static" id="settingsModal">
 	<div
@@ -780,14 +784,14 @@
 					<div class="col-4 overflow-y-auto">
 						<nav class="flex-column align-items-stretch" id="settings-nav">
 							<nav class="nav nav-pills flex-column">
-								<a class="nav-link mb-1" href="#appearance">Aussehen</a>
-								<a class="nav-link mb-1" href="#functions">Funktionen</a>
+								<a class="nav-link mb-1" href="#appearance">{$t('settings.appearance')}</a>
+								<a class="nav-link mb-1" href="#functions">{$t('settings.functions')}</a>
 
-								<a class="nav-link mb-1" href="#tags">Tags</a>
-								<a class="nav-link mb-1" href="#templates">Vorlagen</a>
-								<a class="nav-link mb-1" href="#data">Daten</a>
-								<a class="nav-link mb-1" href="#security">Sicherheit</a>
-								<a class="nav-link mb-1" href="#about">About</a>
+								<a class="nav-link mb-1" href="#tags">{$t('settings.tags')}</a>
+								<a class="nav-link mb-1" href="#templates">{$t('settings.templates')}</a>
+								<a class="nav-link mb-1" href="#data">{$t('settings.data')}</a>
+								<a class="nav-link mb-1" href="#security">{$t('settings.security')}</a>
+								<a class="nav-link mb-1" href="#about">{$t('settings.about')}</a>
 							</nav>
 						</nav>
 					</div>
@@ -800,12 +804,12 @@
 							id="settings-content"
 						>
 							<div id="appearance">
-								<h3 class="text-primary">🎨 Aussehen</h3>
+								<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
 								<div id="lightdark">
 									{#if $tempSettings.darkModeAutoDetect !== $settings.darkModeAutoDetect || $tempSettings.useDarkMode !== $settings.useDarkMode}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
-									<h5>Light-/Dark-Mode</h5>
+									<h5>{$t('settings.light_dark_mode')}</h5>
 									<div class="form-check mt-2">
 										<input
 											class="form-check-input"
@@ -816,12 +820,12 @@
 											bind:group={$tempSettings.darkModeAutoDetect}
 										/>
 										<label class="form-check-label" for="darkModeAutoTrue">
-											Light-/Dark-Mode automatisch erkennen (aktuell:
+											{$t('settings.light_dark_auto_detect')}
 											{#if window.matchMedia('(prefers-color-scheme: dark)').matches}
-												<b>Dark <Fa icon={faMoon} /></b>
+												<b><u>{$t('settings.dark_mode')} <Fa icon={faMoon} /></u></b>
 											{:else}
-												<b>Light <Fa icon={faSun} /></b>
-											{/if})
+												<b><u>{$t('settings.light_mode')} <Fa icon={faSun} /></u></b>
+											{/if}
 										</label>
 									</div>
 									<div class="form-check mt-2">
@@ -834,7 +838,7 @@
 											bind:group={$tempSettings.darkModeAutoDetect}
 										/>
 										<label class="form-check-label" for="darkModeAutoFalse">
-											Light-/Dark-Mode manuell festlegen
+											{$t('settings.light_dark_manual')}
 										</label>
 										{#if $tempSettings.darkModeAutoDetect === false}
 											<div class="form-check form-switch d-flex flex-row ps-0" transition:slide>
@@ -857,10 +861,10 @@
 								</div>
 								<div id="background">
 									{#if $tempSettings.background !== $settings.background || $tempSettings.monochromeBackgroundColor !== $settings.monochromeBackgroundColor}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
 
-									<h5>Hintergrund</h5>
+									<h5>{$t('settings.background')}</h5>
 									<div class="form-check mt-2">
 										<input
 											class="form-check-input"
@@ -871,7 +875,7 @@
 											bind:group={$tempSettings.background}
 										/>
 										<label class="form-check-label" for="background_gradient">
-											Farbverlauf (wird bei jedem Seitenaufruf neu generiert)
+											{$t('settings.background_gradient')}
 										</label>
 									</div>
 									<div class="form-check mt-2">
@@ -883,7 +887,9 @@
 											value={'monochrome'}
 											bind:group={$tempSettings.background}
 										/>
-										<label class="form-check-label" for="background_monochrome"> Einfarbig </label>
+										<label class="form-check-label" for="background_monochrome">
+											{$t('settings.background_monochrome')}
+										</label>
 										{#if $tempSettings.background === 'monochrome'}
 											<input
 												transition:slide
@@ -897,21 +903,15 @@
 							</div>
 
 							<div id="functions">
-								<h3 class="text-primary">🛠️ Funktionen</h3>
+								<h3 class="text-primary">🛠️ {$t('settings.functions')}</h3>
 
 								<div id="autoLoadImages">
 									{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
 
-									<h5>Bilder automatisch laden</h5>
-									<ul>
-										<li>
-											Beim Laden eines Textes können hochgeladene Bilder (sofern vorhanden)
-											automatisch geladen werden. <em>Erhöhter Datenverbrauch!</em>
-										</li>
-										<li>Alternativ wird ein Button zum Nachladen aller Bilder angezeigt.</li>
-									</ul>
+									<h5>{$t('settings.images_title')}</h5>
+									{@html $t('settings.images_description')}
 
 									<div class="form-check form-switch">
 										<input
@@ -922,9 +922,8 @@
 											id="setImageLoadingPerDeviceSwitch"
 										/>
 										<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
-											Für jedes Gerät einzeln festlegen, ob die Bilder automatisch geladen werden
-											sollen</label
-										>
+											{$t('settings.images_loading_per_device')}
+										</label>
 									</div>
 
 									<div class="form-check form-switch ms-3">
@@ -937,12 +936,8 @@
 											disabled={!$tempSettings.setAutoloadImagesPerDevice}
 										/>
 										<label class="form-check-label" for="loadImagesThisDeviceSwitch">
-											{#if $autoLoadImagesThisDevice}
-												Bilder werden auf <b>diesem Gerät</b> automatisch geladen
-											{:else}
-												Bilder werden auf <b>diesem Gerät <u>nicht</u></b> automatisch geladen
-											{/if}</label
-										>
+											{@html $t('settings.images_loading_this_device')}
+										</label>
 									</div>
 
 									<div class="form-check form-switch mt-3">
@@ -955,20 +950,16 @@
 											disabled={$tempSettings.setAutoloadImagesPerDevice}
 										/>
 										<label class="form-check-label" for="autoLoadImagesSwitch">
-											{#if $tempSettings.autoloadImagesByDefault}
-												Bilder werden (auf jedem Gerät) automatisch geladen
-											{:else}
-												Bilder werden (auf jedem Gerät) <b>nicht</b> automatisch geladen
-											{/if}</label
-										>
+											{$t('settings.images_loading_default')}
+										</label>
 									</div>
 								</div>
 
 								<div id="language">
 									{#if $tempSettings.useBrowserLanguage !== $settings.useBrowserLanguage || $tempSettings.language !== $settings.language}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
-									<h5>🌐 Sprache</h5>
+									<h5>🌐 {$t('settings.language')}</h5>
 									<div class="form-check mt-2">
 										<input
 											class="form-check-input"
@@ -979,13 +970,12 @@
 											bind:group={$tempSettings.useBrowserLanguage}
 										/>
 										<label class="form-check-label" for="language_auto">
-											Sprache anhand des Browsers ermitteln (aktuell: <code
-												>{window.navigator.language}</code
-											>
+											{$t('settings.language_auto_detect')}
+											<code>{window.navigator.language}</code>
 											{#if tolgeesMatchForBrowserLanguage() !== '' && tolgeesMatchForBrowserLanguage() !== window.navigator.language}
-												➔ <code>{tolgeesMatchForBrowserLanguage()}</code> wird verwendet
+												➔ <code>{tolgeesMatchForBrowserLanguage()}</code>
+												{$t('settings.language_X_used')}
 											{/if}
-											)
 										</label>
 										{#if $tempSettings.useBrowserLanguage && tolgeesMatchForBrowserLanguage() === ''}
 											<div
@@ -994,9 +984,10 @@
 												class="alert alert-danger"
 												role="alert"
 											>
-												Die Sprache <code>{window.navigator.language}</code> ist nicht verfügbar. Es
-												wird die Standardsprache
-												<code>{$tolgee.getInitialOptions().defaultLanguage}</code> verwendet.
+												{@html $t('settings.language_not_available', {
+													browserLanguage: window.navigator.language,
+													defaultLanguage: $tolgee.getInitialOptions().defaultLanguage
+												})}
 											</div>
 										{/if}
 									</div>
@@ -1010,7 +1001,7 @@
 											bind:group={$tempSettings.useBrowserLanguage}
 										/>
 										<label class="form-check-label" for="language_manual">
-											Sprache dauerhaft festlegen
+											{$t('settings.set_language_manually')}
 											{#if !$tempSettings.useBrowserLanguage}
 												<select
 													transition:slide
@@ -1031,10 +1022,10 @@
 								</div>
 								<div id="timezone">
 									{#if $tempSettings.useBrowserTimezone !== $settings.useBrowserTimezone || ($tempSettings.timezone !== undefined && $tempSettings.timezone?.value !== $settings.timezone?.value)}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
-									<h5>Zeitzone</h5>
-									Stelle die Zeitzone ein, die für den Timestamp ("Geschrieben am") genutzt werden soll.
+									<h5>{$t('settings.timezone')}</h5>
+									{$t('settings.timezone.description', { written_on: $t('log.written_on') })}
 
 									<div class="form-check mt-2">
 										<input
@@ -1046,10 +1037,9 @@
 											bind:group={$tempSettings.useBrowserTimezone}
 										/>
 										<label class="form-check-label" for="timezone1">
-											Zeitzone automatisch anhand des Browsers ermitteln.
+											{@html $t('settings.timezone.auto_detect')}
+											<code>{new Intl.DateTimeFormat().resolvedOptions().timeZone}</code>
 										</label>
-										<br />
-										Aktuell: <code>{new Intl.DateTimeFormat().resolvedOptions().timeZone}</code>
 									</div>
 									<div class="form-check">
 										<input
@@ -1061,23 +1051,19 @@
 											bind:group={$tempSettings.useBrowserTimezone}
 										/>
 										<label class="form-check-label" for="timezone2">
-											Für diesen Account immer die folgende Zeitzone verwenden:
+											{$t('settings.timezone.manual')}
 										</label>
 										<br />
 										<SelectTimezone />
 										{#if !$tempSettings.useBrowserTimezone}
 											<span transition:fade>
-												Ausgewählt: <code>{$tempSettings.timezone}</code>
+												{$t('settings.timezone.selected')} <code>{$tempSettings.timezone}</code>
 											</span>
 										{/if}
 									</div>
 
 									<div class="form-text mt-3">
-										Wenn man auf Reisen ist, kann es sinnvoll sein, die Zeitzone anhand des Browsers
-										zu ermitteln. Dann werden Datum und Uhrzeit am Zielort vorraussichtlich besser
-										erkannt.<br />
-										Wenn man hingegen zuhause im privaten Browser teils andere Zeitzonen (z. B. immer
-										UTC) verwendet, kann es sinnvoll sein, hier eine bestimmte Zeitzone festzulegen.
+										{@html $t('settings.timezone.help_text')}
 									</div>
 								</div>
 
@@ -1086,21 +1072,12 @@
 												.trim()
 												.split(',')
 												.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.aLookBackYears)}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
 
-									<h5>Ein Blick zurück</h5>
+									<h5>{$t('settings.aLookBack')}</h5>
 									<ul>
-										<li>
-											Lege fest, aus welchen vergangenen Jahren Tagebucheinträge desselben
-											Kalendertags angezeigt werden sollen.
-										</li>
-										<li>Gilt nur für den Schreibmodus.</li>
-										<li>
-											Beispiel: <code>1,5,10</code> sorgt dafür, dass du unter dem Textfeld noch die
-											Einträge von vor 1 Jahr, vor 5 Jahren und vor 10 Jahren angezeigt bekommst (sofern
-											vorhanden).
-										</li>
+										{@html $t('settings.aLookBack.description')}
 									</ul>
 									<div class="form-check form-switch">
 										<input
@@ -1111,12 +1088,8 @@
 											id="useALookBackSwitch"
 										/>
 										<label class="form-check-label" for="useALookBackSwitch">
-											{#if $tempSettings.useALookBack}
-												Einträge desselben Tags aus der Vergangenheit anzeigen
-											{:else}
-												Einträge desselben Tags aus der Vergangenheit <b>nicht</b> anzeigen
-											{/if}</label
-										>
+											{$t('settings.ALookBack.useIt')}
+										</label>
 									</div>
 
 									<div>
@@ -1126,19 +1099,17 @@
 											class="form-control {aLookBackYearsInvalid ? 'is-invalid' : ''}"
 											aria-describedby="useALookBackHelpBlock"
 											disabled={!$tempSettings.useALookBack}
-											placeholder="Jahre, mit Komma getrennt"
+											placeholder={$t('settings.ALookBack.input_placeholder')}
 											bind:value={aLookBackYears}
 											invalid
 										/>
 										{#if aLookBackYearsInvalid}
 											<div class="alert alert-danger mt-2" role="alert" transition:slide>
-												Bitte nur Zahlen eingeben, die durch Kommas getrennt sind.
+												{$t('settings.ALookBack.invalid_input')}
 											</div>
 										{/if}
 										<div id="useALookBackHelpBlock" class="form-text">
-											Trage hier alle vergangenen Jahre ein, die angezeigt werden sollen. Beispiel: <code
-												>1,5,10</code
-											>. Benutze Komma zur Trennung, verzichte auf Leerzeichen.
+											{@html $t('settings.ALookBack.help_text')}
 										</div>
 									</div>
 								</div>
@@ -1152,12 +1123,13 @@
 							</div>
 
 							<div id="tags">
-								<h3 class="text-primary">#️⃣ Tags</h3>
+								<h3 class="text-primary">#️⃣ {$t('settings.tags')}</h3>
 								<div>
-									Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.
+									{$t('settings.tags.description')}
+
 									{#if $tags.length === 0}
 										<div class="alert alert-info my-2" role="alert">
-											Es sind noch keine Tags vorhanden. Erstelle einen neuen Tag im Schreibmodus.
+											{$t('settings.tags.no_tags')}
 										</div>
 									{/if}
 									<div class="d-flex flex-column tagColumn mt-1">
@@ -1176,21 +1148,19 @@
 													transition:slide
 												>
 													<div>
-														<Fa icon={faTriangleExclamation} fw /> <b>Tag dauerhaft löschen?</b>
-														Dies kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen
-														durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen
-														im Browser angezeigt.
+														<Fa icon={faTriangleExclamation} fw />
+														{@html $t('settings.tags.delete_confirmation')}
 													</div>
 													<!-- svelte-ignore a11y_consider_explicit_label -->
 													<div class="d-flex flex-row mt-2">
 														<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
-															>Abbrechen
+															>{$t('settings.abort')}
 														</button>
 														<button
 															disabled={isDeletingTag}
 															class="btn btn-danger ms-3"
 															onclick={() => deleteTag(tag.id)}
-															>Löschen
+															>{$t('settings.delete')}
 															{#if isDeletingTag}
 																<span
 																	class="spinner-border spinner-border-sm ms-2"
@@ -1208,10 +1178,10 @@
 							</div>
 
 							<div id="templates">
-								<h3 class="text-primary">📝 Vorlagen</h3>
+								<h3 class="text-primary">📝 {$t('settings.templates')}</h3>
 								<div>
 									{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
-										<div class="unsaved-changes" transition:slide></div>
+										{@render unsavedChanges()}
 									{/if}
 
 									<div class="d-flex flex-column">
@@ -1222,7 +1192,7 @@
 											onchange={updateSelectedTemplate}
 										>
 											<option value="-1" selected={selectedTemplate === '-1'}>
-												Neue Vorlage erstellen...
+												{$t('settings.templates.create_new')}
 											</option>
 											{#each $templates as template, index}
 												<option value={index} selected={index === selectedTemplate}>
@@ -1236,13 +1206,16 @@
 
 									{#if confirmDeleteTemplate}
 										<div transition:slide class="d-flex flex-row align-items-center mb-2">
-											<span
-												>Vorlage <b>{$templates[selectedTemplate]?.name}</b> wirklich löschen?</span
-											>
+											<span>
+												{@html $t('settings.templates.delete_confirmation', {
+													template: $templates[selectedTemplate]?.name
+												})}
+											</span>
 											<button
 												type="button"
 												class="btn btn-secondary ms-2"
-												onclick={() => (confirmDeleteTemplate = false)}>Abbrechen</button
+												onclick={() => (confirmDeleteTemplate = false)}
+												>{$t('settings.abort')}</button
 											>
 											<button
 												type="button"
@@ -1251,7 +1224,7 @@
 													deleteTemplate();
 												}}
 												disabled={isDeletingTemplate}
-												>Löschen
+												>{$t('settings.delete')}
 												{#if isDeletingTemplate}
 													<span
 														class="spinner-border spinner-border-sm ms-2"
@@ -1268,7 +1241,7 @@
 											type="text"
 											bind:value={templateName}
 											class="form-control"
-											placeholder="Name der Vorlage"
+											placeholder={$t('settings.template.name_of_template')}
 										/>
 										<button
 											disabled={selectedTemplate === '-1' || selectedTemplate === null}
@@ -1284,7 +1257,7 @@
 										bind:value={templateText}
 										class="form-control mt-2"
 										rows="10"
-										placeholder="Inhalt der Vorlage"
+										placeholder={$t('settings.template.content_of_template')}
 									>
 									</textarea>
 									<div class="d-flex justify-content-end">
@@ -1296,7 +1269,7 @@
 											class="btn btn-primary mt-2"
 											onclick={saveTemplate}
 										>
-											Vorlage speichern
+											{$t('settings.template.save_template')}
 											{#if isSavingTemplate}
 												<span
 													class="spinner-border spinner-border-sm ms-2"
@@ -1310,13 +1283,12 @@
 							</div>
 
 							<div id="data">
-								<h3 class="text-primary">📁 Daten</h3>
+								<h3 class="text-primary">📁 {$t('settings.data')}</h3>
 								<div>
-									<h5>Export</h5>
-									Exportiere deine Einträge in einer formatierten HTML-Datei. Bilder werden wahlweise
-									in der HTML eingebunden. Alle Dateien werden außerdem in einer Zip-Datei bereitgestellt.
+									<h5>{$t('settings.export')}</h5>
+									{$t('settings.export.description')}
 
-									<h6>Zeitraum</h6>
+									<h6>{$t('settings.export.period')}</h6>
 									<div class="form-check">
 										<input
 											class="form-check-input"
@@ -1326,7 +1298,9 @@
 											id="periodAll"
 											bind:group={exportPeriod}
 										/>
-										<label class="form-check-label" for="periodAll">Gesamter Zeitraum</label>
+										<label class="form-check-label" for="periodAll"
+											>{$t('settings.export.period_all')}</label
+										>
 									</div>
 									<div class="form-check">
 										<input
@@ -1337,11 +1311,13 @@
 											id="periodVariable"
 											bind:group={exportPeriod}
 										/>
-										<label class="form-check-label" for="periodVariable">Variabler Zeitraum</label>
+										<label class="form-check-label" for="periodVariable">
+											{$t('settings.export.period_variable')}</label
+										>
 										{#if exportPeriod === 'periodVariable'}
 											<div class="d-flex flex-row" transition:slide>
 												<div class="me-2">
-													<label for="exportStartDate">Von:</label>
+													<label for="exportStartDate">{$t('settings.export.start_date')}</label>
 													<input
 														type="date"
 														class="form-control me-2"
@@ -1350,7 +1326,7 @@
 													/>
 												</div>
 												<div>
-													<label for="exportEndDate">Bis:</label>
+													<label for="exportEndDate">{$t('settings.export.end_date')}</label>
 													<input
 														type="date"
 														class="form-control"
@@ -1361,13 +1337,13 @@
 											</div>
 											{#if exportStartDate !== '' && exportEndDate !== '' && exportStartDate > exportEndDate}
 												<div class="alert alert-danger mt-2" role="alert" transition:slide>
-													Das Startdatum muss vor dem Enddatum liegen!
+													{$t('settings.export.period_invalid')}
 												</div>
 											{/if}
 										{/if}
 									</div>
 
-									<h6>Anzahl der HTML-Dokumente</h6>
+									<h6>{$t('settings.export.split')}</h6>
 									<div class="form-check">
 										<input
 											class="form-check-input"
@@ -1377,7 +1353,9 @@
 											id="splitAIO"
 											bind:group={exportSplit}
 										/>
-										<label class="form-check-label" for="splitAIO">Eine einzige HTML</label>
+										<label class="form-check-label" for="splitAIO"
+											>{$t('settings.export.split_aio')}
+										</label>
 									</div>
 									<div class="form-check">
 										<input
@@ -1388,7 +1366,9 @@
 											id="splitYear"
 											bind:group={exportSplit}
 										/>
-										<label class="form-check-label" for="splitYear">Eine HTML pro Jahr</label>
+										<label class="form-check-label" for="splitYear"
+											>{$t('settings.export.split_year')}
+										</label>
 									</div>
 									<div class="form-check">
 										<input
@@ -1399,10 +1379,12 @@
 											id="splitMonth"
 											bind:group={exportSplit}
 										/>
-										<label class="form-check-label" for="splitMonth">Eine HTML pro Monat</label>
+										<label class="form-check-label" for="splitMonth"
+											>{$t('settings.export.split_month')}
+										</label>
 									</div>
 
-									<h6>Bilder in HTML anzeigen</h6>
+									<h6>{$t('settings.export.show_images')}</h6>
 									<div class="form-check">
 										<input
 											class="form-check-input"
@@ -1412,13 +1394,11 @@
 											bind:checked={exportImagesInHTML}
 										/>
 										<label class="form-check-label" for="exportImagesInHTML">
-											Bilder direkt unter dem Text anzeigen <em
-												>(werden zudem immer als Link bereitgestellt)</em
-											>
+											{@html $t('settings.export.show_images_description')}
 										</label>
 									</div>
 
-									<h6>Tags drucken</h6>
+									<h6>{$t('settings.export.show_tags')}</h6>
 									<div class="form-check">
 										<input
 											class="form-check-input"
@@ -1426,20 +1406,13 @@
 											id="exportTagsInHTML"
 											bind:checked={exportTagsInHTML}
 										/>
-										<label class="form-check-label" for="exportTagsInHTML"
-											>Tags in der HTML anzeigen</label
-										>
+										<label class="form-check-label" for="exportTagsInHTML">
+											{$t('settings.export.show_tags_description')}
+										</label>
 									</div>
 
 									<div class="form-text">
-										<u>Hinweise:</u>
-										<ul>
-											<li>Die HTML wird keinen Verlauf der einzelnen Tage enthalten.</li>
-											<li>
-												Ein Re-Import ist nicht möglich. Diese Funktion dient nicht dem Backup,
-												sondern rein dem Export, um eine einfach lesbare HTML-Datei zu erhalten.
-											</li>
-										</ul>
+										{@html $t('settings.export.help_text')}
 									</div>
 									<button
 										class="btn btn-primary mt-3"
@@ -1449,7 +1422,7 @@
 											(exportPeriod === 'periodVariable' &&
 												(exportStartDate === '' || exportEndDate === ''))}
 									>
-										Exportieren
+										{$t('settings.export.export_button')}
 										{#if isExporting}
 											<div class="spinner-border spinner-border-sm ms-2" role="status">
 												<span class="visually-hidden">Loading...</span>
@@ -1461,39 +1434,42 @@
 							</div>
 
 							<div id="security">
-								<h3 class="text-primary">🔒 Sicherheit</h3>
+								<h3 class="text-primary">🔒 {$t('settings.security')}</h3>
 								<div>
-									<h5>Password ändern</h5>
+									<h5>{$t('settings.security.change_password')}</h5>
 									<form onsubmit={changePassword}>
 										<div class="form-floating mb-3">
 											<input
 												type="password"
 												class="form-control"
 												id="currentPassword"
-												placeholder="Aktuelles Passwort"
+												placeholder={$t('settings.password.current_password')}
 												bind:value={currentPassword}
 											/>
-											<label for="currentPassword">Aktuelles Passwort</label>
+											<label for="currentPassword">{$t('settings.password.current_password')}</label
+											>
 										</div>
 										<div class="form-floating mb-3">
 											<input
 												type="password"
 												class="form-control"
 												id="newPassword"
-												placeholder="Neues Passwort"
+												placeholder={$t('settings.password.new_password')}
 												bind:value={newPassword}
 											/>
-											<label for="newPassword">Neues Passwort</label>
+											<label for="newPassword">{$t('settings.password.new_password')}</label>
 										</div>
 										<div class="form-floating mb-3">
 											<input
 												type="password"
 												class="form-control"
 												id="confirmNewPassword"
-												placeholder="Neues Passwort bestätigen"
+												placeholder={$t('settings.password.confirm_new_password')}
 												bind:value={confirmNewPassword}
 											/>
-											<label for="confirmNewPassword">Neues Passwort bestätigen</label>
+											<label for="confirmNewPassword"
+												>{$t('settings.password.confirm_new_password')}</label
+											>
 										</div>
 										<button class="btn btn-primary" onclick={changePassword}>
 											{#if isChangingPassword}
@@ -1502,47 +1478,33 @@
 													<span class="visually-hidden">Loading...</span>
 												</div>
 											{/if}
-											Passwort ändern
+											{$t('settings.password.change_password_button')}
 										</button>
 									</form>
 									{#if changePasswordNotEqual}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Die neuen Passwörter stimmen nicht überein!
+											{$t('settings.password.passwords_dont_match')}
 										</div>
 									{/if}
 									{#if changingPasswordSuccess}
 										<div class="alert alert-success mt-2" role="alert" transition:slide>
-											Das Passwort wurde erfolgreich geändert!<br />
-											Backup-Codes wurden ungültig gemacht (sofern vorhanden), und müssen neu erstellt
-											werden.
+											{@html $t('settings.password.success')}
 										</div>
 									{/if}
 									{#if changingPasswordIncorrect}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Das aktuelle Passwort ist falsch!
+											{$t('settings.password.current_password_incorrect')}
 										</div>
 									{:else if changingPasswordError}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Fehler beim Ändern des Passworts!
+											{$t('settings.password.change_error')}
 										</div>
 									{/if}
 								</div>
 								<div>
-									<h5>Backup-Codes</h5>
+									<h5>{$t('settings.backup_codes')}</h5>
 									<ul>
-										<li>
-											Backup-Codes funktionieren wie Einmal-Passwörter. Sie können immer anstelle
-											des Passworts verwendet werden, allerdings sind sie jeweils nur einmal gültig
-											und werden anschließend gelöscht.
-										</li>
-										<li>
-											Es werden immer 6 Codes generiert, welche die vorherigen Codes (sofern
-											vorhanden) ersetzen.
-										</li>
-										<li>
-											Du musst dir die Codes nach der Erstellung direkt notieren, sie können nicht
-											erneut angezeigt werden!
-										</li>
+										{@html $t('settings.backup_codes.description')}
 									</ul>
 
 									<form onsubmit={createBackupCodes}>
@@ -1551,17 +1513,18 @@
 												type="password"
 												class="form-control"
 												id="currentPassword"
-												placeholder="Aktuelles Passwort"
+												placeholder={$t('settings.password.current_password')}
 												bind:value={backupCodesPassword}
 											/>
-											<label for="currentPassword">Passwort bestätigen</label>
+											<label for="currentPassword">{$t('settings.password.confirm_password')}</label
+											>
 										</div>
 										<button
 											class="btn btn-primary"
 											onclick={createBackupCodes}
 											data-sveltekit-noscroll
 										>
-											Backup-Codes generieren
+											{$t('settings.backup_codes.generate_button')}
 											{#if isGeneratingBackupCodes}
 												<div class="spinner-border spinner-border-sm" role="status">
 													<span class="visually-hidden">Loading...</span>
@@ -1571,14 +1534,11 @@
 									</form>
 									{#if backupCodes.length > 0}
 										<div class="alert alert-success alert-dismissible mt-3" transition:slide>
-											<h6>Deine Backup-Codes:</h6>
-											<p>
-												Notiere dir die Codes, sie können nach dem Schließen dieses Fenstern nicht
-												erneut angezeigt werden!
-											</p>
+											{@html $t('settings.backup_codes.success')}
+
 											<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
 												<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
-												Codes kopieren
+												{$t('settings.backup_codes.copy_button')}
 											</button>
 											<ul class="list-group">
 												{#each backupCodes as code}
@@ -1591,16 +1551,15 @@
 									{/if}
 									{#if showBackupCodesError}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Fehler beim Erstellen der Backup-Codes! Vielleicht stimmt das Passwort nicht?
+											{$t('settings.backup_codes.error')}
 										</div>
 									{/if}
 								</div>
 								<div><h5>Username ändern</h5></div>
 								<div>
-									<h5>Konto löschen</h5>
+									<h5>{$t('settings.delete_account')}</h5>
 									<p>
-										Dies löscht dein Konto und alle damit verbundenen Daten. Dies kann nicht
-										rückgängig gemacht werden!
+										{$t('settings.delete_account.description')}
 									</p>
 									<form
 										onsubmit={() => {
@@ -1612,10 +1571,11 @@
 												type="password"
 												class="form-control"
 												id="currentPassword"
-												placeholder="Aktuelles Passwort"
+												placeholder={$t('settings.password.current_password')}
 												bind:value={deleteAccountPassword}
 											/>
-											<label for="currentPassword">Passwort bestätigen</label>
+											<label for="currentPassword">{$t('settings.password.confirm_password')}</label
+											>
 										</div>
 										<button
 											class="btn btn-danger"
@@ -1624,7 +1584,7 @@
 											}}
 											data-sveltekit-noscroll
 										>
-											Konto löschen
+											{$t('settings.delete_account.delete_button')}
 											{#if isDeletingAccount}
 												<!-- svelte-ignore a11y_no_static_element_interactions -->
 												<div class="spinner-border" role="status">
@@ -1635,33 +1595,31 @@
 									</form>
 									{#if showDeleteAccountSuccess}
 										<div class="alert alert-success mt-2" role="alert" transition:slide>
-											Dein Konto wurde erfolgreich gelöscht!<br />
-											Du solltest jetzt eigentlich automatisch ausgeloggt werden. Falls nicht, dann logge
-											dich bitte sebst aus.
+											{@html $t('settings.delete_account.success')}
 										</div>
 									{/if}
 									{#if deleteAccountPasswordIncorrect}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Das eingegebene Passwort ist falsch!
+											{$t('settings.delete_account.password_incorrect')}
 										</div>
 									{/if}
 									{#if showConfirmDeleteAccount}
 										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											Bist du dir sicher, dass du dein Konto löschen möchtest? Dies kann nicht
-											rückgängig gemacht werden!
+											{$t('settings.delete_account.confirm')}
+
 											<div class="d-flex flex-row mt-2">
 												<button
 													class="btn btn-secondary"
 													onclick={() => {
 														showConfirmDeleteAccount = false;
 														deleteAccountPassword = '';
-													}}>Abbrechen</button
+													}}>{$t('settings.abort')}</button
 												>
 												<button
 													class="btn btn-danger ms-3"
 													onclick={deleteAccount}
 													disabled={isDeletingAccount}
-													>Löschen bestätigen
+													>{$t('settings.delete_account.confirm_button')}
 													{#if isDeletingAccount}
 														<span
 															class="spinner-border spinner-border-sm ms-2"
@@ -1677,7 +1635,7 @@
 							</div>
 
 							<div id="about">
-								<h3 class="text-primary">💡 About</h3>
+								<h3 class="text-primary">💡 {$t('settings.about')}</h3>
 								Version:<br />
 								Changelog: <br />
 								Link zu github
@@ -1689,16 +1647,18 @@
 			<div class="modal-footer">
 				{#if settingsHaveChanged}
 					<div class="footer-unsaved-changes" transition:fade={{ duration: 100 }}>
-						Ungespeicherte Änderungen!
+						{$t('settings.unsaved_changes')}
 					</div>
 				{/if}
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+					>{$t('settings.abort')}</button
+				>
 				<button
 					type="button"
 					class="btn btn-primary"
 					onclick={saveUserSettings}
 					disabled={isSaving || !settingsHaveChanged}
-					>Speichern
+					>{$t('settings.save')}
 					{#if isSaving}
 						<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
 						></span>
@@ -1718,7 +1678,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Änderungen wurden gespeichert!</div>
+			<div class="toast-body">{$t('settings.toast.saved_edit_tag_success')}</div>
 		</div>
 	</div>
 
@@ -1730,7 +1690,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Speichern der Änderungen!</div>
+			<div class="toast-body">{$t('settings.toast.saved_edit_tag_error')}</div>
 		</div>
 	</div>
 
@@ -1742,7 +1702,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Löschen des Tags!</div>
+			<div class="toast-body">{$t('settings.toast.delete_tag_error')}</div>
 		</div>
 	</div>
 
@@ -1754,7 +1714,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Einstellungen gespeichert!</div>
+			<div class="toast-body">{$t('settings.toast.saved_settings_success')}</div>
 		</div>
 	</div>
 
@@ -1766,7 +1726,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Speichern der Einstellungen!</div>
+			<div class="toast-body">{$t('settings.toast.saved_settings_error')}</div>
 		</div>
 	</div>
 
@@ -1778,7 +1738,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Name oder Inhalt einer Vorlage dürfen nicht leer sein!</div>
+			<div class="toast-body">{$t('settings.toast.invalid_template_empty')}</div>
 		</div>
 	</div>
 
@@ -1790,7 +1750,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Name der Vorlage existiert bereits</div>
+			<div class="toast-body">{$t('settings.toast.invalid_template_double')}</div>
 		</div>
 	</div>
 
@@ -1802,7 +1762,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Vorlage gespeichert</div>
+			<div class="toast-body">{$t('settings.toast.saved_template_success')}</div>
 		</div>
 	</div>
 
@@ -1814,7 +1774,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Löschen der Vorlage</div>
+			<div class="toast-body">{$t('settings.toast.delete_template_error')}</div>
 		</div>
 	</div>
 
@@ -1826,7 +1786,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Vorlage gelöscht</div>
+			<div class="toast-body">{$t('settings.toast.delete_template_success')}</div>
 		</div>
 	</div>
 
@@ -1838,7 +1798,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Logout</div>
+			<div class="toast-body">{$t('settings.toast.logout_error')}</div>
 		</div>
 	</div>
 
@@ -1850,7 +1810,7 @@
 		aria-atomic="true"
 	>
 		<div class="d-flex">
-			<div class="toast-body">Fehler beim Exportieren!</div>
+			<div class="toast-body">{$t('settings.toast.export_data_error')}</div>
 		</div>
 	</div>
 </div>
@@ -1897,7 +1857,7 @@
 	}
 
 	.unsaved-changes::before {
-		content: 'Ungespeicherte Änderungen';
+		content: attr(data-content);
 	}
 
 	:global(.tagColumn > span) {
@@ -1906,7 +1866,6 @@
 
 	.tagColumn {
 		gap: 0.5rem;
-		/* width: min-content; */
 	}
 
 	#selectMode:checked {

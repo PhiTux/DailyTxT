@@ -1,5 +1,8 @@
 <script>
 	import { templates, insertTemplate } from '$lib/templateStore';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 </script>
 
 <select
@@ -7,7 +10,7 @@
 	class="form-select form-select-sm"
 	aria-label="Select template"
 >
-	<option value="" disabled>Vorlage einfügen...</option>
+	<option value="" disabled>{$t('template.dropdown_insert')}</option>
 	{#each $templates as template}
 		<option value={template.text}>
 			{template.name}

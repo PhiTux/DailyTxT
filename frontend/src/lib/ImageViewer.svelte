@@ -3,6 +3,9 @@
 	import { fade, slide } from 'svelte/transition';
 	import { faXmark, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let { images } = $props(); // Array of image objects with `src`, `filename`, and `uuid_filename`
 
@@ -132,7 +135,7 @@
 					href={images[currentIndex].src}
 					download={images[currentIndex].filename}
 				>
-					Download
+					{$t('imageViewer.download')}
 				</a>
 			</div>
 			<button

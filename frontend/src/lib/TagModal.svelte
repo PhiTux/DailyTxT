@@ -4,6 +4,9 @@
 	import { Picker } from 'emoji-picker-element';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let {
 		editTag = $bindable(),
@@ -55,9 +58,9 @@
 			<div class="modal-header">
 				<h5 class="modal-title">
 					{#if createTag}
-						Neues Tag erstellen
+						{$t('modal.tag.title_new')}
 					{:else}
-						Tag bearbeiten
+						{$t('modal.tag.title_edit')}
 					{/if}
 				</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -65,7 +68,7 @@
 			<div class="modal-body">
 				<div class="row">
 					<div class="col-4">
-						<h5>Emoji</h5>
+						<h5>{$t('modal.tag.emoji')}</h5>
 					</div>
 					<div class="col-8">
 						{#if editTag.icon}
@@ -78,7 +81,7 @@
 								}}><Fa icon={faTrash} fw /></button
 							>
 						{:else}
-							<span><em>Kein Emoji ausgewählt...</em></span>
+							<span><em>{$t('modal.tag.no_emoji')}</em></span>
 						{/if}
 					</div>
 				</div>
@@ -93,9 +96,9 @@
 								😀
 							{:else}
 								{editTag.icon}
-							{/if} Emoji auswählen
+							{/if}
+							{$t('modal.tag.select_emoji')}
 						</button>
-						<!-- <em>(freiwillig)</em> -->
 						<div class="tooltip" role="tooltip">
 							<emoji-picker class="emojiPicker" onemoji-click={(ev) => emojiSelected(ev)}
 							></emoji-picker>
@@ -104,20 +107,20 @@
 				</div>
 
 				<div class="row">
-					<div class="col-4"><h5>Name</h5></div>
+					<div class="col-4"><h5>{$t('modal.tag.name')}</h5></div>
 					<div class="col-8">
 						<input
 							bind:value={editTag.name}
 							type="text"
 							class="form-control mb-2"
-							placeholder="Name"
+							placeholder={$t('modal.tag.name')}
 						/>
 					</div>
 				</div>
 
 				<div class="row">
 					<div class="col-4">
-						<h5>Farbe</h5>
+						<h5>{$t('modal.tag.color')}</h5>
 					</div>
 					<div class="col-8">
 						<input
@@ -130,12 +133,14 @@
 
 				<hr />
 				<div class="row">
-					<div class="col-4"><h5>Vorschau</h5></div>
+					<div class="col-4"><h5>{$t('modal.tag.preview')}</h5></div>
 					<div class="col-8"><Tag tag={editTag} /></div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+					>{$t('modal.close')}</button
+				>
 				<button
 					onclick={() => {
 						createTag ? saveNewTag() : saveEditedTag();
@@ -143,7 +148,7 @@
 					type="button"
 					class="btn btn-primary"
 					disabled={!editTag.name || isSaving}
-					>Speichern
+					>{$t('modal.save')}
 					{#if isSaving}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 					{/if}

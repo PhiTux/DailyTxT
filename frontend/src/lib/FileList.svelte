@@ -3,6 +3,9 @@
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { slide } from 'svelte/transition';
 	import { formatBytes } from './helpers.js';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	let { files, downloadFile, askDeleteFile, deleteAllowed } = $props();
 </script>
@@ -34,9 +37,11 @@
 						aria-valuemax="100"
 					>
 						{#if file.downloadProgress === 0}
-							<span class="text-dark">Wird entschlüsselt...</span>
+							<span class="text-dark">
+								{$t('files.decrypting')}
+							</span>
 						{:else}
-							<span class="text-dark">Download: {file.downloadProgress}%</span>
+							<span class="text-dark">{$t('files.download')}: {file.downloadProgress}%</span>
 						{/if}
 					</div>
 				</div>
