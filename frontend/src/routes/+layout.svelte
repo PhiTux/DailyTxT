@@ -121,6 +121,12 @@
 			>
 				<div class="d-flex">
 					<div class="toast-body">Noch {available_backup_codes} Backup-Codes verfügbar!</div>
+					<button
+						type="button"
+						class="btn-close me-2 m-auto"
+						data-bs-dismiss="toast"
+						aria-label="Close"
+					></button>
 				</div>
 			</div>
 		</div>

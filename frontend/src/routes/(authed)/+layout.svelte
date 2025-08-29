@@ -1679,6 +1679,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.saved_edit_tag_success')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1691,6 +1693,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.saved_edit_tag_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1703,6 +1707,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.delete_tag_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1715,6 +1721,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.saved_settings_success')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1727,6 +1735,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.saved_settings_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1739,6 +1749,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.invalid_template_empty')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1751,6 +1763,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.invalid_template_double')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1763,6 +1777,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.saved_template_success')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1775,6 +1791,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.delete_template_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1787,6 +1805,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.delete_template_success')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1799,6 +1819,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.logout_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -1811,6 +1833,8 @@
 	>
 		<div class="d-flex">
 			<div class="toast-body">{$t('settings.toast.export_data_error')}</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 </div>

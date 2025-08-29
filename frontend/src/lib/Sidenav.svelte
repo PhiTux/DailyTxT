@@ -392,6 +392,8 @@
 			<div class="toast-body">
 				{$t('search.toast.error')}
 			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 
@@ -406,6 +408,8 @@
 			<div class="toast-body">
 				{$t('calendar.toast.error_bookmarking')}
 			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 </div>

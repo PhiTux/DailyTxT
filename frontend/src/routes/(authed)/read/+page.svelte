@@ -14,6 +14,9 @@
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -383,7 +386,7 @@
 								<div class="d-flex flex-row">
 									<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
 										<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-										Bilder laden
+										{$t('settings.read.load_images')}
 									</button>
 								</div>
 							{:else}

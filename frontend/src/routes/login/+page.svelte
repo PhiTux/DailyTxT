@@ -538,6 +538,12 @@
 				<div class="toast-body">
 					{$t('login.toast.login_expired')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -552,6 +558,12 @@
 				<div class="toast-body">
 					{$t('login.toast.login_invalid')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -566,6 +578,12 @@
 				<div class="toast-body">
 					{$t('login.toast.account_deleted')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 	</div>
