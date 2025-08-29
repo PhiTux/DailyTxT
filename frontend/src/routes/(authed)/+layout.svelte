@@ -58,25 +58,6 @@
 			$readingMode = false;
 		}
 
-		const scrollSpy = new bootstrap.ScrollSpy(document.body, {
-			target: '#settings-nav'
-		});
-
-		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function () {
-			const height = document.getElementById('modal-body').clientHeight;
-			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
-			document.getElementById('settings-nav').style.height = 'calc(' + height + 'px - 2rem)';
-			document.getElementById('settings-content').style.overflowY = 'auto';
-
-			setTimeout(() => {
-				const dataSpyList = document.querySelectorAll('[data-bs-spy="scroll"]');
-				dataSpyList.forEach((dataSpyEl) => {
-					//bootstrap.ScrollSpy.getInstance(dataSpyEl).refresh();
-					scrollSpy.refresh();
-				});
-			}, 400);
-		});
-
 		document.getElementById('settingsModal').addEventListener('hidden.bs.modal', function () {
 			backupCodes = [];
 		});
@@ -103,12 +84,38 @@
 	}
 
 	let settingsModal;
+	let scrollSpy;
 	function openSettingsModal() {
 		$tempSettings = JSON.parse(JSON.stringify($settings));
 		aLookBackYears = $settings.aLookBackYears.toString();
 
 		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
 		settingsModal.show();
+
+		// initialize ScrollSpy
+		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function onShown() {
+			// Remove the event listener to prevent multiple executions
+			document.getElementById('settingsModal').removeEventListener('shown.bs.modal', onShown);
+
+			const height = document.getElementById('modal-body').clientHeight;
+			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
+			document.getElementById('settings-nav').style.height = 'calc(' + height + 'px - 2rem)';
+			document.getElementById('settings-content').style.overflowY = 'auto';
+
+			// Wait a little longer for all transitions to complete
+			setTimeout(() => {
+				// Apply ScrollSpy to the actual scroll area
+				const settingsContent = document.getElementById('settings-content');
+				console.log(settingsContent);
+				if (scrollSpy) {
+					scrollSpy.dispose(); // Remove old ScrollSpy
+				}
+				scrollSpy = new bootstrap.ScrollSpy(settingsContent, {
+					target: '#settings-nav'
+				});
+				console.log(scrollSpy);
+			}, 400);
+		});
 	}
 
 	/* Important for development: convenient modal-handling with HMR */
@@ -1928,6 +1935,7 @@
 
 	.settings-content > div {
 		padding: 0.5rem;
+		position: relative;
 	}
 
 	#settings-content > div > div {
