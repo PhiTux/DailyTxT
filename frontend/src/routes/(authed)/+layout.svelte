@@ -91,6 +91,31 @@
 	let removeScrollListener = null;
 	let lastComputedSection = 'appearance';
 
+	// Settings section metadata for mobile dropdown navigation
+	const settingsSectionsMeta = [
+		{ id: 'appearance', labelKey: 'settings.appearance' },
+		{ id: 'functions', labelKey: 'settings.functions' },
+		{ id: 'tags', labelKey: 'settings.tags' },
+		{ id: 'templates', labelKey: 'settings.templates' },
+		{ id: 'data', labelKey: 'settings.data' },
+		{ id: 'security', labelKey: 'settings.security' },
+		{ id: 'about', labelKey: 'settings.about' }
+	];
+
+	function scrollToSection(id) {
+		const container = document.getElementById('settings-content');
+		if (!container) return;
+		const target = container.querySelector(':scope > #' + CSS.escape(id));
+		if (!target) return;
+		// Calculate dynamic offset (mobile dropdown height if visible)
+		let offset = 4;
+		const mobileBar = container.querySelector('.mobile-settings-dropdown');
+		if (mobileBar && getComputedStyle(mobileBar).display !== 'none') {
+			offset = mobileBar.getBoundingClientRect().height + 6; // add small gap
+		}
+		container.scrollTo({ top: target.offsetTop - offset, behavior: 'smooth' });
+	}
+
 	function computeActiveSection(container) {
 		if (!container || settingsSections.length === 0) return;
 		// Activation line: a bit below the top to give stability
@@ -868,7 +893,7 @@
 			</div>
 			<div class="modal-body" id="modal-body">
 				<div class="row">
-					<div class="col-4 overflow-y-auto">
+					<div class="col-4 overflow-y-auto d-none d-md-block">
 						<nav class="flex-column align-items-stretch" id="settings-nav">
 							<nav class="nav nav-pills flex-column custom-scrollspy-nav">
 								<a
@@ -902,7 +927,7 @@
 							</nav>
 						</nav>
 					</div>
-					<div class="col-8">
+					<div class="col-12 col-md-8">
 						<div
 							class="settings-content overflow-y-auto"
 							data-bs-spy="scroll"
@@ -910,6 +935,19 @@
 							data-bs-smooth-scroll="true"
 							id="settings-content"
 						>
+							<!-- Mobile dropdown (visible on < md) -->
+							<div class="d-md-none position-sticky top-0 p-1 mobile-settings-dropdown">
+								<select
+									id="settingsSectionSelect"
+									class="form-select form-select-sm"
+									bind:value={activeSettingsSection}
+									onchange={() => scrollToSection(activeSettingsSection)}
+								>
+									{#each settingsSectionsMeta as sec}
+										<option value={sec.id}>{$t(sec.labelKey)}</option>
+									{/each}
+								</select>
+							</div>
 							<div id="appearance">
 								<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
 								<div id="lightdark">
@@ -2060,5 +2098,20 @@
 	}
 	.custom-scrollspy-nav .nav-link:not(.active):hover {
 		background-color: rgba(13, 110, 253, 0.05);
+	}
+
+	/* Mobile settings dropdown styling */
+	.mobile-settings-dropdown {
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+		border-radius: 0.5rem;
+		z-index: 6;
+		backdrop-filter: blur(8px);
+		background: rgba(255, 255, 255, 0.85);
+	}
+	@media (max-width: 767.98px) {
+		/* Add a small spacer below dropdown to prevent content being fully hidden */
+		#settings-content > .mobile-settings-dropdown + div {
+			margin-top: 0.25rem;
+		}
 	}
 </style>
