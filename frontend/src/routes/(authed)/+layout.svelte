@@ -650,6 +650,29 @@
 	let exportTagsInHTML = $state(true);
 	let isExporting = $state(false);
 
+	const exportTranslations = {
+		weekdays: [
+			$t('weekdays.sunday'),
+			$t('weekdays.monday'),
+			$t('weekdays.tuesday'),
+			$t('weekdays.wednesday'),
+			$t('weekdays.thursday'),
+			$t('weekdays.friday'),
+			$t('weekdays.saturday')
+		],
+		dateFormat: $t('export.dateFormat'),
+		uiElements: {
+			exportTitle: $t('export.title'),
+			user: $t('export.user'),
+			exportedOn: $t('export.exportedOn'),
+			exportedOnFormat: $t('export.exportedOnFormat'),
+			entriesCount: $t('export.entriesCount'),
+			images: $t('export.images'),
+			files: $t('export.files'),
+			tags: $t('export.tags')
+		}
+	};
+
 	function exportData() {
 		if (isExporting) return;
 		isExporting = true;
@@ -662,7 +685,8 @@
 					endDate: exportEndDate,
 					imagesInHTML: exportImagesInHTML,
 					split: exportSplit,
-					tagsInHTML: exportTagsInHTML
+					tagsInHTML: exportTagsInHTML,
+					translations: JSON.stringify(exportTranslations)
 				},
 				responseType: 'blob' // Expect a binary response
 			})

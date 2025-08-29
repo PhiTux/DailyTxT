@@ -1540,6 +1540,22 @@ type LogEntry struct {
 	Tags        []int
 }
 
+type TranslationData struct {
+	Weekdays        []string `json:"weekdays"`
+	DateFormat      string   `json:"dateFormat"`
+	DateFormatOrder string   `json:"dateFormatOrder"`
+	UiElements      struct {
+		ExportTitle      string `json:"exportTitle"`
+		User             string `json:"user"`
+		ExportedOn       string `json:"exportedOn"`
+		ExportedOnFormat string `json:"exportedOnFormat"`
+		EntriesCount     string `json:"entriesCount"`
+		Images           string `json:"images"`
+		Files            string `json:"files"`
+		Tags             string `json:"tags"`
+	} `json:"uiElements"`
+}
+
 // ExportData handles exporting user data
 func ExportData(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and derived key from context
@@ -1611,6 +1627,19 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tagsInHTML := r.URL.Query().Get("tagsInHTML") == "true"
+
+	translationsStr := r.URL.Query().Get("translations")
+	if translationsStr == "" {
+		http.Error(w, "Missing translations parameter", http.StatusBadRequest)
+		return
+	}
+
+	var translations TranslationData
+
+	if err := json.Unmarshal([]byte(translationsStr), &translations); err != nil {
+		http.Error(w, fmt.Sprintf("Error parsing translations: %v", err), http.StatusBadRequest)
+		return
+	}
 
 	// Get encryption key
 	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
@@ -1831,7 +1860,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per month
 		for monthKey, entries := range monthlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for month %s: %v", monthKey, err)
 				} else {
@@ -1853,7 +1882,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per year
 		for year, entries := range yearlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for year %d: %v", year, err)
 				} else {
@@ -1874,7 +1903,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	case "aio":
 		// Create one single HTML with all entries
 		if len(allEntries) > 0 {
-			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML)
+			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
 			if err != nil {
 				utils.Logger.Printf("Error generating HTML: %v", err)
 			} else {
@@ -1894,7 +1923,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 }
 
 // generateHTML creates an HTML document with all diary entries
-func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool) ([]byte, error) {
+func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool, translations TranslationData) ([]byte, error) {
 	// Load and decrypt tags if needed
 	var tagMap map[int]Tag
 	if includeTags {
@@ -2276,11 +2305,11 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 <body>`)
 
 	// Header
-	html.WriteString(`    <div class="header">
-        <h1>DailyTxT Export</h1>`)
-	html.WriteString(fmt.Sprintf(`        <p>Benutzer: %s</p>`, utils.GetUsernameByID(userID)))
-	html.WriteString(fmt.Sprintf(`        <p>Exportiert am: %s</p>`, time.Now().Format("02.01.2006 15:04:05")))
-	html.WriteString(fmt.Sprintf(`        <p>Anzahl Einträge: %d</p>`, len(entries)))
+	html.WriteString(fmt.Sprintf(`    <div class="header">
+        <h1>%s</h1>`, translations.UiElements.ExportTitle))
+	html.WriteString(fmt.Sprintf(`        <p>%s: %s</p>`, translations.UiElements.User, utils.GetUsernameByID(userID)))
+	html.WriteString(fmt.Sprintf(`        <p>%s: %s</p>`, translations.UiElements.ExportedOn, time.Now().Format(translations.UiElements.ExportedOnFormat)))
+	html.WriteString(fmt.Sprintf(`        <p>%s: %d</p>`, translations.UiElements.EntriesCount, len(entries)))
 	html.WriteString(`    </div>
 `)
 
@@ -2291,9 +2320,12 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 
 		// Date header with weekday
 		date := time.Date(entry.Year, time.Month(entry.Month), entry.Day, 0, 0, 0, 0, time.UTC)
-		weekdays := []string{"Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"}
-		weekday := weekdays[date.Weekday()]
-		dateStr := fmt.Sprintf("%s, %02d.%02d.%d", weekday, entry.Day, entry.Month, entry.Year)
+		weekday := translations.Weekdays[date.Weekday()]
+		dateStr := translations.DateFormat
+		dateStr = strings.ReplaceAll(dateStr, "%W", weekday)                          // Wochentag
+		dateStr = strings.ReplaceAll(dateStr, "%D", fmt.Sprintf("%02d", entry.Day))   // Tag mit führender Null
+		dateStr = strings.ReplaceAll(dateStr, "%M", fmt.Sprintf("%02d", entry.Month)) // Monat mit führender Null
+		dateStr = strings.ReplaceAll(dateStr, "%Y", fmt.Sprintf("%d", entry.Year))    // Jahr
 		html.WriteString(fmt.Sprintf(`        <div class="entry-date">%s</div>
 `, htmlpkg.EscapeString(dateStr)))
 
@@ -2321,10 +2353,10 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 			}
 
 			if len(imageFiles) > 0 {
-				html.WriteString(`            <div class="entry-images">
-                <h4>Bilder</h4>
+				html.WriteString(fmt.Sprintf(`            <div class="entry-images">
+                <h4>%s</h4>
                 <div class="image-gallery">
-`)
+`, translations.UiElements.Images))
 				for _, imageFile := range imageFiles {
 					imagePath := fmt.Sprintf("files/%d-%02d-%02d/%s", entry.Year, entry.Month, entry.Day, imageFile)
 					html.WriteString(fmt.Sprintf(`                    <div class="image-item">
@@ -2341,10 +2373,10 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 
 		// Tags
 		if includeTags && len(entry.Tags) > 0 {
-			html.WriteString(`            <div class="entry-tags">
-                <h4>Tags</h4>
+			html.WriteString(fmt.Sprintf(`            <div class="entry-tags">
+                <h4>%s</h4>
                 <div class="tags">
-`)
+`, translations.UiElements.Tags))
 			for _, tagID := range entry.Tags {
 				if tag, exists := tagMap[tagID]; exists {
 					// Use decrypted tag information
@@ -2367,10 +2399,10 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 
 		// Files
 		if len(entry.Files) > 0 {
-			html.WriteString(`            <div class="entry-files">
-                <h4>Dateien</h4>
+			html.WriteString(fmt.Sprintf(`            <div class="entry-files">
+                <h4>%s</h4>
                 <ul class="file-list">
-`)
+`, translations.UiElements.Files))
 			for _, file := range entry.Files {
 				filePath := fmt.Sprintf("files/%d-%02d-%02d/%s", entry.Year, entry.Month, entry.Day, file)
 				html.WriteString(fmt.Sprintf(`                    <li><a href="%s" target="_blank">%s</a></li>
