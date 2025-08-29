@@ -84,7 +84,66 @@
 	}
 
 	let settingsModal;
-	let scrollSpy;
+
+	// Custom ScrollSpy state (manual implementation to avoid flicker)
+	let activeSettingsSection = $state('appearance');
+	let settingsSections = [];
+	let removeScrollListener = null;
+	let lastComputedSection = 'appearance';
+
+	function computeActiveSection(container) {
+		if (!container || settingsSections.length === 0) return;
+		// Activation line: a bit below the top to give stability
+		const activationY = container.scrollTop + container.clientHeight * 0.18; // 18% viewport height
+		let current = settingsSections[0].id;
+		for (let i = 0; i < settingsSections.length; i++) {
+			const sec = settingsSections[i];
+			if (sec.offsetTop <= activationY) {
+				current = sec.id;
+			} else {
+				break;
+			}
+		}
+		// Hysteresis: only update if different for stability
+		if (current !== lastComputedSection) {
+			lastComputedSection = current;
+			activeSettingsSection = current;
+		}
+	}
+
+	function initSettingsScrollSpy() {
+		const container = document.getElementById('settings-content');
+		if (!container) return;
+		settingsSections = Array.from(container.querySelectorAll(':scope > div[id]'));
+		if (settingsSections.length === 0) return;
+		// Initial compute
+		computeActiveSection(container);
+		let raf = 0;
+		const onScroll = () => {
+			if (raf) cancelAnimationFrame(raf);
+			raf = requestAnimationFrame(() => computeActiveSection(container));
+		};
+		container.addEventListener('scroll', onScroll, { passive: true });
+		removeScrollListener = () => {
+			container.removeEventListener('scroll', onScroll);
+			if (raf) cancelAnimationFrame(raf);
+		};
+		// Recompute on resize for robustness
+		const onResize = () => computeActiveSection(container);
+		window.addEventListener('resize', onResize);
+		const originalRemove = removeScrollListener;
+		removeScrollListener = () => {
+			originalRemove && originalRemove();
+			window.removeEventListener('resize', onResize);
+		};
+	}
+
+	function destroySettingsScrollSpy() {
+		removeScrollListener && removeScrollListener();
+		removeScrollListener = null;
+		settingsSections = [];
+	}
+
 	function openSettingsModal() {
 		$tempSettings = JSON.parse(JSON.stringify($settings));
 		aLookBackYears = $settings.aLookBackYears.toString();
@@ -92,29 +151,26 @@
 		settingsModal = new bootstrap.Modal(document.getElementById('settingsModal'));
 		settingsModal.show();
 
-		// initialize ScrollSpy
-		document.getElementById('settingsModal').addEventListener('shown.bs.modal', function onShown() {
-			// Remove the event listener to prevent multiple executions
-			document.getElementById('settingsModal').removeEventListener('shown.bs.modal', onShown);
-
+		// Initialize custom ScrollSpy
+		const modalEl = document.getElementById('settingsModal');
+		const onShown = () => {
+			modalEl.removeEventListener('shown.bs.modal', onShown);
 			const height = document.getElementById('modal-body').clientHeight;
-			document.getElementById('settings-content').style.height = 'calc(' + height + 'px - 2rem)';
-			document.getElementById('settings-nav').style.height = 'calc(' + height + 'px - 2rem)';
-			document.getElementById('settings-content').style.overflowY = 'auto';
-
-			// Wait a little longer for all transitions to complete
-			setTimeout(() => {
-				// Apply ScrollSpy to the actual scroll area
-				const settingsContent = document.getElementById('settings-content');
-				console.log(settingsContent);
-				if (scrollSpy) {
-					scrollSpy.dispose(); // Remove old ScrollSpy
-				}
-				scrollSpy = new bootstrap.ScrollSpy(settingsContent, {
-					target: '#settings-nav'
-				});
-				console.log(scrollSpy);
-			}, 400);
+			const contentEl = document.getElementById('settings-content');
+			const navEl = document.getElementById('settings-nav');
+			if (contentEl && navEl) {
+				contentEl.style.height = 'calc(' + height + 'px - 2rem)';
+				navEl.style.height = 'calc(' + height + 'px - 2rem)';
+				contentEl.style.overflowY = 'auto';
+				contentEl.scrollTop = 0;
+				activeSettingsSection = 'appearance';
+				// Short timeout to allow layout calculation before reading offsets
+				setTimeout(initSettingsScrollSpy, 100);
+			}
+		};
+		modalEl.addEventListener('shown.bs.modal', onShown);
+		modalEl.addEventListener('hidden.bs.modal', () => {
+			destroySettingsScrollSpy();
 		});
 	}
 
@@ -814,15 +870,35 @@
 				<div class="row">
 					<div class="col-4 overflow-y-auto">
 						<nav class="flex-column align-items-stretch" id="settings-nav">
-							<nav class="nav nav-pills flex-column">
-								<a class="nav-link mb-1" href="#appearance">{$t('settings.appearance')}</a>
-								<a class="nav-link mb-1" href="#functions">{$t('settings.functions')}</a>
-
-								<a class="nav-link mb-1" href="#tags">{$t('settings.tags')}</a>
-								<a class="nav-link mb-1" href="#templates">{$t('settings.templates')}</a>
-								<a class="nav-link mb-1" href="#data">{$t('settings.data')}</a>
-								<a class="nav-link mb-1" href="#security">{$t('settings.security')}</a>
-								<a class="nav-link mb-1" href="#about">{$t('settings.about')}</a>
+							<nav class="nav nav-pills flex-column custom-scrollspy-nav">
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'appearance' ? 'active' : ''}"
+									href="#appearance">{$t('settings.appearance')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'functions' ? 'active' : ''}"
+									href="#functions">{$t('settings.functions')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'tags' ? 'active' : ''}"
+									href="#tags">{$t('settings.tags')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'templates' ? 'active' : ''}"
+									href="#templates">{$t('settings.templates')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'data' ? 'active' : ''}"
+									href="#data">{$t('settings.data')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'security' ? 'active' : ''}"
+									href="#security">{$t('settings.security')}</a
+								>
+								<a
+									class="nav-link mb-1 {activeSettingsSection === 'about' ? 'active' : ''}"
+									href="#about">{$t('settings.about')}</a
+								>
 							</nav>
 						</nav>
 					</div>
@@ -1965,5 +2041,24 @@
 
 	.modal-footer {
 		border-top: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	/* Custom ScrollSpy styles */
+	.custom-scrollspy-nav .nav-link {
+		border-left: 4px solid transparent;
+		transition:
+			background-color 0.18s ease,
+			color 0.18s ease,
+			border-color 0.25s ease;
+		will-change: background-color, color, border-color;
+	}
+	.custom-scrollspy-nav .nav-link.active {
+		background-color: rgba(13, 110, 253, 0.15);
+		color: #0d6efd;
+		font-weight: 600;
+		border-left-color: #0d6efd;
+	}
+	.custom-scrollspy-nav .nav-link:not(.active):hover {
+		background-color: rgba(13, 110, 253, 0.05);
 	}
 </style>
