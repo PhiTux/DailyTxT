@@ -1491,10 +1491,6 @@
 		background-color: rgba(219, 219, 219, 0.45);
 	}
 
-	.filenameWeight {
-		font-weight: 550;
-	}
-
 	.files {
 		/* margin-right: 2rem; */
 		margin-bottom: 1rem;

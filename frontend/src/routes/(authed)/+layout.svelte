@@ -31,6 +31,8 @@
 	import axios from 'axios';
 	import { page } from '$app/state';
 	import { blur, slide, fade } from 'svelte/transition';
+	import Statistics from '$lib/settings/Statistics.svelte';
+	import Admin from '$lib/settings/Admin.svelte';
 	import { T, getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
@@ -39,6 +41,9 @@
 	let { children } = $props();
 	let inDuration = 150;
 	let outDuration = 150;
+
+	// Active sub-view of settings modal: 'settings' | 'stats' | 'admin'
+	let activeSettingsView = $state('settings');
 
 	$effect(() => {
 		if ($readingMode === true && page.url.pathname !== '/read') {
@@ -170,6 +175,7 @@
 	}
 
 	function openSettingsModal() {
+		activeSettingsView = 'settings';
 		$tempSettings = JSON.parse(JSON.stringify($settings));
 		aLookBackYears = $settings.aLookBackYears.toString();
 
@@ -887,885 +893,514 @@
 	>
 		<!--  -->
 		<div class="modal-content shadow-lg glass">
-			<div class="modal-header">
-				<h1>{$t('settings.title')}</h1>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			<div class="modal-header flex-wrap gap-2">
+				<div class="btn-group w-100" role="group" aria-label="Settings views">
+					<button
+						type="button"
+						class="btn btn-outline-primary {activeSettingsView === 'settings' ? 'active' : ''}"
+						onclick={() => (activeSettingsView = 'settings')}
+					>
+						{$t('settings.title')}
+					</button>
+					<button
+						type="button"
+						class="btn btn-outline-primary {activeSettingsView === 'stats' ? 'active' : ''}"
+						onclick={() => (activeSettingsView = 'stats')}
+					>
+						{$t('settings.statistics.title')}
+					</button>
+					<button
+						type="button"
+						class="btn btn-outline-primary {activeSettingsView === 'admin' ? 'active' : ''}"
+						onclick={() => (activeSettingsView = 'admin')}
+					>
+						{$t('settings.admin.title')}
+					</button>
+					<button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
 			</div>
 			<div class="modal-body" id="modal-body">
 				<div class="row">
-					<div class="col-4 overflow-y-auto d-none d-md-block">
-						<nav class="flex-column align-items-stretch" id="settings-nav">
-							<nav class="nav nav-pills flex-column custom-scrollspy-nav">
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'appearance' ? 'active' : ''}"
-									href="#appearance">{$t('settings.appearance')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'functions' ? 'active' : ''}"
-									href="#functions">{$t('settings.functions')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'tags' ? 'active' : ''}"
-									href="#tags">{$t('settings.tags')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'templates' ? 'active' : ''}"
-									href="#templates">{$t('settings.templates')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'data' ? 'active' : ''}"
-									href="#data">{$t('settings.data')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'security' ? 'active' : ''}"
-									href="#security">{$t('settings.security')}</a
-								>
-								<a
-									class="nav-link mb-1 {activeSettingsSection === 'about' ? 'active' : ''}"
-									href="#about">{$t('settings.about')}</a
-								>
+					{#if activeSettingsView === 'settings'}
+						<div class="col-4 overflow-y-auto d-none d-md-block">
+							<nav class="flex-column align-items-stretch" id="settings-nav">
+								<nav class="nav nav-pills flex-column custom-scrollspy-nav">
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'appearance' ? 'active' : ''}"
+										href="#appearance">{$t('settings.appearance')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'functions' ? 'active' : ''}"
+										href="#functions">{$t('settings.functions')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'tags' ? 'active' : ''}"
+										href="#tags">{$t('settings.tags')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'templates' ? 'active' : ''}"
+										href="#templates">{$t('settings.templates')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'data' ? 'active' : ''}"
+										href="#data">{$t('settings.data')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'security' ? 'active' : ''}"
+										href="#security">{$t('settings.security')}</a
+									>
+									<a
+										class="nav-link mb-1 {activeSettingsSection === 'about' ? 'active' : ''}"
+										href="#about">{$t('settings.about')}</a
+									>
+								</nav>
 							</nav>
-						</nav>
-					</div>
-					<div class="col-12 col-md-8">
-						<div
-							class="settings-content overflow-y-auto"
-							data-bs-spy="scroll"
-							data-bs-target="#settings-nav"
-							data-bs-smooth-scroll="true"
-							id="settings-content"
-						>
-							<!-- Mobile dropdown (visible on < md) -->
-							<div class="d-md-none position-sticky top-0 p-1 mobile-settings-dropdown">
-								<select
-									id="settingsSectionSelect"
-									class="form-select form-select-sm"
-									bind:value={activeSettingsSection}
-									onchange={() => scrollToSection(activeSettingsSection)}
-								>
-									{#each settingsSectionsMeta as sec}
-										<option value={sec.id}>{$t(sec.labelKey)}</option>
-									{/each}
-								</select>
-							</div>
-							<div id="appearance">
-								<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
-								<div id="lightdark">
-									{#if $tempSettings.darkModeAutoDetect !== $settings.darkModeAutoDetect || $tempSettings.useDarkMode !== $settings.useDarkMode}
-										{@render unsavedChanges()}
-									{/if}
-									<h5>{$t('settings.light_dark_mode')}</h5>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="darkMode"
-											id="darkModeAutoTrue"
-											value={true}
-											bind:group={$tempSettings.darkModeAutoDetect}
-										/>
-										<label class="form-check-label" for="darkModeAutoTrue">
-											{$t('settings.light_dark_auto_detect')}
-											{#if window.matchMedia('(prefers-color-scheme: dark)').matches}
-												<b><u>{$t('settings.dark_mode')} <Fa icon={faMoon} /></u></b>
-											{:else}
-												<b><u>{$t('settings.light_mode')} <Fa icon={faSun} /></u></b>
-											{/if}
-										</label>
-									</div>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="darkMode"
-											id="darkModeAutoFalse"
-											value={false}
-											bind:group={$tempSettings.darkModeAutoDetect}
-										/>
-										<label class="form-check-label" for="darkModeAutoFalse">
-											{$t('settings.light_dark_manual')}
-										</label>
-										{#if $tempSettings.darkModeAutoDetect === false}
-											<div class="form-check form-switch d-flex flex-row ps-0" transition:slide>
-												<label class="form-check-label me-5" for="darkModeSwitch">
-													<Fa icon={faSun} />
-												</label>
-												<input
-													class="form-check-input"
-													bind:checked={$tempSettings.useDarkMode}
-													type="checkbox"
-													role="switch"
-													id="darkModeSwitch"
-												/>
-												<label class="form-check-label ms-2" for="darkModeSwitch">
-													<Fa icon={faMoon} />
-												</label>
-											</div>
-										{/if}
-									</div>
-								</div>
-								<div id="background">
-									{#if $tempSettings.background !== $settings.background || $tempSettings.monochromeBackgroundColor !== $settings.monochromeBackgroundColor}
-										{@render unsavedChanges()}
-									{/if}
-
-									<h5>{$t('settings.background')}</h5>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="background"
-											id="background_gradient"
-											value={'gradient'}
-											bind:group={$tempSettings.background}
-										/>
-										<label class="form-check-label" for="background_gradient">
-											{$t('settings.background_gradient')}
-										</label>
-									</div>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="background"
-											id="background_monochrome"
-											value={'monochrome'}
-											bind:group={$tempSettings.background}
-										/>
-										<label class="form-check-label" for="background_monochrome">
-											{$t('settings.background_monochrome')}
-										</label>
-										{#if $tempSettings.background === 'monochrome'}
-											<input
-												transition:slide
-												class="form-control form-control-color"
-												bind:value={$tempSettings.monochromeBackgroundColor}
-												type="color"
-											/>
-										{/if}
-									</div>
-								</div>
-							</div>
-
-							<div id="functions">
-								<h3 class="text-primary">🛠️ {$t('settings.functions')}</h3>
-
-								<div id="autoLoadImages">
-									{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
-										{@render unsavedChanges()}
-									{/if}
-
-									<h5>{$t('settings.images_title')}</h5>
-									{@html $t('settings.images_description')}
-
-									<div class="form-check form-switch">
-										<input
-											class="form-check-input"
-											bind:checked={$tempSettings.setAutoloadImagesPerDevice}
-											type="checkbox"
-											role="switch"
-											id="setImageLoadingPerDeviceSwitch"
-										/>
-										<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
-											{$t('settings.images_loading_per_device')}
-										</label>
-									</div>
-
-									<div class="form-check form-switch ms-3">
-										<input
-											class="form-check-input"
-											bind:checked={$autoLoadImagesThisDevice}
-											type="checkbox"
-											role="switch"
-											id="loadImagesThisDeviceSwitch"
-											disabled={!$tempSettings.setAutoloadImagesPerDevice}
-										/>
-										<label class="form-check-label" for="loadImagesThisDeviceSwitch">
-											{@html $t('settings.images_loading_this_device')}
-										</label>
-									</div>
-
-									<div class="form-check form-switch mt-3">
-										<input
-											class="form-check-input"
-											bind:checked={$tempSettings.autoloadImagesByDefault}
-											type="checkbox"
-											role="switch"
-											id="autoLoadImagesSwitch"
-											disabled={$tempSettings.setAutoloadImagesPerDevice}
-										/>
-										<label class="form-check-label" for="autoLoadImagesSwitch">
-											{$t('settings.images_loading_default')}
-										</label>
-									</div>
-								</div>
-
-								<div id="language">
-									{#if $tempSettings.useBrowserLanguage !== $settings.useBrowserLanguage || $tempSettings.language !== $settings.language}
-										{@render unsavedChanges()}
-									{/if}
-									<h5>🌐 {$t('settings.language')}</h5>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="language"
-											id="language_auto"
-											value={true}
-											bind:group={$tempSettings.useBrowserLanguage}
-										/>
-										<label class="form-check-label" for="language_auto">
-											{$t('settings.language_auto_detect')}
-											<code>{window.navigator.language}</code>
-											{#if tolgeesMatchForBrowserLanguage() !== '' && tolgeesMatchForBrowserLanguage() !== window.navigator.language}
-												➔ <code>{tolgeesMatchForBrowserLanguage()}</code>
-												{$t('settings.language_X_used')}
-											{/if}
-										</label>
-										{#if $tempSettings.useBrowserLanguage && tolgeesMatchForBrowserLanguage() === ''}
-											<div
-												transition:slide
-												disabled={!$settings.useBrowserLanguage}
-												class="alert alert-danger"
-												role="alert"
-											>
-												{@html $t('settings.language_not_available', {
-													browserLanguage: window.navigator.language,
-													defaultLanguage: $tolgee.getInitialOptions().defaultLanguage
-												})}
-											</div>
-										{/if}
-									</div>
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="language"
-											id="language_manual"
-											value={false}
-											bind:group={$tempSettings.useBrowserLanguage}
-										/>
-										<label class="form-check-label" for="language_manual">
-											{$t('settings.set_language_manually')}
-											{#if !$tempSettings.useBrowserLanguage}
-												<select
-													transition:slide
-													class="form-select"
-													bind:value={$tempSettings.language}
-													disabled={$tempSettings.useBrowserLanguage}
-												>
-													{#each $tolgee.getInitialOptions().availableLanguages as lang}
-														<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
-													{/each}
-												</select>
-											{/if}
-										</label>
-									</div>
-									<div class="form-text">
-										{$t('settings.language.reload_info')}
-									</div>
-								</div>
-								<div id="timezone">
-									{#if $tempSettings.useBrowserTimezone !== $settings.useBrowserTimezone || ($tempSettings.timezone !== undefined && $tempSettings.timezone?.value !== $settings.timezone?.value)}
-										{@render unsavedChanges()}
-									{/if}
-									<h5>{$t('settings.timezone')}</h5>
-									{$t('settings.timezone.description', { written_on: $t('log.written_on') })}
-
-									<div class="form-check mt-2">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="timezone"
-											id="timezone1"
-											value={true}
-											bind:group={$tempSettings.useBrowserTimezone}
-										/>
-										<label class="form-check-label" for="timezone1">
-											{@html $t('settings.timezone.auto_detect')}
-											<code>{new Intl.DateTimeFormat().resolvedOptions().timeZone}</code>
-										</label>
-									</div>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="timezone"
-											id="timezone2"
-											value={false}
-											bind:group={$tempSettings.useBrowserTimezone}
-										/>
-										<label class="form-check-label" for="timezone2">
-											{$t('settings.timezone.manual')}
-										</label>
-										<br />
-										<SelectTimezone />
-										{#if !$tempSettings.useBrowserTimezone}
-											<span transition:fade>
-												{$t('settings.timezone.selected')} <code>{$tempSettings.timezone}</code>
-											</span>
-										{/if}
-									</div>
-
-									<div class="form-text mt-3">
-										{@html $t('settings.timezone.help_text')}
-									</div>
-								</div>
-
-								<div id="aLookBack">
-									{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
-												.trim()
-												.split(',')
-												.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.aLookBackYears)}
-										{@render unsavedChanges()}
-									{/if}
-
-									<h5>{$t('settings.aLookBack')}</h5>
-									<ul>
-										{@html $t('settings.aLookBack.description')}
-									</ul>
-									<div class="form-check form-switch">
-										<input
-											class="form-check-input"
-											bind:checked={$tempSettings.useALookBack}
-											type="checkbox"
-											role="switch"
-											id="useALookBackSwitch"
-										/>
-										<label class="form-check-label" for="useALookBackSwitch">
-											{$t('settings.ALookBack.useIt')}
-										</label>
-									</div>
-
-									<div>
-										<input
-											type="text"
-											id="useALookBackYears"
-											class="form-control {aLookBackYearsInvalid ? 'is-invalid' : ''}"
-											aria-describedby="useALookBackHelpBlock"
-											disabled={!$tempSettings.useALookBack}
-											placeholder={$t('settings.ALookBack.input_placeholder')}
-											bind:value={aLookBackYears}
-											invalid
-										/>
-										{#if aLookBackYearsInvalid}
-											<div class="alert alert-danger mt-2" role="alert" transition:slide>
-												{$t('settings.ALookBack.invalid_input')}
-											</div>
-										{/if}
-										<div id="useALookBackHelpBlock" class="form-text">
-											{@html $t('settings.ALookBack.help_text')}
-										</div>
-									</div>
-								</div>
-								<div id="loginonreload">
-									<h5>Login bei Reload</h5>
-									Bla<br />
-									blub <br />
-									bla <br />
-									blub <br />
-								</div>
-							</div>
-
-							<div id="tags">
-								<h3 class="text-primary">#️⃣ {$t('settings.tags')}</h3>
-								<div>
-									{$t('settings.tags.description')}
-
-									{#if $tags.length === 0}
-										<div class="alert alert-info my-2" role="alert">
-											{$t('settings.tags.no_tags')}
-										</div>
-									{/if}
-									<div class="d-flex flex-column tagColumn mt-1">
-										{#each $tags as tag}
-											<Tag
-												{tag}
-												isEditable
-												editTag={openTagModal}
-												isDeletable
-												deleteTag={askDeleteTag}
-											/>
-											{#if deleteTagId === tag.id}
-												<div
-													class="alert alert-danger align-items-center"
-													role="alert"
-													transition:slide
-												>
-													<div>
-														<Fa icon={faTriangleExclamation} fw />
-														{@html $t('settings.tags.delete_confirmation')}
-													</div>
-													<!-- svelte-ignore a11y_consider_explicit_label -->
-													<div class="d-flex flex-row mt-2">
-														<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
-															>{$t('settings.abort')}
-														</button>
-														<button
-															disabled={isDeletingTag}
-															class="btn btn-danger ms-3"
-															onclick={() => deleteTag(tag.id)}
-															>{$t('settings.delete')}
-															{#if isDeletingTag}
-																<span
-																	class="spinner-border spinner-border-sm ms-2"
-																	role="status"
-																	aria-hidden="true"
-																></span>
-															{/if}
-														</button>
-													</div>
-												</div>
-											{/if}
+						</div>
+						<div class="col-12 col-md-8">
+							<div
+								class="settings-content overflow-y-auto"
+								data-bs-spy="scroll"
+								data-bs-target="#settings-nav"
+								data-bs-smooth-scroll="true"
+								id="settings-content"
+							>
+								<!-- Mobile dropdown (visible on < md) -->
+								<div class="d-md-none position-sticky top-0 p-1 mobile-settings-dropdown">
+									<select
+										id="settingsSectionSelect"
+										class="form-select form-select-sm"
+										bind:value={activeSettingsSection}
+										onchange={() => scrollToSection(activeSettingsSection)}
+									>
+										{#each settingsSectionsMeta as sec}
+											<option value={sec.id}>{$t(sec.labelKey)}</option>
 										{/each}
-									</div>
+									</select>
 								</div>
-							</div>
-
-							<div id="templates">
-								<h3 class="text-primary">📝 {$t('settings.templates')}</h3>
-								<div>
-									{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
-										{@render unsavedChanges()}
-									{/if}
-
-									<div class="d-flex flex-column">
-										<select
-											bind:value={selectedTemplate}
-											class="form-select"
-											aria-label="Select template"
-											onchange={updateSelectedTemplate}
-										>
-											<option value="-1" selected={selectedTemplate === '-1'}>
-												{$t('settings.templates.create_new')}
-											</option>
-											{#each $templates as template, index}
-												<option value={index} selected={index === selectedTemplate}>
-													{template.name}
-												</option>
-											{/each}
-										</select>
-									</div>
-
-									<hr />
-
-									{#if confirmDeleteTemplate}
-										<div transition:slide class="d-flex flex-row align-items-center mb-2">
-											<span>
-												{@html $t('settings.templates.delete_confirmation', {
-													template: $templates[selectedTemplate]?.name
-												})}
-											</span>
-											<button
-												type="button"
-												class="btn btn-secondary ms-2"
-												onclick={() => (confirmDeleteTemplate = false)}
-												>{$t('settings.abort')}</button
-											>
-											<button
-												type="button"
-												class="btn btn-danger ms-2"
-												onclick={() => {
-													deleteTemplate();
-												}}
-												disabled={isDeletingTemplate}
-												>{$t('settings.delete')}
-												{#if isDeletingTemplate}
-													<span
-														class="spinner-border spinner-border-sm ms-2"
-														role="status"
-														aria-hidden="true"
-													></span>
+								<div id="appearance">
+									<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
+									<div id="lightdark">
+										{#if $tempSettings.darkModeAutoDetect !== $settings.darkModeAutoDetect || $tempSettings.useDarkMode !== $settings.useDarkMode}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>{$t('settings.light_dark_mode')}</h5>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="darkMode"
+												id="darkModeAutoTrue"
+												value={true}
+												bind:group={$tempSettings.darkModeAutoDetect}
+											/>
+											<label class="form-check-label" for="darkModeAutoTrue">
+												{$t('settings.light_dark_auto_detect')}
+												{#if window.matchMedia('(prefers-color-scheme: dark)').matches}
+													<b><u>{$t('settings.dark_mode')} <Fa icon={faMoon} /></u></b>
+												{:else}
+													<b><u>{$t('settings.light_mode')} <Fa icon={faSun} /></u></b>
 												{/if}
-											</button>
+											</label>
 										</div>
-									{/if}
-									<div class="d-flex flex-row">
-										<input
-											disabled={selectedTemplate === null}
-											type="text"
-											bind:value={templateName}
-											class="form-control"
-											placeholder={$t('settings.template.name_of_template')}
-										/>
-										<button
-											disabled={selectedTemplate === '-1' || selectedTemplate === null}
-											type="button"
-											class="btn btn-outline-danger ms-5"
-											onclick={() => {
-												confirmDeleteTemplate = !confirmDeleteTemplate;
-											}}><Fa fw icon={faTrash} /></button
-										>
-									</div>
-									<textarea
-										disabled={selectedTemplate === null}
-										bind:value={templateText}
-										class="form-control mt-2"
-										rows="10"
-										placeholder={$t('settings.template.content_of_template')}
-									>
-									</textarea>
-									<div class="d-flex justify-content-end">
-										<button
-											disabled={(oldTemplateName === templateName &&
-												oldTemplateText === templateText) ||
-												isSavingTemplate}
-											type="button"
-											class="btn btn-primary mt-2"
-											onclick={saveTemplate}
-										>
-											{$t('settings.template.save_template')}
-											{#if isSavingTemplate}
-												<span
-													class="spinner-border spinner-border-sm ms-2"
-													role="status"
-													aria-hidden="true"
-												></span>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="darkMode"
+												id="darkModeAutoFalse"
+												value={false}
+												bind:group={$tempSettings.darkModeAutoDetect}
+											/>
+											<label class="form-check-label" for="darkModeAutoFalse">
+												{$t('settings.light_dark_manual')}
+											</label>
+											{#if $tempSettings.darkModeAutoDetect === false}
+												<div class="form-check form-switch d-flex flex-row ps-0" transition:slide>
+													<label class="form-check-label me-5" for="darkModeSwitch">
+														<Fa icon={faSun} />
+													</label>
+													<input
+														class="form-check-input"
+														bind:checked={$tempSettings.useDarkMode}
+														type="checkbox"
+														role="switch"
+														id="darkModeSwitch"
+													/>
+													<label class="form-check-label ms-2" for="darkModeSwitch">
+														<Fa icon={faMoon} />
+													</label>
+												</div>
 											{/if}
-										</button>
+										</div>
+									</div>
+									<div id="background">
+										{#if $tempSettings.background !== $settings.background || $tempSettings.monochromeBackgroundColor !== $settings.monochromeBackgroundColor}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>{$t('settings.background')}</h5>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="background"
+												id="background_gradient"
+												value={'gradient'}
+												bind:group={$tempSettings.background}
+											/>
+											<label class="form-check-label" for="background_gradient">
+												{$t('settings.background_gradient')}
+											</label>
+										</div>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="background"
+												id="background_monochrome"
+												value={'monochrome'}
+												bind:group={$tempSettings.background}
+											/>
+											<label class="form-check-label" for="background_monochrome">
+												{$t('settings.background_monochrome')}
+											</label>
+											{#if $tempSettings.background === 'monochrome'}
+												<input
+													transition:slide
+													class="form-control form-control-color"
+													bind:value={$tempSettings.monochromeBackgroundColor}
+													type="color"
+												/>
+											{/if}
+										</div>
 									</div>
 								</div>
-							</div>
 
-							<div id="data">
-								<h3 class="text-primary">📁 {$t('settings.data')}</h3>
-								<div>
-									<h5>{$t('settings.export')}</h5>
-									{$t('settings.export.description')}
+								<div id="functions">
+									<h3 class="text-primary">🛠️ {$t('settings.functions')}</h3>
 
-									<h6>{$t('settings.export.period')}</h6>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="period"
-											value="periodAll"
-											id="periodAll"
-											bind:group={exportPeriod}
-										/>
-										<label class="form-check-label" for="periodAll"
-											>{$t('settings.export.period_all')}</label
-										>
+									<div id="autoLoadImages">
+										{#if $tempSettings.setAutoloadImagesPerDevice !== $settings.setAutoloadImagesPerDevice || $tempSettings.autoloadImagesByDefault !== $settings.autoloadImagesByDefault}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>{$t('settings.images_title')}</h5>
+										{@html $t('settings.images_description')}
+
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.setAutoloadImagesPerDevice}
+												type="checkbox"
+												role="switch"
+												id="setImageLoadingPerDeviceSwitch"
+											/>
+											<label class="form-check-label" for="setImageLoadingPerDeviceSwitch">
+												{$t('settings.images_loading_per_device')}
+											</label>
+										</div>
+
+										<div class="form-check form-switch ms-3">
+											<input
+												class="form-check-input"
+												bind:checked={$autoLoadImagesThisDevice}
+												type="checkbox"
+												role="switch"
+												id="loadImagesThisDeviceSwitch"
+												disabled={!$tempSettings.setAutoloadImagesPerDevice}
+											/>
+											<label class="form-check-label" for="loadImagesThisDeviceSwitch">
+												{@html $t('settings.images_loading_this_device')}
+											</label>
+										</div>
+
+										<div class="form-check form-switch mt-3">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.autoloadImagesByDefault}
+												type="checkbox"
+												role="switch"
+												id="autoLoadImagesSwitch"
+												disabled={$tempSettings.setAutoloadImagesPerDevice}
+											/>
+											<label class="form-check-label" for="autoLoadImagesSwitch">
+												{$t('settings.images_loading_default')}
+											</label>
+										</div>
 									</div>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="period"
-											value="periodVariable"
-											id="periodVariable"
-											bind:group={exportPeriod}
-										/>
-										<label class="form-check-label" for="periodVariable">
-											{$t('settings.export.period_variable')}</label
-										>
-										{#if exportPeriod === 'periodVariable'}
-											<div class="d-flex flex-row" transition:slide>
-												<div class="me-2">
-													<label for="exportStartDate">{$t('settings.export.start_date')}</label>
-													<input
-														type="date"
-														class="form-control me-2"
-														id="exportStartDate"
-														bind:value={exportStartDate}
-													/>
+
+									<div id="language">
+										{#if $tempSettings.useBrowserLanguage !== $settings.useBrowserLanguage || $tempSettings.language !== $settings.language}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>🌐 {$t('settings.language')}</h5>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="language"
+												id="language_auto"
+												value={true}
+												bind:group={$tempSettings.useBrowserLanguage}
+											/>
+											<label class="form-check-label" for="language_auto">
+												{$t('settings.language_auto_detect')}
+												<code>{window.navigator.language}</code>
+												{#if tolgeesMatchForBrowserLanguage() !== '' && tolgeesMatchForBrowserLanguage() !== window.navigator.language}
+													➔ <code>{tolgeesMatchForBrowserLanguage()}</code>
+													{$t('settings.language_X_used')}
+												{/if}
+											</label>
+											{#if $tempSettings.useBrowserLanguage && tolgeesMatchForBrowserLanguage() === ''}
+												<div
+													transition:slide
+													disabled={!$settings.useBrowserLanguage}
+													class="alert alert-danger"
+													role="alert"
+												>
+													{@html $t('settings.language_not_available', {
+														browserLanguage: window.navigator.language,
+														defaultLanguage: $tolgee.getInitialOptions().defaultLanguage
+													})}
 												</div>
-												<div>
-													<label for="exportEndDate">{$t('settings.export.end_date')}</label>
-													<input
-														type="date"
-														class="form-control"
-														id="exportEndDate"
-														bind:value={exportEndDate}
-													/>
-												</div>
-											</div>
-											{#if exportStartDate !== '' && exportEndDate !== '' && exportStartDate > exportEndDate}
+											{/if}
+										</div>
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="language"
+												id="language_manual"
+												value={false}
+												bind:group={$tempSettings.useBrowserLanguage}
+											/>
+											<label class="form-check-label" for="language_manual">
+												{$t('settings.set_language_manually')}
+												{#if !$tempSettings.useBrowserLanguage}
+													<select
+														transition:slide
+														class="form-select"
+														bind:value={$tempSettings.language}
+														disabled={$tempSettings.useBrowserLanguage}
+													>
+														{#each $tolgee.getInitialOptions().availableLanguages as lang}
+															<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+														{/each}
+													</select>
+												{/if}
+											</label>
+										</div>
+										<div class="form-text">
+											{$t('settings.language.reload_info')}
+										</div>
+									</div>
+									<div id="timezone">
+										{#if $tempSettings.useBrowserTimezone !== $settings.useBrowserTimezone || ($tempSettings.timezone !== undefined && $tempSettings.timezone?.value !== $settings.timezone?.value)}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>{$t('settings.timezone')}</h5>
+										{$t('settings.timezone.description', { written_on: $t('log.written_on') })}
+
+										<div class="form-check mt-2">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="timezone"
+												id="timezone1"
+												value={true}
+												bind:group={$tempSettings.useBrowserTimezone}
+											/>
+											<label class="form-check-label" for="timezone1">
+												{@html $t('settings.timezone.auto_detect')}
+												<code>{new Intl.DateTimeFormat().resolvedOptions().timeZone}</code>
+											</label>
+										</div>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="timezone"
+												id="timezone2"
+												value={false}
+												bind:group={$tempSettings.useBrowserTimezone}
+											/>
+											<label class="form-check-label" for="timezone2">
+												{$t('settings.timezone.manual')}
+											</label>
+											<br />
+											<SelectTimezone />
+											{#if !$tempSettings.useBrowserTimezone}
+												<span transition:fade>
+													{$t('settings.timezone.selected')} <code>{$tempSettings.timezone}</code>
+												</span>
+											{/if}
+										</div>
+
+										<div class="form-text mt-3">
+											{@html $t('settings.timezone.help_text')}
+										</div>
+									</div>
+
+									<div id="aLookBack">
+										{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
+													.trim()
+													.split(',')
+													.map( (year) => parseInt(year.trim()) )) !== JSON.stringify($settings.aLookBackYears)}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>{$t('settings.aLookBack')}</h5>
+										<ul>
+											{@html $t('settings.aLookBack.description')}
+										</ul>
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.useALookBack}
+												type="checkbox"
+												role="switch"
+												id="useALookBackSwitch"
+											/>
+											<label class="form-check-label" for="useALookBackSwitch">
+												{$t('settings.ALookBack.useIt')}
+											</label>
+										</div>
+
+										<div>
+											<input
+												type="text"
+												id="useALookBackYears"
+												class="form-control {aLookBackYearsInvalid ? 'is-invalid' : ''}"
+												aria-describedby="useALookBackHelpBlock"
+												disabled={!$tempSettings.useALookBack}
+												placeholder={$t('settings.ALookBack.input_placeholder')}
+												bind:value={aLookBackYears}
+												invalid
+											/>
+											{#if aLookBackYearsInvalid}
 												<div class="alert alert-danger mt-2" role="alert" transition:slide>
-													{$t('settings.export.period_invalid')}
+													{$t('settings.ALookBack.invalid_input')}
 												</div>
 											{/if}
-										{/if}
+											<div id="useALookBackHelpBlock" class="form-text">
+												{@html $t('settings.ALookBack.help_text')}
+											</div>
+										</div>
 									</div>
+									<div id="loginonreload">
+										<h5>Login bei Reload</h5>
+										Bla<br />
+										blub <br />
+										bla <br />
+										blub <br />
+									</div>
+								</div>
 
-									<h6>{$t('settings.export.split')}</h6>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="split"
-											value="aio"
-											id="splitAIO"
-											bind:group={exportSplit}
-										/>
-										<label class="form-check-label" for="splitAIO"
-											>{$t('settings.export.split_aio')}
-										</label>
-									</div>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="split"
-											value="year"
-											id="splitYear"
-											bind:group={exportSplit}
-										/>
-										<label class="form-check-label" for="splitYear"
-											>{$t('settings.export.split_year')}
-										</label>
-									</div>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="radio"
-											name="split"
-											value="month"
-											id="splitMonth"
-											bind:group={exportSplit}
-										/>
-										<label class="form-check-label" for="splitMonth"
-											>{$t('settings.export.split_month')}
-										</label>
-									</div>
+								<div id="tags">
+									<h3 class="text-primary">#️⃣ {$t('settings.tags')}</h3>
+									<div>
+										{$t('settings.tags.description')}
 
-									<h6>{$t('settings.export.show_images')}</h6>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="checkbox"
-											name="images"
-											id="exportImagesInHTML"
-											bind:checked={exportImagesInHTML}
-										/>
-										<label class="form-check-label" for="exportImagesInHTML">
-											{@html $t('settings.export.show_images_description')}
-										</label>
-									</div>
-
-									<h6>{$t('settings.export.show_tags')}</h6>
-									<div class="form-check">
-										<input
-											class="form-check-input"
-											type="checkbox"
-											id="exportTagsInHTML"
-											bind:checked={exportTagsInHTML}
-										/>
-										<label class="form-check-label" for="exportTagsInHTML">
-											{$t('settings.export.show_tags_description')}
-										</label>
-									</div>
-
-									<div class="form-text">
-										{@html $t('settings.export.help_text')}
-									</div>
-									<button
-										class="btn btn-primary mt-3"
-										onclick={exportData}
-										data-sveltekit-noscroll
-										disabled={isExporting ||
-											(exportPeriod === 'periodVariable' &&
-												(exportStartDate === '' || exportEndDate === ''))}
-									>
-										{$t('settings.export.export_button')}
-										{#if isExporting}
-											<div class="spinner-border spinner-border-sm ms-2" role="status">
-												<span class="visually-hidden">Loading...</span>
+										{#if $tags.length === 0}
+											<div class="alert alert-info my-2" role="alert">
+												{$t('settings.tags.no_tags')}
 											</div>
 										{/if}
-									</button>
+										<div class="d-flex flex-column tagColumn mt-1">
+											{#each $tags as tag}
+												<Tag
+													{tag}
+													isEditable
+													editTag={openTagModal}
+													isDeletable
+													deleteTag={askDeleteTag}
+												/>
+												{#if deleteTagId === tag.id}
+													<div
+														class="alert alert-danger align-items-center"
+														role="alert"
+														transition:slide
+													>
+														<div>
+															<Fa icon={faTriangleExclamation} fw />
+															{@html $t('settings.tags.delete_confirmation')}
+														</div>
+														<!-- svelte-ignore a11y_consider_explicit_label -->
+														<div class="d-flex flex-row mt-2">
+															<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
+																>{$t('settings.abort')}
+															</button>
+															<button
+																disabled={isDeletingTag}
+																class="btn btn-danger ms-3"
+																onclick={() => deleteTag(tag.id)}
+																>{$t('settings.delete')}
+																{#if isDeletingTag}
+																	<span
+																		class="spinner-border spinner-border-sm ms-2"
+																		role="status"
+																		aria-hidden="true"
+																	></span>
+																{/if}
+															</button>
+														</div>
+													</div>
+												{/if}
+											{/each}
+										</div>
+									</div>
 								</div>
-								<div><h5>Import</h5></div>
-							</div>
 
-							<div id="security">
-								<h3 class="text-primary">🔒 {$t('settings.security')}</h3>
-								<div>
-									<h5>{$t('settings.security.change_password')}</h5>
-									<form onsubmit={changePassword}>
-										<div class="form-floating mb-3">
-											<input
-												type="password"
-												class="form-control"
-												id="currentPassword"
-												placeholder={$t('settings.password.current_password')}
-												bind:value={currentPassword}
-											/>
-											<label for="currentPassword">{$t('settings.password.current_password')}</label
-											>
-										</div>
-										<div class="form-floating mb-3">
-											<input
-												type="password"
-												class="form-control"
-												id="newPassword"
-												placeholder={$t('settings.password.new_password')}
-												bind:value={newPassword}
-											/>
-											<label for="newPassword">{$t('settings.password.new_password')}</label>
-										</div>
-										<div class="form-floating mb-3">
-											<input
-												type="password"
-												class="form-control"
-												id="confirmNewPassword"
-												placeholder={$t('settings.password.confirm_new_password')}
-												bind:value={confirmNewPassword}
-											/>
-											<label for="confirmNewPassword"
-												>{$t('settings.password.confirm_new_password')}</label
-											>
-										</div>
-										<button class="btn btn-primary" onclick={changePassword}>
-											{#if isChangingPassword}
-												<!-- svelte-ignore a11y_no_static_element_interactions -->
-												<div class="spinner-border" role="status">
-													<span class="visually-hidden">Loading...</span>
-												</div>
-											{/if}
-											{$t('settings.password.change_password_button')}
-										</button>
-									</form>
-									{#if changePasswordNotEqual}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.password.passwords_dont_match')}
-										</div>
-									{/if}
-									{#if changingPasswordSuccess}
-										<div class="alert alert-success mt-2" role="alert" transition:slide>
-											{@html $t('settings.password.success')}
-										</div>
-									{/if}
-									{#if changingPasswordIncorrect}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.password.current_password_incorrect')}
-										</div>
-									{:else if changingPasswordError}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.password.change_error')}
-										</div>
-									{/if}
-								</div>
-								<div>
-									<h5>{$t('settings.backup_codes')}</h5>
-									<ul>
-										{@html $t('settings.backup_codes.description')}
-									</ul>
+								<div id="templates">
+									<h3 class="text-primary">📝 {$t('settings.templates')}</h3>
+									<div>
+										{#if oldTemplateName !== templateName || oldTemplateText !== templateText}
+											{@render unsavedChanges()}
+										{/if}
 
-									<form onsubmit={createBackupCodes}>
-										<div class="form-floating mb-3">
-											<input
-												type="password"
-												class="form-control"
-												id="currentPassword"
-												placeholder={$t('settings.password.current_password')}
-												bind:value={backupCodesPassword}
-											/>
-											<label for="currentPassword">{$t('settings.password.confirm_password')}</label
+										<div class="d-flex flex-column">
+											<select
+												bind:value={selectedTemplate}
+												class="form-select"
+												aria-label="Select template"
+												onchange={updateSelectedTemplate}
 											>
-										</div>
-										<button
-											class="btn btn-primary"
-											onclick={createBackupCodes}
-											data-sveltekit-noscroll
-										>
-											{$t('settings.backup_codes.generate_button')}
-											{#if isGeneratingBackupCodes}
-												<div class="spinner-border spinner-border-sm" role="status">
-													<span class="visually-hidden">Loading...</span>
-												</div>
-											{/if}
-										</button>
-									</form>
-									{#if backupCodes.length > 0}
-										<div class="alert alert-success alert-dismissible mt-3" transition:slide>
-											{@html $t('settings.backup_codes.success')}
-
-											<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
-												<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
-												{$t('settings.backup_codes.copy_button')}
-											</button>
-											<ul class="list-group">
-												{#each backupCodes as code}
-													<li class="list-group-item backupCode">
-														<code>{code}</code>
-													</li>
+												<option value="-1" selected={selectedTemplate === '-1'}>
+													{$t('settings.templates.create_new')}
+												</option>
+												{#each $templates as template, index}
+													<option value={index} selected={index === selectedTemplate}>
+														{template.name}
+													</option>
 												{/each}
-											</ul>
+											</select>
 										</div>
-									{/if}
-									{#if showBackupCodesError}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.backup_codes.error')}
-										</div>
-									{/if}
-								</div>
-								<div><h5>Username ändern</h5></div>
-								<div>
-									<h5>{$t('settings.delete_account')}</h5>
-									<p>
-										{$t('settings.delete_account.description')}
-									</p>
-									<form
-										onsubmit={() => {
-											showConfirmDeleteAccount = true;
-										}}
-									>
-										<div class="form-floating mb-3">
-											<input
-												type="password"
-												class="form-control"
-												id="currentPassword"
-												placeholder={$t('settings.password.current_password')}
-												bind:value={deleteAccountPassword}
-											/>
-											<label for="currentPassword">{$t('settings.password.confirm_password')}</label
-											>
-										</div>
-										<button
-											class="btn btn-danger"
-											onclick={() => {
-												showConfirmDeleteAccount = true;
-											}}
-											data-sveltekit-noscroll
-										>
-											{$t('settings.delete_account.delete_button')}
-											{#if isDeletingAccount}
-												<!-- svelte-ignore a11y_no_static_element_interactions -->
-												<div class="spinner-border" role="status">
-													<span class="visually-hidden">Loading...</span>
-												</div>
-											{/if}
-										</button>
-									</form>
-									{#if showDeleteAccountSuccess}
-										<div class="alert alert-success mt-2" role="alert" transition:slide>
-											{@html $t('settings.delete_account.success')}
-										</div>
-									{/if}
-									{#if deleteAccountPasswordIncorrect}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.delete_account.password_incorrect')}
-										</div>
-									{/if}
-									{#if showConfirmDeleteAccount}
-										<div class="alert alert-danger mt-2" role="alert" transition:slide>
-											{$t('settings.delete_account.confirm')}
 
-											<div class="d-flex flex-row mt-2">
+										<hr />
+
+										{#if confirmDeleteTemplate}
+											<div transition:slide class="d-flex flex-row align-items-center mb-2">
+												<span>
+													{@html $t('settings.templates.delete_confirmation', {
+														template: $templates[selectedTemplate]?.name
+													})}
+												</span>
 												<button
-													class="btn btn-secondary"
-													onclick={() => {
-														showConfirmDeleteAccount = false;
-														deleteAccountPassword = '';
-													}}>{$t('settings.abort')}</button
+													type="button"
+													class="btn btn-secondary ms-2"
+													onclick={() => (confirmDeleteTemplate = false)}
+													>{$t('settings.abort')}</button
 												>
 												<button
-													class="btn btn-danger ms-3"
-													onclick={deleteAccount}
-													disabled={isDeletingAccount}
-													>{$t('settings.delete_account.confirm_button')}
-													{#if isDeletingAccount}
+													type="button"
+													class="btn btn-danger ms-2"
+													onclick={() => {
+														deleteTemplate();
+													}}
+													disabled={isDeletingTemplate}
+													>{$t('settings.delete')}
+													{#if isDeletingTemplate}
 														<span
 															class="spinner-border spinner-border-sm ms-2"
 															role="status"
@@ -1774,41 +1409,456 @@
 													{/if}
 												</button>
 											</div>
+										{/if}
+										<div class="d-flex flex-row">
+											<input
+												disabled={selectedTemplate === null}
+												type="text"
+												bind:value={templateName}
+												class="form-control"
+												placeholder={$t('settings.template.name_of_template')}
+											/>
+											<button
+												disabled={selectedTemplate === '-1' || selectedTemplate === null}
+												type="button"
+												class="btn btn-outline-danger ms-5"
+												onclick={() => {
+													confirmDeleteTemplate = !confirmDeleteTemplate;
+												}}><Fa fw icon={faTrash} /></button
+											>
 										</div>
-									{/if}
+										<textarea
+											disabled={selectedTemplate === null}
+											bind:value={templateText}
+											class="form-control mt-2"
+											rows="10"
+											placeholder={$t('settings.template.content_of_template')}
+										>
+										</textarea>
+										<div class="d-flex justify-content-end">
+											<button
+												disabled={(oldTemplateName === templateName &&
+													oldTemplateText === templateText) ||
+													isSavingTemplate}
+												type="button"
+												class="btn btn-primary mt-2"
+												onclick={saveTemplate}
+											>
+												{$t('settings.template.save_template')}
+												{#if isSavingTemplate}
+													<span
+														class="spinner-border spinner-border-sm ms-2"
+														role="status"
+														aria-hidden="true"
+													></span>
+												{/if}
+											</button>
+										</div>
+									</div>
+								</div>
+
+								<div id="data">
+									<h3 class="text-primary">📁 {$t('settings.data')}</h3>
+									<div>
+										<h5>{$t('settings.export')}</h5>
+										{$t('settings.export.description')}
+
+										<h6>{$t('settings.export.period')}</h6>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="period"
+												value="periodAll"
+												id="periodAll"
+												bind:group={exportPeriod}
+											/>
+											<label class="form-check-label" for="periodAll"
+												>{$t('settings.export.period_all')}</label
+											>
+										</div>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="period"
+												value="periodVariable"
+												id="periodVariable"
+												bind:group={exportPeriod}
+											/>
+											<label class="form-check-label" for="periodVariable">
+												{$t('settings.export.period_variable')}</label
+											>
+											{#if exportPeriod === 'periodVariable'}
+												<div class="d-flex flex-row" transition:slide>
+													<div class="me-2">
+														<label for="exportStartDate">{$t('settings.export.start_date')}</label>
+														<input
+															type="date"
+															class="form-control me-2"
+															id="exportStartDate"
+															bind:value={exportStartDate}
+														/>
+													</div>
+													<div>
+														<label for="exportEndDate">{$t('settings.export.end_date')}</label>
+														<input
+															type="date"
+															class="form-control"
+															id="exportEndDate"
+															bind:value={exportEndDate}
+														/>
+													</div>
+												</div>
+												{#if exportStartDate !== '' && exportEndDate !== '' && exportStartDate > exportEndDate}
+													<div class="alert alert-danger mt-2" role="alert" transition:slide>
+														{$t('settings.export.period_invalid')}
+													</div>
+												{/if}
+											{/if}
+										</div>
+
+										<h6>{$t('settings.export.split')}</h6>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="split"
+												value="aio"
+												id="splitAIO"
+												bind:group={exportSplit}
+											/>
+											<label class="form-check-label" for="splitAIO"
+												>{$t('settings.export.split_aio')}
+											</label>
+										</div>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="split"
+												value="year"
+												id="splitYear"
+												bind:group={exportSplit}
+											/>
+											<label class="form-check-label" for="splitYear"
+												>{$t('settings.export.split_year')}
+											</label>
+										</div>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="radio"
+												name="split"
+												value="month"
+												id="splitMonth"
+												bind:group={exportSplit}
+											/>
+											<label class="form-check-label" for="splitMonth"
+												>{$t('settings.export.split_month')}
+											</label>
+										</div>
+
+										<h6>{$t('settings.export.show_images')}</h6>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="checkbox"
+												name="images"
+												id="exportImagesInHTML"
+												bind:checked={exportImagesInHTML}
+											/>
+											<label class="form-check-label" for="exportImagesInHTML">
+												{@html $t('settings.export.show_images_description')}
+											</label>
+										</div>
+
+										<h6>{$t('settings.export.show_tags')}</h6>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="checkbox"
+												id="exportTagsInHTML"
+												bind:checked={exportTagsInHTML}
+											/>
+											<label class="form-check-label" for="exportTagsInHTML">
+												{$t('settings.export.show_tags_description')}
+											</label>
+										</div>
+
+										<div class="form-text">
+											{@html $t('settings.export.help_text')}
+										</div>
+										<button
+											class="btn btn-primary mt-3"
+											onclick={exportData}
+											data-sveltekit-noscroll
+											disabled={isExporting ||
+												(exportPeriod === 'periodVariable' &&
+													(exportStartDate === '' || exportEndDate === ''))}
+										>
+											{$t('settings.export.export_button')}
+											{#if isExporting}
+												<div class="spinner-border spinner-border-sm ms-2" role="status">
+													<span class="visually-hidden">Loading...</span>
+												</div>
+											{/if}
+										</button>
+									</div>
+									<div><h5>Import</h5></div>
+								</div>
+
+								<div id="security">
+									<h3 class="text-primary">🔒 {$t('settings.security')}</h3>
+									<div>
+										<h5>{$t('settings.security.change_password')}</h5>
+										<form onsubmit={changePassword}>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="currentPassword"
+													placeholder={$t('settings.password.current_password')}
+													bind:value={currentPassword}
+												/>
+												<label for="currentPassword"
+													>{$t('settings.password.current_password')}</label
+												>
+											</div>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="newPassword"
+													placeholder={$t('settings.password.new_password')}
+													bind:value={newPassword}
+												/>
+												<label for="newPassword">{$t('settings.password.new_password')}</label>
+											</div>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="confirmNewPassword"
+													placeholder={$t('settings.password.confirm_new_password')}
+													bind:value={confirmNewPassword}
+												/>
+												<label for="confirmNewPassword"
+													>{$t('settings.password.confirm_new_password')}</label
+												>
+											</div>
+											<button class="btn btn-primary" onclick={changePassword}>
+												{#if isChangingPassword}
+													<!-- svelte-ignore a11y_no_static_element_interactions -->
+													<div class="spinner-border" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												{/if}
+												{$t('settings.password.change_password_button')}
+											</button>
+										</form>
+										{#if changePasswordNotEqual}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.password.passwords_dont_match')}
+											</div>
+										{/if}
+										{#if changingPasswordSuccess}
+											<div class="alert alert-success mt-2" role="alert" transition:slide>
+												{@html $t('settings.password.success')}
+											</div>
+										{/if}
+										{#if changingPasswordIncorrect}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.password.current_password_incorrect')}
+											</div>
+										{:else if changingPasswordError}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.password.change_error')}
+											</div>
+										{/if}
+									</div>
+									<div>
+										<h5>{$t('settings.backup_codes')}</h5>
+										<ul>
+											{@html $t('settings.backup_codes.description')}
+										</ul>
+
+										<form onsubmit={createBackupCodes}>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="currentPassword"
+													placeholder={$t('settings.password.current_password')}
+													bind:value={backupCodesPassword}
+												/>
+												<label for="currentPassword"
+													>{$t('settings.password.confirm_password')}</label
+												>
+											</div>
+											<button
+												class="btn btn-primary"
+												onclick={createBackupCodes}
+												data-sveltekit-noscroll
+											>
+												{$t('settings.backup_codes.generate_button')}
+												{#if isGeneratingBackupCodes}
+													<div class="spinner-border spinner-border-sm" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												{/if}
+											</button>
+										</form>
+										{#if backupCodes.length > 0}
+											<div class="alert alert-success alert-dismissible mt-3" transition:slide>
+												{@html $t('settings.backup_codes.success')}
+
+												<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
+													<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
+													{$t('settings.backup_codes.copy_button')}
+												</button>
+												<ul class="list-group">
+													{#each backupCodes as code}
+														<li class="list-group-item backupCode">
+															<code>{code}</code>
+														</li>
+													{/each}
+												</ul>
+											</div>
+										{/if}
+										{#if showBackupCodesError}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.backup_codes.error')}
+											</div>
+										{/if}
+									</div>
+									<div><h5>Username ändern</h5></div>
+									<div>
+										<h5>{$t('settings.delete_account')}</h5>
+										<p>
+											{$t('settings.delete_account.description')}
+										</p>
+										<form
+											onsubmit={() => {
+												showConfirmDeleteAccount = true;
+											}}
+										>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="currentPassword"
+													placeholder={$t('settings.password.current_password')}
+													bind:value={deleteAccountPassword}
+												/>
+												<label for="currentPassword"
+													>{$t('settings.password.confirm_password')}</label
+												>
+											</div>
+											<button
+												class="btn btn-danger"
+												onclick={() => {
+													showConfirmDeleteAccount = true;
+												}}
+												data-sveltekit-noscroll
+											>
+												{$t('settings.delete_account.delete_button')}
+												{#if isDeletingAccount}
+													<!-- svelte-ignore a11y_no_static_element_interactions -->
+													<div class="spinner-border" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												{/if}
+											</button>
+										</form>
+										{#if showDeleteAccountSuccess}
+											<div class="alert alert-success mt-2" role="alert" transition:slide>
+												{@html $t('settings.delete_account.success')}
+											</div>
+										{/if}
+										{#if deleteAccountPasswordIncorrect}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.delete_account.password_incorrect')}
+											</div>
+										{/if}
+										{#if showConfirmDeleteAccount}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.delete_account.confirm')}
+
+												<div class="d-flex flex-row mt-2">
+													<button
+														class="btn btn-secondary"
+														onclick={() => {
+															showConfirmDeleteAccount = false;
+															deleteAccountPassword = '';
+														}}>{$t('settings.abort')}</button
+													>
+													<button
+														class="btn btn-danger ms-3"
+														onclick={deleteAccount}
+														disabled={isDeletingAccount}
+														>{$t('settings.delete_account.confirm_button')}
+														{#if isDeletingAccount}
+															<span
+																class="spinner-border spinner-border-sm ms-2"
+																role="status"
+																aria-hidden="true"
+															></span>
+														{/if}
+													</button>
+												</div>
+											</div>
+										{/if}
+									</div>
+								</div>
+
+								<div id="about">
+									<h3 class="text-primary">💡 {$t('settings.about')}</h3>
+									Version:<br />
+									Changelog: <br />
+									Link zu github
 								</div>
 							</div>
-
-							<div id="about">
-								<h3 class="text-primary">💡 {$t('settings.about')}</h3>
-								Version:<br />
-								Changelog: <br />
-								Link zu github
-							</div>
 						</div>
-					</div>
+					{/if}
+					{#if activeSettingsView === 'stats'}
+						<div class="col-12">
+							<Statistics />
+						</div>
+					{/if}
+					{#if activeSettingsView === 'admin'}
+						<div class="col-12">
+							<Admin />
+						</div>
+					{/if}
 				</div>
 			</div>
 			<div class="modal-footer">
-				{#if settingsHaveChanged}
-					<div class="footer-unsaved-changes" transition:fade={{ duration: 100 }}>
-						{$t('settings.unsaved_changes')}
-					</div>
-				{/if}
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-					>{$t('settings.abort')}</button
-				>
-				<button
-					type="button"
-					class="btn btn-primary"
-					onclick={saveUserSettings}
-					disabled={isSaving || !settingsHaveChanged}
-					>{$t('settings.save')}
-					{#if isSaving}
-						<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
-						></span>
+				{#if activeSettingsView === 'settings'}
+					{#if settingsHaveChanged}
+						<div class="footer-unsaved-changes" transition:fade={{ duration: 100 }}>
+							{$t('settings.unsaved_changes')}
+						</div>
 					{/if}
-				</button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+						>{$t('settings.abort')}</button
+					>
+					<button
+						type="button"
+						class="btn btn-primary"
+						onclick={saveUserSettings}
+						disabled={isSaving || !settingsHaveChanged}
+						>{$t('settings.save')}
+						{#if isSaving}
+							<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
+							></span>
+						{/if}
+					</button>
+				{:else}
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						{$t('settings.close') || 'Close'}
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>

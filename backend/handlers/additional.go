@@ -2625,159 +2625,129 @@ func renderMarkdownToHTML(text string) string {
 	return string(htmlBytes)
 }
 
-/*
-// BACKUP: Old custom markdown renderer - kept for reference
-// renderMarkdownToHTML converts simple markdown to HTML
-func renderMarkdownToHTML_OLD(text string) string {
-	lines := strings.Split(text, "\n")
-	var result strings.Builder
-	var inCodeBlock bool
-	var codeBlockContent strings.Builder
-	var codeLanguage string
+// Load user statistics:
+// - each logged day with amount of words for each day
+// - amount of files for each day
+// - tags for each day
+func GetStatistics(w http.ResponseWriter, r *http.Request) {
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
-	for _, line := range lines {
-		// Handle code blocks
-		if strings.HasPrefix(line, "```") {
-			if !inCodeBlock {
-				// Starting a code block
-				inCodeBlock = true
-				codeLanguage = strings.TrimSpace(line[3:])
-				codeBlockContent.Reset()
+	// Prepare encryption key for decrypting texts and filenames
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Define response structure (per day only)
+	type DayStat struct {
+		Year         int   `json:"year"`
+		Month        int   `json:"month"`
+		Day          int   `json:"day"`
+		WordCount    int   `json:"wordCount"`
+		FileCount    int   `json:"fileCount"`
+		Tags         []int `json:"tags"`
+		IsBookmarked bool  `json:"isBookmarked"`
+	}
+
+	dayStats := []DayStat{}
+
+	// Get all years
+	years, err := utils.GetYears(userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving years: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Iterate years and months
+	for _, yearStr := range years {
+		yearInt, _ := strconv.Atoi(yearStr)
+		months, err := utils.GetMonths(userID, yearStr)
+		if err != nil {
+			continue // skip problematic year
+		}
+		for _, monthStr := range months {
+			monthInt, _ := strconv.Atoi(monthStr)
+			content, err := utils.GetMonth(userID, yearInt, monthInt)
+			if err != nil {
 				continue
-			} else {
-				// Ending a code block
-				inCodeBlock = false
-				codeContent := codeBlockContent.String()
-				if codeLanguage != "" {
-					result.WriteString(fmt.Sprintf(`<pre><code class="language-%s">%s</code></pre>`,
-						htmlpkg.EscapeString(codeLanguage), htmlpkg.EscapeString(codeContent)))
-				} else {
-					result.WriteString(fmt.Sprintf(`<pre><code>%s</code></pre>`,
-						htmlpkg.EscapeString(codeContent)))
+			}
+			daysArr, ok := content["days"].([]any)
+			if !ok {
+				continue
+			}
+			for _, dayInterface := range daysArr {
+				dayMap, ok := dayInterface.(map[string]any)
+				if !ok {
+					continue
 				}
-				codeLanguage = ""
-				continue
+				dayNumFloat, ok := dayMap["day"].(float64)
+				if !ok {
+					continue
+				}
+				dayNum := int(dayNumFloat)
+
+				// Word count (decrypt text if present)
+				wordCount := 0
+				if encText, ok := dayMap["text"].(string); ok && encText != "" {
+					if decrypted, err := utils.DecryptText(encText, encKey); err == nil {
+						// Count words using Fields (splits on any whitespace)
+						words := strings.Fields(decrypted)
+						wordCount = len(words)
+					}
+				}
+
+				// File count (filenames stored decrypted in memory? If encrypted we try decrypt to validate)
+				fileCount := 0
+				if filesAny, ok := dayMap["files"].([]any); ok {
+					fileCount = len(filesAny)
+				}
+
+				// Tags (IDs are numeric)
+				var tagIDs []int
+				if tagsAny, ok := dayMap["tags"].([]any); ok {
+					for _, t := range tagsAny {
+						if tf, ok := t.(float64); ok {
+							tagIDs = append(tagIDs, int(tf))
+						}
+					}
+				}
+
+				// Bookmark flag
+				isBookmarked := false
+				if bmRaw, ok := dayMap["isBookmarked"]; ok {
+					if b, ok2 := bmRaw.(bool); ok2 {
+						isBookmarked = b
+					} else if f, ok2 := bmRaw.(float64); ok2 { // if stored as number
+						isBookmarked = f != 0
+					}
+				}
+
+				dayStats = append(dayStats, DayStat{
+					Year:         yearInt,
+					Month:        monthInt,
+					Day:          dayNum,
+					WordCount:    wordCount,
+					FileCount:    fileCount,
+					Tags:         tagIDs,
+					IsBookmarked: isBookmarked,
+				})
 			}
-		}
-
-		// If we're in a code block, accumulate the content
-		if inCodeBlock {
-			if codeBlockContent.Len() > 0 {
-				codeBlockContent.WriteString("\n")
-			}
-			codeBlockContent.WriteString(line)
-			continue
-		}
-
-		// Normal line processing (when not in code block)
-		line = strings.TrimSpace(line)
-
-		if line == "" {
-			result.WriteString("<br>")
-			continue
-		}
-
-		// Handle headings
-		if strings.HasPrefix(line, "###") {
-			content := strings.TrimSpace(line[3:])
-			result.WriteString(fmt.Sprintf("<h3>%s</h3>", htmlpkg.EscapeString(content)))
-			continue
-		}
-		if strings.HasPrefix(line, "##") {
-			content := strings.TrimSpace(line[2:])
-			result.WriteString(fmt.Sprintf("<h2>%s</h2>", htmlpkg.EscapeString(content)))
-			continue
-		}
-		if strings.HasPrefix(line, "#") {
-			content := strings.TrimSpace(line[1:])
-			result.WriteString(fmt.Sprintf("<h1>%s</h1>", htmlpkg.EscapeString(content)))
-			continue
-		}
-
-		// Handle list items
-		if strings.HasPrefix(line, "- ") || strings.HasPrefix(line, "* ") {
-			content := strings.TrimSpace(line[2:])
-			content = renderInlineMarkdownToHTML(content)
-			result.WriteString(fmt.Sprintf("<ul><li>%s</li></ul>", content))
-			continue
-		}
-
-		// Handle blockquotes
-		if strings.HasPrefix(line, "> ") {
-			content := strings.TrimSpace(line[2:])
-			content = renderInlineMarkdownToHTML(content)
-			result.WriteString(fmt.Sprintf("<blockquote>%s</blockquote>", content))
-			continue
-		}
-
-		// Regular paragraph with inline formatting
-		line = renderInlineMarkdownToHTML(line)
-		result.WriteString(fmt.Sprintf("<p>%s</p>", line))
-	}
-
-	// Handle unclosed code block
-	if inCodeBlock {
-		codeContent := codeBlockContent.String()
-		if codeLanguage != "" {
-			result.WriteString(fmt.Sprintf(`<pre><code class="language-%s">%s</code></pre>`,
-				htmlpkg.EscapeString(codeLanguage), htmlpkg.EscapeString(codeContent)))
-		} else {
-			result.WriteString(fmt.Sprintf(`<pre><code>%s</code></pre>`,
-				htmlpkg.EscapeString(codeContent)))
 		}
 	}
 
-	return result.String()
+	// Sort days by date descending (latest first) if desired; currently ascending by traversal. Keep ascending.
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(dayStats)
 }
-
-// renderInlineMarkdownToHTML processes inline markdown formatting
-func renderInlineMarkdownToHTML_OLD(text string) string {
-	// Escape HTML first
-	text = htmlpkg.EscapeString(text)
-
-	// Links with title: [text](url "title")
-	linkWithTitleRegex := regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\s+"([^"]+)"\)`)
-	text = linkWithTitleRegex.ReplaceAllStringFunc(text, func(match string) string {
-		matches := linkWithTitleRegex.FindStringSubmatch(match)
-		if len(matches) == 4 {
-			linkText := matches[1]
-			url := matches[2]
-			title := matches[3]
-			return fmt.Sprintf(`<a href="%s" title="%s" target="_blank" rel="noopener noreferrer">%s</a>`, url, title, linkText)
-		}
-		return match
-	})
-
-	// Links without title: [text](url)
-	linkRegex := regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\)`)
-	text = linkRegex.ReplaceAllStringFunc(text, func(match string) string {
-		matches := linkRegex.FindStringSubmatch(match)
-		if len(matches) == 3 {
-			linkText := matches[1]
-			url := matches[2]
-			return fmt.Sprintf(`<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>`, url, linkText)
-		}
-		return match
-	})
-
-	// Bold (**text** or __text__)
-	boldRegex := regexp.MustCompile(`\*\*(.*?)\*\*`)
-	text = boldRegex.ReplaceAllString(text, "<strong>$1</strong>")
-
-	boldRegex2 := regexp.MustCompile(`__(.*?)__`)
-	text = boldRegex2.ReplaceAllString(text, "<strong>$1</strong>")
-
-	// Italic (*text* or _text_)
-	italicRegex := regexp.MustCompile(`\*(.*?)\*`)
-	text = italicRegex.ReplaceAllString(text, "<em>$1</em>")
-
-	italicRegex2 := regexp.MustCompile(`_(.*?)_`)
-	text = italicRegex2.ReplaceAllString(text, "<em>$1</em>")
-
-	// Code (`text`)
-	codeRegex := regexp.MustCompile("`(.*?)`")
-	text = codeRegex.ReplaceAllString(text, "<code>$1</code>")
-
-	return text
-}
-*/
