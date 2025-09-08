@@ -2651,13 +2651,14 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 
 	// Define response structure (per day only)
 	type DayStat struct {
-		Year         int   `json:"year"`
-		Month        int   `json:"month"`
-		Day          int   `json:"day"`
-		WordCount    int   `json:"wordCount"`
-		FileCount    int   `json:"fileCount"`
-		Tags         []int `json:"tags"`
-		IsBookmarked bool  `json:"isBookmarked"`
+		Year          int   `json:"year"`
+		Month         int   `json:"month"`
+		Day           int   `json:"day"`
+		WordCount     int   `json:"wordCount"`
+		FileCount     int   `json:"fileCount"`
+		FileSizeBytes int64 `json:"fileSizeBytes"`
+		Tags          []int `json:"tags"`
+		IsBookmarked  bool  `json:"isBookmarked"`
 	}
 
 	dayStats := []DayStat{}
@@ -2707,10 +2708,27 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-				// File count (filenames stored decrypted in memory? If encrypted we try decrypt to validate)
+				// File count and total size
 				fileCount := 0
+				var totalFileSize int64 = 0
 				if filesAny, ok := dayMap["files"].([]any); ok {
 					fileCount = len(filesAny)
+					// Calculate total file size for this day
+					for _, fileInterface := range filesAny {
+						if fileMap, ok := fileInterface.(map[string]any); ok {
+							if sizeAny, ok := fileMap["size"]; ok {
+								// Handle both int64 and float64 types
+								switch size := sizeAny.(type) {
+								case int64:
+									totalFileSize += size
+								case float64:
+									totalFileSize += int64(size)
+								case int:
+									totalFileSize += int64(size)
+								}
+							}
+						}
+					}
 				}
 
 				// Tags (IDs are numeric)
@@ -2734,13 +2752,14 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 				}
 
 				dayStats = append(dayStats, DayStat{
-					Year:         yearInt,
-					Month:        monthInt,
-					Day:          dayNum,
-					WordCount:    wordCount,
-					FileCount:    fileCount,
-					Tags:         tagIDs,
-					IsBookmarked: isBookmarked,
+					Year:          yearInt,
+					Month:         monthInt,
+					Day:           dayNum,
+					WordCount:     wordCount,
+					FileCount:     fileCount,
+					FileSizeBytes: totalFileSize,
+					Tags:          tagIDs,
+					IsBookmarked:  isBookmarked,
 				})
 			}
 		}

@@ -1,6 +1,6 @@
 <script>
 	import { API_URL } from '$lib/APIurl';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import axios from 'axios';
 	import { onMount } from 'svelte';
 	import Tag from '$lib/Tag.svelte';
@@ -10,8 +10,10 @@
 	import { mount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { selectedDate } from '$lib/calendarStore.js';
+	import { formatBytes } from '$lib/helpers';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	// Raw day stats from backend
 	let dayStats = [];
@@ -185,6 +187,7 @@
 				day: d.day ?? d.Day,
 				wordCount: d.wordCount ?? d.WordCount ?? 0,
 				fileCount: d.fileCount ?? d.FileCount ?? 0,
+				fileSizeBytes: d.fileSizeBytes ?? d.FileSizeBytes ?? 0,
 				tags: d.tags ?? d.Tags ?? [],
 				isBookmarked: d.isBookmarked ?? d.IsBookmarked ?? false
 			}));
@@ -212,14 +215,11 @@
 					</button>
 				</div>
 			</div>`;
-		console.log('Generated popover HTML:', html);
 		return html;
 	}
 
 	// Function to open a specific date in /write
 	function openDate(year, month, day) {
-		console.log('Open date', year, month, day);
-
 		// Set the selected date
 		$selectedDate = {
 			year: parseInt(year),
@@ -255,18 +255,15 @@
 
 		// Initialize day cell popovers
 		const cells = heatmapEl?.querySelectorAll('.day-cell[data-day-key]') || [];
-		console.log('Initializing popovers for', cells.length, 'cells');
 		cells.forEach((el, index) => {
 			const key = el.getAttribute('data-day-key');
 			const day = dayMap.get(key);
 			if (!day) return;
-			
+
 			const htmlContent = tooltipHTML(day);
 			el.setAttribute('data-bs-content', htmlContent);
 			el.setAttribute('data-bs-toggle', 'popover');
-			
-			console.log(`Initializing popover ${index} with content:`, htmlContent);
-			
+
 			const popover = new bootstrap.Popover(el, {
 				html: true,
 				placement: 'top',
@@ -276,12 +273,8 @@
 				sanitize: false // Disable sanitization to allow our HTML
 			});
 
-			// Test if popover is created
-			console.log('Popover instance created:', popover);
-
 			// Close other popovers when this one is shown
 			el.addEventListener('show.bs.popover', () => {
-				console.log('Popover showing for key:', key);
 				// Close all other popovers
 				document.querySelectorAll('.day-cell[data-bs-toggle="popover"]').forEach((otherEl) => {
 					if (otherEl !== el) {
@@ -293,19 +286,17 @@
 
 			// After popover is shown, mount Tag components and setup button handlers
 			const populate = () => {
-				console.log('Popover populate called for key:', key);
 				const inst = bootstrap.Popover.getInstance(el);
 				if (!inst) {
 					console.log('No popover instance found');
 					return;
 				}
-				const popoverEl = typeof inst.getTipElement === 'function' ? inst.getTipElement() : inst.tip;
-				console.log('Popover element:', popoverEl);
-				
+				const popoverEl =
+					typeof inst.getTipElement === 'function' ? inst.getTipElement() : inst.tip;
+
 				const tagContainer = popoverEl?.querySelector('.tt-tags');
 				const openBtn = popoverEl?.querySelector('.tt-open-btn');
-				console.log('Found elements - tags:', tagContainer, 'button:', openBtn);
-				
+
 				if (!tagContainer || tagContainer.dataset.populated === '1') return;
 				// Mark to avoid double work
 				tagContainer.dataset.populated = '1';
@@ -319,32 +310,28 @@
 
 				// Setup button handler
 				if (openBtn && !openBtn.dataset.handlerAdded) {
-					console.log('Adding click handler to button');
 					openBtn.dataset.handlerAdded = '1';
 					openBtn.addEventListener('click', (e) => {
-						console.log('Open date click', e.target, e.currentTarget);
 						e.preventDefault();
 						e.stopPropagation();
-						
+
 						// Get attributes from the clicked element or fallback to currentTarget
 						const target = e.target.closest('.tt-open-btn') || e.currentTarget;
 						const year = target.getAttribute('data-year');
 						const month = target.getAttribute('data-month');
 						const day = target.getAttribute('data-day');
-						
-						console.log('Extracted date:', { year, month, day });
-						
+
 						if (year && month && day) {
 							// Hide popover first
 							const inst = bootstrap.Popover.getInstance(el);
 							if (inst) inst.hide();
-							
+
 							openDate(year, month, day);
 						}
 					});
 				}
 			};
-			
+
 			// Listen for popover events
 			el.addEventListener('inserted.bs.popover', populate);
 			el.addEventListener('shown.bs.popover', populate);
@@ -360,20 +347,27 @@
 		});
 
 		// Close popovers when clicking outside
-		document.addEventListener('click', (e) => {
-			// Check if click is outside any day-cell and outside any popover
-			if (!e.target.closest('.day-cell[data-bs-toggle="popover"]') && !e.target.closest('.popover')) {
-				document.querySelectorAll('.day-cell[data-bs-toggle="popover"]').forEach((el) => {
-					const inst = bootstrap.Popover.getInstance(el);
-					if (inst) inst.hide();
-				});
-			}
-		}, { capture: true }); // Use capture to ensure this runs before other handlers
+		document.addEventListener(
+			'click',
+			(e) => {
+				// Check if click is outside any day-cell and outside any popover
+				if (
+					!e.target.closest('.day-cell[data-bs-toggle="popover"]') &&
+					!e.target.closest('.popover')
+				) {
+					document.querySelectorAll('.day-cell[data-bs-toggle="popover"]').forEach((el) => {
+						const inst = bootstrap.Popover.getInstance(el);
+						if (inst) inst.hide();
+					});
+				}
+			},
+			{ capture: true }
+		); // Use capture to ensure this runs before other handlers
 	}
 </script>
 
 <div class="settings-stats">
-	<h2 class="h4 mb-3">{$t('settings.statistics.title')}</h2>
+	<h2 class=" mb-3">{$t('settings.statistics.title')}</h2>
 
 	{#if years.length === 0}
 		<div class="spinner-border" role="status">
@@ -441,10 +435,183 @@
 				{/each}
 			</div>
 		</div>
+
+		<h4 class="headerTotal">{$t('settings.statistics.total')}</h4>
+		<ul>
+			<li>
+				{@html $t('settings.statistics.daysWithActivity', {
+					days: dayStats.length.toLocaleString($tolgee.getLanguage())
+				})}
+			</li>
+			<li>
+				{@html $t('settings.statistics.wordCountTotal', {
+					wordCount: dayStats
+						.reduce((sum, d) => sum + d.wordCount, 0)
+						.toLocaleString($tolgee.getLanguage())
+				})}
+			</li>
+			<li>
+				{@html $t('settings.statistics.fileCountWithDiskUsage', {
+					fileCount: dayStats
+						.reduce((sum, d) => sum + d.fileCount, 0)
+						.toLocaleString($tolgee.getLanguage()),
+					diskUsage: formatBytes(dayStats.reduce((sum, d) => sum + d.fileSizeBytes, 0))
+				})}
+			</li>
+			<li>
+				{@html $t('settings.statistics.bookmarkedDays', {
+					days: dayStats.filter((d) => d.isBookmarked).length.toLocaleString($tolgee.getLanguage())
+				})}
+			</li>
+			<li>
+				{$t('tags.tags')}:<br />
+				{#each $tags as tag (tag.id)}
+					<span class="d-inline-block me-3 mb-2">
+						<Tag {tag} />
+
+						{@html $t('settings.statistics.tagUsedCount', {
+							count: dayStats
+								.filter((d) => d.tags.includes(tag.id))
+								.length.toLocaleString($tolgee.getLanguage())
+						})}
+					</span>
+					<br />
+				{/each}
+			</li>
+		</ul>
+
+		<h4 class="headerTotal">{$t('settings.statistics.funFacts')}</h4>
+		<ul>
+			<li>
+				📊 {$t('settings.statistics.averageWordsPerLog', {
+					wordCount: Math.round(
+						dayStats.reduce((sum, d) => sum + d.wordCount, 0) /
+							dayStats.filter((d) => d.wordCount > 0).length || 0
+					)
+				})}
+			</li>
+			<li>
+				🏆 {$t('settings.statistics.mostProductiveDay')}: {(() => {
+					const best = dayStats.reduce((max, d) => (d.wordCount > max.wordCount ? d : max), {
+						wordCount: 0
+					});
+					if (best.wordCount > 0) {
+						const date = new Date(best.year, best.month - 1, best.day);
+						const formattedDate = date.toLocaleDateString($tolgee.getLanguage());
+						return `${formattedDate} (${$t('settings.statistics.wordCount', { wordCount: best.wordCount })})`;
+					}
+					return '🤷‍♂️';
+				})()}
+			</li>
+			<li>
+				🗓️ {$t('settings.statistics.longestWritingStreak')}: {(() => {
+					if (dayStats.length === 0) return '0 Tage';
+
+					let maxStreak = 0;
+					let currentStreak = 0;
+					let maxStreakStart = null;
+					let maxStreakEnd = null;
+					let currentStreakStart = null;
+
+					const sortedDays = [...dayStats].sort(
+						(a, b) => new Date(a.year, a.month - 1, a.day) - new Date(b.year, b.month - 1, b.day)
+					);
+
+					for (let i = 0; i < sortedDays.length; i++) {
+						const currentDay = sortedDays[i];
+						const prevDay = i > 0 ? sortedDays[i - 1] : null;
+
+						// Check if current day is consecutive to previous day
+						let isConsecutive = false;
+						if (prevDay) {
+							const currentDate = new Date(currentDay.year, currentDay.month - 1, currentDay.day);
+							const prevDate = new Date(prevDay.year, prevDay.month - 1, prevDay.day);
+							const dayDiff = Math.floor((currentDate - prevDate) / (1000 * 60 * 60 * 24));
+							isConsecutive = dayDiff === 1;
+						}
+
+						if (isConsecutive) {
+							currentStreak++;
+						} else {
+							currentStreak = 1;
+							currentStreakStart = currentDay;
+						}
+
+						// Update max streak if current is longer
+						if (currentStreak > maxStreak) {
+							maxStreak = currentStreak;
+							maxStreakStart = currentStreakStart;
+							maxStreakEnd = currentDay;
+						}
+					}
+
+					if (maxStreak > 1 && maxStreakStart && maxStreakEnd) {
+						const startDate = new Date(
+							maxStreakStart.year,
+							maxStreakStart.month - 1,
+							maxStreakStart.day
+						);
+						const endDate = new Date(maxStreakEnd.year, maxStreakEnd.month - 1, maxStreakEnd.day);
+						const formattedStart = startDate.toLocaleDateString($tolgee.getLanguage());
+						const formattedEnd = endDate.toLocaleDateString($tolgee.getLanguage());
+						return `${$t('settings.statistics.dayCount', { dayCount: maxStreak })} (${formattedStart} - ${formattedEnd})`;
+					}
+
+					return $t('settings.statistics.dayCount', { dayCount: maxStreak });
+				})()}
+			</li>
+			<li>
+				🌍 {$t('settings.statistics.favoriteWritingDay')}: {(() => {
+					const weekdays = [
+						$t('weekdays.sunday'),
+						$t('weekdays.monday'),
+						$t('weekdays.tuesday'),
+						$t('weekdays.wednesday'),
+						$t('weekdays.thursday'),
+						$t('weekdays.friday'),
+						$t('weekdays.saturday')
+					];
+					const dayCount = new Array(7).fill(0);
+					dayStats.forEach((d) => {
+						const date = new Date(d.year, d.month - 1, d.day);
+						dayCount[date.getDay()]++;
+					});
+					const maxIndex = dayCount.indexOf(Math.max(...dayCount));
+					return dayCount[maxIndex] > 0 ? weekdays[maxIndex] : '🤷‍♂️';
+				})()}
+			</li>
+			<li>
+				📖 {$t('settings.statistics.bookpages', {
+					pages: Math.round(dayStats.reduce((sum, d) => sum + d.wordCount, 0) / 300)
+				})}
+			</li>
+			<li>
+				🎯 {(() => {
+					if (dayStats.length === 0) return '0%';
+					const sortedDays = [...dayStats].sort(
+						(a, b) => new Date(a.year, a.month - 1, a.day) - new Date(b.year, b.month - 1, b.day)
+					);
+					const firstDate = new Date(
+						sortedDays[0].year,
+						sortedDays[0].month - 1,
+						sortedDays[0].day
+					);
+					const today = new Date();
+					const daysSinceFirst = Math.floor((today - firstDate) / (1000 * 60 * 60 * 24)) + 1;
+					const activityRate = Math.round((dayStats.length / daysSinceFirst) * 100);
+					return $t('settings.statistics.activityRate', { percent: activityRate });
+				})()}
+			</li>
+		</ul>
 	{/if}
 </div>
 
 <style>
+	.headerTotal {
+		margin-top: 1rem;
+		margin-bottom: 0.5rem;
+	}
+
 	.settings-stats {
 		min-height: 40vh;
 	}
@@ -563,7 +730,7 @@
 		background: #0056b3;
 		color: white;
 	}
-	
+
 	/* Old tooltip styling (now removed as we use popovers) */
 
 	/* Desktop: Add pointer cursor for day cells */
