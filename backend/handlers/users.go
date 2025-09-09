@@ -861,6 +861,57 @@ type DeleteAccountRequest struct {
 	Password string `json:"password"`
 }
 
+// deleteUserByID deletes a user by their user ID from the system
+// This is a shared function used by both DeleteAccount and admin DeleteUser
+func deleteUserByID(userID int) error {
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
+	// Get User data
+	users, err := utils.GetUsers()
+	if err != nil {
+		return fmt.Errorf("error retrieving users: %v", err)
+	}
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return fmt.Errorf("users data is not in the correct format")
+	}
+
+	// Remove user from users list
+	var newUsersList []any
+	userFound := false
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		// Keep all users, except the one with the same user_id
+		if id, ok := uMap["user_id"].(float64); !ok || int(id) != userID {
+			utils.Logger.Printf("Keeping user with ID %f (%d)", id, userID)
+			newUsersList = append(newUsersList, u)
+		} else {
+			userFound = true
+		}
+	}
+
+	if !userFound {
+		return fmt.Errorf("user with ID %d not found", userID)
+	}
+
+	users["users"] = newUsersList
+
+	if err := utils.WriteUsers(users); err != nil {
+		return fmt.Errorf("error writing users data: %v", err)
+	}
+
+	// Delete directory of the user with all his data
+	if err := utils.DeleteUserData(userID); err != nil {
+		return fmt.Errorf("error deleting user data of ID %d: %v", userID, err)
+	}
+
+	return nil
+}
+
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
@@ -892,59 +943,13 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.UsersFileMutex.Lock()
-	defer utils.UsersFileMutex.Unlock()
-
-	// Get User data
-	users, err := utils.GetUsers()
-	if err != nil {
+	// Use the shared delete function
+	if err := deleteUserByID(userID); err != nil {
 		utils.JSONResponse(w, http.StatusOK, map[string]any{
 			"success": false,
-			"message": fmt.Sprintf("Error retrieving users: %v", err),
+			"message": err.Error(),
 		})
-		return
-	}
-	usersList, ok := users["users"].([]any)
-	if !ok {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success": false,
-			"message": "Users data is not in the correct format",
-		})
-		return
-	}
-
-	// Remove user from users list
-	var newUsersList []any
-	for _, u := range usersList {
-		uMap, ok := u.(map[string]any)
-		if !ok {
-			continue
-		}
-		// Keep all users, except the one with the same user_id
-		if id, ok := uMap["user_id"].(float64); !ok || int(id) != userID {
-			utils.Logger.Printf("Keeping user with ID %f (%d)", id, userID)
-			newUsersList = append(newUsersList, u)
-		}
-	}
-	users["users"] = newUsersList
-
-	if err := utils.WriteUsers(users); err != nil {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success": false,
-			"message": fmt.Sprintf("Error writing users data: %v", err),
-		})
-		return
-	}
-
-	utils.UsersFileMutex.Unlock()
-
-	// Delete directory of the user with all his data
-	if err := utils.DeleteUserData(userID); err != nil {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success": false,
-			"message": fmt.Sprintf("Error deleting user data of ID %d (account already deleted): %v", userID, err),
-		})
-		utils.Logger.Printf("Error deleting user data of ID %d (You can savely delete the directory with the same id): %v", userID, err)
+		utils.Logger.Printf("Error deleting user account ID %d: %v", userID, err)
 		return
 	}
 

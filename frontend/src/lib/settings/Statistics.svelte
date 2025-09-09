@@ -16,21 +16,21 @@
 	const tolgee = getTolgee(['language']);
 
 	// Raw day stats from backend
-	let dayStats = [];
+	let dayStats = $state([]);
 
 	// Derived years list & selected year
-	let years = [];
-	let selectedYear = new Date().getFullYear();
+	let years = $state([]);
+	let selectedYear = $state(new Date().getFullYear());
 
 	// Heatmap data (weeks -> days)
-	let weeks = [];
+	let weeks = $state([]);
 	let maxWordCountYear = 0;
 	let minWordCountYear = 0; // smallest > 0 value
 	// Filter stats for selected year
 	// Iterate all days of the year
-	let legendRanges = [];
+	let legendRanges = $state([]);
 	// Bootstrap tooltip support
-	let heatmapEl;
+	let heatmapEl = $state(null);
 	let dayMap = new Map(); // key -> day data
 
 	const buildYearData = () => {
@@ -176,9 +176,13 @@
 			day: '2-digit'
 		});
 
+	let errorOnLoading = $state(false);
+	let isLoading = $state(false);
 	onMount(async () => {
 		try {
+			isLoading = true;
 			const resp = await axios.get(API_URL + '/users/statistics');
+			isLoading = false;
 			dayStats = resp.data;
 			// Normalize key names to camelCase if backend sent lower-case
 			dayStats = dayStats.map((d) => ({
@@ -196,7 +200,9 @@
 			if (!years.includes(selectedYear) && years.length) selectedYear = years[years.length - 1];
 			buildYearData();
 		} catch (e) {
+			isLoading = false;
 			console.error('Failed loading statistics', e);
+			errorOnLoading = true;
 		}
 	});
 
@@ -369,22 +375,31 @@
 <div class="settings-stats">
 	<h2 class=" mb-3">{$t('settings.statistics.title')}</h2>
 
-	{#if years.length === 0}
-		<div class="spinner-border" role="status">
-			<span class="visually-hidden">Loading...</span>
+	{#if errorOnLoading}
+		<div class="text-center">
+			<p class="text-danger">{$t('settings.statistics.error_loading_data')}</p>
 		</div>
-	{:else}
+	{/if}
+
+	{#if isLoading}
+		<div class="text-center">
+			<div class="spinner-border" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+			<p class="mt-2 text-muted">{$t('settings.statistics.loading_data')}</p>
+		</div>
+	{:else if years.length !== 0}
 		<div class="year-selector d-flex align-items-center gap-2 mb-3 flex-wrap">
 			<button
 				class="btn btn-sm btn-outline-secondary"
-				on:click={prevYear}
+				onclick={prevYear}
 				disabled={years.indexOf(selectedYear) === 0}
 				aria-label="previous year">«</button
 			>
 			<select
 				class="form-select form-select-sm year-dropdown"
 				bind:value={selectedYear}
-				on:change={(e) => selectYear(+e.target.value)}
+				onchange={(e) => selectYear(+e.target.value)}
 			>
 				{#each years as y}
 					<option value={y}>{y}</option>
@@ -392,7 +407,7 @@
 			</select>
 			<button
 				class="btn btn-sm btn-outline-secondary"
-				on:click={nextYear}
+				onclick={nextYear}
 				disabled={years.indexOf(selectedYear) === years.length - 1}
 				aria-label="next year">»</button
 			>
@@ -605,6 +620,8 @@
 				})()}
 			</li>
 		</ul>
+	{:else if years.length === 0}
+		<p class="text-info">{$t('settings.statistics.no_data')}</p>
 	{/if}
 </div>
 

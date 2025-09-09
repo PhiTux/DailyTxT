@@ -166,7 +166,7 @@
 
 					handleMigrationProgress(response.data.username);
 				} else {
-					localStorage.setItem('user', JSON.stringify(response.data.username));
+					localStorage.setItem('user', response.data.username);
 					goto('/write');
 				}
 			})

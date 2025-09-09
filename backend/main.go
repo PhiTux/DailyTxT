@@ -90,6 +90,11 @@ func main() {
 	mux.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
 	mux.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
 
+	// Admin routes
+	mux.HandleFunc("POST /admin/validate-password", handlers.ValidateAdminPassword)
+	mux.HandleFunc("POST /admin/users", handlers.GetAllUsers)
+	mux.HandleFunc("POST /admin/delete-user", handlers.DeleteUser)
+
 	// Create a handler chain with Timeout, Logger and CORS middleware
 	// Timeout middleware will be executed first, then Logger, then CORS
 	handler := timeoutMiddleware(middleware.Logger(middleware.CORS(mux)))
