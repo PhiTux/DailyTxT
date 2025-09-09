@@ -933,29 +933,46 @@
 		<!--  -->
 		<div class="modal-content shadow-lg glass">
 			<div class="modal-header flex-wrap gap-2">
-				<div class="btn-group w-100" role="group" aria-label="Settings views">
+				<div class="d-flex w-100 align-items-center">
+					<div
+						class="btn-group flex-grow-1 overflow-auto"
+						role="group"
+						aria-label="Settings views"
+						style="scrollbar-width: none; -ms-overflow-style: none;"
+					>
+						<button
+							type="button"
+							class="btn btn-outline-primary flex-shrink-0 {activeSettingsView === 'settings'
+								? 'active'
+								: ''}"
+							onclick={switchToSettingsTab}
+						>
+							{$t('settings.title')}
+						</button>
+						<button
+							type="button"
+							class="btn btn-outline-primary flex-shrink-0 {activeSettingsView === 'stats'
+								? 'active'
+								: ''}"
+							onclick={switchToStatsTab}
+						>
+							{$t('settings.statistics.title')}
+						</button>
+						<button
+							type="button"
+							class="btn btn-outline-primary flex-shrink-0 {activeSettingsView === 'admin'
+								? 'active'
+								: ''}"
+							onclick={switchToAdminTab}
+						>
+							{$t('settings.admin.title')}
+						</button>
+					</div>
 					<button
 						type="button"
-						class="btn btn-outline-primary {activeSettingsView === 'settings' ? 'active' : ''}"
-						onclick={switchToSettingsTab}
-					>
-						{$t('settings.title')}
-					</button>
-					<button
-						type="button"
-						class="btn btn-outline-primary {activeSettingsView === 'stats' ? 'active' : ''}"
-						onclick={switchToStatsTab}
-					>
-						{$t('settings.statistics.title')}
-					</button>
-					<button
-						type="button"
-						class="btn btn-outline-primary {activeSettingsView === 'admin' ? 'active' : ''}"
-						onclick={switchToAdminTab}
-					>
-						{$t('settings.admin.title')}
-					</button>
-					<button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"
+						class="btn-close ms-3 flex-shrink-0"
+						data-bs-dismiss="modal"
+						aria-label="Close"
 					></button>
 				</div>
 			</div>
@@ -968,33 +985,55 @@
 						<div class="col-4 overflow-y-auto d-none d-md-block">
 							<nav class="flex-column align-items-stretch" id="settings-nav">
 								<nav class="nav nav-pills flex-column custom-scrollspy-nav">
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'appearance' ? 'active' : ''}"
-										href="#appearance">{$t('settings.appearance')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'appearance'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('appearance')}
+										>{$t('settings.appearance')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'functions' ? 'active' : ''}"
-										href="#functions">{$t('settings.functions')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'functions'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('functions')}>{$t('settings.functions')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'tags' ? 'active' : ''}"
-										href="#tags">{$t('settings.tags')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'tags'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('tags')}>{$t('settings.tags')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'templates' ? 'active' : ''}"
-										href="#templates">{$t('settings.templates')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'templates'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('templates')}>{$t('settings.templates')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'data' ? 'active' : ''}"
-										href="#data">{$t('settings.data')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'data'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('data')}>{$t('settings.data')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'security' ? 'active' : ''}"
-										href="#security">{$t('settings.security')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'security'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('security')}>{$t('settings.security')}</button
 									>
-									<a
-										class="nav-link mb-1 {activeSettingsSection === 'about' ? 'active' : ''}"
-										href="#about">{$t('settings.about')}</a
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'about'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('about')}>{$t('settings.about')}</button
 									>
 								</nav>
 							</nav>
@@ -2077,6 +2116,17 @@
 </div>
 
 <style>
+	.modal-header > div > div > button {
+		border: none;
+		border-radius: 10px !important;
+		text-decoration: underline;
+		align-self: center;
+	}
+
+	.modal-header > div > .btn-group {
+		background: #a8a8a83d;
+	}
+
 	h5,
 	h6 {
 		font-weight: 600;
@@ -2212,5 +2262,14 @@
 		#settings-content > .mobile-settings-dropdown + div {
 			margin-top: 0.25rem;
 		}
+	}
+
+	/* Hide scrollbar for tab buttons on small screens */
+	.btn-group.overflow-auto::-webkit-scrollbar {
+		display: none;
+	}
+	.btn-group.overflow-auto {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
 	}
 </style>
