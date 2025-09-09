@@ -1029,3 +1029,112 @@ func CreateBackupCodes(w http.ResponseWriter, r *http.Request) {
 		"available_backup_codes": available_backup_codes,
 	})
 }
+
+// ChangeUsername handles changing a user's username
+func ChangeUsername(w http.ResponseWriter, r *http.Request) {
+	// Get user info from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse request
+	var req struct {
+		NewUsername string `json:"new_username"`
+		Password    string `json:"password"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate input
+	req.NewUsername = strings.TrimSpace(req.NewUsername)
+	if req.NewUsername == "" {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "Username cannot be empty",
+		})
+		return
+	}
+
+	// Get users
+	users, err := utils.GetUsers()
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	// Check if new username is already taken (case-insensitive)
+	for _, u := range usersList {
+		user, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		existingUsername, ok := user["username"].(string)
+		if !ok {
+			continue
+		}
+
+		// Skip current user
+		if int(user["user_id"].(float64)) == userID {
+			continue
+		}
+
+		// Case-insensitive comparison
+		if strings.EqualFold(existingUsername, req.NewUsername) {
+			utils.JSONResponse(w, http.StatusOK, map[string]any{
+				"success":        false,
+				"username_taken": true,
+			})
+			return
+		}
+	}
+
+	// check password
+	derivedKey, availableBackupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil || len(derivedKey) == 0 {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"password_incorrect": true,
+		})
+		return
+	}
+
+	// Update username
+	for _, u := range usersList {
+		user, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		if int(user["user_id"].(float64)) == userID {
+			user["username"] = req.NewUsername
+			//usersList[currentUserIndex] = user
+			users["users"] = usersList
+			break
+		}
+	}
+
+	// Save users file
+	if err := utils.WriteUsers(users); err != nil {
+		utils.Logger.Printf("Error saving users after username change: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	utils.Logger.Printf("Username changed for user ID %d to '%s'", userID, req.NewUsername)
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success":                true,
+		"available_backup_codes": availableBackupCodes,
+	})
+}

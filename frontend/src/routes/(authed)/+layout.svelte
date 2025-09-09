@@ -685,6 +685,13 @@
 	let deleteAccountPasswordIncorrect = $state(false);
 	let showDeleteAccountSuccess = $state(false);
 
+	let newUsername = $state('');
+	let changeUsernamePassword = $state('');
+	let isChangingUsername = $state(false);
+	let changeUsernameSuccess = $state(false);
+	let changeUsernameError = $state('');
+	let changeUsernamePasswordIncorrect = $state(false);
+
 	function deleteAccount() {
 		if (isDeletingAccount) return;
 		isDeletingAccount = true;
@@ -719,10 +726,56 @@
 			});
 	}
 
+	let currentUser = $state(localStorage.getItem('user'));
+
+	function changeUsername() {
+		changeUsernameSuccess = false;
+		changeUsernameError = '';
+		changeUsernamePasswordIncorrect = false;
+
+		if (!newUsername.trim()) {
+			changeUsernameError = $t('settings.change_username.empty_username');
+			return;
+		}
+
+		if (isChangingUsername) return;
+		isChangingUsername = true;
+
+		axios
+			.post(API_URL + '/users/changeUsername', {
+				new_username: newUsername.trim(),
+				password: changeUsernamePassword
+			})
+			.then((response) => {
+				if (response.data.success) {
+					changeUsernameSuccess = true;
+					// Update localStorage with new username
+					localStorage.setItem('user', newUsername.trim());
+					// Clear form
+					newUsername = '';
+					changeUsernamePassword = '';
+				} else {
+					if (response.data.password_incorrect) {
+						changeUsernamePasswordIncorrect = true;
+					} else if (response.data.username_taken) {
+						changeUsernameError = $t('settings.change_username.username_taken');
+					} else {
+						changeUsernameError = $t('settings.change_username.error');
+					}
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				changeUsernameError = $t('settings.change_username.error');
+			})
+			.finally(() => {
+				isChangingUsername = false;
+			});
+	}
+
 	let backupCodesPassword = $state('');
 	let isGeneratingBackupCodes = $state(false);
 	let backupCodes = $state([]);
-	let showBackupCodesPasswordIncorrect = $state(false);
 	let codesCopiedSuccess = $state(false);
 	let showBackupCodesError = $state(false);
 
@@ -730,7 +783,6 @@
 		if (isGeneratingBackupCodes) return;
 		isGeneratingBackupCodes = true;
 
-		showBackupCodesPasswordIncorrect = false;
 		showBackupCodesError = false;
 		backupCodes = [];
 
@@ -1781,6 +1833,7 @@
 												class="btn btn-primary"
 												onclick={createBackupCodes}
 												data-sveltekit-noscroll
+												disabled={isGeneratingBackupCodes || !backupCodesPassword.trim()}
 											>
 												{$t('settings.backup_codes.generate_button')}
 												{#if isGeneratingBackupCodes}
@@ -1813,7 +1866,71 @@
 											</div>
 										{/if}
 									</div>
-									<div><h5>Username ändern</h5></div>
+									<div>
+										<h5>{$t('settings.change_username')}</h5>
+										<div class="form-text">
+											{@html $t('settings.change_username.description')}
+										</div>
+										<div class="mb-3">
+											{$t('settings.change_username.current_username')}: {currentUser}
+										</div>
+
+										<form onsubmit={changeUsername}>
+											<div class="form-floating mb-3">
+												<input
+													type="text"
+													class="form-control"
+													id="newUsername"
+													placeholder={$t('settings.change_username.new_username')}
+													bind:value={newUsername}
+													disabled={isChangingUsername}
+												/>
+												<label for="newUsername"
+													>{$t('settings.change_username.new_username')}</label
+												>
+											</div>
+											<div class="form-floating mb-3">
+												<input
+													type="password"
+													class="form-control"
+													id="changeUsernamePassword"
+													placeholder={$t('settings.password.current_password')}
+													bind:value={changeUsernamePassword}
+													disabled={isChangingUsername}
+												/>
+												<label for="changeUsernamePassword"
+													>{$t('settings.password.current_password')}</label
+												>
+											</div>
+											<button
+												class="btn btn-primary"
+												onclick={changeUsername}
+												disabled={isChangingUsername ||
+													!newUsername.trim() ||
+													!changeUsernamePassword.trim()}
+											>
+												{#if isChangingUsername}
+													<span class="spinner-border spinner-border-sm me-2"></span>
+												{/if}
+												{$t('settings.change_username.button')}
+											</button>
+										</form>
+
+										{#if changeUsernameSuccess}
+											<div class="alert alert-success mt-2" role="alert" transition:slide>
+												{$t('settings.change_username.success')}
+											</div>
+										{/if}
+										{#if changeUsernamePasswordIncorrect}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.password.current_password_incorrect')}
+											</div>
+										{:else if changeUsernameError}
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{changeUsernameError}
+											</div>
+										{/if}
+									</div>
 									<div>
 										<h5>{$t('settings.delete_account')}</h5>
 										<p>
