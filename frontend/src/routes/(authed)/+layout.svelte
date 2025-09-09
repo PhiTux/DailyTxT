@@ -174,6 +174,45 @@
 		settingsSections = [];
 	}
 
+	function reinitializeSettingsScrollSpy() {
+		// Destroy existing ScrollSpy first
+		destroySettingsScrollSpy();
+
+		// Re-setup the settings content scroll behavior
+		const contentEl = document.getElementById('settings-content');
+		const navEl = document.getElementById('settings-nav');
+		const modalBody = document.getElementById('modal-body');
+
+		if (contentEl && navEl && modalBody) {
+			const height = modalBody.clientHeight;
+			contentEl.style.height = 'calc(' + height + 'px - 2rem)';
+			navEl.style.height = 'calc(' + height + 'px - 2rem)';
+			contentEl.style.overflowY = 'auto';
+			contentEl.scrollTop = 0;
+			activeSettingsSection = 'appearance';
+			// Short timeout to allow layout calculation before reading offsets
+			setTimeout(initSettingsScrollSpy, 100);
+		}
+	}
+
+	function switchToSettingsTab() {
+		activeSettingsView = 'settings';
+		// Reinitialize ScrollSpy when switching to settings tab
+		setTimeout(reinitializeSettingsScrollSpy, 50);
+	}
+
+	function switchToStatsTab() {
+		activeSettingsView = 'stats';
+		// Destroy settings ScrollSpy when leaving settings tab
+		destroySettingsScrollSpy();
+	}
+
+	function switchToAdminTab() {
+		activeSettingsView = 'admin';
+		// Destroy settings ScrollSpy when leaving settings tab
+		destroySettingsScrollSpy();
+	}
+
 	function openSettingsModal() {
 		activeSettingsView = 'settings';
 		$tempSettings = JSON.parse(JSON.stringify($settings));
@@ -898,21 +937,21 @@
 					<button
 						type="button"
 						class="btn btn-outline-primary {activeSettingsView === 'settings' ? 'active' : ''}"
-						onclick={() => (activeSettingsView = 'settings')}
+						onclick={switchToSettingsTab}
 					>
 						{$t('settings.title')}
 					</button>
 					<button
 						type="button"
 						class="btn btn-outline-primary {activeSettingsView === 'stats' ? 'active' : ''}"
-						onclick={() => (activeSettingsView = 'stats')}
+						onclick={switchToStatsTab}
 					>
 						{$t('settings.statistics.title')}
 					</button>
 					<button
 						type="button"
 						class="btn btn-outline-primary {activeSettingsView === 'admin' ? 'active' : ''}"
-						onclick={() => (activeSettingsView = 'admin')}
+						onclick={switchToAdminTab}
 					>
 						{$t('settings.admin.title')}
 					</button>
@@ -920,7 +959,10 @@
 					></button>
 				</div>
 			</div>
-			<div class="modal-body" id="modal-body">
+			<div
+				class="modal-body {activeSettingsView !== 'settings' ? 'modal-body-scrollable' : ''}"
+				id="modal-body"
+			>
 				<div class="row">
 					{#if activeSettingsView === 'settings'}
 						<div class="col-4 overflow-y-auto d-none d-md-block">
@@ -2120,7 +2162,14 @@
 	}
 
 	.modal-body {
+		/* For settings tab, let internal elements handle scrolling */
 		overflow-y: hidden;
+	}
+
+	.modal-body.modal-body-scrollable {
+		/* For stats/admin tabs, let modal-body handle scrolling */
+		max-height: calc(100vh - 200px);
+		overflow-y: auto;
 	}
 
 	.modal-header {

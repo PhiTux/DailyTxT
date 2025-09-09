@@ -463,21 +463,23 @@
 					days: dayStats.filter((d) => d.isBookmarked).length.toLocaleString($tolgee.getLanguage())
 				})}
 			</li>
-			<li>
-				{$t('tags.tags')}:<br />
-				{#each $tags as tag (tag.id)}
-					<span class="d-inline-block me-3 mb-2">
-						<Tag {tag} />
+			{#if $tags.length > 0}
+				<li>
+					{$t('tags.tags')}:<br />
+					{#each $tags as tag (tag.id)}
+						<span class="d-inline-block me-3 mb-2">
+							<Tag {tag} />
 
-						{@html $t('settings.statistics.tagUsedCount', {
-							count: dayStats
-								.filter((d) => d.tags.includes(tag.id))
-								.length.toLocaleString($tolgee.getLanguage())
-						})}
-					</span>
-					<br />
-				{/each}
-			</li>
+							{@html $t('settings.statistics.tagUsedCount', {
+								count: dayStats
+									.filter((d) => d.tags.includes(tag.id))
+									.length.toLocaleString($tolgee.getLanguage())
+							})}
+						</span>
+						<br />
+					{/each}
+				</li>
+			{/if}
 		</ul>
 
 		<h4 class="headerTotal">{$t('settings.statistics.funFacts')}</h4>
