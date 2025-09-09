@@ -20,6 +20,7 @@
 	let adminAuthError = $state('');
 
 	// Admin data
+	let freeSpace = $state(0);
 	let users = $state([]);
 	let isLoadingUsers = $state(false);
 	let deleteUserId = $state(null);
@@ -76,6 +77,7 @@
 		try {
 			const response = await makeAdminApiCall('/admin/users');
 			users = response.data.users || [];
+			freeSpace = response.data.free_space;
 		} catch (error) {
 			console.error('Error loading users:', error);
 			if (error.response?.status === 401) {
@@ -290,6 +292,13 @@
 								<div class="col-md-6">
 									<strong>{$t('settings.admin.total_disk_usage')}: </strong>
 									{formatBytes(users.reduce((sum, user) => sum + (user.disk_usage || 0), 0))}
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-6"></div>
+								<div class="col-md-6">
+									<strong>{$t('settings.admin.free_disk_space')}: </strong>
+									{formatBytes(freeSpace)}
 								</div>
 							</div>
 						</div>

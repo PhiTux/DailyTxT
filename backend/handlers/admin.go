@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 
 	"github.com/phitux/dailytxt/backend/utils"
 )
@@ -107,9 +108,17 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	// Get free disk space
+	freeSpace, err := getFreeDiskSpace()
+	if err != nil {
+		log.Printf("Error getting free disk space: %v", err)
+		freeSpace = 0 // Default to 0 if we can't determine free space
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
-		"users": adminUsers,
+		"users":      adminUsers,
+		"free_space": freeSpace,
 	})
 }
 
@@ -134,6 +143,19 @@ func calculateUserDiskUsage(userID int) int64 {
 	}
 
 	return totalSize
+}
+
+// getFreeDiskSpace calculates the free disk space for the data directory
+func getFreeDiskSpace() (int64, error) {
+	var stat syscall.Statfs_t
+	err := syscall.Statfs(utils.Settings.DataPath, &stat)
+	if err != nil {
+		return 0, err
+	}
+
+	// Available space = block size * available blocks
+	freeSpace := int64(stat.Bavail) * int64(stat.Bsize)
+	return freeSpace, nil
 }
 
 // DeleteUser deletes a user and all their data
