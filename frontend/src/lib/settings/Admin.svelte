@@ -21,10 +21,14 @@
 
 	// Admin data
 	let freeSpace = $state(0);
+	let oldData = $state({});
 	let users = $state([]);
 	let isLoadingUsers = $state(false);
 	let deleteUserId = $state(null);
 	let isDeletingUser = $state(false);
+
+	let confirmDeleteOldData = $state(false);
+	let isDeletingOldData = $state(false);
 
 	onMount(() => {
 		currentUser = localStorage.getItem('user');
@@ -75,9 +79,10 @@
 		isLoadingUsers = true;
 
 		try {
-			const response = await makeAdminApiCall('/admin/users');
+			const response = await makeAdminApiCall('/admin/get-data');
 			users = response.data.users || [];
 			freeSpace = response.data.free_space;
+			oldData = response.data.old_data;
 		} catch (error) {
 			console.error('Error loading users:', error);
 			if (error.response?.status === 401) {
@@ -129,6 +134,44 @@
 
 	function confirmDeleteUser(userId) {
 		deleteUserId = deleteUserId === userId ? null : userId;
+	}
+
+	// Delete old data directory
+	async function deleteOldData() {
+		if (isDeletingOldData) return;
+		isDeletingOldData = true;
+
+		try {
+			const response = await makeAdminApiCall('/admin/delete-old-data');
+			if (response.data.success) {
+				// Reset old data state
+				oldData = { exists: false };
+				confirmDeleteOldData = false;
+
+				// Show success toast
+				const toast = new bootstrap.Toast(document.getElementById('toastSuccessOldDataDelete'));
+				toast.show();
+			} else {
+				// Show error toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorOldDataDelete'));
+				toast.show();
+			}
+		} catch (error) {
+			console.error('Error deleting old data:', error);
+			if (error.response?.status === 401) {
+				resetAdminState();
+			} else {
+				// Show error toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorOldDataDelete'));
+				toast.show();
+			}
+		} finally {
+			isDeletingOldData = false;
+		}
+	}
+
+	function toggleDeleteOldDataConfirmation() {
+		confirmDeleteOldData = !confirmDeleteOldData;
 	}
 </script>
 
@@ -303,16 +346,91 @@
 							</div>
 						</div>
 					{/if}
+				</div>
+			</div>
 
-					<div class="mt-3">
-						<button class="btn btn-outline-primary" onclick={loadUsers} disabled={isLoadingUsers}>
-							{#if isLoadingUsers}
-								<span class="spinner-border spinner-border-sm me-2"></span>
+			<!-- Old Data Card -->
+			{#if oldData.exists}
+				<div class="card mt-4">
+					<div class="card-header">
+						<h4 class="card-title mb-0">📦 {$t('settings.admin.old_data')}</h4>
+					</div>
+					<div class="card-body">
+						<p class="text-muted mb-3">
+							{@html $t('settings.admin.old_data_description')}
+						</p>
+
+						{#if oldData.usernames && oldData.usernames.length > 0}
+							<h6>{$t('settings.admin.old_users')}:</h6>
+							<div class="mb-3">
+								{#each oldData.usernames as username, index}
+									<span class="badge bg-secondary me-1">{username}</span>
+								{/each}
+							</div>
+						{:else}
+							<p class="text-warning">
+								{$t('settings.admin.no_old_users_found')}
+							</p>
+						{/if}
+
+						<div class="row">
+							<div class="col-md-6">
+								<strong>{@html $t('settings.admin.old_data_size')}: </strong>
+								{formatBytes(oldData.total_size)}
+							</div>
+						</div>
+
+						<!-- Delete old data button -->
+						<div class="mt-3">
+							<button
+								class="btn btn-danger"
+								onclick={toggleDeleteOldDataConfirmation}
+								disabled={isDeletingOldData}
+							>
+								🗑️ {$t('settings.admin.delete_old_data')}
+							</button>
+
+							{#if confirmDeleteOldData}
+								<div class="mt-3" transition:slide>
+									<div class="alert alert-danger">
+										<p class="mb-2">
+											<strong>{$t('settings.admin.confirm_delete_old_data')}</strong><br />
+											{@html $t('settings.admin.delete_old_data_warning')}
+										</p>
+										<div class="d-flex gap-2">
+											<button
+												class="btn btn-secondary btn-sm"
+												onclick={toggleDeleteOldDataConfirmation}
+											>
+												{$t('settings.admin.cancel')}
+											</button>
+											<button
+												class="btn btn-danger btn-sm"
+												onclick={deleteOldData}
+												disabled={isDeletingOldData}
+											>
+												{#if isDeletingOldData}
+													<span class="spinner-border spinner-border-sm me-1"></span>
+												{/if}
+												{$t('settings.admin.delete')}
+											</button>
+										</div>
+									</div>
+								</div>
 							{/if}
-							{$t('settings.admin.refresh_users')}
-						</button>
+						</div>
 					</div>
 				</div>
+			{/if}
+
+			<!-- Reload Button moved to bottom -->
+			<div class="mt-4 d-flex justify-content-center">
+				<button class="btn btn-outline-primary" onclick={loadUsers} disabled={isLoadingUsers}>
+					{#if isLoadingUsers}
+						<span class="spinner-border spinner-border-sm me-2"></span>
+					{/if}
+					{$t('settings.admin.refresh_users')}
+				</button>
 			</div>
 		</div>
 	{/if}
@@ -343,6 +461,52 @@
 				<div class="toast-body">
 					{$t('settings.statistics.toast_error_user_delete')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
+			</div>
+		</div>
+
+		<div
+			id="toastSuccessOldDataDelete"
+			class="toast align-items-center text-bg-success"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">
+					{$t('settings.admin.toast_success_old_data_delete')}
+				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorOldDataDelete"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">
+					{$t('settings.admin.toast_error_old_data_delete')}
+				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 	</div>

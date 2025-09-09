@@ -63,8 +63,11 @@ func validateAdminPasswordInRequest(r *http.Request) bool {
 	return req.AdminPassword == adminPassword
 }
 
-// GetAllUsers returns all users with their disk usage
-func GetAllUsers(w http.ResponseWriter, r *http.Request) {
+// GetAdminData returns:
+// - all users with their disk usage
+// - free disk space
+// - migration-info
+func GetAdminData(w http.ResponseWriter, r *http.Request) {
 	if !validateAdminPasswordInRequest(r) {
 		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
 		return
@@ -115,10 +118,14 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		freeSpace = 0 // Default to 0 if we can't determine free space
 	}
 
+	// Check for old directory and get old users info
+	oldDirInfo := getOldDirectoryInfo()
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
 		"users":      adminUsers,
 		"free_space": freeSpace,
+		"old_data":   oldDirInfo,
 	})
 }
 
@@ -158,6 +165,59 @@ func getFreeDiskSpace() (int64, error) {
 	return freeSpace, nil
 }
 
+// getOldDirectoryInfo checks for old directory and returns info about old users and directory size
+func getOldDirectoryInfo() map[string]any {
+	oldDirPath := filepath.Join(utils.Settings.DataPath, "old")
+
+	// Check if old directory exists
+	if _, err := os.Stat(oldDirPath); os.IsNotExist(err) {
+		return map[string]any{
+			"exists": false,
+		}
+	}
+
+	// Read users.json from old directory
+	usersJsonPath := filepath.Join(oldDirPath, "users.json")
+	var oldUsernames []string
+
+	if _, err := os.Stat(usersJsonPath); err == nil {
+		// Read and parse users.json
+		data, err := os.ReadFile(usersJsonPath)
+		if err == nil {
+			var usersData map[string]any
+			if json.Unmarshal(data, &usersData) == nil {
+				if usersList, ok := usersData["users"].([]any); ok {
+					for _, u := range usersList {
+						if user, ok := u.(map[string]any); ok {
+							if username, ok := user["username"].(string); ok {
+								oldUsernames = append(oldUsernames, username)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	// Calculate total size of old directory
+	var totalSize int64
+	filepath.Walk(oldDirPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil // Continue on errors
+		}
+		if !info.IsDir() {
+			totalSize += info.Size()
+		}
+		return nil
+	})
+
+	return map[string]any{
+		"exists":     true,
+		"usernames":  oldUsernames,
+		"total_size": totalSize,
+	}
+}
+
 // DeleteUser deletes a user and all their data
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	var req struct {
@@ -188,6 +248,36 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{
+		"success": true,
+	})
+}
+
+// DeleteOldData deletes the entire old directory
+func DeleteOldData(w http.ResponseWriter, r *http.Request) {
+	if !validateAdminPasswordInRequest(r) {
+		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
+		return
+	}
+
+	oldDirPath := filepath.Join(utils.Settings.DataPath, "old")
+
+	// Check if old directory exists
+	if _, err := os.Stat(oldDirPath); os.IsNotExist(err) {
+		http.Error(w, "Old directory does not exist", http.StatusNotFound)
+		return
+	}
+
+	// Remove the entire old directory
+	if err := os.RemoveAll(oldDirPath); err != nil {
+		log.Printf("Error deleting old directory: %v", err)
+		http.Error(w, "Error deleting old directory", http.StatusInternalServerError)
+		return
+	}
+
+	log.Printf("Old directory successfully deleted by admin (id: %d, username: %s)", r.Context().Value(utils.UserIDKey), r.Context().Value(utils.UsernameKey))
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{

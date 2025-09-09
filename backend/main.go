@@ -91,9 +91,10 @@ func main() {
 	mux.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
 
 	// Admin routes
-	mux.HandleFunc("POST /admin/validate-password", handlers.ValidateAdminPassword)
-	mux.HandleFunc("POST /admin/users", handlers.GetAllUsers)
-	mux.HandleFunc("POST /admin/delete-user", handlers.DeleteUser)
+	mux.HandleFunc("POST /admin/validate-password", middleware.RequireAuth(handlers.ValidateAdminPassword))
+	mux.HandleFunc("POST /admin/get-data", middleware.RequireAuth(handlers.GetAdminData))
+	mux.HandleFunc("POST /admin/delete-user", middleware.RequireAuth(handlers.DeleteUser))
+	mux.HandleFunc("POST /admin/delete-old-data", middleware.RequireAuth(handlers.DeleteOldData))
 
 	// Create a handler chain with Timeout, Logger and CORS middleware
 	// Timeout middleware will be executed first, then Logger, then CORS
