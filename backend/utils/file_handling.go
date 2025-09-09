@@ -145,7 +145,6 @@ func GetTags(userID int) (map[string]any, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			Logger.Printf("%s - File not found", filePath)
 			return map[string]any{}, nil
 		}
 		Logger.Printf("Error opening %s: %v", filePath, err)
@@ -212,7 +211,6 @@ func GetUserSettings(userID int) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			Logger.Printf("%s - File not found", filePath)
 			return "", nil
 		}
 		Logger.Printf("Error opening %s: %v", filePath, err)

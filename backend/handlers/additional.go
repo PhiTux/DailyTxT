@@ -1342,7 +1342,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 	// Traverse all years and months
 	yearEntries, err := os.ReadDir(userDir)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Error reading user directory: %v", err), http.StatusInternalServerError)
+		http.Error(w, "No logs found to be searched", http.StatusNotFound)
 		return
 	}
 

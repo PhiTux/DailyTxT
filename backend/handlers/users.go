@@ -279,7 +279,7 @@ func Register(username string, password string) (bool, error) {
 
 			if username_from_file, ok := user["username"].(string); ok && strings.EqualFold(username_from_file, username) {
 				utils.Logger.Printf("Registration failed. Username '%s' already exists", username)
-				return false, fmt.Errorf("username already exists: %d", http.StatusBadRequest)
+				return false, fmt.Errorf("username already exists (error %d)", http.StatusBadRequest)
 			}
 		}
 	}

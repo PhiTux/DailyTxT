@@ -457,13 +457,12 @@
 							</div>
 							{#if !registration_allowed}
 								<div class="alert alert-danger" role="alert">
-									{t('login.alert.registration_not_allowed')}
+									{$t('login.alert.registration_not_allowed')}
 								</div>
 							{/if}
 							{#if show_registration_failed_with_message}
 								<div class="alert alert-danger" role="alert">
-									{@html (t('login.alert.registration_failed_with_message'),
-									{
+									{@html $t('login.alert.registration_failed_with_message', {
 										message: registration_failed_message
 									})}
 								</div>
