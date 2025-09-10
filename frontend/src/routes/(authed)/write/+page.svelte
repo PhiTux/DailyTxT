@@ -841,6 +841,53 @@
 				toast.show();
 			});
 	}
+
+	function renameFile(uuid_filename, new_filename) {
+		// Validate filename
+		if (!new_filename || new_filename.trim() === '') {
+			const toast = new bootstrap.Toast(document.getElementById('toastErrorRenamingFile'));
+			toast.show();
+			return;
+		}
+
+		new_filename = new_filename.trim();
+
+		axios
+			.post(API_URL + '/logs/renameFile', {
+				uuid: uuid_filename,
+				new_filename: new_filename,
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year
+			})
+			.then((response) => {
+				if (response.data.success) {
+					// Update local file list
+					filesOfDay = filesOfDay.map((file) => {
+						if (file.uuid_filename === uuid_filename) {
+							file.filename = new_filename;
+						}
+						return file;
+					});
+
+					// Update images list as well
+					images = images.map((image) => {
+						if (image.uuid_filename === uuid_filename) {
+							image.filename = new_filename;
+						}
+						return image;
+					});
+				} else {
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorRenamingFile'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorRenamingFile'));
+				toast.show();
+			});
+	}
 </script>
 
 <DatepickerLogic />
@@ -1018,7 +1065,7 @@
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
-				<FileList files={filesOfDay} {downloadFile} {askDeleteFile} deleteAllowed />
+				<FileList files={filesOfDay} {downloadFile} {askDeleteFile} {renameFile} deleteAllowed />
 				{#each uploadingFiles as file}
 					<div>
 						{file.name}
@@ -1172,6 +1219,18 @@
 				<div class="toast-body">
 					{$t('log.toast.error_deleting_day')}
 				</div>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorRenamingFile"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">{$t('log.toast.error_renaming_file')}</div>
 			</div>
 		</div>
 	</div>

@@ -1442,44 +1442,49 @@
 										{/if}
 										<div class="d-flex flex-column tagColumn mt-1">
 											{#each $tags as tag}
-												<Tag
-													{tag}
-													isEditable
-													editTag={openTagModal}
-													isDeletable
-													deleteTag={askDeleteTag}
-												/>
-												{#if deleteTagId === tag.id}
-													<div
-														class="alert alert-danger align-items-center"
-														role="alert"
-														transition:slide
-													>
-														<div>
-															<Fa icon={faTriangleExclamation} fw />
-															{@html $t('settings.tags.delete_confirmation')}
+												<div class="mt-2">
+													<Tag
+														{tag}
+														isEditable
+														editTag={openTagModal}
+														isDeletable
+														deleteTag={askDeleteTag}
+													/>
+													{#if deleteTagId === tag.id}
+														<div transition:slide style="padding-top: 0.5rem">
+															<div
+																class="alert alert-danger align-items-center tagAlert"
+																role="alert"
+															>
+																<div>
+																	<Fa icon={faTriangleExclamation} fw />
+																	{@html $t('settings.tags.delete_confirmation')}
+																</div>
+																<!-- svelte-ignore a11y_consider_explicit_label -->
+																<div class="d-flex flex-row mt-2">
+																	<button
+																		class="btn btn-secondary"
+																		onclick={() => (deleteTagId = null)}
+																		>{$t('settings.abort')}
+																	</button>
+																	<button
+																		disabled={isDeletingTag}
+																		class="btn btn-danger ms-3"
+																		onclick={() => deleteTag(tag.id)}
+																		>{$t('settings.delete')}
+																		{#if isDeletingTag}
+																			<span
+																				class="spinner-border spinner-border-sm ms-2"
+																				role="status"
+																				aria-hidden="true"
+																			></span>
+																		{/if}
+																	</button>
+																</div>
+															</div>
 														</div>
-														<!-- svelte-ignore a11y_consider_explicit_label -->
-														<div class="d-flex flex-row mt-2">
-															<button class="btn btn-secondary" onclick={() => (deleteTagId = null)}
-																>{$t('settings.abort')}
-															</button>
-															<button
-																disabled={isDeletingTag}
-																class="btn btn-danger ms-3"
-																onclick={() => deleteTag(tag.id)}
-																>{$t('settings.delete')}
-																{#if isDeletingTag}
-																	<span
-																		class="spinner-border spinner-border-sm ms-2"
-																		role="status"
-																		aria-hidden="true"
-																	></span>
-																{/if}
-															</button>
-														</div>
-													</div>
-												{/if}
+													{/if}
+												</div>
 											{/each}
 										</div>
 									</div>
@@ -2233,6 +2238,10 @@
 </div>
 
 <style>
+	.tagAlert {
+		margin-bottom: 0 !important;
+	}
+
 	.modal-header > div > div > button {
 		border: none;
 		border-radius: 10px !important;
@@ -2290,10 +2299,6 @@
 
 	:global(.tagColumn > span) {
 		width: min-content;
-	}
-
-	.tagColumn {
-		gap: 0.5rem;
 	}
 
 	#selectMode:checked {

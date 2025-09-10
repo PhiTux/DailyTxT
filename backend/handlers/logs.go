@@ -1004,3 +1004,134 @@ func DeleteDay(w http.ResponseWriter, r *http.Request) {
 
 	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
 }
+
+// RenameFileRequest represents the rename file request body
+type RenameFileRequest struct {
+	UUID        string `json:"uuid"`
+	NewFilename string `json:"new_filename"`
+	Day         int    `json:"day"`
+	Month       int    `json:"month"`
+	Year        int    `json:"year"`
+}
+
+// RenameFile handles renaming a file
+func RenameFile(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse request body
+	var req RenameFileRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate input
+	req.NewFilename = strings.TrimSpace(req.NewFilename)
+	if req.NewFilename == "" {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "New filename cannot be empty",
+		})
+		return
+	}
+
+	if req.UUID == "" {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "File UUID is required",
+		})
+		return
+	}
+
+	// Get month data
+	content, err := utils.GetMonth(userID, req.Year, req.Month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	enc_filename, err := utils.EncryptText(req.NewFilename, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting text: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Find and update the file
+	days, ok := content["days"].([]any)
+	if !ok {
+		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
+			"success": false,
+			"message": "No days found",
+		})
+		return
+	}
+
+	found := false
+	for _, d := range days {
+		day, ok := d.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		dayNum, ok := day["day"].(float64)
+		if !ok || int(dayNum) != req.Day {
+			continue
+		}
+
+		files, ok := day["files"].([]any)
+		if !ok {
+			continue
+		}
+
+		// Find and rename the specific file
+		for _, f := range files {
+			file, ok := f.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			if uuid, ok := file["uuid_filename"].(string); ok && uuid == req.UUID {
+				file["enc_filename"] = enc_filename
+				found = true
+				break
+			}
+		}
+
+		if found {
+			break
+		}
+	}
+
+	if !found {
+		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
+			"success": false,
+			"message": "File not found",
+		})
+		return
+	}
+
+	// Save the updated month data
+	if err := utils.WriteMonth(userID, req.Year, req.Month, content); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	utils.Logger.Printf("File renamed successfully for user %d: %s -> %s", userID, req.UUID, req.NewFilename)
+	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
+}
