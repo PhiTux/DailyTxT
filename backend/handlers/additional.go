@@ -2770,3 +2770,14 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dayStats)
 }
+
+// GetVersionInfo returns the current application version (public endpoint, no auth required)
+func GetVersionInfo(w http.ResponseWriter, r *http.Request) {
+	latest_stable, latest_overall := utils.GetLatestVersion()
+
+	utils.JSONResponse(w, http.StatusOK, map[string]string{
+		"current_version":        utils.GetVersion(),
+		"latest_stable_version":  latest_stable,
+		"latest_overall_version": latest_overall,
+	})
+}

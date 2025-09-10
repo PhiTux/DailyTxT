@@ -437,6 +437,8 @@ func GetDefaultSettings() map[string]any {
 		"useDarkMode":                false,
 		"background":                 "gradient",
 		"monochromeBackgroundColor":  "#ececec",
+		"checkForUpdates":            true,
+		"includeTestVersions":        false,
 	}
 }
 

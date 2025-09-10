@@ -24,7 +24,8 @@
 		faCopy,
 		faCheck,
 		faSun,
-		faMoon
+		faMoon,
+		faCircleUp
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 	import SelectTimezone from '$lib/SelectTimezone.svelte';
@@ -34,6 +35,8 @@
 	import Statistics from '$lib/settings/Statistics.svelte';
 	import Admin from '$lib/settings/Admin.svelte';
 	import { T, getTranslate, getTolgee } from '@tolgee/svelte';
+	import github from '$lib/assets/GitHub-Logo.png';
+	import donate from '$lib/assets/bmc-button.png';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -42,8 +45,64 @@
 	let inDuration = 150;
 	let outDuration = 150;
 
+	let current_version = $state('');
+	let latest_stable_version = $state('');
+	let latest_overall_version = $state('');
+	let updateAvailable = $state(false);
+
 	// Active sub-view of settings modal: 'settings' | 'stats' | 'admin'
 	let activeSettingsView = $state('settings');
+
+	// Function to compare version strings (semver-like)
+	function compareVersions(v1, v2) {
+		if (!v1 || !v2) return 0;
+
+		const parseVersion = (version) => {
+			const cleaned = version.replace(/^v/, '');
+			const parts = cleaned.split('-')[0].split('.');
+			return parts.map((part) => parseInt(part) || 0);
+		};
+
+		const version1 = parseVersion(v1);
+		const version2 = parseVersion(v2);
+
+		for (let i = 0; i < Math.max(version1.length, version2.length); i++) {
+			const v1Part = version1[i] || 0;
+			const v2Part = version2[i] || 0;
+
+			if (v1Part > v2Part) return 1;
+			if (v1Part < v2Part) return -1;
+		}
+
+		// if both have the same semver-number, check the testing-number (like 2.3.1-testing.3)
+		// if one does not have anything on the right of "-", then this is the "stable" version
+		const testingVersion1 = v1.split('-')[1] || '';
+		const testingVersion2 = v2.split('-')[1] || '';
+
+		if (testingVersion1 === '') return 1;
+		if (testingVersion2 === '') return -1;
+
+		return testingVersion1.localeCompare(testingVersion2) > 0;
+	}
+
+	// Function to check if updates are available
+	function checkForUpdates() {
+		if (!$settings.checkForUpdates) {
+			updateAvailable = false;
+			return;
+		}
+
+		const latestVersion = $settings.includeTestVersions
+			? latest_overall_version
+			: latest_stable_version;
+
+		updateAvailable = compareVersions(latestVersion, current_version) > 0;
+	}
+
+	// React to changes in settings or version info
+	$effect(() => {
+		checkForUpdates();
+	});
 
 	$effect(() => {
 		if ($readingMode === true && page.url.pathname !== '/read') {
@@ -56,6 +115,7 @@
 	onMount(() => {
 		getUserSettings();
 		getTemplates();
+		getVersionInfo();
 
 		if (page.url.pathname === '/read') {
 			$readingMode = true;
@@ -907,6 +967,21 @@
 				isExporting = false;
 			});
 	}
+
+	function getVersionInfo() {
+		axios
+			.get(API_URL + '/version')
+			.then((response) => {
+				current_version = response.data.current_version;
+				latest_stable_version = response.data.latest_stable_version;
+				latest_overall_version = response.data.latest_overall_version;
+				// Trigger update check after loading version info
+				checkForUpdates();
+			})
+			.catch((error) => {
+				console.error('Error fetching version info:', error);
+			});
+	}
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -944,9 +1019,19 @@
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
-				<button class="btn btn-outline-secondary me-2" onclick={openSettingsModal}
-					><Fa icon={faSliders} /></button
+				<button
+					class="btn btn-outline-secondary me-2 position-relative"
+					onclick={openSettingsModal}
 				>
+					<Fa icon={faSliders} />
+					{#if updateAvailable}
+						<Fa
+							icon={faCircleUp}
+							size="1.2x"
+							class="position-absolute top-0 start-100 translate-middle text-info"
+						/>
+					{/if}
+				</button>
 				<button class="btn btn-outline-secondary" onclick={() => logout(null)}
 					><Fa icon={faRightFromBracket} /></button
 				>
@@ -1085,8 +1170,13 @@
 										class="nav-link mb-1 text-start {activeSettingsSection === 'about'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('about')}>{$t('settings.about')}</button
+										onclick={() => scrollToSection('about')}
 									>
+										{$t('settings.about')}
+										{#if updateAvailable}
+											<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+										{/if}
+									</button>
 								</nav>
 							</nav>
 						</div>
@@ -2017,9 +2107,108 @@
 
 								<div id="about">
 									<h3 class="text-primary">💡 {$t('settings.about')}</h3>
-									Version:<br />
-									Changelog: <br />
-									Link zu github
+
+									<span class="d-table mx-auto"
+										>{@html $t('settings.about.made_by', {
+											creator:
+												'<a class="link-light link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="https://github.com/PhiTux" target="_blank">PhiTux / Marco Kümmel</a>'
+										})}</span
+									>
+									<hr />
+
+									<u>{$t('settings.about.current_version')}:</u>
+									<b>{current_version}</b><br />
+									<u>{$t('settings.about.latest_version')}:</u>
+									{#if !updateAvailable}
+										<b
+											>{$settings.includeTestVersions
+												? latest_overall_version
+												: latest_stable_version}</b
+										>
+									{:else}
+										<a href="https://hub.docker.com/r/phitux/dailytxt/tags" target="_blank"
+											><span class="badge text-bg-info fs-6"
+												>{$settings.includeTestVersions
+													? latest_overall_version
+													: latest_stable_version}</span
+											></a
+										>
+									{/if}
+
+									<br />
+
+									{#if updateAvailable}
+										<p class="alert alert-info d-flex align-items-center mt-2 mb-2 p-2">
+											<Fa icon={faCircleUp} size="2x" class="text-info me-2" />
+											{$t('settings.about.update_available')}
+										</p>
+									{/if}
+
+									<span class="form-text">{$t('settings.about.version_info')}</span><br />
+
+									<a
+										class="btn btn-secondary my-2"
+										href="https://github.com/PhiTux/DailyTxT#changelog"
+										target="_blank"
+									>
+										{$t('settings.about.changelog')}
+									</a>
+
+									<div id="updateSettings" class="mt-2">
+										{#if $tempSettings.checkForUpdates !== $settings.checkForUpdates || $tempSettings.includeTestVersions !== $settings.includeTestVersions}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>{$t('settings.about.update_notification')}</h5>
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.checkForUpdates}
+												type="checkbox"
+												role="switch"
+												id="checkForUpdatesSwitch"
+											/>
+											<label class="form-check-label" for="checkForUpdatesSwitch">
+												{$t('settings.updates.check_for_updates')}
+											</label>
+										</div>
+
+										<div class="form-check form-switch ms-3">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.includeTestVersions}
+												type="checkbox"
+												role="switch"
+												id="includeTestVersionsSwitch"
+												disabled={!$tempSettings.checkForUpdates}
+											/>
+											<label class="form-check-label" for="includeTestVersionsSwitch">
+												{$t('settings.updates.include_test_versions')}
+											</label>
+										</div>
+									</div>
+
+									<hr />
+
+									<a
+										class="btn btn-secondary mx-auto d-table"
+										href="https://github.com/PhiTux/DailyTxT"
+										target="_blank"
+									>
+										{$t('settings.about.source_code')}: <img src={github} alt="" width="100px" />
+									</a>
+
+									<hr />
+
+									<span class="d-table mx-auto">{@html $t('settings.about.donate')}</span>
+									<a
+										class="d-block mx-auto mt-2"
+										href="https://www.buymeacoffee.com/PhiTux"
+										target="_blank"
+										style="width: 200px;"
+									>
+										<img src={donate} alt="" width="200px" />
+									</a>
 								</div>
 							</div>
 						</div>

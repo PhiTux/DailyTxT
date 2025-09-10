@@ -7,11 +7,16 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Global logger
 var Logger *log.Logger
+
+// Application version (separate from AppSettings)
+var AppVersion string
 
 func init() {
 	// Initialize logger
@@ -41,6 +46,16 @@ type AppSettings struct {
 
 // Global settings
 var Settings AppSettings
+
+// SetVersion sets the application version
+func SetVersion(version string) {
+	AppVersion = version
+}
+
+// GetVersion returns the current application version
+func GetVersion() string {
+	return AppVersion
+}
 
 // InitSettings loads the application settings
 func InitSettings() error {
@@ -405,4 +420,185 @@ func GetUsernameByID(userID int) string {
 
 	fmt.Printf("user not found with ID: %d\n", userID)
 	return ""
+}
+
+// Docker Hub API structures
+type DockerHubTag struct {
+	Name string `json:"name"`
+}
+
+type DockerHubTagsResponse struct {
+	//Count   int            `json:"count"`
+	Results []DockerHubTag `json:"results"`
+}
+
+// Version cache
+var (
+	lastVersionCheck     time.Time
+	cachedLatestVersion  string
+	cachedLatestWithTest string
+	versionCacheDuration = time.Hour
+)
+
+// parseVersion parses a semver string and returns major, minor, patch as integers
+// Returns -1, -1, -1 if parsing fails
+func parseVersion(version string) (int, int, int) {
+	// Remove 'v' prefix if present
+	version = strings.TrimPrefix(version, "v")
+
+	// Split by '-' to separate version from pre-release identifiers
+	parts := strings.Split(version, "-")
+	if len(parts) == 0 {
+		return -1, -1, -1
+	}
+
+	// Parse the main version part (e.g., "2.3.1")
+	versionPart := parts[0]
+	versionNumbers := strings.Split(versionPart, ".")
+
+	if len(versionNumbers) != 3 {
+		return -1, -1, -1
+	}
+
+	major, err1 := strconv.Atoi(versionNumbers[0])
+	minor, err2 := strconv.Atoi(versionNumbers[1])
+	patch, err3 := strconv.Atoi(versionNumbers[2])
+
+	if err1 != nil || err2 != nil || err3 != nil {
+		return -1, -1, -1
+	}
+
+	return major, minor, patch
+}
+
+// compareVersions compares two version strings
+// Returns 1 if v1 > v2, -1 if v1 < v2, 0 if equal
+func compareVersions(v1, v2 string) int {
+	maj1, min1, pat1 := parseVersion(v1)
+	maj2, min2, pat2 := parseVersion(v2)
+
+	// If either version is invalid, treat it as lower
+	if maj1 == -1 {
+		if maj2 == -1 {
+			return 0
+		}
+		return -1
+	}
+	if maj2 == -1 {
+		return 1
+	}
+
+	// Compare major version
+	if maj1 != maj2 {
+		if maj1 > maj2 {
+			return 1
+		}
+		return -1
+	}
+
+	// Compare minor version
+	if min1 != min2 {
+		if min1 > min2 {
+			return 1
+		}
+		return -1
+	}
+
+	// Compare patch version
+	if pat1 != pat2 {
+		if pat1 > pat2 {
+			return 1
+		}
+		return -1
+	}
+
+	return 0
+}
+
+// isStableVersion checks if a version is stable (no pre-release identifiers like "testing")
+func isStableVersion(version string) bool {
+	// Remove 'v' prefix if present
+	version = strings.TrimPrefix(version, "v")
+
+	// Convert to lowercase for case-insensitive search
+	lowerVersion := strings.ToLower(version)
+
+	// Check if the version contains "test" (part of "testing", "test", etc.)
+	if strings.Contains(lowerVersion, "test") {
+		return false
+	}
+
+	return true
+}
+
+// GetLatestVersion fetches the latest version information from Docker Hub
+// Returns (latest_stable_version, latest_version_including_testing)
+func GetLatestVersion() (string, string) {
+	// Check if we have cached data that's still fresh
+	if time.Since(lastVersionCheck) < versionCacheDuration && cachedLatestVersion != "" {
+		return cachedLatestVersion, cachedLatestWithTest
+	}
+
+	// Fetch tags from Docker Hub
+	resp, err := http.Get("https://hub.docker.com/v2/repositories/phitux/dailytxt/tags")
+	if err != nil {
+		Logger.Printf("Error fetching Docker Hub tags: %v", err)
+		// Return cached values if available, otherwise empty
+		return cachedLatestVersion, cachedLatestWithTest
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		Logger.Printf("Docker Hub API returned status %d", resp.StatusCode)
+		return cachedLatestVersion, cachedLatestWithTest
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		Logger.Printf("Error reading Docker Hub response: %v", err)
+		return cachedLatestVersion, cachedLatestWithTest
+	}
+
+	var tagsResponse DockerHubTagsResponse
+	if err := json.Unmarshal(body, &tagsResponse); err != nil {
+		Logger.Printf("Error parsing Docker Hub response: %v", err)
+		return cachedLatestVersion, cachedLatestWithTest
+	}
+
+	var latestStable, latestOverall string
+
+	// Process all tags
+	for _, tag := range tagsResponse.Results {
+		tagName := tag.Name
+
+		// Skip non-version tags like "latest"
+		if !strings.Contains(tagName, ".") {
+			continue
+		}
+
+		// Check if this is a valid semver-like version
+		maj, min, pat := parseVersion(tagName)
+		if maj == -1 || min == -1 || pat == -1 {
+			continue
+		}
+
+		// Update latest overall version
+		if latestOverall == "" || compareVersions(tagName, latestOverall) > 0 {
+			latestOverall = tagName
+		}
+
+		// Update latest stable version (only if it's stable)
+		if isStableVersion(tagName) {
+			if latestStable == "" || compareVersions(tagName, latestStable) > 0 {
+				latestStable = tagName
+			}
+		}
+	}
+
+	// Update cache
+	lastVersionCheck = time.Now()
+	cachedLatestVersion = latestStable
+	cachedLatestWithTest = latestOverall
+
+	return latestStable, latestOverall
 }

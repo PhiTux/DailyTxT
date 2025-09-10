@@ -14,6 +14,9 @@ import (
 	"github.com/phitux/dailytxt/backend/utils"
 )
 
+// Application version - UPDATE THIS FOR NEW RELEASES
+const AppVersion = "2.0.0-testing.1"
+
 // longTimeoutEndpoints defines endpoints that need extended timeouts
 var longTimeoutEndpoints = map[string]bool{
 	"/logs/uploadFile":   true,
@@ -42,6 +45,10 @@ func main() {
 	logger := log.New(os.Stdout, "dailytxt: ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 	logger.Println("Server starting...")
 
+	// Set application version
+	utils.SetVersion(AppVersion)
+	logger.Printf("DailyTxT version: %s", AppVersion)
+
 	// Load settings
 	if err := utils.InitSettings(); err != nil {
 		logger.Fatalf("Failed to initialize settings: %v", err)
@@ -52,6 +59,9 @@ func main() {
 
 	// Create a new router
 	mux := http.NewServeMux()
+
+	// Public routes (no authentication required)
+	mux.HandleFunc("GET /version", handlers.GetVersionInfo)
 
 	// Register routes
 	mux.HandleFunc("POST /users/login", handlers.Login)
