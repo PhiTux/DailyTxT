@@ -23,6 +23,7 @@
 	let freeSpace = $state(0);
 	let oldData = $state({});
 	let users = $state([]);
+	let appSettings = $state({});
 	let isLoadingUsers = $state(false);
 	let deleteUserId = $state(null);
 	let isDeletingUser = $state(false);
@@ -83,6 +84,7 @@
 			users = response.data.users || [];
 			freeSpace = response.data.free_space;
 			oldData = response.data.old_data;
+			appSettings = response.data.app_settings || {};
 		} catch (error) {
 			console.error('Error loading users:', error);
 			if (error.response?.status === 401) {
@@ -129,6 +131,7 @@
 		adminPassword = '';
 		adminAuthError = '';
 		users = [];
+		appSettings = {};
 		deleteUserId = null;
 	}
 
@@ -422,6 +425,51 @@
 					</div>
 				</div>
 			{/if}
+
+			<!-- App Settings Card / Environment Variables -->
+			<div class="card mt-4">
+				<div class="card-header">
+					<h4 class="card-title mb-0">⚙️ {$t('settings.admin.environment_variables')}</h4>
+				</div>
+				<div class="card-body">
+					<p class="text-muted mb-3">
+						{$t('settings.admin.environment_variables_description')}
+					</p>
+
+					{#if Object.keys(appSettings).length > 0}
+						<div class="list-group list-group-flush">
+							{#each Object.entries(appSettings) as [key, value]}
+								<div class="list-group-item px-0 py-2">
+									<div class="row">
+										<div class="col-4">
+											<span class="fw-bold text-muted">{key}:</span>
+										</div>
+										<div class="col-8">
+											<span class="font-monospace">
+												{#if Array.isArray(value)}
+													{JSON.stringify(value)}
+												{:else if typeof value === 'boolean'}
+													<span class="badge {value ? 'bg-success' : 'bg-danger'}">
+														{value ? 'true' : 'false'}
+													</span>
+												{:else if key === 'secret_token' && value === ''}
+													<span class="text-muted fst-italic"
+														>{$t('settings.admin.hidden_for_security')}</span
+													>
+												{:else}
+													{value}
+												{/if}
+											</span>
+										</div>
+									</div>
+								</div>
+							{/each}
+						</div>
+					{:else}
+						<p class="text-muted">{$t('settings.admin.no_environment_variables')}</p>
+					{/if}
+				</div>
+			</div>
 
 			<!-- Reload Button moved to bottom -->
 			<div class="mt-4 d-flex justify-content-center">

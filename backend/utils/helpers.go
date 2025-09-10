@@ -121,6 +121,17 @@ func InitSettings() error {
 	return nil
 }
 
+func GetAppSettings() AppSettings {
+	// dont't show secret - remove it!
+	var tempSettings AppSettings
+
+	data, _ := json.Marshal(Settings)
+	json.Unmarshal(data, &tempSettings)
+
+	tempSettings.SecretToken = ""
+	return tempSettings
+}
+
 func GetUserIDByUsername(username string) (int, error) {
 	// Get users
 	users, err := GetUsers()

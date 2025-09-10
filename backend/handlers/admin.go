@@ -121,11 +121,15 @@ func GetAdminData(w http.ResponseWriter, r *http.Request) {
 	// Check for old directory and get old users info
 	oldDirInfo := getOldDirectoryInfo()
 
+	// Get App Settings (Env-vars)
+	appSettings := utils.GetAppSettings()
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]any{
-		"users":      adminUsers,
-		"free_space": freeSpace,
-		"old_data":   oldDirInfo,
+		"users":        adminUsers,
+		"free_space":   freeSpace,
+		"old_data":     oldDirInfo,
+		"app_settings": appSettings,
 	})
 }
 

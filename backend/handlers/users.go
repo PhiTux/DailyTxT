@@ -234,6 +234,11 @@ type RegisterRequest struct {
 // Register handles user registration
 // The API endpoint
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if !utils.Settings.AllowRegistration {
+		http.Error(w, "Registration is not allowed", http.StatusForbidden)
+		return
+	}
+
 	// Parse the request body
 	var req RegisterRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {

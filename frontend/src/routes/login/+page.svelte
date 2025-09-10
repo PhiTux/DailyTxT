@@ -424,6 +424,12 @@
 				</h2>
 				<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#loginAccordion">
 					<div class="accordion-body">
+						<div class="alert alert-info">{$t('login.create_account_info')}</div>
+						{#if !registration_allowed}
+							<div class="alert alert-danger" role="alert">
+								{$t('login.alert.registration_not_allowed')}
+							</div>
+						{/if}
 						<form onsubmit={handleRegister}>
 							<div class="form-floating mb-3">
 								<input
@@ -455,11 +461,7 @@
 								/>
 								<label for="registerPassword2">{$t('login.confirm_password')}</label>
 							</div>
-							{#if !registration_allowed}
-								<div class="alert alert-danger" role="alert">
-									{$t('login.alert.registration_not_allowed')}
-								</div>
-							{/if}
+
 							{#if show_registration_failed_with_message}
 								<div class="alert alert-danger" role="alert">
 									{@html $t('login.alert.registration_failed_with_message', {
