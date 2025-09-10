@@ -87,6 +87,7 @@ func main() {
 	mux.HandleFunc("GET /logs/downloadFile", middleware.RequireAuth(handlers.DownloadFile))
 	mux.HandleFunc("GET /logs/deleteFile", middleware.RequireAuth(handlers.DeleteFile))
 	mux.HandleFunc("POST /logs/renameFile", middleware.RequireAuth(handlers.RenameFile))
+	mux.HandleFunc("POST /logs/reorderFiles", middleware.RequireAuth(handlers.ReorderFiles))
 	mux.HandleFunc("GET /logs/getHistory", middleware.RequireAuth(handlers.GetHistory))
 	mux.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
 	mux.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))

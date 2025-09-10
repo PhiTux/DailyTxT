@@ -888,6 +888,51 @@
 				toast.show();
 			});
 	}
+
+	function reorderFiles(newFileOrder) {
+		// Create mapping of UUID to order
+		const fileOrderMap = {};
+		newFileOrder.forEach((file, index) => {
+			fileOrderMap[file.uuid_filename] = index;
+		});
+
+		// Send to backend
+		axios
+			.post(API_URL + '/logs/reorderFiles', {
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year,
+				file_order: fileOrderMap
+			})
+			.then((response) => {
+				if (response.data.success) {
+					// Update local state
+					filesOfDay = newFileOrder;
+
+					// Update images array - preserve existing properties like src, loading, etc.
+					const newImagesOrder = [];
+					newFileOrder.forEach((file) => {
+						const existingImage = images.find((img) => img.uuid_filename === file.uuid_filename);
+						if (existingImage) {
+							// Preserve existing image properties (src, loading, etc.) and update with new file data
+							newImagesOrder.push({
+								...existingImage, // Keep existing image properties
+								...file // Update with new file data (filename, etc.)
+							});
+						}
+					});
+					images = newImagesOrder;
+				} else {
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorReorderingFiles'));
+					toast.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorReorderingFiles'));
+				toast.show();
+			});
+	}
 </script>
 
 <DatepickerLogic />
@@ -1065,7 +1110,14 @@
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
-				<FileList files={filesOfDay} {downloadFile} {askDeleteFile} {renameFile} deleteAllowed />
+				<FileList
+					files={filesOfDay}
+					{downloadFile}
+					{askDeleteFile}
+					{renameFile}
+					{reorderFiles}
+					deleteAllowed
+				/>
 				{#each uploadingFiles as file}
 					<div>
 						{file.name}
@@ -1107,6 +1159,12 @@
 				<div class="toast-body">
 					{$t('tags.toast.error_removing')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1121,6 +1179,12 @@
 				<div class="toast-body">
 					{$t('tags.toast.error_adding')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1135,6 +1199,12 @@
 				<div class="toast-body">
 					{$t('tags.toast.error_saving')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1149,6 +1219,12 @@
 				<div class="toast-body">
 					{$t('log.toast.error_saving')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1163,6 +1239,12 @@
 				<div class="toast-body">
 					{$t('log.toast.error_loading')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1177,6 +1259,12 @@
 				<div class="toast-body">
 					{$t('files.toast.error_saving')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1191,6 +1279,12 @@
 				<div class="toast-body">
 					{$t('files.toast.error_deleting')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1205,6 +1299,12 @@
 				<div class="toast-body">
 					{$t('files.toast.error_loading')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1219,6 +1319,12 @@
 				<div class="toast-body">
 					{$t('log.toast.error_deleting_day')}
 				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 
@@ -1231,6 +1337,30 @@
 		>
 			<div class="d-flex">
 				<div class="toast-body">{$t('log.toast.error_renaming_file')}</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorReorderingFiles"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">{$t('log.toast.error_reordering_files')}</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
 			</div>
 		</div>
 	</div>

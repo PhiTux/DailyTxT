@@ -1135,3 +1135,134 @@ func RenameFile(w http.ResponseWriter, r *http.Request) {
 	utils.Logger.Printf("File renamed successfully for user %d: %s -> %s", userID, req.UUID, req.NewFilename)
 	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
 }
+
+// ReorderFilesRequest represents the reorder files request body
+type ReorderFilesRequest struct {
+	Day       int            `json:"day"`
+	Month     int            `json:"month"`
+	Year      int            `json:"year"`
+	FileOrder map[string]int `json:"file_order"` // UUID -> order index
+}
+
+// ReorderFiles handles reordering files within a day
+func ReorderFiles(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse request body
+	var req ReorderFilesRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if len(req.FileOrder) == 0 {
+		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
+			"success": false,
+			"message": "File order mapping is required",
+		})
+		return
+	}
+
+	// Get month data
+	content, err := utils.GetMonth(userID, req.Year, req.Month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Find and reorder files for the specific day
+	days, ok := content["days"].([]any)
+	if !ok {
+		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
+			"success": false,
+			"message": "No days found",
+		})
+		return
+	}
+
+	found := false
+	for _, d := range days {
+		day, ok := d.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		dayNum, ok := day["day"].(float64)
+		if !ok || int(dayNum) != req.Day {
+			continue
+		}
+
+		files, ok := day["files"].([]any)
+		if !ok {
+			continue
+		}
+
+		// Create a slice to hold files with their new order
+		type fileWithOrder struct {
+			file  map[string]any
+			order int
+		}
+
+		var orderedFiles []fileWithOrder
+
+		// Assign order to each file
+		for _, f := range files {
+			file, ok := f.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			uuid, ok := file["uuid_filename"].(string)
+			if !ok {
+				continue
+			}
+
+			if order, exists := req.FileOrder[uuid]; exists {
+				orderedFiles = append(orderedFiles, fileWithOrder{file: file, order: order})
+			} else {
+				// Files not in the reorder map get appended at the end
+				orderedFiles = append(orderedFiles, fileWithOrder{file: file, order: len(req.FileOrder)})
+			}
+		}
+
+		// Sort files by their order
+		for i := 0; i < len(orderedFiles)-1; i++ {
+			for j := i + 1; j < len(orderedFiles); j++ {
+				if orderedFiles[i].order > orderedFiles[j].order {
+					orderedFiles[i], orderedFiles[j] = orderedFiles[j], orderedFiles[i]
+				}
+			}
+		}
+
+		// Update the files array with the new order
+		newFiles := make([]any, len(orderedFiles))
+		for i, fileWithOrder := range orderedFiles {
+			newFiles[i] = fileWithOrder.file
+		}
+		day["files"] = newFiles
+
+		found = true
+		break
+	}
+
+	if !found {
+		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
+			"success": false,
+			"message": "Day not found",
+		})
+		return
+	}
+
+	// Save the updated month data
+	if err := utils.WriteMonth(userID, req.Year, req.Month, content); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
+}
