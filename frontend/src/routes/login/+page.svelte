@@ -6,7 +6,7 @@
 	import { goto } from '$app/navigation';
 	import { API_URL } from '$lib/APIurl.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
-	import { loadFlagEmoji } from '$lib/helpers.js';
+	import { isAuthenticated, loadFlagEmoji } from '$lib/helpers.js';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -166,6 +166,7 @@
 
 					handleMigrationProgress(response.data.username);
 				} else {
+					$isAuthenticated = true;
 					localStorage.setItem('user', response.data.username);
 					goto('/write');
 				}

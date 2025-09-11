@@ -21,6 +21,26 @@ function sameDate(date1, date2) {
 	);
 }
 
+export const isAuthenticated = writable(false);
+
+// Function to check if page load authentication is required
+function needsReauthentication() {
+	isAuthenticated.subscribe((value) => {
+		if (value) return false;
+	})
+
+	if (typeof window === 'undefined') return false;
+
+	// Check localStorage for re-auth requirement
+	const requireReauth = localStorage.getItem('requirePasswordOnPageLoad');
+	
+	if (requireReauth !== 'true') {
+		isAuthenticated.set(true);
+	}
+
+	return requireReauth === 'true';
+}
+
 function generateNeonMesh(dark) {
 	/* const baseColors = ['#ff00ff', '#00ffff', '#ffea00', '#ff0080', '#00ff80', '#ff4500']; */
 	const baseColors = ["#ff00ff", "#00ffff", "#ffea00", "#ff0080", "#00ff80", "#ff4500",
@@ -56,7 +76,7 @@ function loadFlagEmoji(language) {
 	return json[language] || '';
 }
 
-export { formatBytes, sameDate, loadFlagEmoji, generateNeonMesh };
+export { formatBytes, sameDate, needsReauthentication, generateNeonMesh, loadFlagEmoji };
 
 export let alwaysShowSidenav = writable(true);
 

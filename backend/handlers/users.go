@@ -439,6 +439,7 @@ func GetDefaultSettings() map[string]any {
 		"monochromeBackgroundColor":  "#ececec",
 		"checkForUpdates":            true,
 		"includeTestVersions":        false,
+		"requirePasswordOnPageLoad":  false,
 	}
 }
 
@@ -1143,5 +1144,35 @@ func ChangeUsername(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"success":                true,
 		"available_backup_codes": availableBackupCodes,
+	})
+}
+
+// ValidatePasswordRequest represents the validate password request body
+type ValidatePasswordRequest struct {
+	Password string `json:"password"`
+}
+
+// ValidatePassword validates the user's password for re-authentication
+func ValidatePassword(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Parse the request body
+	var req ValidatePasswordRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	// Validate password using the same method as login
+	derived_key, available_backup_codes, _ := utils.CheckPasswordForUser(userID, req.Password)
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"valid":                  derived_key != "",
+		"available_backup_codes": available_backup_codes,
 	})
 }

@@ -2,7 +2,7 @@
 	import * as bootstrap from 'bootstrap';
 	import Fa from 'svelte-fa';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import {
 		readingMode,
 		settings,
@@ -12,7 +12,13 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
-	import { alwaysShowSidenav, generateNeonMesh, loadFlagEmoji } from '$lib/helpers.js';
+	import {
+		alwaysShowSidenav,
+		generateNeonMesh,
+		loadFlagEmoji,
+		needsReauthentication,
+		isAuthenticated
+	} from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
 		faRightFromBracket,
@@ -112,7 +118,22 @@
 		}
 	});
 
+	onDestroy(() => {
+		$isAuthenticated = false;
+	});
+
 	onMount(() => {
+		let needsReauth = needsReauthentication();
+
+		// Check if re-authentication is needed FIRST
+		if (!$isAuthenticated && needsReauth) {
+			// Save current route for return after reauth
+			localStorage.setItem('returnAfterReauth', window.location.pathname);
+			goto('/reauth');
+			return; // Stop further initialization
+		}
+
+		// Normal initialization only if authenticated
 		getUserSettings();
 		getTemplates();
 		getVersionInfo();
@@ -323,6 +344,13 @@
 				$settings = response.data;
 				$tempSettings = JSON.parse(JSON.stringify($settings));
 				aLookBackYears = $settings.aLookBackYears.toString();
+
+				// Save re-auth setting to localStorage for immediate availability
+				localStorage.setItem(
+					'requirePasswordOnPageLoad',
+					$settings.requirePasswordOnPageLoad.toString()
+				);
+
 				updateLanguage();
 
 				// set background
@@ -435,6 +463,12 @@
 			.then((response) => {
 				if (response.data.success) {
 					$settings = $tempSettings;
+
+					// Save re-auth setting to localStorage for immediate availability
+					localStorage.setItem(
+						'requirePasswordOnPageLoad',
+						$tempSettings.requirePasswordOnPageLoad.toString()
+					);
 
 					// update language
 					updateLanguage();
@@ -1512,11 +1546,25 @@
 										</div>
 									</div>
 									<div id="loginonreload">
-										<h5>Login bei Reload</h5>
-										Bla<br />
-										blub <br />
-										bla <br />
-										blub <br />
+										{#if $tempSettings.requirePasswordOnPageLoad !== $settings.requirePasswordOnPageLoad}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>🔒 {$t('settings.reauth.title')}</h5>
+										{$t('settings.reauth.description')}
+
+										<div class="form-check form-switch mt-2">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.requirePasswordOnPageLoad}
+												type="checkbox"
+												role="switch"
+												id="requirePasswordOnPageLoadSwitch"
+											/>
+											<label class="form-check-label" for="requirePasswordOnPageLoadSwitch">
+												{$t('settings.reauth.label')}
+											</label>
+										</div>
 									</div>
 								</div>
 

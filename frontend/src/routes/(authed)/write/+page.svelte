@@ -32,7 +32,7 @@
 	import { formatBytes, alwaysShowSidenav, sameDate } from '$lib/helpers.js';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
-	import { templates, insertTemplate } from '$lib/templateStore';
+	import { insertTemplate } from '$lib/templateStore';
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
 	import { T, getTranslate } from '@tolgee/svelte';
@@ -242,7 +242,8 @@
 	let aLookBack = $state([]);
 
 	function getALookBack() {
-		if (!$settings.useALookBack) {
+		// Skip if settings not loaded yet
+		if (!$settings || $settings.useALookBack === undefined || !$settings.useALookBack) {
 			aLookBack = [];
 			return;
 		}
@@ -263,6 +264,13 @@
 				console.error(error);
 			});
 	}
+
+	// Re-trigger aLookBack when settings are loaded/changed
+	$effect(() => {
+		if ($settings && $settings.useALookBack !== undefined) {
+			getALookBack();
+		}
+	});
 
 	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
 	//TODO: support svg? -> minsize is necessary...

@@ -8,7 +8,7 @@
 	import { onMount } from 'svelte';
 	import * as bootstrap from 'bootstrap';
 	import Tag from './Tag.svelte';
-	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
+	import { isAuthenticated, offcanvasIsOpen, sameDate } from '$lib/helpers.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import axios from 'axios';
 	import { cal } from '$lib/calendarStore.js';
@@ -58,7 +58,7 @@
 	}
 
 	$effect(() => {
-		if (window.location.href) {
+		if ($isAuthenticated && window.location.href) {
 			setTimeout(() => {
 				oc = document.querySelector('.offcanvas');
 				oc.addEventListener('hidden.bs.offcanvas', () => {

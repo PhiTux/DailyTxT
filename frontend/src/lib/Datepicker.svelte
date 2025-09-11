@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
-	import { offcanvasIsOpen, sameDate } from '$lib/helpers.js';
+	import { offcanvasIsOpen, sameDate, isAuthenticated } from '$lib/helpers.js';
 	import { getTranslate } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
@@ -88,7 +88,7 @@
 	};
 
 	$effect(() => {
-		if (window.location.href) {
+		if ($isAuthenticated && window.location.href) {
 			setTimeout(() => {
 				oc = document.querySelector('.offcanvas');
 				oc.addEventListener('hidden.bs.offcanvas', () => {

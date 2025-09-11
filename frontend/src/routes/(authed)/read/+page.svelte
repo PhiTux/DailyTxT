@@ -13,7 +13,7 @@
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, needsReauthentication, isAuthenticated } from '$lib/helpers.js';
 	import { getTranslate } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
@@ -34,6 +34,10 @@
 	let observer;
 
 	onMount(() => {
+		/* if (!$isAuthenticated && needsReauthentication()) {
+			return;
+		} */
+
 		loadMonthForReading();
 
 		// Highlights automatically the day in the calendar, when the log is in the viewport
