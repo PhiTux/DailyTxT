@@ -3,8 +3,6 @@
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 	import { API_URL } from '$lib/APIurl.js';
-	import Fa from 'svelte-fa';
-	import { faLock } from '@fortawesome/free-solid-svg-icons';
 	import { generateNeonMesh, isAuthenticated } from '$lib/helpers';
 	import { getTranslate } from '@tolgee/svelte';
 	import logo from '$lib/assets/locked_heart_with_keyhole.svg';

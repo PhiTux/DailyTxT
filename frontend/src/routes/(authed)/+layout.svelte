@@ -367,6 +367,15 @@
 			});
 	}
 
+	let darkMode = $derived.by(() => {
+		if ($settings.darkModeAutoDetect) {
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			return prefersDark;
+		} else {
+			return $settings.useDarkMode;
+		}
+	});
+
 	let aLookBackYearsInvalid = $state(false);
 	// check if aLookBackYears is valid
 	$effect(() => {
@@ -444,7 +453,8 @@
 			document.body.style.backgroundColor = $settings.monochromeBackgroundColor;
 		} else if ($settings.background === 'gradient') {
 			document.body.style.backgroundColor = '';
-			generateNeonMesh();
+			console.log(darkMode);
+			generateNeonMesh(darkMode);
 		}
 	}
 
