@@ -7,7 +7,8 @@
 		readingMode,
 		settings,
 		tempSettings,
-		autoLoadImagesThisDevice
+		autoLoadImagesThisDevice,
+		darkMode
 	} from '$lib/settingsStore.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags } from '$lib/tagStore.js';
@@ -367,15 +368,6 @@
 			});
 	}
 
-	let darkMode = $derived.by(() => {
-		if ($settings.darkModeAutoDetect) {
-			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			return prefersDark;
-		} else {
-			return $settings.useDarkMode;
-		}
-	});
-
 	let aLookBackYearsInvalid = $state(false);
 	// check if aLookBackYears is valid
 	$effect(() => {
@@ -453,8 +445,7 @@
 			document.body.style.backgroundColor = $settings.monochromeBackgroundColor;
 		} else if ($settings.background === 'gradient') {
 			document.body.style.backgroundColor = '';
-			console.log(darkMode);
-			generateNeonMesh(darkMode);
+			generateNeonMesh($darkMode);
 		}
 	}
 

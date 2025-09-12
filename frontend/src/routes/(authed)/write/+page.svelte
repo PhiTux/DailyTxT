@@ -759,7 +759,6 @@
 			})
 			.finally(() => {
 				// close modal
-
 				isSavingNewTag = false;
 			});
 	}

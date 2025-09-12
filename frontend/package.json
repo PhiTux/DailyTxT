@@ -32,6 +32,7 @@
 		"vite": "^5.0.3"
 	},
 	"dependencies": {
+		"@emoji-mart/data": "^1.2.1",
 		"@fortawesome/free-solid-svg-icons": "^6.7.2",
 		"@popperjs/core": "^2.11.8",
 		"@tolgee/format-icu": "^6.2.7",
@@ -39,7 +40,7 @@
 		"axios": "^1.7.8",
 		"bootstrap": "^5.3.3",
 		"dayjs": "^1.11.13",
-		"emoji-picker-element": "^1.26.1",
+		"emoji-mart": "^5.6.0",
 		"marked": "^15.0.6",
 		"svelte-multiselect": "^11.1.1",
 		"svelte-outside": "^0.0.3",

@@ -1,10 +1,10 @@
 <script>
 	import * as bootstrap from 'bootstrap';
 	import Tag from './Tag.svelte';
-	import { Picker } from 'emoji-picker-element';
 	import Fa from 'svelte-fa';
 	import { faTrash } from '@fortawesome/free-solid-svg-icons';
 	import { getTranslate } from '@tolgee/svelte';
+	import EmojiMart from './EmojiMart.svelte';
 
 	const { t } = getTranslate();
 
@@ -17,10 +17,13 @@
 	} = $props();
 
 	let modalElement;
+	let tooltipElement;
 
 	function open() {
 		// hide tag picker
-		document.querySelector('.tooltip').classList.remove('shown');
+		if (tooltipElement) {
+			tooltipElement.classList.remove('shown');
+		}
 
 		let modal = new bootstrap.Modal(modalElement);
 		modal.show();
@@ -35,21 +38,16 @@
 
 	let pickerShown = $state(false);
 	function togglePicker() {
-		document.querySelector('.tooltip').classList.toggle('shown');
-		pickerShown = document.querySelector('.tooltip').classList.contains('shown');
+		if (tooltipElement) {
+			tooltipElement.classList.toggle('shown');
+			pickerShown = tooltipElement.classList.contains('shown');
+		}
 	}
 
 	function emojiSelected(ev) {
-		editTag.icon = ev.detail.unicode;
+		editTag.icon = ev.native;
 		togglePicker();
 	}
-
-	window.addEventListener('freeze', () => {
-		const picker = document.querySelector('emoji-picker');
-		if (picker?.database?.close) {
-			picker.database.close();
-		}
-	});
 </script>
 
 <div bind:this={modalElement} class="modal fade" id="modalTag" tabindex="-1">
@@ -99,9 +97,8 @@
 							{/if}
 							{$t('modal.tag.select_emoji')}
 						</button>
-						<div class="tooltip" role="tooltip">
-							<emoji-picker class="emojiPicker" onemoji-click={(ev) => emojiSelected(ev)}
-							></emoji-picker>
+						<div class="tooltip" role="tooltip" bind:this={tooltipElement}>
+							<EmojiMart select={emojiSelected} />
 						</div>
 					</div>
 				</div>
@@ -175,7 +172,7 @@
 		z-index: 1000;
 	}
 
-	.emojiPicker {
+	:global(em-emoji-picker) {
 		position: absolute;
 		z-index: 1000;
 	}
