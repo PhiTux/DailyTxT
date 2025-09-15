@@ -124,7 +124,6 @@
 	}
 
 	.container-fluid {
-		/* background: linear-gradient(135deg, #899cf1 0%, #a24b4b 100%); */
 		min-height: 100vh;
 	}
 

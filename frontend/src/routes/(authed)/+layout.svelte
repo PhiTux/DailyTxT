@@ -43,6 +43,7 @@
 	import Admin from '$lib/settings/Admin.svelte';
 	import { T, getTranslate, getTolgee } from '@tolgee/svelte';
 	import github from '$lib/assets/GitHub-Logo.png';
+	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
 	import donate from '$lib/assets/bmc-button.png';
 
 	const { t } = getTranslate();
@@ -1049,8 +1050,11 @@
 				</div>
 			</div>
 
-			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
-				Center-LOGO
+			<div class=" col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
+				<div class="full-logo d-flex align-items-center">
+					<img src={dailytxt} alt="" height="38px" />
+					<span class="dailytxt ms-2">DailyTxT</span>
+				</div>
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
@@ -2476,6 +2480,42 @@
 </div>
 
 <style>
+	.dailytxt {
+		color: #f57c00;
+		font-size: 1.8rem;
+		font-weight: 500;
+		line-height: 1rem;
+		position: relative;
+		text-decoration: none;
+		transition: color 0.3s ease;
+	}
+
+	.dailytxt::after {
+		content: '';
+		position: absolute;
+		bottom: -9px;
+		left: 50%;
+		width: 0;
+		height: 2px;
+		background-color: #0d6efd;
+		transform: translateX(-50%);
+		transition: width 0.3s ease;
+		z-index: -1;
+	}
+
+	.full-logo:hover > .dailytxt::after {
+		width: 100%;
+	}
+
+	img {
+		transition: 0.3s ease;
+	}
+
+	.full-logo:hover > img {
+		transform: scale(1.15);
+		filter: drop-shadow(0px 0px 4px #4891ff);
+	}
+
 	.tagAlert {
 		margin-bottom: 0 !important;
 	}
