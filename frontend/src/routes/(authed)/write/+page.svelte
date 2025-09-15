@@ -416,6 +416,104 @@
 	}
 
 	let uploadingFiles = $state([]);
+	let isDragOver = $state(false);
+	let dragCounter = $state(0); // Track drag enter/leave events
+	let draggedFileCount = $state(0); // Store file count during drag
+
+	// Drag and drop handlers
+	function handleDragEnter(event) {
+		event.preventDefault();
+
+		// Check if dragging files, not text or other content
+		if (!hasFiles(event.dataTransfer)) {
+			return;
+		}
+
+		dragCounter++;
+		if (dragCounter === 1) {
+			isDragOver = true;
+			// Try to get file count
+			extractDragInfo(event);
+		}
+	}
+
+	function handleDragLeave(event) {
+		event.preventDefault();
+
+		// Only handle if we're actually dragging files
+		if (!isDragOver) return;
+
+		dragCounter--;
+		if (dragCounter === 0) {
+			isDragOver = false;
+			draggedFileCount = 0;
+		}
+	}
+
+	function handleDragOver(event) {
+		event.preventDefault();
+
+		// Check if dragging files, not text or other content
+		if (!hasFiles(event.dataTransfer)) {
+			return;
+		}
+
+		event.dataTransfer.dropEffect = 'copy';
+		// Try again if we haven't got info yet
+		if (draggedFileCount === 0) {
+			extractDragInfo(event);
+		}
+	}
+
+	function hasFiles(dataTransfer) {
+		// Check if dataTransfer contains files
+		return (
+			dataTransfer.types &&
+			(dataTransfer.types.includes('Files') ||
+				dataTransfer.types.includes('application/x-moz-file') ||
+				(dataTransfer.items && Array.from(dataTransfer.items).some((item) => item.kind === 'file')))
+		);
+	}
+
+	function extractDragInfo(event) {
+		// Double-check that we have files
+		if (!hasFiles(event.dataTransfer)) {
+			return;
+		}
+
+		const items = event.dataTransfer.items;
+		if (items && items.length > 0) {
+			let fileCount = 0;
+
+			for (let i = 0; i < items.length; i++) {
+				const item = items[i];
+				if (item.kind === 'file') {
+					fileCount++;
+				}
+			}
+
+			if (fileCount > 0) {
+				draggedFileCount = fileCount;
+			}
+		}
+	}
+
+	function handleDrop(event) {
+		event.preventDefault();
+
+		// Reset drag state
+		isDragOver = false;
+		dragCounter = 0;
+		draggedFileCount = 0;
+
+		// Check if we actually have files to upload
+		const files = event.dataTransfer.files;
+		if (files && files.length > 0) {
+			for (let i = 0; i < files.length; i++) {
+				uploadFile(files[i]);
+			}
+		}
+	}
 
 	function uploadFile(f) {
 		let uuid = uuidv4();
@@ -943,7 +1041,33 @@
 </script>
 
 <DatepickerLogic />
-<svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
+<svelte:window
+	onkeydown={on_key_down}
+	onkeyup={on_key_up}
+	ondragenter={handleDragEnter}
+	ondragleave={handleDragLeave}
+	ondragover={handleDragOver}
+	ondrop={handleDrop}
+/>
+
+<!-- Drag and Drop Overlay -->
+{#if isDragOver}
+	<div class="drag-drop-overlay" transition:fade={{ duration: 150 }}>
+		<div class="drag-drop-content">
+			<Fa icon={faCloudArrowUp} size="3x" class="mb-3" />
+			<h3>{$t('files.drop.title')}</h3>
+
+			<div class="dragged-files-preview">
+				<p class="files-count">
+					🎯 {$t('files.drop.ready_to_upload', { count: draggedFileCount })}
+				</p>
+				<div class="file-drop-info">
+					<p class="drop-instruction">{$t('files.drop.release_to_upload')}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <!-- shown on small Screen, when triggered -->
 <div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">
@@ -1110,10 +1234,31 @@
 
 			<div class="files d-flex flex-column glass">
 				<button
-					class="btn btn-secondary {filesOfDay?.length > 0 ? 'mb-2' : ''}"
+					class="btn btn-secondary upload-btn {filesOfDay?.length > 0 ? 'mb-2' : ''}"
 					id="uploadBtn"
 					onclick={triggerFileInput}
-					><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />{$t('files.upload')}</button
+					ondragenter={(e) => {
+						e.preventDefault();
+						e.currentTarget.classList.add('drag-hover');
+					}}
+					ondragleave={(e) => {
+						e.preventDefault();
+						e.currentTarget.classList.remove('drag-hover');
+					}}
+					ondragover={(e) => {
+						e.preventDefault();
+						e.dataTransfer.dropEffect = 'copy';
+					}}
+					ondrop={(e) => {
+						e.preventDefault();
+						e.currentTarget.classList.remove('drag-hover');
+						const files = e.dataTransfer.files;
+						if (files && files.length > 0) {
+							for (let i = 0; i < files.length; i++) {
+								uploadFile(files[i]);
+							}
+						}
+					}}><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />{$t('files.upload')}</button
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
@@ -1779,5 +1924,80 @@
 		max-width: 400px; */
 		width: 400px;
 		padding-right: 2rem;
+	}
+
+	/* Drag and Drop Styles */
+	.drag-drop-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background-color: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(4px);
+		z-index: 9999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		pointer-events: none;
+	}
+
+	.drag-drop-content {
+		text-align: center;
+		color: white;
+		background-color: rgba(255, 255, 255, 0.1);
+		border: 2px dashed rgba(255, 255, 255, 0.5);
+		border-radius: 20px;
+		padding: 3rem;
+		max-width: 600px;
+		max-height: 80vh;
+		overflow-y: auto;
+	}
+
+	.drag-drop-content h3 {
+		margin-bottom: 1rem;
+		font-size: 2rem;
+	}
+
+	.drag-drop-content p {
+		font-size: 1.2rem;
+		opacity: 0.9;
+	}
+
+	.dragged-files-preview {
+		margin-top: 1.5rem;
+		text-align: center;
+	}
+
+	.files-count {
+		font-size: 1.3rem;
+		margin-bottom: 1rem;
+		font-weight: 500;
+		color: #90ee90;
+	}
+
+	.file-drop-info {
+		background-color: rgba(0, 0, 0, 0.2);
+		border-radius: 10px;
+		padding: 1rem;
+		margin-top: 1rem;
+	}
+
+	.drop-instruction {
+		font-size: 1.1rem;
+		margin: 0;
+		opacity: 0.9;
+	}
+
+	:global(.upload-btn.drag-hover) {
+		background-color: #198754 !important;
+		border-color: #198754 !important;
+		transform: scale(1.05);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.upload-btn {
+		transition: all 0.2s ease;
+		border: 2px dashed transparent;
 	}
 </style>
