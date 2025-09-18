@@ -1053,7 +1053,7 @@
 			<div class=" col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
 				<div class="full-logo d-flex align-items-center">
 					<img src={dailytxt} alt="" height="38px" />
-					<span class="dailytxt ms-2">DailyTxT</span>
+					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
 			</div>
 
@@ -1945,7 +1945,10 @@
 										{/if}
 										{#if changingPasswordSuccess}
 											<div class="alert alert-success mt-2" role="alert" transition:slide>
-												{@html $t('settings.password.success')}
+												{$t('settings.password.success')}
+											</div>
+											<div class="alert alert-danger mt-2" role="alert" transition:slide>
+												{$t('settings.password.success_backup_codes_warning')}
 											</div>
 										{/if}
 										{#if changingPasswordIncorrect}

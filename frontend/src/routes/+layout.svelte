@@ -120,7 +120,9 @@
 				aria-atomic="true"
 			>
 				<div class="d-flex">
-					<div class="toast-body">Noch {available_backup_codes} Backup-Codes verfügbar!</div>
+					<div class="toast-body">
+						{tolgee.t('toast.password.available_backup_codes', { count: available_backup_codes })}
+					</div>
 					<button
 						type="button"
 						class="btn-close me-2 m-auto"
@@ -134,6 +136,10 @@
 </main>
 
 <style>
+	:global(.toast-container) {
+		z-index: 9999;
+	}
+
 	main {
 		height: 100vh;
 	}
@@ -150,17 +156,26 @@
 		height: 100%;
 	}
 
+	:global(.modal.show) {
+		background-color: rgba(0, 0, 0, 0.3) !important;
+	}
+
+	:global(.modal-content) {
+		backdrop-filter: blur(20px) saturate(150%);
+		background-color: rgba(83, 83, 83, 0.85) !important;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: #ececec;
+	}
+
 	:global(.glass) {
-		backdrop-filter: blur(12px) saturate(130%);
-		/* background-color: rgba(219, 219, 219, 0.45); */
-		background-color: rgba(83, 83, 83, 0.73);
+		backdrop-filter: blur(14px) saturate(130%);
+		background-color: rgba(83, 83, 83, 0.8);
 		border: 1px solid #62626278;
 		color: #ececec;
 	}
 
 	:global(.glassLight) {
 		backdrop-filter: blur(8px) saturate(130%);
-		/* background-color: rgba(219, 219, 219, 0.45); */
 		background-color: rgba(83, 83, 83, 0.445);
 		border: 1px solid #62626278;
 		color: #ececec;

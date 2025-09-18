@@ -191,14 +191,4 @@
 	.removeBtn:hover {
 		color: #dc3545;
 	}
-
-	:global(.modal.show) {
-		background-color: rgba(80, 80, 80, 0.1) !important;
-		backdrop-filter: blur(2px) saturate(150%);
-	}
-
-	.modal-content {
-		backdrop-filter: blur(8px) saturate(150%);
-		background-color: rgba(219, 219, 219, 0.45);
-	}
 </style>
