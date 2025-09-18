@@ -1067,6 +1067,16 @@ func ChangeUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check password
+	derivedKey, availableBackupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
+	if err != nil || len(derivedKey) == 0 {
+		utils.JSONResponse(w, http.StatusOK, map[string]any{
+			"success":            false,
+			"password_incorrect": true,
+		})
+		return
+	}
+
 	// Get users
 	users, err := utils.GetUsers()
 	if err != nil {
@@ -1105,16 +1115,6 @@ func ChangeUsername(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
-	}
-
-	// check password
-	derivedKey, availableBackupCodes, err := utils.CheckPasswordForUser(userID, req.Password)
-	if err != nil || len(derivedKey) == 0 {
-		utils.JSONResponse(w, http.StatusOK, map[string]any{
-			"success":            false,
-			"password_incorrect": true,
-		})
-		return
 	}
 
 	// Update username
