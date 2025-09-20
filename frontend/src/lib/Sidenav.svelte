@@ -263,7 +263,7 @@
 	<div class="search d-flex flex-column">
 		<form onsubmit={searchForString} class="input-group">
 			<button
-				class="btnSearchPopover btn btn-outline-secondary glassLight"
+				class="btnSearchPopover btn btn-outline-secondary glass"
 				data-bs-toggle="popover"
 				data-bs-title="Suche"
 				data-bs-content={$t('search.description')}
@@ -303,7 +303,7 @@
 						setTimeout(() => (showTagDropdown = false), 150);
 					}}
 				/>
-				<button class="btn btn-outline-secondary glassLight" type="submit" id="search-button">
+				<button class="btn btn-outline-secondary glass" type="submit" id="search-button">
 					{#if $isSearching}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
 					{:else}
@@ -336,7 +336,7 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="list-group flex-grow-1 mb-2 glassLight">
+		<div class="list-group flex-grow-1 mb-2 glass">
 			{#if $searchResults.length > 0}
 				{#each $searchResults as result}
 					<button
@@ -426,10 +426,17 @@
 	.noResult {
 		font-size: 25pt;
 		font-weight: 750;
-		color: #ccc;
 		text-align: center;
 		padding: 1rem;
 		user-select: none;
+	}
+
+	:global(body[data-bs-theme='dark']) .noResult {
+		color: #757575;
+	}
+
+	:global(body[data-bs-theme='light']) .noResult {
+		color: #cccccc;
 	}
 
 	:global(.popover-body > span) {

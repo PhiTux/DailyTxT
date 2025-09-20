@@ -61,6 +61,72 @@
 	// Active sub-view of settings modal: 'settings' | 'stats' | 'admin'
 	let activeSettingsView = $state('settings');
 
+	// References for sliding indicator
+	let settingsTabGroup;
+	let settingsButton;
+	let statsButton;
+	let adminButton;
+
+	// Calculate slide offset and width for the indicator
+	function getSlideOffset(activeView) {
+		if (!settingsTabGroup || !settingsButton) return 0;
+
+		const container = settingsTabGroup;
+		const containerRect = container.getBoundingClientRect();
+
+		let activeButton;
+		switch (activeView) {
+			case 'settings':
+				activeButton = settingsButton;
+				break;
+			case 'stats':
+				activeButton = statsButton;
+				break;
+			case 'admin':
+				activeButton = adminButton;
+				break;
+			default:
+				activeButton = settingsButton;
+		}
+
+		if (!activeButton) return 0;
+
+		const buttonRect = activeButton.getBoundingClientRect();
+		// Add the container's scrollLeft to account for horizontal scrolling
+		return buttonRect.left - containerRect.left + container.scrollLeft;
+	}
+
+	function getSlideWidth(activeView) {
+		let activeButton;
+		switch (activeView) {
+			case 'settings':
+				activeButton = settingsButton;
+				break;
+			case 'stats':
+				activeButton = statsButton;
+				break;
+			case 'admin':
+				activeButton = adminButton;
+				break;
+			default:
+				activeButton = settingsButton;
+		}
+
+		return activeButton ? activeButton.offsetWidth : 0;
+	}
+
+	// Force indicator update when activeSettingsView changes or when modal is shown
+	let indicatorNeedsUpdate = $state(0);
+
+	/* $effect(() => {
+		// Trigger when activeSettingsView changes
+		activeSettingsView;
+		// Trigger a re-render to update indicator position
+		setTimeout(() => {
+			indicatorNeedsUpdate++;
+		}, 10);
+	}); */
+
 	// Function to compare version strings (semver-like)
 	function compareVersions(v1, v2) {
 		if (!v1 || !v2) return 0;
@@ -319,6 +385,10 @@
 				activeSettingsSection = 'appearance';
 				// Short timeout to allow layout calculation before reading offsets
 				setTimeout(initSettingsScrollSpy, 100);
+				// Update indicator position after modal is fully shown
+				setTimeout(() => {
+					indicatorNeedsUpdate++;
+				}, 50);
 			}
 		};
 		modalEl.addEventListener('shown.bs.modal', onShown);
@@ -1107,21 +1177,32 @@
 		class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-sm-down"
 	>
 		<!--  -->
-		<div class="modal-content shadow-lg glass">
+		<div class="modal-content shadow-lg glass glass-modal">
 			<div class="modal-header flex-wrap gap-2">
 				<div class="d-flex w-100 align-items-center">
 					<div
-						class="btn-group flex-grow-1 overflow-auto"
+						class="btn-group flex-grow-1 overflow-auto position-relative"
+						id="settingsTabGroup"
 						role="group"
 						aria-label="Settings views"
 						style="scrollbar-width: none; -ms-overflow-style: none;"
+						bind:this={settingsTabGroup}
 					>
+						<!-- Sliding indicator -->
+						<div
+							class="sliding-indicator"
+							style="transform: translateX({indicatorNeedsUpdate &&
+								getSlideOffset(activeSettingsView)}px); width: {indicatorNeedsUpdate &&
+								getSlideWidth(activeSettingsView)}px;"
+						></div>
+
 						<button
 							type="button"
 							class="btn btn-outline-primary flex-shrink-0 {activeSettingsView === 'settings'
 								? 'active'
 								: ''}"
 							onclick={switchToSettingsTab}
+							bind:this={settingsButton}
 						>
 							{$t('settings.title')}
 						</button>
@@ -1131,6 +1212,7 @@
 								? 'active'
 								: ''}"
 							onclick={switchToStatsTab}
+							bind:this={statsButton}
 						>
 							{$t('settings.statistics.title')}
 						</button>
@@ -1140,6 +1222,7 @@
 								? 'active'
 								: ''}"
 							onclick={switchToAdminTab}
+							bind:this={adminButton}
 						>
 							{$t('settings.admin.title')}
 						</button>
@@ -1167,42 +1250,51 @@
 											? 'active'
 											: ''}"
 										onclick={() => scrollToSection('appearance')}
-										>{$t('settings.appearance')}</button
+										>🎨 {$t('settings.appearance')}</button
 									>
 									<button
 										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'functions'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('functions')}>{$t('settings.functions')}</button
+										onclick={() => scrollToSection('functions')}
+										>🛠️ {$t('settings.functions')}</button
 									>
 									<button
 										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'tags'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('tags')}>{$t('settings.tags')}</button
+										onclick={() => scrollToSection('tags')}>#️⃣ {$t('settings.tags')}</button
 									>
 									<button
 										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'templates'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('templates')}>{$t('settings.templates')}</button
+										onclick={() => scrollToSection('templates')}
+										>📝 {$t('settings.templates')}</button
 									>
 									<button
 										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'data'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('data')}>{$t('settings.data')}</button
+										onclick={() => scrollToSection('data')}>📁 {$t('settings.data')}</button
 									>
 									<button
 										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'security'
 											? 'active'
 											: ''}"
-										onclick={() => scrollToSection('security')}>{$t('settings.security')}</button
+										onclick={() => scrollToSection('security')}>🔒 {$t('settings.security')}</button
+									>
+									<button
+										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'account'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('account')}>👤 {$t('settings.account')}</button
 									>
 									<button
 										type="button"
@@ -1211,7 +1303,7 @@
 											: ''}"
 										onclick={() => scrollToSection('about')}
 									>
-										{$t('settings.about')}
+										💡 {$t('settings.about')}
 										{#if updateAvailable}
 											<Fa icon={faCircleUp} size="1.2x" class="text-info" />
 										{/if}
@@ -1550,27 +1642,6 @@
 											</div>
 										</div>
 									</div>
-									<div id="loginonreload">
-										{#if $tempSettings.requirePasswordOnPageLoad !== $settings.requirePasswordOnPageLoad}
-											{@render unsavedChanges()}
-										{/if}
-
-										<h5>🔒 {$t('settings.reauth.title')}</h5>
-										{$t('settings.reauth.description')}
-
-										<div class="form-check form-switch mt-2">
-											<input
-												class="form-check-input"
-												bind:checked={$tempSettings.requirePasswordOnPageLoad}
-												type="checkbox"
-												role="switch"
-												id="requirePasswordOnPageLoadSwitch"
-											/>
-											<label class="form-check-label" for="requirePasswordOnPageLoadSwitch">
-												{$t('settings.reauth.label')}
-											</label>
-										</div>
-									</div>
 								</div>
 
 								<div id="tags">
@@ -1886,7 +1957,6 @@
 											{/if}
 										</button>
 									</div>
-									<div><h5>Import</h5></div>
 								</div>
 
 								<div id="security">
@@ -2017,6 +2087,32 @@
 											</div>
 										{/if}
 									</div>
+									<div id="loginonreload">
+										{#if $tempSettings.requirePasswordOnPageLoad !== $settings.requirePasswordOnPageLoad}
+											{@render unsavedChanges()}
+										{/if}
+
+										<h5>{$t('settings.reauth.title')}</h5>
+										{$t('settings.reauth.description')}
+
+										<div class="form-check form-switch mt-2">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.requirePasswordOnPageLoad}
+												type="checkbox"
+												role="switch"
+												id="requirePasswordOnPageLoadSwitch"
+											/>
+											<label class="form-check-label" for="requirePasswordOnPageLoadSwitch">
+												{$t('settings.reauth.label')}
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<div id="account">
+									<h3 class="text-primary">👤 {$t('settings.account')}</h3>
+
 									<div>
 										<h5>{$t('settings.change_username')}</h5>
 										<div class="form-text">
@@ -2082,6 +2178,7 @@
 											</div>
 										{/if}
 									</div>
+
 									<div>
 										<h5>{$t('settings.delete_account')}</h5>
 										<p>
@@ -2483,6 +2580,25 @@
 </div>
 
 <style>
+	#settingsTabGroup > button {
+		transition: text-decoration 0.3s ease;
+	}
+	:global(body[data-bs-theme='dark']) #settingsTabGroup > button {
+		color: white;
+	}
+	:global(body[data-bs-theme='light']) #settingsTabGroup > button {
+		color: black;
+	}
+
+	#settingsTabGroup > button.active {
+		text-decoration-color: #f57c00;
+		text-decoration-thickness: 3px;
+	}
+
+	:global(body[data-bs-theme='light']) #settingsTabGroup {
+		background-color: #b8b8b8;
+	}
+
 	.dailytxt {
 		color: #f57c00;
 		font-size: 1.8rem;
@@ -2572,6 +2688,7 @@
 		border-top-right-radius: 10px;
 		padding-left: 0.5rem;
 		margin-bottom: 0.5rem;
+		color: black;
 	}
 
 	.unsaved-changes::before {
@@ -2598,10 +2715,15 @@
 	}
 
 	#settings-content > div > div {
-		background-color: #bdbdbd5d;
 		padding: 0.5rem;
 		border-radius: 10px;
 		margin-bottom: 1rem;
+	}
+	:global(body[data-bs-theme='dark']) #settings-content > div > div {
+		background-color: #8080805d;
+	}
+	:global(body[data-bs-theme='light']) #settings-content > div > div {
+		background-color: #dfdfdf5d;
 	}
 
 	h3.text-primary {
@@ -2626,11 +2748,11 @@
 	}
 
 	.modal-header {
-		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+		border-bottom: none;
 	}
 
 	.modal-footer {
-		border-top: 1px solid rgba(255, 255, 255, 0.2);
+		border-top: none;
 	}
 
 	/* Custom ScrollSpy styles */
@@ -2642,10 +2764,24 @@
 			border-color 0.25s ease;
 		will-change: background-color, color, border-color;
 	}
+	:global(body[data-bs-theme='dark']) .custom-scrollspy-nav .nav-link {
+		color: #9ac2ff;
+	}
+	:global(body[data-bs-theme='light']) .custom-scrollspy-nav .nav-link {
+		color: #0c6dff;
+	}
+
 	.custom-scrollspy-nav .nav-link.active {
-		background-color: rgba(13, 110, 253, 0.15);
-		color: #0d6efd;
 		font-weight: 600;
+	}
+	:global(body[data-bs-theme='dark']) .custom-scrollspy-nav .nav-link.active {
+		background-color: rgba(116, 116, 116, 0.521);
+		color: #62a1ff;
+		border-left-color: #0d6efd;
+	}
+	:global(body[data-bs-theme='light']) .custom-scrollspy-nav .nav-link.active {
+		background-color: rgba(13, 110, 253, 0.1);
+		color: #0066ff;
 		border-left-color: #0d6efd;
 	}
 	.custom-scrollspy-nav .nav-link:not(.active):hover {
@@ -2674,5 +2810,40 @@
 	.btn-group.overflow-auto {
 		scrollbar-width: none;
 		-ms-overflow-style: none;
+	}
+
+	/* Sliding indicator for settings tabs */
+	.sliding-indicator {
+		position: absolute;
+		top: 0;
+		height: 100%;
+		background-color: var(--bs-primary);
+		border-radius: 0.375rem;
+		transition:
+			transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+			width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		z-index: 0;
+		pointer-events: none;
+	}
+
+	/* Ensure buttons are above the indicator */
+	.btn-group .btn {
+		position: relative;
+		z-index: 1;
+		background-color: transparent !important;
+		border-color: transparent !important;
+	}
+
+	/* Active button styling - remove background since indicator handles it */
+	.btn-group .btn.active {
+		background-color: transparent !important;
+		border-color: transparent !important;
+		color: white !important;
+	}
+
+	/* Hover effect */
+	.btn-group .btn:hover {
+		background-color: rgba(13, 110, 253, 0.1) !important;
+		border-color: transparent !important;
 	}
 </style>

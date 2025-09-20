@@ -136,6 +136,14 @@
 			if (to < from) to = from; // ensure non-inverted
 			return { level: s.level, from, to };
 		});
+
+		// Fix overlapping ranges by making them exclusive/inclusive properly
+		for (let i = 1; i < legendRanges.length; i++) {
+			// Make sure current segment doesn't start where previous ends
+			if (legendRanges[i].from === legendRanges[i - 1].to && legendRanges[i].from > 0) {
+				legendRanges[i].from = legendRanges[i - 1].to + 1;
+			}
+		}
 	}
 
 	const colorLevel = (wc) => {
@@ -391,10 +399,10 @@
 	{:else if years.length !== 0}
 		<div class="year-selector d-flex align-items-center gap-2 mb-3 flex-wrap">
 			<button
-				class="btn btn-sm btn-outline-secondary"
+				class="btn btn-sm btn-secondary nav-button"
 				onclick={prevYear}
 				disabled={years.indexOf(selectedYear) === 0}
-				aria-label="previous year">«</button
+				aria-label="previous year">&lt;</button
 			>
 			<select
 				class="form-select form-select-sm year-dropdown"
@@ -406,10 +414,10 @@
 				{/each}
 			</select>
 			<button
-				class="btn btn-sm btn-outline-secondary"
+				class="btn btn-sm btn-secondary nav-button"
 				onclick={nextYear}
 				disabled={years.indexOf(selectedYear) === years.length - 1}
-				aria-label="next year">»</button
+				aria-label="next year">&gt;</button
 			>
 			<div class="legend ms-auto d-flex align-items-center gap-1">
 				<span class="legend-label small">{$t('settings.statistics.legend')}</span>
@@ -598,11 +606,6 @@
 				})()}
 			</li>
 			<li>
-				📖 {$t('settings.statistics.bookpages', {
-					pages: Math.round(dayStats.reduce((sum, d) => sum + d.wordCount, 0) / 300)
-				})}
-			</li>
-			<li>
 				🎯 {(() => {
 					if (dayStats.length === 0) return '0%';
 					const sortedDays = [...dayStats].sort(
@@ -619,6 +622,11 @@
 					return $t('settings.statistics.activityRate', { percent: activityRate });
 				})()}
 			</li>
+			<li>
+				📖 {$t('settings.statistics.bookpages', {
+					pages: Math.round(dayStats.reduce((sum, d) => sum + d.wordCount, 0) / 300)
+				})}
+			</li>
 		</ul>
 	{:else if years.length === 0}
 		<p class="text-info">{$t('settings.statistics.no_data')}</p>
@@ -626,14 +634,23 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='dark']) .nav-button {
+		color: #bebebe;
+	}
+
+	.nav-button:disabled {
+		opacity: 0.5;
+	}
+
 	.headerTotal {
 		margin-top: 1rem;
 		margin-bottom: 0.5rem;
 	}
 
 	.settings-stats {
-		min-height: 40vh;
+		min-height: 65vh;
 	}
+
 	.year-selector .year-dropdown {
 		width: auto;
 	}
@@ -664,9 +681,15 @@
 		background: transparent;
 	}
 	/* Color scale (adjust to theme) */
-	.level-0 {
+
+	:global(body[data-bs-theme='light']) .level-0 {
 		background: var(--heatmap-empty, #ebedf0);
 	}
+
+	:global(body[data-bs-theme='dark']) .level-0 {
+		background: var(--heatmap-empty, #333333);
+	}
+
 	.level-1 {
 		background: #c6e48b;
 	}
@@ -705,15 +728,21 @@
 		background: #196127;
 	}
 	.bookmark {
-		font-size: 9px;
+		font-size: 10px;
 		line-height: 1;
-		color: #fff;
-		text-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
-	}
-	.day-cell.level-0 .bookmark {
-		color: #555;
+		color: #000;
 		text-shadow: none;
 	}
+	:global(body[data-bs-theme='dark']) .day-cell.level-0 .bookmark {
+		color: #bbb;
+	}
+	:global(body[data-bs-theme='light']) .day-cell.level-0 .bookmark {
+		color: #555;
+	}
+	:global(body[data-bs-theme='light']) .day-cell.level-4 .bookmark {
+		color: #dddddd;
+	}
+
 	/* Popover styling (applies inside Bootstrap popover) */
 	:global(.popover-day-content) {
 		min-width: 200px;

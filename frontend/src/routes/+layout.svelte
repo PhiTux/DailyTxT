@@ -10,6 +10,7 @@
 	import * as bootstrap from 'bootstrap';
 	import { TolgeeProvider, Tolgee, DevTools, LanguageStorage } from '@tolgee/svelte';
 	import { FormatIcu } from '@tolgee/format-icu';
+	import { darkMode } from '$lib/settingsStore.js';
 
 	const tolgee = Tolgee()
 		.use(DevTools())
@@ -88,7 +89,13 @@
 
 		// if on login page, generate neon mesh
 		if (page.url.pathname === '/login') {
-			generateNeonMesh();
+			generateNeonMesh($darkMode);
+		}
+	});
+
+	$effect(() => {
+		if ($darkMode !== undefined) {
+			document.body.setAttribute('data-bs-theme', $darkMode ? 'dark' : 'light');
 		}
 	});
 
@@ -160,24 +167,33 @@
 		background-color: rgba(0, 0, 0, 0.3) !important;
 	}
 
-	:global(.modal-content) {
+	:global(body[data-bs-theme='dark'] .modal-content) {
 		backdrop-filter: blur(20px) saturate(150%);
-		background-color: rgba(83, 83, 83, 0.85) !important;
+		background-color: rgba(70, 70, 70, 0.5) !important;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		color: #ececec;
 	}
+	:global(body[data-bs-theme='light'] .modal-content) {
+		backdrop-filter: blur(20px) saturate(150%);
+		background-color: rgba(211, 211, 211, 0.5) !important;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		color: #161616;
+	}
 
-	:global(.glass) {
+	:global(body[data-bs-theme='dark'] .glass) {
 		backdrop-filter: blur(14px) saturate(130%);
-		background-color: rgba(83, 83, 83, 0.8);
+		background-color: rgba(83, 83, 83, 0.4);
 		border: 1px solid #62626278;
 		color: #ececec;
 	}
+	:global(body[data-bs-theme='light'] .glass) {
+		backdrop-filter: blur(14px) saturate(130%);
+		background-color: rgba(187, 187, 187, 0.3);
+		border: 1px solid #ccc;
+		color: #222;
+	}
 
-	:global(.glassLight) {
-		backdrop-filter: blur(8px) saturate(130%);
-		background-color: rgba(83, 83, 83, 0.445);
-		border: 1px solid #62626278;
-		color: #ececec;
+	:global(body[data-bs-theme='dark'] .popover-body > span) {
+		background-color: #444;
 	}
 </style>

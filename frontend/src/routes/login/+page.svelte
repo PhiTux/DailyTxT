@@ -233,7 +233,7 @@
 <div class="logo-login-flex d-flex justify-content-center align-items-center flex-row h-100">
 	<div class="logo-wrapper d-flex flex-column align-items-center">
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
-		<p>DailyTxT</p>
+		<span class="dailytxt">DailyTxT</span>
 	</div>
 	<div class="login-wrapper">
 		<div class="accordion" id="loginAccordion">
@@ -592,6 +592,17 @@
 </div>
 
 <style>
+	.dailytxt {
+		margin-top: 1.5rem;
+		color: #f57c00;
+		font-size: 2.7rem;
+		font-weight: 500;
+		line-height: 1rem;
+		position: relative;
+		text-decoration-line: underline;
+		text-decoration-color: #0d6efd;
+	}
+
 	.language-select-wrapper {
 		position: absolute;
 		top: 10px;
@@ -625,6 +636,13 @@
 	#largeLogo {
 		width: 40%;
 		min-height: 10%;
+		filter: drop-shadow(0 0 0.7rem #7e7e7e);
+		transition: 0.3s ease;
+	}
+
+	#largeLogo:hover {
+		filter: drop-shadow(0 0 1rem #0d6efd);
+		transform: scale(1.1);
 	}
 
 	.login-wrapper {
@@ -635,6 +653,12 @@
 		width: 70%;
 	}
 
+	@media screen and (min-width: 769px) and (max-width: 1000px) {
+		#loginAccordion {
+			width: 80%;
+		}
+	}
+
 	@media screen and (max-width: 768px) {
 		.logo-login-flex {
 			flex-direction: column !important;
@@ -643,6 +667,25 @@
 		.login-wrapper {
 			min-width: 50%;
 			max-width: 75%;
+		}
+
+		#loginAccordion {
+			width: 100%;
+		}
+
+		.logo-wrapper {
+			width: 70%;
+			margin-bottom: 3rem;
+		}
+	}
+
+	@media screen and (max-width: 540px) {
+		.logo-wrapper {
+			width: 90%;
+		}
+
+		.login-wrapper {
+			width: 80%;
 		}
 	}
 </style>

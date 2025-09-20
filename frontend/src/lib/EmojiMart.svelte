@@ -11,11 +11,6 @@
 
 	// Wait for darkMode and language to be initialized before creating picker
 	$effect(() => {
-		console.log('EmojiMart effect:', {
-			darkMode: $darkMode,
-			emojiPickerEl: !!emojiPickerEl,
-			picker: !!picker
-		});
 		if ($darkMode !== undefined && emojiPickerEl && !picker) {
 			createPicker();
 		}
@@ -29,7 +24,6 @@
 	});
 
 	function createPicker() {
-		console.log('Creating emoji picker with theme:', $darkMode ? 'dark' : 'light');
 		picker = new Picker({
 			theme: $darkMode ? 'dark' : 'light',
 			autoFocus: true,

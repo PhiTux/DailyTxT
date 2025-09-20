@@ -128,8 +128,8 @@
 	}
 
 	.card {
-		backdrop-filter: blur(10px);
-		background: rgba(255, 255, 255, 0.5);
+		/* backdrop-filter: blur(10px); */
+		/* background: rgba(255, 255, 255, 0.5); */
 		border: none;
 		border-radius: 10px;
 	}

@@ -181,14 +181,30 @@
 		background-color: transparent;
 		border: 1px solid #ccc;
 		border-radius: 5px;
-		color: #495057;
+
 		cursor: pointer;
 		font-size: 11pt;
 		margin-left: 0.3rem;
 		transition: all 0.3s ease;
 	}
 
+	:global(body[data-bs-theme='dark']) .removeBtn {
+		color: #c2c2c2;
+	}
+
+	:global(body[data-bs-theme='light']) .removeBtn {
+		color: #495057;
+	}
+
 	.removeBtn:hover {
-		color: #dc3545;
+		color: #dc3545 !important;
+	}
+
+	.modal-header {
+		border-bottom: none;
+	}
+
+	.modal-footer {
+		border-top: none;
 	}
 </style>

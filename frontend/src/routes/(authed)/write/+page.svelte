@@ -677,6 +677,64 @@
 	let filteredTags = $state([]);
 	let selectedTags = $state([]);
 
+	// Action: portal dropdown to <body> and position it under the input
+	function portalDropdown(node, params) {
+		let anchorEl;
+
+		function getAnchor() {
+			if (params?.anchor) {
+				return typeof params.anchor === 'string'
+					? document.querySelector(params.anchor)
+					: params.anchor;
+			}
+			return document.getElementById('tag-input');
+		}
+
+		function position() {
+			if (!anchorEl) return;
+			const rect = anchorEl.getBoundingClientRect();
+			node.style.position = 'fixed';
+			node.style.top = rect.bottom + 'px';
+			node.style.left = rect.left + 'px';
+			/* node.style.width = rect.width + 'px'; */
+			// keep within viewport horizontally (basic guard)
+			const maxLeft = Math.max(8, Math.min(rect.left, window.innerWidth - node.offsetWidth - 8));
+			node.style.left = maxLeft + 'px';
+		}
+
+		function attach() {
+			// move element into body so it's not clipped by ancestors and backdrop-filter works as expected
+			document.body.appendChild(node);
+			position();
+		}
+
+		function onScroll() {
+			position();
+		}
+		function onResize() {
+			position();
+		}
+
+		anchorEl = getAnchor();
+		attach();
+		// use capture to react to scrolls on any ancestor
+		window.addEventListener('scroll', onScroll, true);
+		window.addEventListener('resize', onResize);
+
+		return {
+			update(newParams) {
+				params = newParams;
+				anchorEl = getAnchor();
+				position();
+			},
+			destroy() {
+				window.removeEventListener('scroll', onScroll, true);
+				window.removeEventListener('resize', onResize);
+				// Do not manually remove node; Svelte will detach it.
+			}
+		};
+	}
+
 	// show the correct tags in the dropdown
 	$effect(() => {
 		if ($tags.length === 0) {
@@ -1095,7 +1153,7 @@
 		<!-- Center -->
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
-			<div class="d-flex flex-row textAreaHeader glassLight">
+			<div class="d-flex flex-row textAreaHeader glass">
 				<div class="flex-fill textAreaDate">
 					{new Date(
 						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
@@ -1200,7 +1258,7 @@
 					</button>
 				</div>
 				{#if showTagDropdown}
-					<div id="tagDropdown">
+					<div id="tagDropdown" use:portalDropdown>
 						{#if filteredTags.length === 0}
 							<em style="padding: 0.2rem;">{$t('tags.no_tags_found')}</em>
 						{:else}
@@ -1773,10 +1831,6 @@
 		white-space: nowrap;
 	}
 
-	.tag-item.selected {
-		background-color: #b2b4b6;
-	}
-
 	.selectedTags {
 		margin-top: 0.5rem;
 		gap: 0.5rem;
@@ -1788,14 +1842,23 @@
 
 	#tagDropdown {
 		position: absolute;
-		background-color: white;
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 		z-index: 1000;
 		max-height: 200px;
 		overflow-y: scroll;
 		overflow-x: hidden;
 		display: flex;
 		flex-direction: column;
+		backdrop-filter: blur(10px) saturate(150%);
+		border-radius: 10px;
+	}
+
+	:global(body[data-bs-theme='dark']) #tagDropdown {
+		background-color: rgba(87, 87, 87, 0.5);
+	}
+
+	:global(body[data-bs-theme='light']) #tagDropdown {
+		background-color: rgba(196, 196, 196, 0.5);
 	}
 
 	.tag-item {
@@ -1803,15 +1866,19 @@
 		padding: 5px;
 	}
 
+	:global(body[data-bs-theme='dark']) .tag-item.selected {
+		background-color: #5f5f5f;
+	}
+
+	:global(body[data-bs-theme='light']) .tag-item.selected {
+		background-color: #b9b9b9;
+	}
+
 	.tags {
 		z-index: 10;
 		padding: 0.5rem;
 		margin-bottom: 2rem;
-		/* backdrop-filter: blur(8px) saturate(150%);
-		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77; */
 		border-radius: 10px;
-		/* color: #ececec; */
 	}
 
 	.loadImageBtn {
@@ -1822,19 +1889,18 @@
 		transition: all ease 0.2s;
 	}
 
-	.modal-content {
-		backdrop-filter: blur(8px) saturate(150%);
-		background-color: rgba(219, 219, 219, 0.45);
+	.modal-header {
+		border-bottom: none;
+	}
+
+	.modal-footer {
+		border-top: none;
 	}
 
 	.files {
-		/* margin-right: 2rem; */
 		margin-bottom: 1rem;
 		border-radius: 10px;
 		padding: 1rem;
-		/* backdrop-filter: blur(8px) saturate(150%);
-		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77; */
 	}
 
 	:global(#uploadIcon) {
@@ -1846,11 +1912,64 @@
 	}
 
 	:global(.TMCommandBar) {
-		border-top: 1px solid #ccc;
-		border-left: 1px solid #ccc;
-		border-right: 1px solid #ccc;
+		border-top: none;
+		border-bottom: none;
 		height: auto;
 		flex-wrap: wrap;
+		padding-top: 2px;
+		padding-bottom: 3px;
+	}
+
+	:global(body[data-bs-theme='dark'] .TMCommandBar) {
+		border-left: 1px solid #6a6a6a;
+		border-right: 1px solid #6a6a6a;
+	}
+
+	:global(body[data-bs-theme='light'] .TMCommandBar) {
+		border-left: 1px solid #cccccc;
+		border-right: 1px solid #cccccc;
+	}
+
+	:global(body[data-bs-theme='dark'] .TMCommandBar) {
+		background-color: rgba(70, 70, 70, 0.5);
+	}
+
+	:global(body[data-bs-theme='light'] .TMCommandBar) {
+		background-color: rgba(202, 202, 202, 0.5);
+	}
+
+	:global(body[data-bs-theme='dark'] .TMCommandButton_Inactive) {
+		background-color: transparent;
+		fill: #f0f0f0;
+	}
+
+	:global(body[data-bs-theme='light'] .TMCommandButton_Inactive) {
+		background-color: transparent;
+		fill: #161616;
+	}
+
+	:global(body[data-bs-theme='dark'] .TMCommandButton_Inactive:hover) {
+		background-color: rgba(180, 180, 180, 0.438);
+	}
+
+	:global(body[data-bs-theme='light'] .TMCommandButton_Inactive:hover) {
+		background-color: rgba(180, 180, 180, 0.438);
+	}
+
+	:global(.TMCommandButton) {
+		border-radius: 3px;
+	}
+
+	:global(body[data-bs-theme='dark'] .TinyMDE) {
+		backdrop-filter: blur(8px) saturate(130%);
+		background-color: rgba(50, 50, 50, 0.8);
+		color: #f0f0f0;
+	}
+
+	:global(body[data-bs-theme='light'] .TinyMDE) {
+		backdrop-filter: blur(8px) saturate(130%);
+		background-color: rgba(255, 255, 255, 0.7);
+		color: #1f1f1f;
 	}
 
 	#editor {

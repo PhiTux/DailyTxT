@@ -358,7 +358,7 @@
 		{#each logs as log (log.day)}
 			<!-- Log-Area -->
 			{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
-				<div class="log mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
+				<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
 					<div class="date me-3 d-flex flex-column align-items-center">
 						<p class="dateNumber">{log.day}</p>
 						<p class="dateDay">
@@ -446,10 +446,16 @@
 	}
 
 	.log {
-		backdrop-filter: blur(10px) saturate(150%);
-		background-color: rgba(199, 199, 201, 0.329);
 		border-radius: 15px;
-		border: 1px solid rgba(223, 221, 221, 0.658);
+	}
+
+	:global(body[data-bs-theme='dark']) .glass {
+		background-color: rgba(68, 68, 68, 0.6) !important;
+	}
+
+	:global(body[data-bs-theme='light']) .glass {
+		background-color: rgba(122, 122, 122, 0.6) !important;
+		color: rgb(19, 19, 19);
 	}
 
 	.dateNumber {

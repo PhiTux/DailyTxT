@@ -233,9 +233,9 @@
 
 			<!-- Admin status bar -->
 			<div
-				class="d-flex align-items-center mb-4 p-3 bg-success bg-opacity-10 border border-success rounded"
+				class="d-flex align-items-center mb-4 p-3 bg-success bg-opacity-25 border border-success rounded"
 			>
-				<span class="text-success me-3">🔓 {$t('settings.admin.authenticated')}</span>
+				<span class="text-success me-3">🔓 {$t('settings.admin.authorized')} </span>
 				<button class="btn btn-outline-secondary btn-sm ms-2" onclick={resetAdminState}>
 					{$t('settings.admin.logout')}
 				</button>
@@ -562,7 +562,7 @@
 
 <style>
 	.settings-admin {
-		min-height: 40vh;
+		min-height: 65vh;
 	}
 
 	.table th {

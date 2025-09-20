@@ -142,7 +142,7 @@
 	];
 </script>
 
-<div class="datepicker glassLight">
+<div class="datepicker glass">
 	<div class="datepicker-header">
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
@@ -311,8 +311,16 @@
 		font-weight: bold;
 		padding: 8px 0;
 		font-size: 0.9em;
+	}
+
+	:global(body[data-bs-theme='light']) .day-header {
 		color: #666;
 	}
+
+	:global(body[data-bs-theme='light']) .day-header {
+		color: #5c5c5c;
+	}
+
 	.day {
 		height: 32px;
 		width: 32px;
@@ -327,19 +335,24 @@
 		user-select: none;
 		--dot-color: rgb(250, 199, 58);
 	}
+	:global(body[data-bs-theme='light']) .day {
+		color: #222;
+	}
 	.day:hover {
 		background: #f0f0f0;
+		color: black;
 	}
 	.day.mark-background {
 		background-color: #00ad00;
 		color: white;
 		aspect-ratio: 1;
 	}
+	.day.mark-background:hover {
+		background-color: #008a00;
+	}
 
 	.day.mark-circle {
-		/* background-color: transparent;*/
 		border: 3px solid #f57c00;
-		/* color: #ff9224; */
 	}
 
 	.day.mark-dot::after {
