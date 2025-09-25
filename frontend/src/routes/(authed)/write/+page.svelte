@@ -63,8 +63,6 @@
 			target: document.querySelector('.TMCommandBar')
 		});
 
-		loadTags();
-
 		getLog();
 
 		// enable popovers
@@ -83,20 +81,6 @@
 			$insertTemplate = '';
 		}
 	});
-
-	function loadTags() {
-		axios
-			.get(API_URL + '/logs/getTags')
-			.then((response) => {
-				$tags = response.data;
-			})
-			.catch((error) => {
-				console.error(error);
-				// toast
-				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingTags'));
-				toast.show();
-			});
-	}
 
 	$effect(() => {
 		if (currentLog !== savedLog) {

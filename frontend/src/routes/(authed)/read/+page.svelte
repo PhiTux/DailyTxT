@@ -7,13 +7,13 @@
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
 	import Tag from '$lib/Tag.svelte';
-	import { tags } from '$lib/tagStore.js';
+	import { tags, tagsLoaded } from '$lib/tagStore.js';
 	import FileList from '$lib/FileList.svelte';
 	import { autoLoadImagesThisDevice, settings } from '$lib/settingsStore';
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
-	import { alwaysShowSidenav, needsReauthentication, isAuthenticated } from '$lib/helpers.js';
+	import { alwaysShowSidenav } from '$lib/helpers.js';
 	import { getTranslate } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
@@ -65,10 +65,15 @@
 	}
 
 	onMount(() => {
-		loadMonthForReading();
 		scrollAreaEl = document.getElementById('scrollArea');
 		if (scrollAreaEl) {
 			scrollAreaEl.addEventListener('scroll', onScrollHandler, { passive: true });
+		}
+	});
+
+	$effect(() => {
+		if ($tagsLoaded) {
+			loadMonthForReading();
 		}
 	});
 
@@ -400,62 +405,76 @@
 
 	<!-- Center -->
 	<div class="d-flex flex-column my-4 ms-4 flex-fill overflow-y-auto" id="scrollArea">
-		{#each logs as log (log.day)}
-			<!-- Log-Area -->
-			{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
-				<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
-					<div class="date me-3 d-flex flex-column align-items-center">
-						<p class="dateNumber">{log.day}</p>
-						<p class="dateDay">
-							<b>
-								{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString(
-									'locale',
-									{
-										weekday: 'long'
-									}
-								)}
-							</b>
-						</p>
-					</div>
-					<div class="flex-grow-1 middle">
-						{#if log.text && log.text !== ''}
-							<div class="text">
-								{@html marked.parse(log.text)}
-							</div>
-						{/if}
-						{#if log.tags?.length > 0}
-							<div class="tags d-flex flex-row flex-wrap">
-								{#each log.tags as t}
-									<Tag tag={$tags.find((tag) => tag.id === t)} />
-								{/each}
-							</div>
-						{/if}
-						{#if log.images?.length > 0}
-							{#if !autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
-								<div class="d-flex flex-row">
-									<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
-										<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-										{$t('settings.read.load_images')}
-									</button>
-								</div>
-							{:else}
-								<ImageViewer images={log.images} />
-							{/if}
-						{/if}
-					</div>
-
-					{#if log.files && log.files.length > 0}
-						<div class="d-flex flex-column ms-3 files">
-							<FileList files={log.files} {downloadFile} />
+		{#if logs.length > 0}
+			{#each logs as log (log.day)}
+				<!-- Log-Area -->
+				{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
+					<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
+						<div class="date me-3 d-flex flex-column align-items-center">
+							<p class="dateNumber">{log.day}</p>
+							<p class="dateDay">
+								<b>
+									{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString(
+										'locale',
+										{
+											weekday: 'long'
+										}
+									)}
+								</b>
+							</p>
 						</div>
-					{/if}
+						<div class="flex-grow-1 middle">
+							{#if log.text && log.text !== ''}
+								<div class="text">
+									{@html marked.parse(log.text)}
+								</div>
+							{/if}
+							{#if log.tags?.length > 0}
+								<div class="tags d-flex flex-row flex-wrap">
+									{#each log.tags as t}
+										<Tag tag={$tags.find((tag) => tag.id === t)} />
+									{/each}
+								</div>
+							{/if}
+							{#if log.images?.length > 0}
+								{#if !autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
+									<div class="d-flex flex-row">
+										<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
+											<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+											{$t('read.load_images')}
+										</button>
+									</div>
+								{:else}
+									<ImageViewer images={log.images} />
+								{/if}
+							{/if}
+						</div>
+
+						{#if log.files && log.files.length > 0}
+							<div class="d-flex flex-column ms-3 files">
+								<FileList files={log.files} {downloadFile} />
+							</div>
+						{/if}
+					</div>
+				{/if}
+			{/each}
+		{:else}
+			<div class="d-flex align-items-center justify-content-center h-100">
+				<div class="glass p-5 rounded-5 no-entries">
+					<span id="no-entries">{$t('read.no_entries')}</span>
 				</div>
-			{/if}
-		{/each}
+			</div>
+		{/if}
 	</div>
 </div>
 
 <style>
+	#no-entries {
+		font-size: 1.5rem;
+		font-weight: 600;
+		opacity: 0.7;
+	}
+
 	.sidenav {
 		width: 380px;
 		min-width: 380px;

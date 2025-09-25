@@ -11,7 +11,7 @@
 		darkMode
 	} from '$lib/settingsStore.js';
 	import { API_URL } from '$lib/APIurl.js';
-	import { tags } from '$lib/tagStore.js';
+	import { tags, tagsLoaded } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
 	import {
 		alwaysShowSidenav,
@@ -205,6 +205,7 @@
 		getUserSettings();
 		getTemplates();
 		getVersionInfo();
+		loadTags();
 
 		if (page.url.pathname === '/read') {
 			$readingMode = true;
@@ -216,6 +217,21 @@
 			backupCodes = [];
 		});
 	});
+
+	function loadTags() {
+		axios
+			.get(API_URL + '/logs/getTags')
+			.then((response) => {
+				$tags = response.data;
+				$tagsLoaded = true;
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingTags'));
+				toast.show();
+			});
+	}
 
 	function logout(errorCode) {
 		axios
