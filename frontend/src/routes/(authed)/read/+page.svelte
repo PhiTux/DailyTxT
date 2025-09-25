@@ -29,36 +29,47 @@
 	});
 
 	let logs = $state([]);
-	let search = $state('');
 
-	let observer;
+	let scrollAreaEl;
+
+	function updateReadingDateFromScroll() {
+		if (!scrollAreaEl) return;
+		const logsEls = scrollAreaEl.querySelectorAll('.log');
+		const containerTop = scrollAreaEl.getBoundingClientRect().top;
+		let candidate = null;
+		for (const el of logsEls) {
+			const rect = el.getBoundingClientRect();
+			// First element whose bottom edge is below the top edge of the container
+			if (rect.bottom > containerTop + 4) {
+				// +4px tolerance to reduce flicker
+				candidate = el;
+				break;
+			}
+		}
+		if (candidate) {
+			const day = parseInt(candidate.getAttribute('data-log-day'));
+			if (!$readingDate || $readingDate.day !== day) {
+				$readingDate = {
+					year: $cal.currentYear,
+					month: $cal.currentMonth + 1,
+					day
+				};
+			}
+		}
+	}
+
+	let scrollRaf;
+	function onScrollHandler() {
+		if (scrollRaf) cancelAnimationFrame(scrollRaf);
+		scrollRaf = requestAnimationFrame(updateReadingDateFromScroll);
+	}
 
 	onMount(() => {
-		/* if (!$isAuthenticated && needsReauthentication()) {
-			return;
-		} */
-
 		loadMonthForReading();
-
-		// Highlights automatically the day in the calendar, when the log is in the viewport
-		observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						$readingDate = new Date(
-							$cal.currentYear,
-							$cal.currentMonth,
-							entry.target.getAttribute('data-log-day')
-						);
-					}
-				});
-			},
-			{
-				root: null,
-				rootMargin: '0% 0px -70% 0px',
-				threshold: 0.67
-			}
-		);
+		scrollAreaEl = document.getElementById('scrollArea');
+		if (scrollAreaEl) {
+			scrollAreaEl.addEventListener('scroll', onScrollHandler, { passive: true });
+		}
 	});
 
 	let currentMonth = $cal.currentMonth;
@@ -273,7 +284,7 @@
 		}
 	}
 
-	//#TODO Anpassen
+	// TODO adjust
 	function triggerAutomaticDownload(uuid) {
 		for (let i = 0; i < logs.length; i++) {
 			let log = logs[i];
@@ -312,7 +323,7 @@
 				}
 			})
 			.then((response) => {
-				logs = response.data;
+				logs = response.data.sort((a, b) => a.day - b.day);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -320,11 +331,45 @@
 			.finally(() => {
 				isLoadingMonthForReading = false;
 
-				setTimeout(() => {
-					document.querySelectorAll('.log').forEach((log) => {
-						observer.observe(log);
-					});
-				}, 1000);
+				// Wait until DOM is stable (layout after markup injection) then do first calculation
+				requestAnimationFrame(() => {
+					updateReadingDateFromScroll();
+					// Ensure an initial highlight or jump to selectedDate after month switch
+					if (logs && logs.length > 0) {
+						const firstDay = logs[0].day;
+						const selectedMatchesMonth =
+							$selectedDate &&
+							$selectedDate.year === $cal.currentYear &&
+							$selectedDate.month === $cal.currentMonth + 1;
+
+						if (selectedMatchesMonth) {
+							const selEl = document.querySelector(`.log[data-log-day="${$selectedDate.day}"]`);
+							if (selEl) {
+								// Instant jump (avoid double smooth scroll chains)
+								selEl.scrollIntoView({ behavior: 'instant', block: 'start' });
+								$readingDate = {
+									year: $cal.currentYear,
+									month: $cal.currentMonth + 1,
+									day: $selectedDate.day
+								};
+							}
+						}
+
+						// Fallback: if readingDate not yet in this month (and no matching selectedDate), mark first log day
+						if (
+							(!$readingDate ||
+								$readingDate.month !== $cal.currentMonth + 1 ||
+								$readingDate.year !== $cal.currentYear) &&
+							!selectedMatchesMonth
+						) {
+							$readingDate = {
+								year: $cal.currentYear,
+								month: $cal.currentMonth + 1,
+								day: firstDay
+							};
+						}
+					}
+				});
 			});
 	}
 </script>
