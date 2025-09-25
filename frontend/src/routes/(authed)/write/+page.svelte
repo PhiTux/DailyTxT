@@ -1310,7 +1310,7 @@
 					{askDeleteFile}
 					{renameFile}
 					{reorderFiles}
-					deleteAllowed
+					editable
 				/>
 				{#each uploadingFiles as file}
 					<div>

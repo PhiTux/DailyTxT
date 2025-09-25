@@ -14,7 +14,7 @@
 
 	const { t } = getTranslate();
 
-	let { files, downloadFile, askDeleteFile, deleteAllowed, renameFile, reorderFiles } = $props();
+	let { files, downloadFile, askDeleteFile, editable, renameFile, reorderFiles } = $props();
 
 	let openOptionsMenu = $state(null); // UUID of file with open options menu
 	let editingFilename = $state(null); // UUID of file being renamed
@@ -91,20 +91,22 @@
 		ondrop={(e) => handleDrop(e, index)}
 	>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div
-			class="drag-handle d-flex align-items-center px-2"
-			draggable="true"
-			ondragstart={(e) => {
-				e.stopPropagation();
-				handleDragStart(e, index);
-			}}
-			ondragend={(e) => {
-				e.stopPropagation();
-				handleDragEnd(e);
-			}}
-		>
-			<Fa icon={faGripVertical} class="text-muted" />
-		</div>
+		{#if editable}
+			<div
+				class="drag-handle d-flex align-items-center px-2"
+				draggable="true"
+				ondragstart={(e) => {
+					e.stopPropagation();
+					handleDragStart(e, index);
+				}}
+				ondragend={(e) => {
+					e.stopPropagation();
+					handleDragEnd(e);
+				}}
+			>
+				<Fa icon={faGripVertical} class="text-muted" />
+			</div>
+		{/if}
 		<button
 			onclick={() => downloadFile(file.uuid_filename)}
 			class="p-2 fileBtn d-flex flex-column flex-fill"
@@ -140,7 +142,7 @@
 				</div>
 			{/if}
 		</button>
-		{#if deleteAllowed}
+		{#if editable}
 			<button
 				class="p-2 fileBtn optionsBtn"
 				onclick={() => {
@@ -158,7 +160,7 @@
 		{/if}
 	</div>
 
-	{#if deleteAllowed && openOptionsMenu === file.uuid_filename}
+	{#if editable && openOptionsMenu === file.uuid_filename}
 		<div transition:slide>
 			<div class="options-menu p-3 mt-1">
 				<div class="mb-3">
