@@ -48,6 +48,10 @@
 
 	let tinyMDE;
 	onMount(() => {
+		// If we come from read mode, keep the last visible day as the active selected day
+		if ($readingDate) {
+			$selectedDate = $readingDate; // promote readingDate to selectedDate when switching to write mode
+		}
 		$readingDate = null; // no reading-highlighting when in write mode
 
 		tinyMDE = new TinyMDE.Editor({ element: 'editor', content: '' });

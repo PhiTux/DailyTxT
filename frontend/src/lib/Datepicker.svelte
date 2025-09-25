@@ -1,5 +1,6 @@
 <script>
 	import { cal, selectedDate, readingDate } from '$lib/calendarStore.js';
+	import { readingMode } from '$lib/settingsStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
@@ -192,7 +193,9 @@
 								{$cal.daysWithLogs.includes(day.day) ? 'mark-background' : ''} 
 								{$cal.daysWithFiles.includes(day.day) ? 'mark-dot' : ''} 
 								{$cal.daysBookmarked.includes(day.day) ? 'mark-circle' : ''}
-								{(!$readingDate && sameDate($selectedDate, day)) || sameDate($readingDate, day) ? 'selected' : ''}"
+								{(!$readingMode && sameDate($selectedDate, day)) || ($readingMode && sameDate($readingDate, day))
+								? 'selected'
+								: ''}"
 							onclick={() => onDateClick(day)}
 						>
 							{day.day}
