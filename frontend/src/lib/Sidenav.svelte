@@ -495,14 +495,21 @@
 		border-bottom-right-radius: 0;
 	}
 
+	/* Dynamic search results panel: fill remaining space, but never below 250px */
+	.search {
+		flex: 1 1 auto; /* allow search area to grow */
+		min-height: 0; /* allow inner flex children to compute height */
+		display: flex;
+		flex-direction: column;
+	}
+
 	.list-group {
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
 		overflow-y: auto;
-		min-height: 250px;
-		/* backdrop-filter: blur(8px) saturate(150%);
-		background-color: rgba(219, 219, 219, 0.45);
-		border: 1px solid #ececec77; */
+		min-height: 250px; /* minimum requirement */
+		flex: 1 1 auto; /* take all remaining vertical space */
+		max-height: none; /* remove hard cap */
 	}
 
 	.input-group {

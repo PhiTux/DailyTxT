@@ -396,7 +396,7 @@
 	<Sidenav />
 </div>
 
-<div class="d-flex flex-row justify-content-between h-100">
+<div class="layout-read d-flex flex-row justify-content-between">
 	<!-- shown on large Screen -->
 	{#if $alwaysShowSidenav}
 		<div class="sidenav p-3">
@@ -486,9 +486,22 @@
 		opacity: 0.7;
 	}
 
+	.layout-read {
+		height: 100%;
+		overflow: hidden;
+	}
+
 	.sidenav {
 		width: 380px;
 		min-width: 380px;
+		overflow-y: auto; /* independent scroll */
+		max-height: 100vh; /* constrain to viewport */
+		padding-right: 0.5rem;
+		box-sizing: border-box;
+	}
+
+	#sidenav {
+		overflow-y: auto;
 	}
 
 	.files {
@@ -548,6 +561,8 @@
 
 	#scrollArea {
 		padding-right: 1rem;
+		overflow-y: auto;
+		max-height: 100vh; /* scroll area uses remaining viewport height */
 	}
 
 	@media (min-width: 1300px) and (max-width: 1450px) {
@@ -589,6 +604,11 @@
 	@media (max-width: 1300px) {
 		.logContent {
 			flex-direction: column !important;
+		}
+
+		#scrollArea {
+			margin-top: 1rem !important;
+			margin-bottom: 1rem !important;
 		}
 	}
 
