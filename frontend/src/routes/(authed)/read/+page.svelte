@@ -14,9 +14,10 @@
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import { alwaysShowSidenav } from '$lib/helpers.js';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -415,46 +416,56 @@
 							<p class="dateDay">
 								<b>
 									{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString(
-										'locale',
+										$tolgee.getLanguage(),
 										{
 											weekday: 'long'
 										}
 									)}
 								</b>
 							</p>
+							<p class="dateMonthYear">
+								<i
+									>{new Date($cal.currentYear, $cal.currentMonth, log.day).toLocaleDateString(
+										$tolgee.getLanguage(),
+										{ year: 'numeric', month: 'long' }
+									)}</i
+								>
+							</p>
 						</div>
-						<div class="flex-grow-1 middle">
-							{#if log.text && log.text !== ''}
-								<div class="text">
-									{@html marked.parse(log.text)}
-								</div>
-							{/if}
-							{#if log.tags?.length > 0}
-								<div class="tags d-flex flex-row flex-wrap">
-									{#each log.tags as t}
-										<Tag tag={$tags.find((tag) => tag.id === t)} />
-									{/each}
-								</div>
-							{/if}
-							{#if log.images?.length > 0}
-								{#if !autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
-									<div class="d-flex flex-row">
-										<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
-											<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-											{$t('read.load_images')}
-										</button>
+						<div class="logContent flex-grow-1 d-flex flex-row">
+							<div class="flex-grow-1 middle">
+								{#if log.text && log.text !== ''}
+									<div class="text">
+										{@html marked.parse(log.text)}
 									</div>
-								{:else}
-									<ImageViewer images={log.images} />
 								{/if}
+								{#if log.tags?.length > 0}
+									<div class="tags d-flex flex-row flex-wrap">
+										{#each log.tags as t}
+											<Tag tag={$tags.find((tag) => tag.id === t)} />
+										{/each}
+									</div>
+								{/if}
+								{#if log.images?.length > 0}
+									{#if !autoLoadImages && log.images.find((image) => !image.src && !image.loading)}
+										<div class="d-flex flex-row">
+											<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
+												<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
+												{$t('read.load_images')}
+											</button>
+										</div>
+									{:else}
+										<ImageViewer images={log.images} />
+									{/if}
+								{/if}
+							</div>
+
+							{#if log.files && log.files.length > 0}
+								<div class="d-flex flex-column ms-3 files">
+									<FileList files={log.files} {downloadFile} />
+								</div>
 							{/if}
 						</div>
-
-						{#if log.files && log.files.length > 0}
-							<div class="d-flex flex-column ms-3 files">
-								<FileList files={log.files} {downloadFile} />
-							</div>
-						{/if}
 					</div>
 				{/if}
 			{/each}
@@ -482,6 +493,7 @@
 
 	.files {
 		max-width: 350px;
+		min-width: 200px;
 	}
 
 	.middle {
@@ -531,9 +543,62 @@
 
 	.dateDay {
 		opacity: 0.7;
+		font-size: 1.2rem;
 	}
 
 	#scrollArea {
 		padding-right: 1rem;
+	}
+
+	@media (min-width: 1300px) and (max-width: 1450px) {
+		.files {
+			max-width: 250px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.date {
+			min-width: 50px;
+			flex-direction: row !important;
+			align-items: end !important;
+		}
+
+		.dateDay {
+			margin-left: 1rem;
+		}
+
+		.dateNumber {
+			margin-top: -0.5rem;
+			margin-bottom: 0;
+		}
+
+		.dateMonthYear {
+			margin-left: 1rem;
+			opacity: 0.7;
+		}
+
+		.log {
+			flex-direction: column !important;
+		}
+
+		#scrollArea {
+			margin-left: 1rem !important;
+		}
+	}
+
+	@media (max-width: 1300px) {
+		.logContent {
+			flex-direction: column !important;
+		}
+	}
+
+	@media (min-width: 769px) {
+		.date {
+			min-width: 100px;
+		}
+
+		.dateMonthYear {
+			display: none;
+		}
 	}
 </style>
