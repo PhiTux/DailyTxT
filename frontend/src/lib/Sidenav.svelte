@@ -12,9 +12,10 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import axios from 'axios';
 	import { cal } from '$lib/calendarStore.js';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	let oc;
 
@@ -358,11 +359,14 @@
 					>
 						<div class="search-result-content">
 							<div class="date">
-								{new Date(result.year, result.month - 1, result.day).toLocaleDateString('locale', {
-									day: '2-digit',
-									month: '2-digit',
-									year: 'numeric'
-								})}
+								{new Date(result.year, result.month - 1, result.day).toLocaleDateString(
+									$tolgee.getLanguage(),
+									{
+										day: '2-digit',
+										month: '2-digit',
+										year: 'numeric'
+									}
+								)}
 							</div>
 							<!-- <div class="search-separator"></div> -->
 							<div class="text">
@@ -445,6 +449,11 @@
 		border-radius: 3px;
 		padding: 0 5px;
 		background-color: #eee;
+	}
+
+	:global(.popover-body) {
+		overflow-y: auto;
+		max-height: 550px;
 	}
 
 	.searchTagDropdown {

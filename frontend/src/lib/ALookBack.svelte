@@ -1,10 +1,11 @@
 <script>
 	import { marked } from 'marked';
 	import { selectedDate } from './calendarStore';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import { onMount } from 'svelte';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	marked.use({
 		breaks: true,
@@ -69,7 +70,7 @@
 						log?.year,
 						log?.month - 1,
 						log?.day
-					).toLocaleDateString('locale', {
+					).toLocaleDateString($tolgee.getLanguage(), {
 						weekday: 'long',
 						day: '2-digit',
 						month: '2-digit',

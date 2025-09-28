@@ -177,7 +177,7 @@
 	}
 
 	const fmtDate = (d) =>
-		d.toLocaleDateString(undefined, {
+		d.toLocaleDateString($tolgee.getLanguage(), {
 			weekday: 'long',
 			year: 'numeric',
 			month: '2-digit',

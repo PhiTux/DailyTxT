@@ -5,9 +5,10 @@
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
 	import { offcanvasIsOpen, sameDate, isAuthenticated } from '$lib/helpers.js';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	let { bookmarkDay } = $props();
 
@@ -115,7 +116,7 @@
 	});
 
 	let months = Array.from({ length: 12 }, (_, i) =>
-		new Date(2000, i).toLocaleString('default', { month: 'long' })
+		new Date(2000, i).toLocaleString($tolgee.getLanguage(), { month: 'long' })
 	);
 
 	const onMonthSelect = (event) => {
@@ -148,7 +149,9 @@
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
 			<select
-				value={new Date(2000, $cal.currentMonth).toLocaleString('default', { month: 'long' })}
+				value={new Date(2000, $cal.currentMonth).toLocaleString($tolgee.getLanguage(), {
+					month: 'long'
+				})}
 				onchange={onMonthSelect}
 			>
 				{#each months as month}
@@ -291,6 +294,8 @@
 		color: white;
 		padding: 8px 16px;
 		font-size: 16px;
+		border-top-left-radius: 8px;
+		border-top-right-radius: 8px;
 	}
 	.calendar-container {
 		position: relative;
@@ -387,7 +392,8 @@
 		cursor: pointer;
 		padding: 2px 12px;
 		border-radius: 4px;
-		max-width: 100px;
+		max-width: 150px;
+		min-width: 100px;
 		text-align: center;
 		text-align-last: center;
 		-webkit-appearance: none;

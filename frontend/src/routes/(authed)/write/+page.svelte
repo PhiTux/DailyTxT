@@ -35,9 +35,10 @@
 	import { insertTemplate } from '$lib/templateStore';
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
-	import { T, getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -341,7 +342,7 @@
 		let timezone = $settings.useBrowserTimezone
 			? Intl.DateTimeFormat().resolvedOptions().timeZone
 			: $settings.timezone;
-		let date_written = new Date().toLocaleString('de-DE', {
+		let date_written = new Date().toLocaleString($tolgee.getLanguage(), {
 			timeZone: timezone,
 			year: 'numeric',
 			month: '2-digit',
@@ -1145,10 +1146,10 @@
 				<div class="flex-fill textAreaDate">
 					{new Date(
 						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-					).toLocaleDateString('locale', { weekday: 'long', timeZone: 'UTC' })}<br />
+					).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br />
 					{new Date(
 						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-					).toLocaleDateString('locale', {
+					).toLocaleDateString($tolgee.getLanguage(), {
 						day: '2-digit',
 						month: '2-digit',
 						year: 'numeric',
