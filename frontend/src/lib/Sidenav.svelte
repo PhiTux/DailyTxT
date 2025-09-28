@@ -449,21 +449,39 @@
 
 	.searchTagDropdown {
 		position: absolute;
-		/* background-color: white; */
-		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+		backdrop-filter: blur(10px) saturate(150%);
 		z-index: 1000;
-		left: 60px;
+		left: 74px;
 		margin-top: 38px;
 		max-height: 200px;
 		overflow-y: auto;
 		overflow-x: hidden;
 		display: flex;
 		flex-direction: column;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
 	}
 
-	.searchTag-item.selected {
-		background-color: #b2b4b6;
+	:global(body[data-bs-theme='dark']) .searchTagDropdown {
+		background-color: rgba(87, 87, 87, 0.5);
 	}
+
+	:global(body[data-bs-theme='light']) .searchTagDropdown {
+		background-color: rgba(196, 196, 196, 0.5);
+	}
+
+	:global(body[data-bs-theme='dark']) .searchTag-item.selected {
+		background-color: #5f5f5f;
+	}
+
+	:global(body[data-bs-theme='light']) .searchTag-item.selected {
+		background-color: #b9b9b9;
+	}
+
+	/* .searchTag-item.selected {
+		background-color: #b2b4b6;
+	} */
 
 	.searchTag-item {
 		cursor: pointer;

@@ -1843,7 +1843,8 @@
 		display: flex;
 		flex-direction: column;
 		backdrop-filter: blur(10px) saturate(150%);
-		border-radius: 10px;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
 	}
 
 	:global(body[data-bs-theme='dark']) #tagDropdown {

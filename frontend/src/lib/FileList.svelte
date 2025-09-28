@@ -91,7 +91,7 @@
 		ondrop={(e) => handleDrop(e, index)}
 	>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		{#if editable}
+		{#if editable && files.length > 1}
 			<div
 				class="drag-handle d-flex align-items-center px-2"
 				draggable="true"
