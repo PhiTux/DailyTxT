@@ -32,7 +32,8 @@
 		faCheck,
 		faSun,
 		faMoon,
-		faCircleUp
+		faCircleUp,
+		faBars
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 	import SelectTimezone from '$lib/SelectTimezone.svelte';
@@ -1116,11 +1117,11 @@
 						type="button"
 						data-bs-toggle="offcanvas"
 						data-bs-target="#sidenav"
-						aria-controls="sidenav">menü</button
+						aria-controls="sidenav"><Fa icon={faBars} /></button
 					>
 				{/if}
 
-				<div class="form-check form-switch d-flex flex-row">
+				<div class="selectMode form-check form-switch d-flex flex-row">
 					<label class="me-3" for="selectMode"><Fa icon={faPencil} size="1.5x" /></label>
 					<div class="form-check form-switch">
 						<input
@@ -2596,6 +2597,19 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='dark'] .multiselect) {
+		background: #212529 !important;
+		border: 1px solid #212529 !important;
+	}
+
+	:global(body[data-bs-theme='dark'] .multiselect > ul) {
+		background: #212529 !important;
+	}
+
+	:global(.multiselect.disabled) {
+		color: grey !important;
+	}
+
 	#settingsTabGroup > button {
 		transition: text-decoration 0.3s ease;
 	}
@@ -2713,6 +2727,10 @@
 
 	:global(.tagColumn > span) {
 		width: min-content;
+	}
+
+	.selectMode > label {
+		cursor: pointer;
 	}
 
 	#selectMode:checked {
