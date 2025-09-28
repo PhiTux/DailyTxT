@@ -167,6 +167,42 @@
 		};
 	}
 
+	// Swipe support (mobile): horizontal swipe on header changes day
+	let touchStartX = 0;
+	let touchStartY = 0;
+	let touchStartTime = 0;
+	const SWIPE_MIN_DISTANCE = 50; // px
+	const SWIPE_MAX_OFF_AXIS = 70; // px vertical tolerance
+	const SWIPE_MAX_DURATION = 800; // ms
+
+	function onHeaderTouchStart(e) {
+		if (e.touches.length !== 1) return;
+		const t = e.touches[0];
+		touchStartX = t.clientX;
+		touchStartY = t.clientY;
+		touchStartTime = Date.now();
+	}
+
+	function onHeaderTouchEnd(e) {
+		const t = e.changedTouches && e.changedTouches[0];
+		if (!t) return;
+		const dx = t.clientX - touchStartX;
+		const dy = t.clientY - touchStartY;
+		const dt = Date.now() - touchStartTime;
+
+		if (dt > SWIPE_MAX_DURATION) return;
+		if (Math.abs(dx) < SWIPE_MIN_DISTANCE) return;
+		if (Math.abs(dy) > SWIPE_MAX_OFF_AXIS) return;
+
+		// valid horizontal swipe
+		e.preventDefault();
+		if (dx < 0) {
+			changeDay(+1); // swipe left -> next day
+		} else {
+			changeDay(-1); // swipe right -> previous day
+		}
+	}
+
 	let currentLog = $state('');
 	let savedLog = $state('');
 
@@ -1142,7 +1178,11 @@
 		<!-- Center -->
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
-			<div class="d-flex flex-row textAreaHeader glass">
+			<div
+				class="d-flex flex-row textAreaHeader glass"
+				ontouchstart={onHeaderTouchStart}
+				ontouchend={onHeaderTouchEnd}
+			>
 				<div class="flex-fill textAreaDate">
 					{new Date(
 						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
@@ -1194,7 +1234,7 @@
 			{/if}
 
 			{#if $settings.useALookBack && aLookBack.length > 0}
-				<div class="mt-3 d-flex gap-2">
+				<div class="mt-3 d-flex gap-2 overflow-x-auto">
 					{#each aLookBack as log}
 						<ALookBack {log} />
 					{/each}
@@ -1814,7 +1854,8 @@
 
 	.middle-right {
 		justify-content: center;
-		width: 100%;
+		/* width: 100%; */
+		min-width: 0;
 	}
 
 	.tagRow {
@@ -2040,6 +2081,7 @@
 	/* Allow middle/editor column to actually shrink instead of forcing siblings narrower */
 	#middle {
 		min-width: 0;
+		width: 100%;
 	}
 
 	/* Drag and Drop Styles */
