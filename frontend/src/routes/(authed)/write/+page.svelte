@@ -1768,7 +1768,7 @@
 		border: 1px solid #adadad77;
 	}
 
-	@media (max-width: 1150px) {
+	@media (max-width: 1200px) {
 		.middle-right {
 			flex-direction: column !important;
 			align-items: center;
@@ -1780,6 +1780,9 @@
 		}
 
 		#right {
+			/* Revert fixed width for stacked layout */
+			flex: 1 1 auto !important;
+			width: 100% !important;
 			padding-right: 0 !important;
 		}
 	}
@@ -1792,22 +1795,24 @@
 		}
 	}
 
-	@media (min-width: 1400px) {
-		#right {
-			width: 500px !important;
+	@media (min-width: 1600px) {
+		.sidenav {
+			padding-left: 2rem !important;
+			min-width: 430px !important;
 		}
-	}
 
-	.main-row {
-		max-width: 100vw;
+		#middle {
+			padding-left: 3rem !important;
+			padding-right: 3rem !important;
+		}
+
+		#right {
+			min-width: 400px !important;
+		}
 	}
 
 	.middle-right {
 		justify-content: center;
-		width: 100%;
-	}
-
-	#middle {
 		width: 100%;
 	}
 
@@ -1968,8 +1973,8 @@
 	:global(.TinyMDE) {
 		border: 1px solid lightgreen;
 
-		border-bottom-left-radius: 5px;
-		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 8px;
+		border-bottom-right-radius: 8px;
 		overflow-y: auto;
 
 		transition: all ease 0.2s;
@@ -2022,10 +2027,17 @@
 
 	#right {
 		margin-top: 1.5rem !important;
-		/* min-width: 300px;
-		max-width: 400px; */
-		width: 400px;
+		/* Keep a stable column so long lines in the editor don't steal its space */
+		flex: 0 0 360px;
+		width: 360px;
+		min-width: 300px;
+		max-width: 400px;
 		padding-right: 2rem;
+	}
+
+	/* Allow middle/editor column to actually shrink instead of forcing siblings narrower */
+	#middle {
+		min-width: 0;
 	}
 
 	/* Drag and Drop Styles */

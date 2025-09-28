@@ -396,7 +396,7 @@
 	<Sidenav />
 </div>
 
-<div class="layout-read d-flex flex-row justify-content-between">
+<div class="layout-read d-flex flex-row justify-content-between container-xxl">
 	<!-- shown on large Screen -->
 	{#if $alwaysShowSidenav}
 		<div class="sidenav p-3">
@@ -506,7 +506,7 @@
 
 	.files {
 		max-width: 350px;
-		min-width: 200px;
+		min-width: 250px;
 	}
 
 	.middle {
