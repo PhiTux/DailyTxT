@@ -285,6 +285,11 @@
 		padding: 0.5rem 1rem;
 		cursor: pointer;
 		z-index: 10000;
+		border-radius: 50px;
+		width: 50px;
+		height: 50px;
+		display: flex;
+		align-items: center;
 	}
 
 	.nav-btn.prev {
