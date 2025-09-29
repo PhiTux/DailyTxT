@@ -220,6 +220,8 @@
 		gap: 1rem;
 		overflow-x: auto;
 		padding: 0.5rem 0;
+		height: 116px;
+		min-height: 116px;
 	}
 
 	.image-container {

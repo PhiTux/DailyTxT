@@ -1167,7 +1167,7 @@
 
 	{#key page.data}
 		<div
-			class="transition-wrapper overflow-y-auto"
+			class="transition-wrapper overflow-y-auto h-100"
 			out:blur={{ duration: outDuration }}
 			in:blur={{ duration: inDuration, delay: outDuration }}
 		>

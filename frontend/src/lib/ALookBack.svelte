@@ -42,8 +42,8 @@
 </script>
 
 <!-- svelte-ignore a11y_consider_explicit_label -->
-<button onclick={openModal} id="zoomButton" class="btn" style="width: 200px; height: 100px;">
-	<div class="d-flex flex-row h-100">
+<button onclick={openModal} id="zoomButton" class="btn" style="height:100px;">
+	<div class="d-flex flex-row h-100" style="width: 200px;">
 		<div class="left d-flex flex-column justify-content-evenly px-1">
 			<div><b>{log?.year}</b></div>
 			<div><em><b>{log?.years_old}</b> {$t('aLookBack.Year_one_letter')}</em></div>

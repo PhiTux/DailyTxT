@@ -1166,7 +1166,7 @@
 	<Sidenav />
 </div>
 
-<div class="d-flex flex-row justify-content-between h-100 main-row">
+<div class="d-flex flex-row justify-content-between main-row h-100">
 	<!-- shown on large Screen -->
 	{#if $alwaysShowSidenav}
 		<div class="sidenav p-3">
@@ -1234,7 +1234,7 @@
 			{/if}
 
 			{#if $settings.useALookBack && aLookBack.length > 0}
-				<div class="mt-3 d-flex gap-2 overflow-x-auto">
+				<div class="mt-3 d-flex gap-2 overflow-x-auto mb-2 a-look-back">
 					{#each aLookBack as log}
 						<ALookBack {log} />
 					{/each}
@@ -1349,14 +1349,17 @@
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
 
-				<FileList
-					files={filesOfDay}
-					{downloadFile}
-					{askDeleteFile}
-					{renameFile}
-					{reorderFiles}
-					editable
-				/>
+				<div class="fileScroll">
+					<FileList
+						files={filesOfDay}
+						{downloadFile}
+						{askDeleteFile}
+						{renameFile}
+						{reorderFiles}
+						editable
+					/>
+				</div>
+
 				{#each uploadingFiles as file}
 					<div>
 						{file.name}
@@ -1770,6 +1773,11 @@
 </div>
 
 <style>
+	.a-look-back {
+		height: 110px;
+		min-height: 110px;
+	}
+
 	#modalHistory > div > div {
 		height: 80vh;
 	}
@@ -1937,6 +1945,11 @@
 		margin-bottom: 1rem;
 		border-radius: 10px;
 		padding: 1rem;
+		min-height: 0;
+	}
+
+	.fileScroll {
+		overflow-y: auto;
 	}
 
 	:global(#uploadIcon) {

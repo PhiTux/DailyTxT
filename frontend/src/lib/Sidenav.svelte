@@ -427,6 +427,12 @@
 		margin-bottom: 3rem;
 	}
 
+	@media (max-height: 800px) {
+		:global(.datepicker) {
+			margin-bottom: 1rem;
+		}
+	}
+
 	.noResult {
 		font-size: 25pt;
 		font-weight: 750;
@@ -453,7 +459,8 @@
 
 	:global(.popover-body) {
 		overflow-y: auto;
-		max-height: 550px;
+		/* max-height: 550px; */
+		max-height: 90vh;
 	}
 
 	.searchTagDropdown {
