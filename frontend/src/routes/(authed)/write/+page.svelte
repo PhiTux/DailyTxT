@@ -1321,7 +1321,7 @@
 
 			<div class="files d-flex flex-column glass">
 				<button
-					class="btn btn-secondary upload-btn {filesOfDay?.length > 0 ? 'mb-2' : ''}"
+					class="btn btn-secondary upload-btn {filesOfDay?.length > 0 ? '' : ''}"
 					id="uploadBtn"
 					onclick={triggerFileInput}
 					ondragenter={(e) => {
@@ -1348,6 +1348,9 @@
 					}}><Fa icon={faCloudArrowUp} class="me-2" id="uploadIcon" />{$t('files.upload')}</button
 				>
 				<input type="file" id="fileInput" multiple style="display: none;" onchange={onFileChange} />
+				{#if filesOfDay?.length > 0}
+					<div transition:slide><div class="pt-3"></div></div>
+				{/if}
 
 				<div class="fileScroll">
 					<FileList

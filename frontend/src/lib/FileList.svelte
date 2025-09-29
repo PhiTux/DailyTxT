@@ -110,10 +110,10 @@
 					{/if}
 					<button
 						onclick={() => downloadFile(file.uuid_filename)}
-						class="p-2 fileBtn d-flex flex-column flex-fill"
+						class="p-2 fileBtn d-flex flex-row flex-fill justify-content-center"
 					>
-						<div class="d-flex flex-row align-items-center">
-							<div class="filename filenameWeight">{file.filename}</div>
+						<div>
+							<span class="filename filenameWeight">{file.filename}</span>
 							<span class="filesize">({formatBytes(file.size)})</span>
 						</div>
 						{#if file.downloadProgress >= 0}
@@ -272,6 +272,7 @@
 		background-color: rgba(117, 117, 117, 0.45);
 		border: 0px solid #ececec77;
 		border-radius: 5px;
+		width: 100%;
 	}
 
 	.options-menu {
