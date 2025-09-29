@@ -1200,13 +1200,17 @@
 					<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
 					{logDateWritten}
 				</div>
-				{#if historyAvailable}
-					<div class="textAreaHistory d-flex flex-column justify-content-center">
-						<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
-							<Fa icon={faClockRotateLeft} class="" size="1.5x" fw />
-						</button>
-					</div>
-				{/if}
+				<!-- {#if historyAvailable} -->
+				<div
+					class="textAreaHistory d-flex flex-column justify-content-center {historyAvailable
+						? ''
+						: 'invisible'}"
+				>
+					<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
+						<Fa icon={faClockRotateLeft} class="" size="1.5x" fw />
+					</button>
+				</div>
+				<!-- {/if} -->
 				<div class="textAreaDelete d-flex flex-column justify-content-center">
 					<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
 						<Fa icon={faTrash} class="" size="1.5x" fw />
@@ -2064,10 +2068,13 @@
 		border-top-right-radius: 5px;
 	}
 
-	.textAreaDate,
+	.textAreaDate {
+		border-right: 1px solid #6a6a6a;
+		padding: 0.25em;
+	}
+
 	.textAreaWrittenAt,
 	.textAreaHistory {
-		border-right: 1px solid #6a6a6a;
 		padding: 0.25em;
 	}
 

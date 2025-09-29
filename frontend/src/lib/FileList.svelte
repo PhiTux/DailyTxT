@@ -273,6 +273,7 @@
 		border: 0px solid #ececec77;
 		border-radius: 5px;
 		width: 100%;
+		margin-top: 0.5rem;
 	}
 
 	.options-menu {
@@ -304,6 +305,5 @@
 	.file-list {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
 	}
 </style>
