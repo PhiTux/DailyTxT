@@ -19,7 +19,8 @@
 		faClockRotateLeft,
 		faArrowLeft,
 		faArrowRight,
-		faTrash
+		faTrash,
+		faBars
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import { v4 as uuidv4 } from 'uuid';
@@ -1183,38 +1184,68 @@
 				ontouchstart={onHeaderTouchStart}
 				ontouchend={onHeaderTouchEnd}
 			>
-				<div class="flex-fill textAreaDate">
-					{new Date(
-						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-					).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br />
-					{new Date(
-						Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-					).toLocaleDateString($tolgee.getLanguage(), {
-						day: '2-digit',
-						month: '2-digit',
-						year: 'numeric',
-						timeZone: 'UTC'
-					})}
+				<div class="flex-fill d-flex">
+					<div class="w-50 textAreaDate">
+						{new Date(
+							Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+						).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br />
+						{new Date(
+							Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+						).toLocaleDateString($tolgee.getLanguage(), {
+							day: '2-digit',
+							month: '2-digit',
+							year: 'numeric',
+							timeZone: 'UTC'
+						})}
+					</div>
+					<div class="w-50 textAreaWrittenAt">
+						<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
+						{logDateWritten}
+					</div>
 				</div>
-				<div class="flex-fill textAreaWrittenAt">
-					<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
-					{logDateWritten}
-				</div>
-				<!-- {#if historyAvailable} -->
+				<!-- Desktop buttons -->
 				<div
-					class="textAreaHistory d-flex flex-column justify-content-center {historyAvailable
+					class="textAreaHistory header-btn-desktop d-flex flex-column justify-content-center {historyAvailable
 						? ''
 						: 'invisible'}"
 				>
 					<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
-						<Fa icon={faClockRotateLeft} class="" size="1.5x" fw />
+						<Fa icon={faClockRotateLeft} size="1.5x" fw />
 					</button>
 				</div>
-				<!-- {/if} -->
-				<div class="textAreaDelete d-flex flex-column justify-content-center">
+				<div class="textAreaDelete header-btn-desktop d-flex flex-column justify-content-center">
 					<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
-						<Fa icon={faTrash} class="" size="1.5x" fw />
+						<Fa icon={faTrash} size="1.5x" fw />
 					</button>
+				</div>
+				<!-- Mobile dropdown -->
+				<div class="dropdown header-actions-mobile d-flex flex-column justify-content-center ms-1">
+					<button
+						class="btn px-2 btn-hover"
+						type="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<Fa icon={faBars} fw />
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						{#if historyAvailable}
+							<li>
+								<button type="button" class="dropdown-item" onclick={() => getHistory()}>
+									<Fa icon={faClockRotateLeft} class="me-2" />{$t('log.dropdown.history')}
+								</button>
+							</li>
+						{/if}
+						<li>
+							<button
+								type="button"
+								class="dropdown-item text-danger"
+								onclick={() => showDeleteDayModal()}
+							>
+								<Fa icon={faTrash} class="me-2" />{$t('log.dropdown.deleteDay')}
+							</button>
+						</li>
+					</ul>
 				</div>
 			</div>
 			<div id="log" class="focus-ring">
@@ -2017,13 +2048,11 @@
 	}
 
 	:global(body[data-bs-theme='dark'] .TinyMDE) {
-		backdrop-filter: blur(8px) saturate(130%);
 		background-color: rgba(50, 50, 50, 0.8);
 		color: #f0f0f0;
 	}
 
 	:global(body[data-bs-theme='light'] .TinyMDE) {
-		backdrop-filter: blur(8px) saturate(130%);
 		background-color: rgba(255, 255, 255, 0.7);
 		color: #1f1f1f;
 	}
@@ -2068,14 +2097,60 @@
 		border-top-right-radius: 5px;
 	}
 
+	.header-actions-mobile {
+		display: none;
+	}
+	.header-btn-desktop {
+		display: flex;
+	}
+
+	@media (max-width: 550px) {
+		.header-actions-mobile {
+			display: flex;
+		}
+		.header-btn-desktop {
+			display: none !important;
+		}
+	}
+	@media (min-width: 551px) {
+		.header-actions-mobile {
+			display: none !important;
+		}
+		.header-btn-desktop {
+			display: flex !important;
+		}
+	}
+
 	.textAreaDate {
 		border-right: 1px solid #6a6a6a;
 		padding: 0.25em;
 	}
 
+	@media (max-width: 500px) {
+		.textAreaWrittenAt {
+			font-size: 0.9rem;
+		}
+	}
+
+	@media (max-width: 450px) {
+		.textAreaWrittenAt {
+			font-size: 0.8rem;
+		}
+		.textAreaDate {
+			font-size: 0.9rem;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.textAreaWrittenAt {
+			font-size: 0.7rem;
+		}
+	}
+
 	.textAreaWrittenAt,
 	.textAreaHistory {
 		padding: 0.25em;
+		align-content: center;
 	}
 
 	.textAreaDelete {

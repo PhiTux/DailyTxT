@@ -1121,8 +1121,10 @@
 					>
 				{/if}
 
-				<div class="selectMode form-check form-switch d-flex flex-row">
-					<label class="me-3" for="selectMode"><Fa icon={faPencil} size="1.5x" /></label>
+				<div class="selectMode form-check form-switch d-flex flex-row align-items-center">
+					<label class="me-3 modeSliderIcon" for="selectMode"
+						><Fa icon={faPencil} size="1.5x" /></label
+					>
 					<div class="form-check form-switch">
 						<input
 							class="form-check-input"
@@ -1133,7 +1135,9 @@
 							style="transform: scale(1.3);"
 						/>
 					</div>
-					<label class="ms-2" for="selectMode"><Fa icon={faGlasses} size="1.5x" /></label>
+					<label class="ms-2 modeSliderIcon" for="selectMode"
+						><Fa icon={faGlasses} size="1.5x" /></label
+					>
 				</div>
 			</div>
 
@@ -2627,6 +2631,21 @@
 
 	:global(body[data-bs-theme='light']) #settingsTabGroup {
 		background-color: #b8b8b8;
+	}
+
+	@media (max-width: 450px) {
+		.modeSliderIcon {
+			font-size: 0.8rem !important;
+		}
+		.selectMode {
+			padding-left: 1rem !important;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.dailytxt {
+			display: none;
+		}
 	}
 
 	.dailytxt {
