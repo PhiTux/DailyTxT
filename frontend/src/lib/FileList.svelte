@@ -23,6 +23,14 @@
 	let draggedIndex = $state(null);
 	let dragOverIndex = $state(null);
 
+	$effect(() => {
+		if (files) {
+			openOptionsMenu = null;
+			editingFilename = null;
+			newFilename = '';
+		}
+	});
+
 	function handleDragStart(event, index) {
 		draggedIndex = index;
 		event.dataTransfer.effectAllowed = 'move';
