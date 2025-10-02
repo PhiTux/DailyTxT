@@ -111,6 +111,11 @@
 							type="text"
 							class="form-control mb-2"
 							placeholder={$t('modal.tag.name')}
+							onkeydown={(e) => {
+								if (e.key === 'Enter') {
+									createTag ? saveNewTag() : saveEditedTag();
+								}
+							}}
 						/>
 					</div>
 				</div>

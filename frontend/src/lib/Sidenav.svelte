@@ -480,6 +480,12 @@
 		border-bottom-right-radius: 10px;
 	}
 
+	@media (max-width: 1599px) {
+		.searchTagDropdown {
+			left: 58px;
+		}
+	}
+
 	:global(body[data-bs-theme='dark']) .searchTagDropdown {
 		background-color: rgba(87, 87, 87, 0.5);
 	}

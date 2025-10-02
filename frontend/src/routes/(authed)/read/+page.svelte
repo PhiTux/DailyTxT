@@ -606,6 +606,10 @@
 			flex-direction: column !important;
 		}
 
+		.files {
+			margin-left: 0 !important;
+		}
+
 		#scrollArea {
 			margin-top: 1rem !important;
 			margin-bottom: 1rem !important;

@@ -4,7 +4,6 @@
 	import Sidenav from '$lib/Sidenav.svelte';
 	import { selectedDate, cal, readingDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
-	import { goto } from '$app/navigation';
 	import { mount, onMount } from 'svelte';
 	import { searchString, searchResults } from '$lib/searchStore.js';
 	import * as TinyMDE from 'tiny-markdown-editor';
@@ -26,7 +25,7 @@
 	import { v4 as uuidv4 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
 	import { settings, autoLoadImagesThisDevice } from '$lib/settingsStore';
-	import { tags } from '$lib/tagStore';
+	import { tags, tagsLoaded } from '$lib/tagStore';
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
 	import FileList from '$lib/FileList.svelte';
@@ -720,12 +719,31 @@
 	let searchTab = $state('');
 	let showTagDropdown = $state(false);
 
+	// General touch device detection (iPad & others) for simplified touch-friendly tag selection
+	let isTouchDevice = $state(false);
+	let showTouchTagPanel = $state(false);
+	onMount(() => {
+		try {
+			const ua = navigator.userAgent || '';
+			const platform = navigator.platform || '';
+			const maxTP = navigator.maxTouchPoints || 0;
+			const coarse = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+			const iPadLike = /iPad/.test(ua) || (/Mac/.test(platform) && maxTP > 1);
+			isTouchDevice = maxTP > 0 || coarse || iPadLike || 'ontouchstart' in window;
+		} catch (e) {
+			isTouchDevice = false;
+		}
+	});
+
 	let filteredTags = $state([]);
 	let selectedTags = $state([]);
 
-	// Action: portal dropdown to <body> and position it under the input
+	// Action: portal dropdown to <body> and position it under the input (with iOS visualViewport handling)
 	function portalDropdown(node, params) {
 		let anchorEl;
+		let frameRequested = false;
+		let lastPlacement = 'bottom';
+		const GAP = 4;
 
 		function getAnchor() {
 			if (params?.anchor) {
@@ -736,47 +754,128 @@
 			return document.getElementById('tag-input');
 		}
 
-		function position() {
-			if (!anchorEl) return;
+		function schedulePosition() {
+			if (frameRequested) return;
+			frameRequested = true;
+			requestAnimationFrame(() => {
+				frameRequested = false;
+				_doPosition();
+			});
+		}
+
+		function _doPosition() {
+			if (!anchorEl || !node.isConnected) return;
 			const rect = anchorEl.getBoundingClientRect();
+			const vv = window.visualViewport;
+			// Use fixed positioning + visual viewport offsets
 			node.style.position = 'fixed';
-			node.style.top = rect.bottom + 'px';
-			node.style.left = rect.left + 'px';
-			/* node.style.width = rect.width + 'px'; */
-			// keep within viewport horizontally (basic guard)
-			const maxLeft = Math.max(8, Math.min(rect.left, window.innerWidth - node.offsetWidth - 8));
-			node.style.left = maxLeft + 'px';
+
+			// Determine available space (visual viewport aware)
+			const viewportHeight = vv ? vv.height : window.innerHeight;
+			const viewportWidth = vv ? vv.width : window.innerWidth;
+			const vOffsetTop = vv ? vv.offsetTop : 0; // when keyboard pushes visual viewport upward
+			const vOffsetLeft = vv ? vv.offsetLeft : 0;
+			// Safe-area bottom inset (iOS notch / home indicator) – cannot read env() directly here, fallback 0
+			const safeBottomInset = 0;
+
+			// First attempt: place below
+			let top = rect.bottom + vOffsetTop + GAP;
+			let left = rect.left + vOffsetLeft;
+
+			// Temporarily set visibility hidden to measure height if not shown
+			const prevVis = node.style.visibility;
+			node.style.visibility = 'hidden';
+			node.style.top = '0px';
+			node.style.left = '0px';
+			node.style.display = 'block';
+			const menuH = node.offsetHeight || 180;
+			const menuW = node.offsetWidth || 200;
+			node.style.visibility = prevVis || '';
+
+			const spaceBelow = viewportHeight + vOffsetTop - rect.bottom - GAP - safeBottomInset;
+			const spaceAbove = rect.top - vOffsetTop - GAP;
+
+			// Decide placement & dynamic max-height
+			let desiredPlacement = 'bottom';
+			// If below space is insufficient but above has more room, flip
+			if (spaceBelow < Math.min(menuH, 220) && spaceAbove > spaceBelow) {
+				desiredPlacement = 'top';
+			}
+
+			let available = desiredPlacement === 'bottom' ? spaceBelow : spaceAbove;
+			// Cap maximal height to a reasonable viewport fraction
+			const maxCap = Math.min(Math.max(available, 120), Math.floor(viewportHeight * 0.7));
+			// Apply before final vertical positioning so scrollHeight reflects possible shrink
+			node.style.maxHeight = maxCap + 'px';
+			node.style.overflowY = 'auto';
+			node.style.webkitOverflowScrolling = 'touch';
+
+			if (desiredPlacement === 'top') {
+				top = rect.top + vOffsetTop - GAP - maxCap;
+				lastPlacement = 'top';
+			} else {
+				// keep below; if content smaller than available it will shrink naturally
+				lastPlacement = 'bottom';
+			}
+
+			// Horizontal clamping
+			if (left + menuW > viewportWidth + vOffsetLeft - 8) {
+				left = viewportWidth + vOffsetLeft - menuW - 8;
+			}
+			left = Math.max(8 + vOffsetLeft, left);
+
+			node.style.top = Math.round(top) + 'px';
+			node.style.left = Math.round(left) + 'px';
+			node.dataset.placement = lastPlacement;
 		}
 
 		function attach() {
-			// move element into body so it's not clipped by ancestors and backdrop-filter works as expected
-			document.body.appendChild(node);
-			position();
+			if (!node.isConnected) return;
+			if (node.parentElement !== document.body) {
+				document.body.appendChild(node);
+			}
+			// do an immediate position before RAF to avoid initial invisible state
+			_doPosition();
+			schedulePosition();
+			// fallback in case rAF didn't fire yet or iOS delayed metrics
+			setTimeout(() => {
+				if (!node.dataset.placement) {
+					_doPosition();
+				}
+			}, 48);
 		}
 
-		function onScroll() {
-			position();
+		function onAny() {
+			schedulePosition();
 		}
-		function onResize() {
-			position();
+		function onScrollCapture() {
+			schedulePosition();
 		}
 
 		anchorEl = getAnchor();
 		attach();
-		// use capture to react to scrolls on any ancestor
-		window.addEventListener('scroll', onScroll, true);
-		window.addEventListener('resize', onResize);
+
+		// Global listeners
+		window.addEventListener('scroll', onScrollCapture, true);
+		window.addEventListener('resize', onAny);
+		if (window.visualViewport) {
+			window.visualViewport.addEventListener('resize', onAny);
+			window.visualViewport.addEventListener('scroll', onAny);
+		}
 
 		return {
 			update(newParams) {
 				params = newParams;
 				anchorEl = getAnchor();
-				position();
+				schedulePosition();
 			},
 			destroy() {
-				window.removeEventListener('scroll', onScroll, true);
-				window.removeEventListener('resize', onResize);
-				// Do not manually remove node; Svelte will detach it.
+				window.removeEventListener('scroll', onScrollCapture, true);
+				window.removeEventListener('resize', onAny);
+				if (window.visualViewport) {
+					window.visualViewport.removeEventListener('resize', onAny);
+					window.visualViewport.removeEventListener('scroll', onAny);
+				}
 			}
 		};
 	}
@@ -965,6 +1064,21 @@
 			});
 	}
 
+	function loadTags() {
+		axios
+			.get(API_URL + '/logs/getTags')
+			.then((response) => {
+				$tags = response.data;
+				$tagsLoaded = true;
+			})
+			.catch((error) => {
+				console.error(error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingTags'));
+				toast.show();
+			});
+	}
+
 	let history = $state([]);
 	let historySelected = $state(0);
 	function getHistory() {
@@ -1144,6 +1258,8 @@
 	}
 </script>
 
+<!-- styles consolidated above -->
+
 <DatepickerLogic />
 <svelte:window
 	onkeydown={on_key_down}
@@ -1321,27 +1437,42 @@
 					>
 				</div>
 				<div class="tagRow d-flex flex-row">
-					<input
-						bind:value={searchTab}
-						onfocus={() => {
-							showTagDropdown = true;
-							selectedTagIndex = 0;
-						}}
-						onfocusout={() => {
-							setTimeout(() => (showTagDropdown = false), 150);
-						}}
-						onkeydown={handleKeyDown}
-						type="text"
-						class="form-control"
-						id="tag-input"
-						placeholder={$t('tags.input')}
-					/>
+					{#if isTouchDevice}
+						<button
+							id="tag-input"
+							type="button"
+							class="btn btn-outline-secondary flex-grow-1 text-start"
+							onclick={() => (showTouchTagPanel = !showTouchTagPanel)}
+						>
+							{#if showTouchTagPanel}
+								{$t('tags.hide_selector')}
+							{:else}
+								{$t('tags.input')}
+							{/if}
+						</button>
+					{:else}
+						<input
+							bind:value={searchTab}
+							onfocus={() => {
+								showTagDropdown = true;
+								selectedTagIndex = 0;
+							}}
+							onfocusout={() => {
+								setTimeout(() => (showTagDropdown = false), 150);
+							}}
+							onkeydown={handleKeyDown}
+							type="text"
+							class="form-control"
+							id="tag-input"
+							placeholder={$t('tags.input')}
+						/>
+					{/if}
 					<button class="newTagBtn btn btn-outline-secondary ms-2" onclick={openTagModal}>
 						<Fa icon={faSquarePlus} fw />
 						{$t('tags.new_tag')}
 					</button>
 				</div>
-				{#if showTagDropdown}
+				{#if !isTouchDevice && showTagDropdown}
 					<div id="tagDropdown" use:portalDropdown>
 						{#if filteredTags.length === 0}
 							<em style="padding: 0.2rem;">{$t('tags.no_tags_found')}</em>
@@ -1361,6 +1492,27 @@
 								</div>
 							{/each}
 						{/if}
+					</div>
+				{/if}
+				{#if isTouchDevice && showTouchTagPanel}
+					<div transition:slide>
+						<div class="touch-tag-panel mt-2">
+							{#if $tags.length === 0}
+								<em style="padding:0.2rem;">{$t('tags.no_tags_found')}</em>
+							{:else}
+								<div class="d-flex flex-row flex-wrap gap-1 selectTagTouchDevice">
+									{#each $tags.filter((t) => !selectedTags.includes(t.id)) as tag (tag.id)}
+										<button
+											type="button"
+											class="touch-tag-item btn btn-sm btn-outline-none"
+											onclick={() => selectTag(tag.id)}
+										>
+											<Tag {tag} />
+										</button>
+									{/each}
+								</div>
+							{/if}
+						</div>
 					</div>
 				{/if}
 				<div class="selectedTags d-flex flex-row flex-wrap">
@@ -1831,6 +1983,12 @@
 </div>
 
 <style>
+	.selectTagTouchDevice {
+		background-color: #adadad65;
+		padding: 0.5rem;
+		border-radius: 10px;
+	}
+
 	.a-look-back {
 		height: 110px;
 		min-height: 110px;
