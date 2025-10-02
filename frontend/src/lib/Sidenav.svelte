@@ -265,10 +265,12 @@
 		<form onsubmit={searchForString} class="input-group">
 			<button
 				class="btnSearchPopover btn btn-outline-secondary glass"
+				type="button"
 				data-bs-toggle="popover"
 				data-bs-title="Suche"
 				data-bs-content={$t('search.description')}
-				onclick={(event) => event.preventDefault()}><Fa icon={faQuestionCircle} /></button
+				tabindex="0"
+				aria-label={$t('search.description')}><Fa icon={faQuestionCircle} /></button
 			>
 			{#if $searchTag.id}
 				<!-- If a tag is selected ... -->
@@ -459,8 +461,7 @@
 
 	:global(.popover-body) {
 		overflow-y: auto;
-		/* max-height: 550px; */
-		max-height: 90vh;
+		max-height: 80vh;
 	}
 
 	.searchTagDropdown {
