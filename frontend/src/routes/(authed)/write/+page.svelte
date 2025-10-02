@@ -49,12 +49,19 @@
 	let cancelDownload = new AbortController();
 
 	let tinyMDE;
+	let isMobile = false;
 	onMount(() => {
 		// If we come from read mode, keep the last visible day as the active selected day
 		if ($readingDate) {
 			$selectedDate = $readingDate; // promote readingDate to selectedDate when switching to write mode
 		}
 		$readingDate = null; // no reading-highlighting when in write mode
+
+		// Detect mobile (simple heuristic: viewport width OR user agent)
+		isMobile =
+			typeof window !== 'undefined' &&
+			(window.matchMedia('(max-width: 768px)').matches ||
+				/Mobi|Android/i.test(navigator.userAgent));
 
 		tinyMDE = new TinyMDE.Editor({ element: 'editor', content: '' });
 		let commandBar = new TinyMDE.CommandBar({ element: 'toolbar', editor: tinyMDE });
@@ -247,8 +254,19 @@
 
 			savedLog = currentLog;
 
+			// Update editor content
 			tinyMDE.setContent(currentLog);
-			tinyMDE.setSelection({ row: 0, col: 0 });
+			// Only auto-focus/select on non-mobile devices
+			if (!isMobile) {
+				try {
+					tinyMDE.setSelection({ row: 0, col: 0 });
+					// Ensure the underlying editable div gets focus
+					const editorEl = document.querySelector(
+						'#editor .TinyMDE textarea, #editor .TinyMDE [contenteditable="true"]'
+					);
+					if (editorEl) editorEl.focus();
+				} catch {}
+			}
 
 			logDateWritten = response.data.date_written;
 
@@ -292,9 +310,11 @@
 	}
 
 	// Re-trigger aLookBack when settings are loaded/changed
+	let initial_aLookBack = $state(false);
 	$effect(() => {
-		if ($settings && $settings.useALookBack !== undefined) {
+		if (!initial_aLookBack && $settings && $settings.useALookBack) {
 			getALookBack();
+			initial_aLookBack = true;
 		}
 	});
 
