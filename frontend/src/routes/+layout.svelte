@@ -147,10 +147,6 @@
 		z-index: 9999;
 	}
 
-	:global(body[data-bs-theme='light'] button) {
-		color: black;
-	}
-
 	:global(body[data-bs-theme='dark'] button) {
 		color: #fbfbfe;
 	}

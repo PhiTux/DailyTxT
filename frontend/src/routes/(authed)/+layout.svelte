@@ -270,6 +270,7 @@
 		{ id: 'templates', labelKey: 'settings.templates' },
 		{ id: 'data', labelKey: 'settings.data' },
 		{ id: 'security', labelKey: 'settings.security' },
+		{ id: 'account', labelKey: 'settings.account' },
 		{ id: 'about', labelKey: 'settings.about' }
 	];
 
@@ -2207,7 +2208,11 @@
 										</p>
 										<form
 											onsubmit={() => {
-												showConfirmDeleteAccount = true;
+												if (deleteAccountPassword.trim() === '') {
+													return;
+												} else {
+													showConfirmDeleteAccount = true;
+												}
 											}}
 										>
 											<div class="form-floating mb-3">
@@ -2223,9 +2228,15 @@
 												>
 											</div>
 											<button
-												class="btn btn-danger"
+												class="btn btn-danger {deleteAccountPassword.trim() === ''
+													? 'disabled'
+													: ''}"
 												onclick={() => {
-													showConfirmDeleteAccount = true;
+													if (deleteAccountPassword.trim() === '') {
+														return;
+													} else {
+														showConfirmDeleteAccount = true;
+													}
 												}}
 												data-sveltekit-noscroll
 											>

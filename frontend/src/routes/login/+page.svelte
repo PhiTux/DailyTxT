@@ -228,19 +228,33 @@
 				is_registering = false;
 			});
 	}
+
+	let secondButtonCollapsed = $state(true);
+	onMount(() => {
+		const el = document.getElementById('collapseTwo');
+		if (el) {
+			el.addEventListener('show.bs.collapse', () => {
+				secondButtonCollapsed = false;
+			});
+			el.addEventListener('hide.bs.collapse', () => {
+				secondButtonCollapsed = true;
+			});
+		}
+	});
 </script>
 
 <div class="logo-login-flex d-flex justify-content-center align-items-center flex-row h-100">
 	<div class="logo-wrapper d-flex flex-column align-items-center">
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
 		<span class="dailytxt">DailyTxT</span>
+		<span>{secondButtonCollapsed ? 'h' : 'b'}</span>
 	</div>
 	<div class="login-wrapper">
-		<div class="accordion" id="loginAccordion">
-			<div class="accordion-item">
-				<h2 class="accordion-header">
+		<div class="accordion shadow rounded-4" id="loginAccordion">
+			<div class="accordion-item rounded-4 rounded-bottom-0">
+				<h2 class="accordion-header rounded-4 rounded-bottom-0">
 					<button
-						class="accordion-button"
+						class="accordion-button rounded-4 rounded-bottom-0"
 						type="button"
 						data-bs-toggle="collapse"
 						data-bs-target="#collapseOne"
@@ -410,11 +424,15 @@
 					</div>
 				</div>
 			</div>
-			<div class="accordion-item">
-				<h2 class="accordion-header">
+			<div class="accordion-item rounded-4 rounded-top-0">
+				<h2 class="accordion-header rounded-4 rounded-top-0">
+					<!--  -->
 					<button
-						class="accordion-button collapsed"
+						class="accordion-button rounded-top-0 {secondButtonCollapsed
+							? 'collapsed rounded-4'
+							: ''}"
 						type="button"
+						id="secondAccordionButton"
 						data-bs-toggle="collapse"
 						data-bs-target="#collapseTwo"
 						aria-expanded="false"
