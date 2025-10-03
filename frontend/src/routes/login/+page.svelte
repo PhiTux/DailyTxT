@@ -7,6 +7,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import { isAuthenticated, loadFlagEmoji } from '$lib/helpers.js';
+	import { fade } from 'svelte/transition';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -89,7 +90,21 @@
 
 		// check if registration is allowed
 		checkRegistrationAllowed();
+
+		getVersionInfo();
 	});
+
+	let current_version = $state('');
+	function getVersionInfo() {
+		axios
+			.get(API_URL + '/version')
+			.then((response) => {
+				current_version = response.data.current_version;
+			})
+			.catch((error) => {
+				console.error('Error fetching version info:', error);
+			});
+	}
 
 	function checkRegistrationAllowed() {
 		axios
@@ -243,13 +258,22 @@
 	});
 </script>
 
-<div class="logo-login-flex d-flex justify-content-center align-items-center flex-row h-100">
+<div class="logo-login-flex h-100">
+	{#if current_version !== ''}
+		<div transition:fade class="position-absolute bottom-0 end-0 m-2 glass p-1 rounded-3">
+			<a
+				class="link-underline link-underline-opacity-0 link-underline-opacity-75-hover"
+				href="https://github.com/PhiTux/DailyTxT#changelog"
+				target="_blank">{current_version}</a
+			>
+		</div>
+	{/if}
 	<div class="logo-wrapper d-flex flex-column align-items-center">
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
 		<span class="dailytxt">DailyTxT</span>
-		<span>{secondButtonCollapsed ? 'h' : 'b'}</span>
 	</div>
 	<div class="login-wrapper">
+		<div class="fill"></div>
 		<div class="accordion shadow rounded-4" id="loginAccordion">
 			<div class="accordion-item rounded-4 rounded-bottom-0">
 				<h2 class="accordion-header rounded-4 rounded-bottom-0">
@@ -527,6 +551,7 @@
 				</div>
 			</div>
 		</div>
+		<div class="fill"></div>
 	</div>
 
 	<div class="language-select-wrapper">
@@ -649,6 +674,7 @@
 
 	.logo-wrapper {
 		width: 50%;
+		z-index: 1;
 	}
 
 	#largeLogo {
@@ -665,10 +691,33 @@
 
 	.login-wrapper {
 		width: 50%;
+		/* z-index: 10; */
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		overflow-y: auto;
+	}
+
+	.fill {
+		height: 3rem;
+		min-height: 3rem;
+		flex: 1 1 auto;
 	}
 
 	#loginAccordion {
 		width: 70%;
+		margin-top: 1rem;
+		margin-bottom: 3rem;
+		z-index: 10;
+	}
+
+	.logo-login-flex {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		overflow-y: hidden;
 	}
 
 	@media screen and (min-width: 769px) and (max-width: 1000px) {
@@ -680,30 +729,49 @@
 	@media screen and (max-width: 768px) {
 		.logo-login-flex {
 			flex-direction: column !important;
+			justify-content: inherit;
+			overflow-y: auto;
 		}
 
 		.login-wrapper {
 			min-width: 50%;
 			max-width: 75%;
+			overflow-y: clip;
+			height: auto;
+			margin-top: 3rem;
+			margin-bottom: 3rem;
 		}
 
 		#loginAccordion {
 			width: 100%;
+			margin-top: 1rem;
+			margin-bottom: 0;
 		}
 
 		.logo-wrapper {
 			width: 70%;
-			margin-bottom: 3rem;
+			margin-top: 3rem;
+		}
+
+		.fill {
+			display: none;
 		}
 	}
 
-	@media screen and (max-width: 540px) {
+	@media screen and (max-width: 700px) {
 		.logo-wrapper {
 			width: 90%;
 		}
 
 		.login-wrapper {
 			width: 80%;
+		}
+	}
+
+	@media screen and (max-width: 500px) {
+		.login-wrapper {
+			width: 100%;
+			max-width: 90%;
 		}
 	}
 </style>
