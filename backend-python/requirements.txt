@@ -1,6 +1,0 @@
-fastapi[standard]
-pyjwt
-passlib[bcrypt]
-argon2_cffi
-cryptography
-pydantic-settings

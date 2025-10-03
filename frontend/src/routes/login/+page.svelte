@@ -421,6 +421,9 @@
 												})}
 											</div>
 										{/if}
+										<div class="text-bg-info p-2 my-2 rounded">
+											{@html $t('login.migration.account_info')}
+										</div>
 									{/if}
 								</div>
 							{/if}

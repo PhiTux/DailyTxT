@@ -1,6 +1,0 @@
-.venv
-.envrc
-data/
-dev/
-*.pyc
-__pycache__/
