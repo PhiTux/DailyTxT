@@ -13,6 +13,7 @@
 	import axios from 'axios';
 	import { cal } from '$lib/calendarStore.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
+	import { slide } from 'svelte/transition';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -337,11 +338,7 @@
 					{:else}
 						<div class="touch-tag-grid gap-1">
 							{#each filteredTags as tag (tag.id)}
-								<button
-									type="button"
-									class="touch-tag-item btn btn-sm"
-									onclick={() => selectSearchTag(tag.id)}
-								>
+								<button type="button" class="btn btn-sm" onclick={() => selectSearchTag(tag.id)}>
 									<Tag {tag} />
 								</button>
 							{/each}
@@ -516,22 +513,11 @@
 
 	.touch-search-tag-panel {
 		padding: 0.5rem 0.6rem 0.6rem;
-		max-height: 35vh;
-		background: rgba(255, 255, 255, 0.08);
-		backdrop-filter: blur(6px);
-		border: 1px solid rgba(255, 255, 255, 0.15);
 	}
 
 	.touch-tag-grid {
 		display: flex;
 		flex-wrap: wrap;
-	}
-
-	.touch-tag-item {
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		gap: 0.25rem;
 	}
 
 	.touch-tag-item:active {
