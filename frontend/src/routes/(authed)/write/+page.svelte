@@ -989,6 +989,10 @@
 			})
 			.finally(() => {
 				showTagLoading = false;
+
+				if (isTouchDevice) {
+					showTouchTagPanel = false;
+				}
 			});
 
 		searchTab = '';
@@ -1305,11 +1309,11 @@
 {/if}
 
 <!-- shown on small Screen, when triggered -->
-<div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">
-	<div class="offcanvas-header">
+<div class="offcanvas offcanvas-start overflow-y-auto" id="sidenav" tabindex="-1">
+	<div class="offcanvas-header sticky-top">
 		<button
 			type="button"
-			class="btn-close"
+			class="btn-close btn-close-white"
 			data-bs-dismiss="offcanvas"
 			data-bs-target="#sidenav"
 			aria-label="Close"
@@ -2020,6 +2024,17 @@
 </div>
 
 <style>
+	#sidenav {
+		padding-left: 1rem;
+		padding-right: 1rem;
+		padding-bottom: 1rem;
+	}
+
+	.offcanvas-header > button {
+		background-color: #ccc;
+		opacity: 0.8;
+	}
+
 	.selectTagTouchDevice {
 		background-color: #9e9e9e65;
 		padding: 0.5rem;
