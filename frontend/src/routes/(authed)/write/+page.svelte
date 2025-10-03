@@ -1496,22 +1496,24 @@
 				{/if}
 				{#if isTouchDevice && showTouchTagPanel}
 					<div transition:slide>
-						<div class="touch-tag-panel mt-2">
-							{#if $tags.length === 0}
-								<em style="padding:0.2rem;">{$t('tags.no_tags_found')}</em>
-							{:else}
-								<div class="d-flex flex-row flex-wrap gap-1 selectTagTouchDevice">
-									{#each $tags.filter((t) => !selectedTags.includes(t.id)) as tag (tag.id)}
-										<button
-											type="button"
-											class="touch-tag-item btn btn-sm btn-outline-none"
-											onclick={() => selectTag(tag.id)}
-										>
-											<Tag {tag} />
-										</button>
-									{/each}
-								</div>
-							{/if}
+						<div class="pt-2">
+							<div class="touch-tag-panel">
+								{#if $tags.length === 0}
+									<em style="padding:0.2rem;">{$t('tags.no_tags_found')}</em>
+								{:else}
+									<div class="d-flex flex-row flex-wrap gap-1 selectTagTouchDevice">
+										{#each $tags.filter((t) => !selectedTags.includes(t.id)) as tag (tag.id)}
+											<button
+												type="button"
+												class="touch-tag-item btn btn-sm btn-outline-none"
+												onclick={() => selectTag(tag.id)}
+											>
+												<Tag {tag} />
+											</button>
+										{/each}
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				{/if}
@@ -1984,7 +1986,7 @@
 
 <style>
 	.selectTagTouchDevice {
-		background-color: #adadad65;
+		background-color: #9e9e9e65;
 		padding: 0.5rem;
 		border-radius: 10px;
 	}

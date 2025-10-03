@@ -126,6 +126,20 @@
 	let showTagDropdown = $state(false);
 	let filteredTags = $state([]);
 	let selectedTagIndex = $state(0);
+	// Touch-Geräte Erkennung für alternative Tag-Auswahl
+	let isTouchDevice = $state(false);
+	onMount(() => {
+		try {
+			const ua = navigator.userAgent || '';
+			const platform = navigator.platform || '';
+			const maxTP = navigator.maxTouchPoints || 0;
+			const coarse = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
+			const iPadLike = /iPad/.test(ua) || (/Mac/.test(platform) && maxTP > 1);
+			isTouchDevice = maxTP > 0 || coarse || iPadLike || 'ontouchstart' in window;
+		} catch (e) {
+			isTouchDevice = false;
+		}
+	});
 
 	function handleKeyDown(event) {
 		if (!showTagDropdown && event.key === 'Enter') {
@@ -316,28 +330,48 @@
 			{/if}
 		</form>
 		{#if showTagDropdown}
-			<div class="searchTagDropdown glass">
-				{#if filteredTags.length === 0}
-					<em style="padding: 0.2rem;">
-						{$t('tags.no_tags_found')}
-					</em>
-				{:else}
-					{#each filteredTags as tag, index (tag.id)}
-						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<!-- svelte-ignore a11y_no_static_element_interactions -->
-						<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-						<div
-							role="button"
-							tabindex="0"
-							onclick={() => selectSearchTag(tag.id)}
-							onmouseover={() => (selectedTagIndex = index)}
-							class="searchTag-item {index === selectedTagIndex ? 'selected' : ''}"
-						>
-							<Tag {tag} />
+			{#if isTouchDevice}
+				<div class="touch-search-tag-panel glass">
+					{#if filteredTags.length === 0}
+						<em style="padding: 0.2rem;">{$t('tags.no_tags_found')}</em>
+					{:else}
+						<div class="touch-tag-grid gap-1">
+							{#each filteredTags as tag (tag.id)}
+								<button
+									type="button"
+									class="touch-tag-item btn btn-sm"
+									onclick={() => selectSearchTag(tag.id)}
+								>
+									<Tag {tag} />
+								</button>
+							{/each}
 						</div>
-					{/each}
-				{/if}
-			</div>
+					{/if}
+				</div>
+			{:else}
+				<div class="searchTagDropdown glass">
+					{#if filteredTags.length === 0}
+						<em style="padding: 0.2rem;">
+							{$t('tags.no_tags_found')}
+						</em>
+					{:else}
+						{#each filteredTags as tag, index (tag.id)}
+							<!-- svelte-ignore a11y_click_events_have_key_events -->
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
+							<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+							<div
+								role="button"
+								tabindex="0"
+								onclick={() => selectSearchTag(tag.id)}
+								onmouseover={() => (selectedTagIndex = index)}
+								class="searchTag-item {index === selectedTagIndex ? 'selected' : ''}"
+							>
+								<Tag {tag} />
+							</div>
+						{/each}
+					{/if}
+				</div>
+			{/if}
 		{/if}
 		<div class="list-group flex-grow-1 mb-2 glass">
 			{#if $searchResults.length > 0}
@@ -480,6 +514,30 @@
 		border-bottom-right-radius: 10px;
 	}
 
+	.touch-search-tag-panel {
+		padding: 0.5rem 0.6rem 0.6rem;
+		max-height: 35vh;
+		background: rgba(255, 255, 255, 0.08);
+		backdrop-filter: blur(6px);
+		border: 1px solid rgba(255, 255, 255, 0.15);
+	}
+
+	.touch-tag-grid {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.touch-tag-item {
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.touch-tag-item:active {
+		transform: scale(0.96);
+	}
+
 	@media (max-width: 1599px) {
 		.searchTagDropdown {
 			left: 58px;
@@ -501,10 +559,6 @@
 	:global(body[data-bs-theme='light']) .searchTag-item.selected {
 		background-color: #b9b9b9;
 	}
-
-	/* .searchTag-item.selected {
-		background-color: #b2b4b6;
-	} */
 
 	.searchTag-item {
 		cursor: pointer;
