@@ -142,6 +142,58 @@
 		$t('calendar.day_short.saturday'),
 		$t('calendar.day_short.sunday')
 	];
+
+	// --- Swipe Navigation (month) ---
+	let swipeActive = false;
+	let swipeStartX = 0;
+	let swipeStartY = 0;
+	let swipeLastX = 0;
+	const SWIPE_THRESHOLD = 60; // required horizontal distance
+	const MAX_VERTICAL_DRIFT = 55; // abort if vertical movement dominates
+
+	function onTouchStart(e) {
+		if (e.touches.length !== 1) return;
+		const t = e.touches[0];
+		swipeActive = true;
+		swipeStartX = t.clientX;
+		swipeStartY = t.clientY;
+		swipeLastX = t.clientX;
+	}
+
+	function onTouchMove(e) {
+		if (!swipeActive) return;
+		const t = e.touches[0];
+		const dx = t.clientX - swipeStartX;
+		const dy = t.clientY - swipeStartY;
+		// Abort gesture if vertical scroll is stronger
+		if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 12) {
+			swipeActive = false;
+			return;
+		}
+		// Prevent page scroll if clearly horizontal
+		if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) {
+			e.preventDefault();
+		}
+		swipeLastX = t.clientX;
+	}
+
+	function onTouchEnd() {
+		if (!swipeActive) return;
+		const dx = swipeLastX - swipeStartX;
+		const absDx = Math.abs(dx);
+		// vertical validation (in case move ended early)
+		// compute approx vertical drift mid-gesture not stored; skip here
+		if (absDx >= SWIPE_THRESHOLD) {
+			if (dx < 0) {
+				// swipe left -> next month
+				changeMonth(1);
+			} else if (dx > 0) {
+				// swipe right -> previous month
+				changeMonth(-1);
+			}
+		}
+		swipeActive = false;
+	}
 </script>
 
 <div class="datepicker glass">
@@ -175,7 +227,12 @@
 		</div>
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(1)}>&gt;</button>
 	</div>
-	<div class="calendar-container">
+	<div
+		class="calendar-container"
+		ontouchstart={onTouchStart}
+		ontouchmove={onTouchMove}
+		ontouchend={onTouchEnd}
+	>
 		{#key days}
 			<div
 				class="datepicker-grid"
