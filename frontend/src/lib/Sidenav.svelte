@@ -520,10 +520,6 @@
 		flex-wrap: wrap;
 	}
 
-	.touch-tag-item:active {
-		transform: scale(0.96);
-	}
-
 	@media (max-width: 1599px) {
 		.searchTagDropdown {
 			left: 58px;

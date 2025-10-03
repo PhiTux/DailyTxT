@@ -18,7 +18,7 @@
 	});
 </script>
 
-<span class="badge rounded-pill" style="background-color: {tag.color}; color: {fontColor}">
+<span class="shadow badge rounded-pill" style="background-color: {tag.color}; color: {fontColor}">
 	<div class="d-flex flex-row">
 		<div>{tag.icon} #{tag.name}</div>
 		{#if isEditable}

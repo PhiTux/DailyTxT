@@ -1058,6 +1058,21 @@
 					toast.show();
 				}
 			})
+			.catch((error) => {
+				console.error(error.response);
+				if (error.response.status == 400) {
+					// name already exists
+					// toast
+					const toast = new bootstrap.Toast(
+						document.getElementById('toastErrorSavingNewTagExists')
+					);
+					toast.show();
+				} else {
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorSavingNewTag'));
+					toast.show();
+				}
+			})
 			.finally(() => {
 				// close modal
 				isSavingNewTag = false;
@@ -1652,6 +1667,26 @@
 			<div class="d-flex">
 				<div class="toast-body">
 					{$t('tags.toast.error_saving')}
+				</div>
+				<button
+					type="button"
+					class="btn-close me-2 m-auto"
+					data-bs-dismiss="toast"
+					aria-label="Close"
+				></button>
+			</div>
+		</div>
+
+		<div
+			id="toastErrorSavingNewTagExists"
+			class="toast align-items-center text-bg-danger"
+			role="alert"
+			aria-live="assertive"
+			aria-atomic="true"
+		>
+			<div class="d-flex">
+				<div class="toast-body">
+					{$t('tags.toast.error_saving_exists')}
 				</div>
 				<button
 					type="button"

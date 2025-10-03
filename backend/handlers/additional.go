@@ -1200,6 +1200,29 @@ func SaveTags(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check for duplicate tag names
+	tags, ok := content["tags"].([]any)
+	if ok {
+		for _, tagInterface := range tags {
+			tag, ok := tagInterface.(map[string]any)
+			if !ok {
+				continue
+			}
+
+			if encName, ok := tag["name"].(string); ok {
+				decryptedName, err := utils.DecryptText(encName, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting tag name: %v", err), http.StatusInternalServerError)
+					return
+				}
+				if decryptedName == req.Name {
+					http.Error(w, "Tag name already exists", http.StatusBadRequest)
+					return
+				}
+			}
+		}
+	}
+
 	// Encrypt tag data
 	encIcon, err := utils.EncryptText(req.Icon, encKey)
 	if err != nil {
@@ -1233,7 +1256,7 @@ func SaveTags(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Add tag to tags array
-	tags, ok := content["tags"].([]any)
+	tags, ok = content["tags"].([]any)
 	if !ok {
 		tags = []any{}
 	}
