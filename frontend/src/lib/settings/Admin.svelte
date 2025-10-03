@@ -1,5 +1,5 @@
 <script>
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import { API_URL } from '$lib/APIurl';
 	import axios from 'axios';
 	import { onDestroy, onMount } from 'svelte';
@@ -8,6 +8,7 @@
 	import * as bootstrap from 'bootstrap';
 
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	let adminPassword = $state('');
 	let isAdminAuthenticated = $state(false);
@@ -30,6 +31,15 @@
 
 	let confirmDeleteOldData = $state(false);
 	let isDeletingOldData = $state(false);
+
+	// Registration override controls
+	let isOpeningRegistration = $state(false);
+	let registrationAllowed = $state(false);
+	let registrationAllowedTemporary = $state(false);
+	let registrationUntil = $state('');
+	let regStatusError = $state('');
+	let regOpenSuccess = $state(false);
+	let regOpenError = $state('');
 
 	onMount(() => {
 		currentUser = localStorage.getItem('user');
@@ -85,6 +95,9 @@
 			freeSpace = response.data.free_space;
 			oldData = response.data.old_data;
 			appSettings = response.data.app_settings || {};
+
+			// Also check registration status
+			await checkRegistrationAllowed();
 		} catch (error) {
 			console.error('Error loading users:', error);
 			if (error.response?.status === 401) {
@@ -93,6 +106,41 @@
 			}
 		} finally {
 			isLoadingUsers = false;
+		}
+	}
+
+	async function checkRegistrationAllowed() {
+		regStatusError = '';
+		try {
+			const resp = await axios.get(API_URL + '/users/isRegistrationAllowed');
+			registrationAllowed = !!resp.data.registration_allowed;
+			registrationAllowedTemporary = !!resp.data.temporary_allowed;
+			registrationUntil = resp.data.until || '';
+		} catch (e) {
+			regStatusError = $t('settings.admin.registration_status_error');
+		}
+	}
+
+	async function openRegistrationTemporary() {
+		if (isOpeningRegistration) return;
+		isOpeningRegistration = true;
+
+		regOpenSuccess = false;
+		regOpenError = '';
+		registrationUntil = '';
+		try {
+			const resp = await makeAdminApiCall('/admin/open-registration', { seconds: 300 });
+			if (resp.data?.success) {
+				regOpenSuccess = true;
+				registrationUntil = resp.data.until || '';
+				await checkRegistrationAllowed();
+			} else {
+				regOpenError = $t('settings.admin.registration_open_error');
+			}
+		} catch (e) {
+			regOpenError = e?.response?.data || $t('settings.admin.registration_open_error');
+		} finally {
+			isOpeningRegistration = false;
 		}
 	}
 
@@ -241,8 +289,72 @@
 				</button>
 			</div>
 
+			<!-- Registration Override Card -->
+			{#if !registrationAllowed}
+				<div class="card mt-4">
+					<div class="card-header">
+						<h4 class="card-title mb-0">📝 {$t('settings.admin.registration')}</h4>
+					</div>
+					<div class="card-body">
+						<p class="text-muted mb-3">
+							{$t('settings.admin.registration_description')}
+						</p>
+
+						<div class="d-flex align-items-center gap-3 mb-3">
+							<div>
+								<strong>{$t('settings.admin.current_status')}: </strong>
+								<span
+									class="badge {registrationAllowed || registrationAllowedTemporary
+										? 'bg-success'
+										: 'bg-danger'}"
+								>
+									{registrationAllowed || registrationAllowedTemporary
+										? $t('settings.admin.registration_allowed')
+										: $t('settings.admin.registration_blocked')}
+								</span>
+							</div>
+							<button
+								class="btn btn-outline-primary"
+								onclick={openRegistrationTemporary}
+								disabled={isOpeningRegistration}
+							>
+								{#if isOpeningRegistration}
+									<span class="spinner-border spinner-border-sm me-2"></span>
+								{/if}
+								{$t('settings.admin.button_open_5_minutes')}
+							</button>
+							<button class="btn btn-outline-secondary" onclick={checkRegistrationAllowed}>
+								{$t('settings.admin.button_refresh_status')}
+							</button>
+						</div>
+
+						{#if registrationAllowedTemporary && registrationUntil}
+							<div class="alert alert-success" transition:slide>
+								{@html $t('settings.admin.registration_allowed_until', {
+									date_and_time: new Date(registrationUntil).toLocaleString($tolgee.getLanguage(), {
+										year: 'numeric',
+										month: 'numeric',
+										day: 'numeric',
+										hour: 'numeric',
+										minute: 'numeric',
+										second: 'numeric'
+									})
+								})}
+							</div>
+						{/if}
+
+						{#if regStatusError}
+							<div class="alert alert-warning" transition:slide>{regStatusError}</div>
+						{/if}
+						{#if regOpenError}
+							<div class="alert alert-danger" transition:slide>{regOpenError}</div>
+						{/if}
+					</div>
+				</div>
+			{/if}
+
 			<!-- User management card -->
-			<div class="card">
+			<div class="card mt-4">
 				<div class="card-header">
 					<h4 class="card-title mb-0">👥 {$t('settings.admin.user_management')}</h4>
 				</div>

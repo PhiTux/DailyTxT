@@ -219,9 +219,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func IsRegistrationAllowed(w http.ResponseWriter, r *http.Request) {
-	// Check if registration is allowed
-	utils.JSONResponse(w, http.StatusOK, map[string]bool{
-		"registration_allowed": utils.Settings.AllowRegistration,
+
+	// Check if registration is allowed (consider env and temporary override)
+	allowed, tempAllowed := utils.IsRegistrationAllowed()
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"registration_allowed": allowed,
+		"temporary_allowed":    tempAllowed,
+		"until":                utils.GetRegistrationOverrideUntil(),
 	})
 }
 
@@ -234,7 +238,7 @@ type RegisterRequest struct {
 // Register handles user registration
 // The API endpoint
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if !utils.Settings.AllowRegistration {
+	if allowed, temporary := utils.IsRegistrationAllowed(); !allowed && !temporary {
 		http.Error(w, "Registration is not allowed", http.StatusForbidden)
 		return
 	}

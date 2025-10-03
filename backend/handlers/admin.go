@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/phitux/dailytxt/backend/utils"
 )
@@ -286,5 +287,41 @@ func DeleteOldData(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{
 		"success": true,
+	})
+}
+
+// OpenRegistrationTemp allows admin to open registration for a limited time window
+func OpenRegistrationTemp(w http.ResponseWriter, r *http.Request) {
+	// Decode request (admin password + optional seconds)
+	var req struct {
+		AdminPassword string `json:"admin_password"`
+		Seconds       int    `json:"seconds"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request", http.StatusBadRequest)
+		return
+	}
+
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+	if adminPassword == "" || req.AdminPassword != adminPassword {
+		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
+		return
+	}
+
+	log.Printf("%v", r.Body)
+
+	// Default duration 5 minutes; optionally allow custom seconds (max 15 min)
+	duration := 5 * 60 // seconds
+	if req.Seconds > 0 && req.Seconds <= 15*60 {
+		duration = req.Seconds
+	}
+
+	utils.SetRegistrationOverride(time.Duration(duration) * time.Second)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"success":  true,
+		"until":    time.Now().Add(time.Duration(duration) * time.Second).Format(time.RFC3339),
+		"duration": duration,
 	})
 }

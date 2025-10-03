@@ -109,6 +109,7 @@ func main() {
 	mux.HandleFunc("POST /admin/get-data", middleware.RequireAuth(handlers.GetAdminData))
 	mux.HandleFunc("POST /admin/delete-user", middleware.RequireAuth(handlers.DeleteUser))
 	mux.HandleFunc("POST /admin/delete-old-data", middleware.RequireAuth(handlers.DeleteOldData))
+	mux.HandleFunc("POST /admin/open-registration", middleware.RequireAuth(handlers.OpenRegistrationTemp))
 
 	// Create a handler chain with Timeout, Logger and CORS middleware
 	// Timeout middleware will be executed first, then Logger, then CORS

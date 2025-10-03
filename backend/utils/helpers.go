@@ -9,6 +9,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -46,6 +47,39 @@ type AppSettings struct {
 
 // Global settings
 var Settings AppSettings
+
+// Registration override state (temporary window to allow registration)
+var (
+	registrationOverrideUntil time.Time
+	registrationOverrideMu    sync.RWMutex
+)
+
+// SetRegistrationOverride opens registration for the given duration
+func SetRegistrationOverride(d time.Duration) {
+	registrationOverrideMu.Lock()
+	defer registrationOverrideMu.Unlock()
+	registrationOverrideUntil = time.Now().Add(d)
+	Logger.Printf("Registration temporarily opened until %s", registrationOverrideUntil.Format(time.RFC3339))
+}
+
+func GetRegistrationOverrideUntil() time.Time {
+	registrationOverrideMu.RLock()
+	defer registrationOverrideMu.RUnlock()
+	return registrationOverrideUntil
+}
+
+// IsRegistrationAllowed returns whether registration is
+// overall allowed or temporarily allowed
+func IsRegistrationAllowed() (bool, bool) {
+	allowed := Settings.AllowRegistration
+
+	registrationOverrideMu.RLock()
+	until := registrationOverrideUntil
+	registrationOverrideMu.RUnlock()
+	tempAllowed := time.Now().Before(until)
+
+	return allowed, tempAllowed
+}
 
 // SetVersion sets the application version
 func SetVersion(version string) {

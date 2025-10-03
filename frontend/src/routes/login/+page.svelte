@@ -27,6 +27,8 @@
 	let is_migrating = $state(false);
 
 	let registration_allowed = $state(true);
+	let registration_allowed_temporary = $state(false);
+	let until = $state('');
 
 	let migration_phases = $state([
 		'creating_new_user',
@@ -111,6 +113,8 @@
 			.get(API_URL + '/users/isRegistrationAllowed')
 			.then((response) => {
 				registration_allowed = response.data.registration_allowed;
+				registration_allowed_temporary = response.data.temporary_allowed;
+				until = response.data.until;
 			})
 			.catch((error) => {
 				console.error('Error checking registration allowed:', error);
@@ -471,15 +475,28 @@
 				<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#loginAccordion">
 					<div class="accordion-body">
 						<div class="alert alert-info">{$t('login.create_account_info')}</div>
-						{#if !registration_allowed}
+						{#if !registration_allowed && !registration_allowed_temporary}
 							<div class="alert alert-danger" role="alert">
 								{$t('login.alert.registration_not_allowed')}
+							</div>
+						{:else if until !== ''}
+							<div class="alert alert-warning" role="alert">
+								{@html $t('login.alert.registration_allowed_until', {
+									date_and_time: new Date(until).toLocaleDateString($tolgee.getLanguage(), {
+										year: 'numeric',
+										month: 'numeric',
+										day: 'numeric',
+										hour: 'numeric',
+										minute: 'numeric',
+										second: 'numeric'
+									})
+								})}
 							</div>
 						{/if}
 						<form onsubmit={handleRegister}>
 							<div class="form-floating mb-3">
 								<input
-									disabled={!registration_allowed}
+									disabled={!registration_allowed && !registration_allowed_temporary}
 									type="text"
 									class="form-control"
 									id="registerUsername"
@@ -489,7 +506,7 @@
 							</div>
 							<div class="form-floating mb-3">
 								<input
-									disabled={!registration_allowed}
+									disabled={!registration_allowed && !registration_allowed_temporary}
 									type="password"
 									class="form-control"
 									id="registerPassword"
@@ -499,7 +516,7 @@
 							</div>
 							<div class="form-floating mb-3">
 								<input
-									disabled={!registration_allowed}
+									disabled={!registration_allowed && !registration_allowed_temporary}
 									type="password"
 									class="form-control"
 									id="registerPassword2"
@@ -522,7 +539,7 @@
 							{/if}
 							{#if show_registration_success}
 								<div class="alert alert-success" role="alert">
-									{$t('login.alert.registration_success')}
+									{@html $t('login.alert.registration_success')}
 								</div>
 							{/if}
 							{#if show_registration_warning_empty_fields}
@@ -539,7 +556,8 @@
 								<button
 									type="submit"
 									class="btn btn-primary"
-									disabled={is_registering || !registration_allowed}
+									disabled={is_registering ||
+										(!registration_allowed && !registration_allowed_temporary)}
 								>
 									{#if is_registering}
 										<div class="spinner-border spinner-border-sm" role="status">
