@@ -51,8 +51,8 @@
 	const tolgee = getTolgee(['language']);
 
 	let { children } = $props();
-	let inDuration = 150;
-	let outDuration = 150;
+	let inDuration = 150; //150;
+	let outDuration = 150; //150;
 
 	let current_version = $state('');
 	let latest_stable_version = $state('');
@@ -1177,15 +1177,17 @@
 		</div>
 	</nav>
 
-	{#key page.data}
-		<div
-			class="transition-wrapper overflow-y-auto h-100"
-			out:blur={{ duration: outDuration }}
-			in:blur={{ duration: inDuration, delay: outDuration }}
-		>
-			{@render children()}
-		</div>
-	{/key}
+	<div class="transition-stack flex-fill position-relative">
+		{#key page.data}
+			<div
+				class="transition-wrapper overflow-y-auto position-absolute top-0 bottom-0 start-0 end-0"
+				out:blur={{ duration: outDuration }}
+				in:blur={{ duration: inDuration, delay: outDuration * 2 }}
+			>
+				{@render children()}
+			</div>
+		{/key}
+	</div>
 </div>
 
 <TagModal
@@ -2621,6 +2623,10 @@
 </div>
 
 <style>
+	/* Allow the stacked absolute children to scroll without forcing the parent to expand */
+	.transition-stack {
+		min-height: 0;
+	}
 	:global(body[data-bs-theme='dark'] .multiselect) {
 		background: #212529 !important;
 		border: 1px solid #212529 !important;
