@@ -577,7 +577,7 @@
 
 	<div class="language-select-wrapper">
 		<div class="input-group mb-3">
-			<span class="input-group-text" id="basic-addon1">🌐</span>
+			<span class="input-group-text user-select-none" id="basic-addon1">🌐</span>
 			<select
 				class="form-select"
 				bind:value={selectedLanguage}
@@ -712,7 +712,6 @@
 
 	.login-wrapper {
 		width: 50%;
-		/* z-index: 10; */
 		height: 100%;
 		display: flex;
 		flex-direction: column;
@@ -739,6 +738,7 @@
 		justify-content: center;
 		align-items: center;
 		overflow-y: hidden;
+		min-height: 100vh;
 	}
 
 	@media screen and (min-width: 769px) and (max-width: 1000px) {
@@ -752,12 +752,17 @@
 			flex-direction: column !important;
 			justify-content: inherit;
 			overflow-y: auto;
+			-webkit-overflow-scrolling: touch;
+			height: 100dvh;
+			min-height: 100vh;
+			touch-action: pan-y;
+			overscroll-behavior-y: contain;
 		}
 
 		.login-wrapper {
 			min-width: 50%;
 			max-width: 75%;
-			overflow-y: clip;
+			overflow-y: visible;
 			height: auto;
 			margin-top: 3rem;
 			margin-bottom: 3rem;

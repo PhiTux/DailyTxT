@@ -7,7 +7,6 @@ WORKDIR /app/frontend
 # Install dependencies and build SvelteKit (adapter-static outputs to build/)
 COPY frontend/package*.json ./
 RUN apk update && apk add build-base cairo-dev pango-dev giflib-dev g++ make py3-pip && npm ci
-#RUN apk add g++ make py3-pip && npm ci || npm install
 COPY frontend/ ./
 RUN npm run build
 RUN npm prune --production

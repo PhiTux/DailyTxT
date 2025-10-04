@@ -1153,6 +1153,7 @@
 					<img src={dailytxt} alt="" height="38px" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
+				1
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">

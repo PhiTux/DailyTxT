@@ -12,7 +12,6 @@
 	import { FormatIcu } from '@tolgee/format-icu';
 	import { darkMode } from '$lib/settingsStore.js';
 	import { registerSW } from 'virtual:pwa-register';
-	import { base } from '$app/paths';
 
 	const tolgee = Tolgee()
 		.use(DevTools())
@@ -192,14 +191,14 @@
 					aria-atomic="true"
 				>
 					<div class="d-flex align-items-center">
-						<div class="toast-body">Install DailyTxT for a better app-like experience.</div>
+						<div class="toast-body">{tolgee.t('toast.pwa.install_description')}</div>
 						<button
 							id="btnPwaInstall"
 							type="button"
 							class="btn btn-light btn-sm me-2 m-2"
 							onclick={installPWA}
 						>
-							Install
+							{tolgee.t('toast.pwa.install_button')}
 						</button>
 						<button
 							type="button"
@@ -219,9 +218,9 @@
 				aria-atomic="true"
 			>
 				<div class="d-flex align-items-center">
-					<div class="toast-body">A new version is available.</div>
+					<div class="toast-body">{tolgee.t('toast.pwa.update_available')}</div>
 					<button id="btnPwaReload" type="button" class="btn btn-light btn-sm me-2 m-2">
-						Reload
+						{tolgee.t('toast.pwa.reload_button')}
 					</button>
 					<button
 						type="button"
