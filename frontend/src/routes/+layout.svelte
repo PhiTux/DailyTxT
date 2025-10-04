@@ -11,6 +11,8 @@
 	import { TolgeeProvider, Tolgee, DevTools, LanguageStorage } from '@tolgee/svelte';
 	import { FormatIcu } from '@tolgee/format-icu';
 	import { darkMode } from '$lib/settingsStore.js';
+	import { registerSW } from 'virtual:pwa-register';
+	import { base } from '$app/paths';
 
 	const tolgee = Tolgee()
 		.use(DevTools())
@@ -19,6 +21,11 @@
 		.init({
 			availableLanguages: ['en', 'de', 'fr'],
 			defaultLanguage: 'en',
+			staticData: {
+				en: () => import('../i18n/en.json'),
+				de: () => import('../i18n/de.json'),
+				fr: () => import('../i18n/fr.json')
+			},
 
 			// for development
 			apiUrl: import.meta.env.VITE_TOLGEE_API_URL,
@@ -28,6 +35,10 @@
 	let { children } = $props();
 	let inDuration = 150;
 	let outDuration = 150;
+
+	// PWA install prompt state
+	let deferredInstallPrompt = $state(null);
+	let showInstallToast = $state(false);
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -91,7 +102,62 @@
 		if (page.url.pathname === '/login') {
 			generateNeonMesh($darkMode);
 		}
+
+		// PWA auto-update with user prompt
+		const updateSW = registerSW({
+			onNeedRefresh() {
+				const toastEl = document.getElementById('toastPwaUpdate');
+				if (!toastEl) return;
+				toastEl.classList.remove('d-none');
+				const toast = new bootstrap.Toast(toastEl, { autohide: false });
+				toast.show();
+				const btn = document.getElementById('btnPwaReload');
+				btn?.addEventListener('click', () => updateSW(true));
+			},
+			onOfflineReady() {
+				// not needed, we don't aim offline, skip toast
+			}
+		});
+
+		// Detect standalone (already installed) and platforms where auto prompt won't show
+		const isStandalone =
+			window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+
+		// Capture the install prompt event (Android/Chrome etc.)
+		window.addEventListener('beforeinstallprompt', (e) => {
+			// Prevent the mini-infobar and save for triggering later
+			e.preventDefault();
+			deferredInstallPrompt = e;
+			if (!isStandalone) {
+				showInstallToast = true;
+				const toastEl = document.getElementById('toastPwaInstall');
+				if (toastEl) {
+					const toast = new bootstrap.Toast(toastEl, { autohide: false });
+					toast.show();
+				}
+			}
+		});
+
+		// Hide install banner when app gets installed
+		window.addEventListener('appinstalled', () => {
+			deferredInstallPrompt = null;
+			showInstallToast = false;
+			const toastEl = document.getElementById('toastPwaInstall');
+			toastEl?.classList.add('d-none');
+		});
 	});
+
+	async function installPWA() {
+		if (!deferredInstallPrompt) return;
+		deferredInstallPrompt.prompt();
+		try {
+			await deferredInstallPrompt.userChoice;
+		} finally {
+			// Only allow prompting once
+			deferredInstallPrompt = null;
+			showInstallToast = false;
+		}
+	}
 
 	$effect(() => {
 		if ($darkMode !== undefined) {
@@ -117,6 +183,54 @@
 		</div>
 
 		<div class="toast-container position-fixed bottom-0 end-0 p-3">
+			{#if showInstallToast}
+				<div
+					id="toastPwaInstall"
+					class="toast text-bg-primary"
+					role="alert"
+					aria-live="assertive"
+					aria-atomic="true"
+				>
+					<div class="d-flex align-items-center">
+						<div class="toast-body">Install DailyTxT for a better app-like experience.</div>
+						<button
+							id="btnPwaInstall"
+							type="button"
+							class="btn btn-light btn-sm me-2 m-2"
+							onclick={installPWA}
+						>
+							Install
+						</button>
+						<button
+							type="button"
+							class="btn-close me-2 m-auto"
+							data-bs-dismiss="toast"
+							aria-label="Close"
+							onclick={() => (showInstallToast = false)}
+						></button>
+					</div>
+				</div>
+			{/if}
+			<div
+				id="toastPwaUpdate"
+				class="toast text-bg-info d-none"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex align-items-center">
+					<div class="toast-body">A new version is available.</div>
+					<button id="btnPwaReload" type="button" class="btn btn-light btn-sm me-2 m-2">
+						Reload
+					</button>
+					<button
+						type="button"
+						class="btn-close me-2 m-auto"
+						data-bs-dismiss="toast"
+						aria-label="Close"
+					></button>
+				</div>
+			</div>
 			<div
 				id="toastAvailableBackupCodesWarning"
 				class="toast align-items-center {available_backup_codes > 3

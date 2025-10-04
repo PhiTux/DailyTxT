@@ -479,7 +479,7 @@
 							<div class="alert alert-danger" role="alert">
 								{$t('login.alert.registration_not_allowed')}
 							</div>
-						{:else if until !== ''}
+						{:else if registration_allowed_temporary && until !== ''}
 							<div class="alert alert-warning" role="alert">
 								{@html $t('login.alert.registration_allowed_until', {
 									date_and_time: new Date(until).toLocaleDateString($tolgee.getLanguage(), {

@@ -1,0 +1,417 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {{years_old} year ago} other {{years_old} years ago}}",
+    "open": "Open",
+    "Year_one_letter": "Y"
+  },
+  "calendar": {
+    "button_bookmark": "Bookmark",
+    "button_today": "Today",
+    "day_short": {
+      "friday": "Fri",
+      "monday": "Mon",
+      "saturday": "Sat",
+      "sunday": "Sun",
+      "thursday": "Thu",
+      "tuesday": "Tue",
+      "wednesday": "Wed"
+    },
+    "toast": {
+      "error_bookmarking": "Error bookmarking the day!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %M/%D/%Y",
+    "entriesCount": "Count of entries",
+    "exportedOn": "Exported on",
+    "exportedOnFormat": "01/02/2006 15:04:05",
+    "files": "Files",
+    "images": "Images",
+    "tags": "Tags",
+    "title": "DailyTxT Export",
+    "user": "User"
+  },
+  "fileList": {
+    "change_filename": "Rename file",
+    "delete_file": "Delete file"
+  },
+  "files": {
+    "decrypting": "Decrypting...",
+    "download": "Download",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} file can be uploaded} other {{count} files can be uploaded}}",
+      "release_to_upload": "Drop to upload",
+      "title": "Drop files here"
+    },
+    "encrypting": "Encrypting...",
+    "toast": {
+      "error_deleting": "Error deleting a file!",
+      "error_loading": "Error downloading a file!",
+      "error_saving": "Error saving a file!"
+    },
+    "upload": "Upload"
+  },
+  "imageViewer": {
+    "download": "Download"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Delete log",
+      "history": "History"
+    },
+    "load_images": "{amount, plural, one {{amount} load image} other {{amount} load images}}",
+    "toast": {
+      "error_deleting_day": "Error deleting the day!",
+      "error_loading": "Error loading the text!",
+      "error_renaming_file": "Error renaming the file",
+      "error_reordering_files": "Error changing the order of files",
+      "error_saving": "Error saving the text!"
+    },
+    "written_on": "Written on:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Fields must not be empty!",
+      "login_failed": "Login failed!<br />\nPlease check your input data.",
+      "passwords_do_not_match": "Passwords do not match!",
+      "registration_allowed_until": "Registration temporarily open until {date_and_time} (Server time).",
+      "registration_failed": "Registration failed - please analyze the error messages!",
+      "registration_failed_with_message": "Registration failed!<br />\nError message: <i>{message}</i>",
+      "registration_not_allowed": "Registration is currently not possible!",
+      "registration_success": "Registration successful - please log in!<br/>\nAfterwards, it's best to check out the <b><u>Settings</u></b>!"
+    },
+    "confirm_password": "Confirm Password",
+    "create_account": "Create Account",
+    "create_account_info": "Usernames are case-insensitive during login. It's recommended to write a name normally (e.g., \"Tom\") so it looks correct in exports. You can still log in with \"tom\".",
+    "login": "Login",
+    "migration": {
+      "account_info": "During the migration, backup codes (if available) were invalidated and need to be recreated!<br/>\nAdditionally, familiarize yourself with the new <b><u>settings</u></b> for your account!<br/><br/>\nOnce all accounts have been migrated without errors, the \"old\" data can be manually deleted in the admin panel.",
+      "create_account": "Create user account",
+      "migrate_files": "Migrate files",
+      "migrate_logs": "Migrate entries",
+      "migrate_templates": "Migrate templates",
+      "progress": "Progress:",
+      "start_message": "Data migration has started. This may take a few moments.",
+      "success_message": "Migration completed without any detected errors! Please restart the login. <br />\nThen check if all data has been migrated correctly.",
+      "warning": "In the meantime, do not reload the page and do not log in again!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migration completed with {error_count} detected error! Please check the server logs for details!<br />If the login doesn't work, or the data is incorrect, the migrated data must be manually removed.} other {Migration completed with {error_count} detected errors! Please check the server logs for details!<br />If the login doesn't work, or the data is incorrect, the migrated data must be manually removed.}}",
+    "password": "Password",
+    "toast": {
+      "account_deleted": "Account successfully deleted.",
+      "login_expired": "Login has expired. Please log in again.",
+      "login_invalid": "Authentication failed. Please log in again."
+    },
+    "username": "Username"
+  },
+  "modal": {
+    "close": "Close",
+    "deleteDay": {
+      "bookmark": "Bookmark",
+      "button_close": "Close",
+      "button_delete": "Delete",
+      "description": "You delete <b><u>all data</u></b> of <b><u>{month}/{day}/{year}</u></b>!",
+      "files": "{files, plural, one {1 File} other {{files} Files}}",
+      "history": "History",
+      "logEntry": "Diary entry",
+      "tags": "{tags, plural, one {{tags} Tag} other {{tags} Tags}}",
+      "thisIncludes": "This includes:",
+      "title": "Delete day completely?"
+    },
+    "deleteFile": {
+      "body": "Really delete file <u><b> {file}</b></u>?",
+      "delete": "Delete",
+      "title": "Delete file?"
+    },
+    "history": {
+      "description": "By clicking <b>Save</b>, you make the shown older text the current main text.",
+      "newer": "Newer",
+      "older": "Older",
+      "title": "History"
+    },
+    "save": "Save",
+    "tag": {
+      "color": "Color",
+      "emoji": "Emoji",
+      "name": "Name",
+      "no_emoji": "No emoji selected...",
+      "preview": "Preview",
+      "select_emoji": "Select emoji",
+      "title_edit": "Edit tag",
+      "title_new": "Create new tag"
+    }
+  },
+  "read": {
+    "load_images": "{count, plural, one {Load {count} image of the month ({size})} other {Load all {count} images of the month ({size})}}",
+    "no_entries": "No entries"
+  },
+  "reauth": {
+    "authentication_error": "Authentication error",
+    "confirmButton": "Confirm",
+    "description": "For security reasons, you must enter your password again.",
+    "title": "Confirm Password",
+    "wrong_password": "Wrong password"
+  },
+  "search": {
+    "description": "With <span>Ctrl</span> + <span>F</span> the search field is focused.<br>\nYou can search for <b>text</b>, <b>file names</b>, and <b>tags</b>:<br>\n<ul>\n  <li><b><u>Text</u></b>: When using multiple search terms, the following rules apply:\n    <ul>\n      <li><b>EXACT</b>: Put the complete search term in <u>double quotation marks</u> to search for the exact sequence of words.</li>\n\t  <li><b>OR</b>: Separate search terms with <b>|</b> to find entries where at least one term is used.</li>\n\t  <li><b>AND</b>: Separate search terms with <u>spaces</u> to find entries where all terms are used. The order of the terms is irrelevant, as is the distance between them.</li>\n\t</ul>\n  </li>\n  <li><b><u>File names</u></b>: If the search term consists of <u>one word</u>, then it will search not only for text, but also for file names.</li>\n  <li><b><u>Tags</u></b>: The search term must start with <b>#</b>. It will search for every item tagged with the tag.</li>\n</ul>",
+    "no_results": "No results",
+    "search": "Search",
+    "toast": {
+      "error": "Error during search!"
+    }
+  },
+  "settings": {
+    "abort": "Cancel",
+    "about": "About",
+    "about.changelog": "Changelog",
+    "about.current_version": "Current version",
+    "about.donate": "Do you enjoy DailyTxT? Then I would be very happy with a little donation! ❤️<br/>Development and maintenance of the tool take a lot of time. Thank you! \uD83E\uDD70",
+    "about.latest_version": "Latest version",
+    "about.made_by": "Made with ❤️ by {creator}",
+    "about.source_code": "Source code",
+    "about.update_available": "Update available",
+    "about.update_notification": "Update notification",
+    "about.version_info": "Note: This automatic version detection may not always be correct.",
+    "account": "User account",
+    "admin": {
+      "authorized": "Admin access authorized",
+      "button_open_5_minutes": "Open for 5 minutes",
+      "button_refresh_status": "Refresh status",
+      "cancel": "Cancel",
+      "check_password": "Check password",
+      "confirm_delete": "Really delete user account?",
+      "confirm_delete_old_data": "Really delete?",
+      "current_status": "Current status",
+      "delete": "Delete",
+      "delete_account": "Delete user account",
+      "delete_old_data": "Delete old data",
+      "delete_old_data_warning": "I strongly recommend creating a <b><u>backup</u></b> of the old data manually!",
+      "delete_warning": "The user account will be completely and permanently deleted!",
+      "disk_usage": "Disk usage",
+      "environment_variables": "Environment variables",
+      "environment_variables_description": "These are the environment variables that were defined when DailyTxT started. They are probably found in the docker-compose file.",
+      "free_disk_space": "Free disk space",
+      "hidden_for_security": "Hidden for security reasons",
+      "id": "ID",
+      "invalid_password": "Invalid password!",
+      "loading_users": "Loading users",
+      "login_description": "The admin password is defined server-side as an environment variable!",
+      "login_error": "Unknown error when checking the password.",
+      "login_required": "Admin password required",
+      "logout": "Log out admin",
+      "me": "Me",
+      "no_environment_variables": "No environment variables found",
+      "no_users": "No user accounts found",
+      "old_data": "Data before migration",
+      "old_data_description": "The data of the old DailyTxT version 1.x.x is currently located in the <code>old</code> directory.<br/>\nThe folder occupies storage space <b>in addition</b> to the currently available/migrated data. If you are sure that all users listed below have migrated their data without errors (and appear in the list above), then you can delete this old data as well!",
+      "old_data_size": "Disk usage of folder <code>old</code>",
+      "old_users": "Users before migration",
+      "password": "Admin password",
+      "refresh_users": "Reload users",
+      "registration": "Registration",
+      "registration_allowed": "Allowed",
+      "registration_allowed_until": "Registration temporarily open until <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Blocked",
+      "registration_description": "The creation of new accounts is currently disabled by default (via environment variable). With this menu, registration can be enabled for 5 minutes. Afterwards, it will automatically be disabled again. The environment variable remains unchanged.",
+      "registration_open_error": "Error when temporarily opening the registration.",
+      "registration_status_error": "Error checking if registration is allowed.",
+      "title": "Admin",
+      "toast_error_old_data_delete": "Error deleting old data",
+      "toast_success_old_data_delete": "Old data (before migration) has been deleted",
+      "total_disk_usage": "Used disk space",
+      "total_users": "Total users",
+      "user_management": "User management",
+      "username": "Username",
+      "warning_delete_self": "Your own user account should not be deleted here, but preferably within the \"Settings\"."
+    },
+    "aLookBack": "A look back",
+    "aLookBack.description": "<li>Decide from which past years diary entries of the same calendar day should be displayed.</li>\n<li>Only applies to write mode.</li>\n<li>Example: <code>1,5,10</code> shows entries from 1 year ago, 5 years ago, and 10 years ago below the text field (if available).</li>",
+    "ALookBack": {
+      "help_text": "Enter all past years to be displayed here. Example: <code>1,5,10</code>. Use commas to separate, avoid spaces.",
+      "input_placeholder": "Years, separated by commas",
+      "invalid_input": "Please enter only numbers separated by commas.",
+      "useIt": "Show entries of the same day from the past"
+    },
+    "appearance": "Appearance",
+    "background": "Background",
+    "background_gradient": "Gradient (is newly generated on each page load)",
+    "background_monochrome": "Monochrome",
+    "backup_codes": "Backup codes",
+    "backup_codes.copy_button": "Copy codes",
+    "backup_codes.description": "<li>Backup codes work like one-time passwords. They can always be used instead of the password, but they are only valid once and are then deleted.</li>\n<li>6 codes are always generated, which replace the previous codes (if available).</li>\n<li>You must write down the codes immediately after creation; they cannot be shown again!</li>",
+    "backup_codes.error": "Error creating backup codes! Maybe the password is incorrect?",
+    "backup_codes.generate_button": "Generate backup codes",
+    "backup_codes.success": "<h6>Your backup codes:</h6>\n<p>Write down the codes; they cannot be displayed again after closing this window!</p>",
+    "change_username": "Change username",
+    "change_username.button": "Change username",
+    "change_username.current_username": "Current username",
+    "change_username.description": "Note about the username:<br/>\nCase is not considered when using it for login. However, a correctly written name (e.g., \"Tom\" instead of \"tom\") looks nicer in the export or similar situations.",
+    "change_username.error": "Unknown error",
+    "change_username.new_username": "New username",
+    "change_username.success": "Username has been changed",
+    "change_username.username_taken": "Username is already taken",
+    "close": "Close",
+    "dark_mode": "Dark",
+    "data": "Data",
+    "delete": "Delete",
+    "delete_account": "Delete user account",
+    "delete_account.confirm": "Are you sure you want to delete your account? This cannot be undone!",
+    "delete_account.confirm_button": "Confirm deletion",
+    "delete_account.delete_button": "Delete user account",
+    "delete_account.description": "This deletes your account and all associated data. This cannot be undone!",
+    "delete_account.password_incorrect": "The entered password is incorrect!",
+    "delete_account.success": "Your account has been deleted successfully!<br />\nYou should be logged out automatically. If not, please log out manually.",
+    "export": "Export",
+    "export.description": "Export your entries as a formatted HTML file. Images can optionally be embedded into the HTML. All files are also provided in a ZIP file.",
+    "export.end_date": "To:",
+    "export.export_button": "Export",
+    "export.help_text": "<u>Notes:</u>\n<ul>\n\t<li>The HTML will not include the history of individual days.</li>\n\t<li>Re-import is not possible. This function is not a backup but purely for export to obtain an easily readable HTML file.</li>\n</ul>",
+    "export.period": "Period",
+    "export.period_all": "Entire period",
+    "export.period_invalid": "The start date must be before the end date!",
+    "export.period_variable": "Variable period",
+    "export.show_images": "Show images in HTML",
+    "export.show_images_description": "Show images directly below the text <em>(they are also always provided as links)</em>",
+    "export.show_tags": "Show tags",
+    "export.show_tags_description": "Show tags in the HTML",
+    "export.split": "Number of HTML documents",
+    "export.split_aio": "Single HTML",
+    "export.split_month": "One HTML per month",
+    "export.split_year": "One HTML per year",
+    "export.start_date": "From:",
+    "functions": "Functions",
+    "images_description": "<ul>\n\t<li>\n\t\tWhen loading a text, uploaded images (if available) can be loaded automatically. <em>Increased data usage!</em>\n\t</li>\n\t<li>Alternatively, a button is displayed to load all images.</li>\n</ul>",
+    "images_loading_default": "Automatically load images by default (on every device)",
+    "images_loading_per_device": "Decide for each device whether images should be loaded automatically",
+    "images_loading_this_device": "Automatically load images on <b>this device</b>",
+    "images_title": "Automatically load images",
+    "language": "Language",
+    "language_auto_detect": "Determine language based on the browser. Currently:",
+    "language_not_available": "The language <code>{browserLanguage}</code> is not available. The default language <code>{defaultLanguage}</code> is used.",
+    "language.reload_info": "Some changes only become visible after reloading the page.",
+    "language_X_used": "is used",
+    "light_dark_auto_detect": "Detect mode automatically. Currently:",
+    "light_dark_manual": "Set mode manually",
+    "light_dark_mode": "Light/Dark mode",
+    "light_mode": "Light",
+    "password": {
+      "change_error": "Error changing the password!",
+      "change_password_button": "Change password",
+      "confirm_new_password": "Confirm new password",
+      "confirm_password": "Confirm Password",
+      "current_password": "Current password",
+      "current_password_incorrect": "Current password incorrect!",
+      "new_password": "New password",
+      "passwords_dont_match": "The new passwords do not match!",
+      "success": "Password changed successfully!",
+      "success_backup_codes_warning": "Attention: Backup codes were invalidated (if available) and must be recreated."
+    },
+    "reauth": {
+      "description": "To enhance security, the password may be requested again on each page load.",
+      "label": "Request password on each page load",
+      "title": "Password on page load"
+    },
+    "save": "Save",
+    "security": "Security",
+    "security.change_password": "Change password",
+    "selectTimezone": "Select timezone",
+    "set_language_manually": "Set language permanently",
+    "statistics": {
+      "activityRate": "You use DailyTxT on {percent}% of all days since the first entry",
+      "averageWordsPerLog": "{wordCount, plural, one {On average {wordCount} word per entry} other {On average {wordCount} words per entry}}",
+      "bookmarked": "Bookmarked",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> bookmarked day} other {<b>{days}</b> bookmarked days}}",
+      "bookpages": "{pages, plural, one {You've already written {pages} book page (at 300 words per page)} other {You've already written {pages} book pages (at 300 words per page)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} day} other {{dayCount} days}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> day with activity} other {<b>{days}</b> days with activity}}",
+      "error_loading_data": "Unknown error while loading statistics",
+      "favoriteWritingDay": "Favorite weekday for writing",
+      "fileCount": "{fileCount, plural, one {{fileCount} File} other {{fileCount} Files}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> file occupying <b>{diskUsage}</b>} other {<b>{fileCount}</b> files occupying <b>{diskUsage}</b>}}",
+      "funFacts": "Fun facts",
+      "legend": "Legend",
+      "loading_data": "Loading data",
+      "longestWritingStreak": "Longest writing streak",
+      "mostProductiveDay": "Most productive day",
+      "no_data": "No data yet",
+      "open": "Open",
+      "tagUsedCount": "Used <b>{count}x</b>",
+      "title": "Statistics",
+      "toast_error_user_delete": "Error deleting user",
+      "toast_success_user_delete": "User deleted",
+      "total": "Total",
+      "wordCount": "{wordCount, plural, one {{wordCount} Word} other {{wordCount} Words}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> word} other {<b>{wordCount}</b> words}}",
+      "words": "Words"
+    },
+    "tags": "Tags",
+    "tags.delete_confirmation": "<b>Delete tag permanently?</b><br/>This may take a moment because each entry must be searched for potential links. Changes may only become visible after a page reload.",
+    "tags.description": "Here you can edit tags or delete them completely from DailyTxT.",
+    "tags.no_tags": "No tags are available yet. Create a new tag in write mode.",
+    "template": {
+      "content_of_template": "Content of the template",
+      "name_of_template": "Name of the template",
+      "save_template": "Save template"
+    },
+    "templates": "Templates",
+    "templates.create_new": "Create new template...",
+    "templates.delete_confirmation": "Really delete template <b>{template}</b>?",
+    "timezone": "Timezone",
+    "timezone.auto_detect": "Automatically determine timezone based on the browser.<br/>Currently: ",
+    "timezone.description": "Set the timezone to be used for the timestamp (\"{written_on}\").",
+    "timezone.help_text": "When traveling, it can be useful to determine the timezone based on the browser. Then the date and time at the destination will likely be recognized better.<br />If, on the other hand, you use different timezones at home in a private browser (e.g., always UTC), it can be useful to set a specific timezone here.",
+    "timezone.manual": "Always use the following timezone for this user account:",
+    "timezone.selected": "Selected:",
+    "title": "Settings",
+    "toast": {
+      "delete_tag_error": "Error deleting the tag!",
+      "delete_template_error": "Error deleting the template",
+      "delete_template_success": "Template deleted",
+      "export_data_error": "Error exporting!",
+      "invalid_template_double": "Template name already exists!",
+      "invalid_template_empty": "Name or content of a template must not be empty!",
+      "logout_error": "Error during logout",
+      "saved_edit_tag_error": "Error saving changes!",
+      "saved_edit_tag_success": "Changes have been saved!",
+      "saved_settings_error": "Error saving the settings!",
+      "saved_settings_success": "Settings saved",
+      "saved_template_success": "Template saved"
+    },
+    "unsaved_changes": "Unsaved changes",
+    "updates": {
+      "check_for_updates": "Notify me about new versions",
+      "include_test_versions": "Also notify me about new test versions that contain \"testing\" in the version name. These may be faulty — be sure to make a backup first!"
+    }
+  },
+  "tags": {
+    "description": "Here you can add and remove tags for the selected date to categorize your entries. You can also create new tags here.<br/><br/>With <span>Ctrl</span> + <span>G</span> the search field is focused (desktop only).<br/><br/> To change a tag or delete it entirely, you must switch to the settings.",
+    "hide_selector": "Close tag selector",
+    "input": "Tag...",
+    "new_tag": "New",
+    "no_tags_found": "No tags found...",
+    "tags": "Tags",
+    "toast": {
+      "error_adding": "Error adding the tag to the selected date!",
+      "error_removing": "Error removing the tag!",
+      "error_saving": "Error creating the tag!",
+      "error_saving_exists": "Tag name already exists"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Insert template..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Still {count} backup code available!} other {Still {count} backup codes available!}}"
+    }
+  },
+  "weekdays": {
+    "friday": "Friday",
+    "monday": "Monday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "thursday": "Thursday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday"
+  }
+}

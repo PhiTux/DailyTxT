@@ -532,9 +532,15 @@
 		if ($settings.background === 'monochrome') {
 			document.querySelector('.background').style.background = '';
 			document.body.style.backgroundColor = $settings.monochromeBackgroundColor;
+			document
+				.querySelector('meta[name="theme-color"]')
+				.setAttribute('content', $settings.monochromeBackgroundColor);
 		} else if ($settings.background === 'gradient') {
 			document.body.style.backgroundColor = '';
 			generateNeonMesh($darkMode);
+			document
+				.querySelector('meta[name="theme-color"]')
+				.setAttribute('content', $darkMode ? '#171717' : '#ffffff');
 		}
 	}
 
@@ -2385,7 +2391,9 @@
 
 									<hr />
 
-									<span class="d-table mx-auto">{@html $t('settings.about.donate')}</span>
+									<span class="d-table mx-auto text-center"
+										>{@html $t('settings.about.donate')}</span
+									>
 									<a
 										class="d-block mx-auto mt-2"
 										href="https://www.buymeacoffee.com/PhiTux"
@@ -2857,7 +2865,7 @@
 	.mobile-settings-dropdown {
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 		border-radius: 0.5rem;
-		z-index: 6;
+		z-index: 20;
 		backdrop-filter: blur(8px);
 		background: rgba(255, 255, 255, 0.85);
 	}

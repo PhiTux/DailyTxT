@@ -1,0 +1,417 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {Vor {years_old} Jahr} other {Vor {years_old} Jahren}}",
+    "open": "Öffnen",
+    "Year_one_letter": "J"
+  },
+  "calendar": {
+    "button_bookmark": "Lesezeichen",
+    "button_today": "Heute",
+    "day_short": {
+      "friday": "Fr",
+      "monday": "Mo",
+      "saturday": "Sa",
+      "sunday": "So",
+      "thursday": "Do",
+      "tuesday": "Di",
+      "wednesday": "Mi"
+    },
+    "toast": {
+      "error_bookmarking": "Fehler beim Markieren des Tages!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %D.%M.%Y",
+    "entriesCount": "Anzahl der Einträge",
+    "exportedOn": "Exportiert am",
+    "exportedOnFormat": "02.01.2006 15:04:05",
+    "files": "Dateien",
+    "images": "Bilder",
+    "tags": "Tags",
+    "title": "DailyTxT Export",
+    "user": "Benutzer"
+  },
+  "fileList": {
+    "change_filename": "Dateinamen ändern",
+    "delete_file": "Datei löschen"
+  },
+  "files": {
+    "decrypting": "Wird entschlüsselt...",
+    "download": "Download",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} Datei kann hochgeladen werden} other {{count} Dateien können hochgeladen werden}}",
+      "release_to_upload": "Ablegen zum Hochladen",
+      "title": "Dateien hier ablegen"
+    },
+    "encrypting": "Wird verschlüsselt...",
+    "toast": {
+      "error_deleting": "Fehler beim Löschen einer Datei!",
+      "error_loading": "Fehler beim Download einer Datei!",
+      "error_saving": "Fehler beim Speichern einer Datei!"
+    },
+    "upload": "Upload"
+  },
+  "imageViewer": {
+    "download": "Download"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Eintrag löschen",
+      "history": "Verlauf"
+    },
+    "load_images": "{amount, plural, one {{amount} Bild laden} other {{amount} Bilder laden}}",
+    "toast": {
+      "error_deleting_day": "Fehler beim Löschen des Tages!",
+      "error_loading": "Fehler beim Laden des Textes!",
+      "error_renaming_file": "Fehler beim Umbenennen der Datei",
+      "error_reordering_files": "Fehler beim Ändern der Reihenfolge der Dateien",
+      "error_saving": "Fehler beim Speichern des Textes!"
+    },
+    "written_on": "Geschrieben am:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Eingabefelder dürfen nicht leer sein!",
+      "login_failed": "Login fehlgeschlagen!<br />\nBitte Eingabedaten überprüfen.",
+      "passwords_do_not_match": "Passwörter stimmen nicht überein!",
+      "registration_allowed_until": "Registrierung temporär geöffnet bis {date_and_time} (Serverzeit).",
+      "registration_failed": "Registrierung fehlgeschlagen - bitte Fehlermeldungen analysieren!",
+      "registration_failed_with_message": "Registrierung fehlgeschlagen!<br />\nFehlermeldung: <i>{message}</i>",
+      "registration_not_allowed": "Registrierung ist derzeit nicht möglich!",
+      "registration_success": "Registrierung erfolgreich - bitte einloggen!<br/>\nWirf danach am besten einen Blick in die <b><u>Einstellungen</u></b>!"
+    },
+    "confirm_password": "Passwort bestätigen",
+    "create_account": "Benutzerkonto erstellen",
+    "create_account_info": "Groß- und Kleinschreibung sind beim Benutzernamen irrelevant! Es empfieht sich daher, einen Namen normal zu schreiben (z. B. \"Tom\"), sodass er z. B. beim Export korrekt angezeigt wird. Dann kannst du im Login dennoch \"tom\" benutzen.",
+    "login": "Login",
+    "migration": {
+      "account_info": "Bei der Migration wurden Backup-Codes (sofern vorhanden) ungültig gemacht und müssen neu erstellt werden!<br/>\nMache dich außerdem mit den neuen <b><u>Einstellungen</u></b> für deinen Account vertraut!<br/><br/>\nWenn alle Accounts fehlerfrei migriert wurden, dann können die \"alten\" Daten im Admin-Panel manuel gelöscht werden.",
+      "create_account": "Benutzerkonto anlegen",
+      "migrate_files": "Dateien migrieren",
+      "migrate_logs": "Einträge migrieren",
+      "migrate_templates": "Vorlagen migrieren",
+      "progress": "Fortschritt:",
+      "start_message": "Daten-Migration wurde gestartet. Dies kann einige Momente dauern.",
+      "success_message": "Migration wurde ohne erkannte Fehler abgeschlossen! Bitte Login erneut starten. <br />\nPrüfe anschließend, ob alle Daten korrekt migriert wurden.",
+      "warning": "Währenddessen die Seite nicht neu laden und nicht neu einloggen!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migration wurde mit {error_count} erkannten Fehler abgeschlossen! Prüfe die Server-Logs für Details!<br />\nFalls der Login nicht funktioniert, oder die Daten fehlerhaft sind, so müssen die migrierten Daten händisch entfernt werden.} other {Migration wurde mit {error_count} erkannten Fehlern abgeschlossen! Prüfe die Server-Logs für Details!<br />\nFalls der Login nicht funktioniert, oder die Daten fehlerhaft sind, so müssen die migrierten Daten händisch entfernt werden.}}",
+    "password": "Passwort",
+    "toast": {
+      "account_deleted": "Benutzerkonto erfolgreich gelöscht.",
+      "login_expired": "Der Login ist abgelaufen. Bitte neu anmelden.",
+      "login_invalid": "Authentifizierung fehlgeschlagen. Bitte neu anmelden."
+    },
+    "username": "Benutzername"
+  },
+  "modal": {
+    "close": "Schließen",
+    "deleteDay": {
+      "bookmark": "Lesezeichen",
+      "button_close": "Schließen",
+      "button_delete": "Löschen",
+      "description": "Du löschst <b><u>sämtliche Daten</u></b> vom <b> <u>{day}.{month}.{year}</u></b>!",
+      "files": "{files, plural, one {1 Datei} other {{files} Dateien}}",
+      "history": "Verlauf",
+      "logEntry": "Tagebucheintrag",
+      "tags": "{tags, plural, one {{tags} Tag} other {{tags} Tags}}",
+      "thisIncludes": "Dies beinhaltet:",
+      "title": "Tag vollständig löschen?"
+    },
+    "deleteFile": {
+      "body": "Datei <u><b> {file}</b></u> wirklich löschen?",
+      "delete": "Löschen",
+      "title": "Datei löschen?"
+    },
+    "history": {
+      "description": "Mit <b>Speichern</b> machst du den angezeigten älteren Text wieder zum aktuellen Haupttext.",
+      "newer": "Neuer",
+      "older": "Älter",
+      "title": "Verlauf"
+    },
+    "save": "Speichern",
+    "tag": {
+      "color": "Farbe",
+      "emoji": "Emoji",
+      "name": "Name",
+      "no_emoji": "Kein Emoji ausgewählt...",
+      "preview": "Vorschau",
+      "select_emoji": "Emoji auswählen",
+      "title_edit": "Tag bearbeiten",
+      "title_new": "Neues Tag erstellen"
+    }
+  },
+  "read": {
+    "load_images": "{count, plural, one {{count} Bild laden ({size})} other {Alle {count} Bilder des Monats laden ({size})}}",
+    "no_entries": "Keine Einträge"
+  },
+  "reauth": {
+    "authentication_error": "Fehler bei der Authentifizierung",
+    "confirmButton": "Bestätigen",
+    "description": "Aus Sicherheitsgründen musst du dein Passwort erneut eingeben.",
+    "title": "Passwort bestätigen",
+    "wrong_password": "Falsches Passwort"
+  },
+  "search": {
+    "description": "Mit <span>Ctrl</span> + <span>F</span> wird das Suchfeld fokussiert.<br>\nDu kannst nach <b>Text</b>, <b>Dateinamen</b> und <b>Tags</b> suchen:<br>\n<ul>\n  <li><b><u>Text</u></b>: Bei Verwendung von mehreren Suchbegriffen gelten folgende Regeln:\n    <ul>\n      <li><b>EXAKT</b>: Setze den kompletten Suchbegriff in <u>doppelte Anführungszeichen</u>, um die exakte Wortfolge     zu suchen.</li>\n\t  <li><b>ODER</b>: Trenne Suchbegriffe mit <b>|</b>, um Einträge zu finden, bei denen mindestens ein Begriff verwendet wurde.</li>\n\t  <li><b>UND</b>: Trenne Suchbegriffe mit <u>Leerzeichen</u>, um Einträge zu finden, bei denen alle Begriffe verwendet wurden. Die Reihenfolge der Begriffe ist dabei irrelevant, genauso wie die Distanz zwischen den Begriffen.</li>\n\t</ul>\n  </li>\n  <li><b><u>Dateinamen</u></b>: Wenn der Suchbegriff nur aus <u>einem Wort</u> besteht, dann wird nicht nur nach Text, sondern auch nach Dateinamen gesucht.</li>\n  <li><b><u>Tags</u></b>: Der Suchbegriff muss mit <b>#</b> beginnen. Es wird nach jedem Datum gesucht, das mit dem Tag markiert ist.</li>\n</ul>",
+    "no_results": "Keine Ergebnisse",
+    "search": "Suche",
+    "toast": {
+      "error": "Fehler beim Suchen!"
+    }
+  },
+  "settings": {
+    "abort": "Abbrechen",
+    "about": "Über",
+    "about.changelog": "Änderungsprotokoll",
+    "about.current_version": "Aktuelle Version",
+    "about.donate": "Dir gefällt DailyTxT? Dann würde ich mich sehr über eine kleine Spende freuen! ❤️<br/>Entwicklung und Wartung des Tools kosten sehr viel Zeit. Danke! \uD83E\uDD70",
+    "about.latest_version": "Neueste Version",
+    "about.made_by": "Mit ❤️ gemacht von {creator}",
+    "about.source_code": "Quellcode",
+    "about.update_available": "Update verfügbar",
+    "about.update_notification": "Update-Benachrichtigung",
+    "about.version_info": "Hinweis: Diese automatische Versionsermittlung ist womöglich nicht immer korrekt.",
+    "account": "Benutzerkonto",
+    "admin": {
+      "authorized": "Admin-Zugang autorisiert",
+      "button_open_5_minutes": "Für 5 Minuten öffnen",
+      "button_refresh_status": "Status neu laden",
+      "cancel": "Abbrechen",
+      "check_password": "Passwort prüfen",
+      "confirm_delete": "Benutzerkonto wirklich löschen?",
+      "confirm_delete_old_data": "Wirklich löschen?",
+      "current_status": "Aktueller Status",
+      "delete": "Löschen",
+      "delete_account": "Benutzerkonto löschen",
+      "delete_old_data": "Alte Daten löschen",
+      "delete_old_data_warning": "Ich empfehle dringend, manuell ein <b><u>Backup</u></b> der alten Daten zu erstellen!",
+      "delete_warning": "Das Benutzerkonto wird vollständig und unwiederbringlich gelöscht!",
+      "disk_usage": "Speicherplatz",
+      "environment_variables": "Umgebungsvariablen",
+      "environment_variables_description": "Dies sind die Umgebungsvariablen, die beim Start von DailyTxT definiert wurden. Sie stehen vermutlich in der docker-compose Datei.",
+      "free_disk_space": "Verfügbarer Speicherplatz",
+      "hidden_for_security": "Aus Sicherheitsgründen versteckt",
+      "id": "ID",
+      "invalid_password": "Passwort falsch!",
+      "loading_users": "Benutzer werden geladen",
+      "login_description": "Das Admin Passwort wird serverseitig als Umgebungsvariable definiert!",
+      "login_error": "Unbekannter Fehler beim Prüfen des Passworts.",
+      "login_required": "Admin Passwort benötigt",
+      "logout": "Admin ausloggen",
+      "me": "Ich",
+      "no_environment_variables": "Keine Umgebungsvariablen gefunden",
+      "no_users": "Keine Benutzerkonten gefunden",
+      "old_data": "Daten vor der Migration",
+      "old_data_description": "Die Daten der alten DailyTxT Version 1.x.x liegen aktuell im Verzeichnis <code>old</code>.<br/>\nDer Ordner belegt <b>zusätzlich</b> zu den aktuell vorhandenen / migrierten Daten Speicherplatz. Wenn du sicher bist, dass alle unten aufgeführten User ihre Daten fehlerfrei migriert haben (und in der oberen Auflistung auftauchen), dann kannst du diese alten Daten auch löschen!",
+      "old_data_size": "Speicherplatz des Ordners <code>old</code>",
+      "old_users": "Benutzer vor der Migration",
+      "password": "Admin Passwort",
+      "refresh_users": "Benutzer neu laden",
+      "registration": "Registrierung",
+      "registration_allowed": "Erlaubt",
+      "registration_allowed_until": "Registrierung temporär geöffnet bis <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Blockiert",
+      "registration_description": "Die Erstellung neuer Accounts ist aktuell standardmäßig deaktiviert (via Umgebungsvariable). Mit diesem Menü kann die Registrierung für 5 Minuten freigeschaltet werden. Anschließend wird sie automatisch wieder deaktiviert. Die Umgebungsvariable bleibt davon unberührt.",
+      "registration_open_error": "Fehler beim temporären Öffnen der Registrierung.",
+      "registration_status_error": "Fehler beim Überprüfen, ob die Registrierung erlaubt ist.",
+      "title": "Admin",
+      "toast_error_old_data_delete": "Fehler beim Löschen der alten Daten",
+      "toast_success_old_data_delete": "Alte Daten (vor der Migration) wurden gelöscht",
+      "total_disk_usage": "Belegter Speicherplatz",
+      "total_users": "Anzahl Benutzer",
+      "user_management": "Benutzerverwaltung",
+      "username": "Benutzername",
+      "warning_delete_self": "Das eigene Benutzerkonto sollte nicht hier gelöscht werden, sondern am besten innerhalb der \"Einstellungen\"."
+    },
+    "aLookBack": "Ein Blick zurück",
+    "aLookBack.description": "<li>Lege fest, aus welchen vergangenen Jahren Tagebucheinträge desselben Kalendertags angezeigt werden sollen.</li>\n<li>Gilt nur für den Schreibmodus.</li>\n<li>Beispiel: <code>1,5,10</code> sorgt dafür, dass du unter dem Textfeld noch die Einträge von vor 1 Jahr, vor 5 Jahren und vor 10 Jahren angezeigt bekommst (sofern vorhanden).</li>",
+    "ALookBack": {
+      "help_text": "Trage hier alle vergangenen Jahre ein, die angezeigt werden sollen. Beispiel: <code>1,5,10</code>. Benutze Komma zur Trennung, verzichte auf Leerzeichen.",
+      "input_placeholder": "Jahre, mit Komma getrennt",
+      "invalid_input": "Bitte nur Zahlen eingeben, die durch Kommas getrennt sind.",
+      "useIt": "Einträge desselben Tags aus der Vergangenheit anzeigen"
+    },
+    "appearance": "Aussehen",
+    "background": "Hintergrund",
+    "background_gradient": "Farbverlauf (wird bei jedem Seitenaufruf neu generiert)",
+    "background_monochrome": "Einfarbig",
+    "backup_codes": "Backup Codes",
+    "backup_codes.copy_button": "Codes kopieren",
+    "backup_codes.description": "<li>Backup-Codes funktionieren wie Einmal-Passwörter. Sie können immer anstelle des Passworts verwendet werden, allerdings sind sie jeweils nur einmal gültig und werden anschließend gelöscht.</li>\n<li>Es werden immer 6 Codes generiert, welche die vorherigen Codes (sofern vorhanden) ersetzen.</li>\n<li>Du musst dir die Codes nach der Erstellung direkt notieren, sie können nicht erneut angezeigt werden!</li>",
+    "backup_codes.error": "Fehler beim Erstellen der Backup-Codes! Vielleicht stimmt das Passwort nicht?",
+    "backup_codes.generate_button": "Backup Codes generieren",
+    "backup_codes.success": "<h6>Deine Backup-Codes:</h6>\n<p>Notiere dir die Codes, sie können nach dem Schließen dieses Fenstern nicht erneut angezeigt werden!</p>",
+    "change_username": "Benutzernamen ändern",
+    "change_username.button": "Benutzernamen ändern",
+    "change_username.current_username": "Aktueller Benutzername",
+    "change_username.description": "Hinweis zur Verwendung des Benutzernamens:<br/>\nGroß- und Kleinschreibung werden bei der Verwendung im Login nicht beachtet. Allerdings sieht ein korrekt geschriebener Name (z. B. \"Tom\" anstatt \"tom\") im Export oder ähnlichen Fällen schöner aus.",
+    "change_username.error": "Unbekannter Fehler",
+    "change_username.new_username": "Neuer Benutzername",
+    "change_username.success": "Benutzername wurde geändert",
+    "change_username.username_taken": "Benutzername wird bereits verwendet",
+    "close": "Schließen",
+    "dark_mode": "Dark",
+    "data": "Daten",
+    "delete": "Löschen",
+    "delete_account": "Benutzerkonto löschen",
+    "delete_account.confirm": "Bist du dir sicher, dass du dein Konto löschen möchtest? Dies kann nicht rückgängig gemacht werden!",
+    "delete_account.confirm_button": "Löschen bestätigen",
+    "delete_account.delete_button": "Benutzerkonto löschen",
+    "delete_account.description": "Dies löscht dein Konto und alle damit verbundenen Daten. Dies kann nicht rückgängig gemacht werden!",
+    "delete_account.password_incorrect": "Das eingegebene Passwort ist falsch!",
+    "delete_account.success": "Dein Konto wurde erfolgreich gelöscht!<br />\nDu solltest jetzt eigentlich automatisch ausgeloggt werden. Falls nicht, dann logge dich bitte sebst aus.",
+    "export": "Export",
+    "export.description": "Exportiere deine Einträge in einer formatierten HTML-Datei. Bilder werden wahlweise in der HTML eingebunden. Alle Dateien werden außerdem in einer Zip-Datei bereitgestellt.",
+    "export.end_date": "Bis:",
+    "export.export_button": "Exportieren",
+    "export.help_text": "<u>Hinweise:</u>\n<ul>\n\t<li>Die HTML wird keinen Verlauf der einzelnen Tage enthalten.</li>\n\t<li>Ein Re-Import ist nicht möglich. Diese Funktion dient nicht dem Backup, sondern rein dem Export, um eine einfach lesbare HTML-Datei zu erhalten.</li>\n</ul>",
+    "export.period": "Zeitraum",
+    "export.period_all": "Gesamter Zeitraum",
+    "export.period_invalid": "Das Startdatum muss vor dem Enddatum liegen!",
+    "export.period_variable": "Variabler Zeitraum",
+    "export.show_images": "Bilder in HTML anzeigen",
+    "export.show_images_description": "Bilder direkt unter dem Text anzeigen <em>(werden zudem immer als Link bereitgestellt)</em> ",
+    "export.show_tags": "Tags anzeigen",
+    "export.show_tags_description": "Tags in der HTML anzeigen",
+    "export.split": "Anzahl der HTML-Dokumente",
+    "export.split_aio": "Eine einzige HTML",
+    "export.split_month": "Eine HTML pro Monat",
+    "export.split_year": "Eine HTML pro Jahr",
+    "export.start_date": "Von:",
+    "functions": "Funktionen",
+    "images_description": "<ul>\n\t<li>\n\t\tBeim Laden eines Textes können hochgeladene Bilder (sofern vorhanden) automatisch geladen werden. <em>Erhöhter Datenverbrauch!</em>\n\t</li>\n\t<li>Alternativ wird ein Button zum Nachladen aller Bilder angezeigt.</li>\n</ul>",
+    "images_loading_default": "Bilder standardmäßig (auf jedem Gerät) automatisch laden",
+    "images_loading_per_device": "Für jedes Gerät einzeln festlegen, ob die Bilder automatisch geladen werden sollen",
+    "images_loading_this_device": "Bilder auf <b>diesem Gerät</b> automatisch laden",
+    "images_title": "Bilder automatisch laden",
+    "language": "Sprache",
+    "language_auto_detect": "Sprache anhand des Browsers ermitteln. Aktuell:",
+    "language_not_available": "Die Sprache <code>{browserLanguage}</code> ist nicht verfügbar. Es wird die Standardsprache <code>{defaultLanguage}</code> verwendet.",
+    "language.reload_info": "Manche Änderungen werden erst nach einem Neuladen der Seite sichtbar.",
+    "language_X_used": "wird verwendet",
+    "light_dark_auto_detect": "Modus automatisch erkennen. Aktuell:",
+    "light_dark_manual": "Modus manuell festlegen",
+    "light_dark_mode": "Light-/Dark-Modus",
+    "light_mode": "Light",
+    "password": {
+      "change_error": "Fehler beim Ändern des Passworts!",
+      "change_password_button": "Passwort ändern",
+      "confirm_new_password": "Neues Passwort bestätigen",
+      "confirm_password": "Passwort bestätigen",
+      "current_password": "Aktuelles Passwort",
+      "current_password_incorrect": "Aktuelles Passwort inkorrekt!",
+      "new_password": "Neues Passwort",
+      "passwords_dont_match": "Die neuen Passwörter stimmen nicht überein!",
+      "success": "Das Passwort wurde erfolgreich geändert!",
+      "success_backup_codes_warning": "Achtung: Backup-Codes wurden ungültig gemacht (sofern vorhanden), und müssen neu erstellt werden."
+    },
+    "reauth": {
+      "description": "Um die Sicherheit zu erhöhen, kann das Passwort bei jedem Seitenladen erneut abgefragt werden.",
+      "label": "Passwort bei jedem Seitenladen abfragen",
+      "title": "Passwort bei Seitenladen"
+    },
+    "save": "Speichern",
+    "security": "Sicherheit",
+    "security.change_password": "Passwort ändern",
+    "selectTimezone": "Zeitzone wählen",
+    "set_language_manually": "Sprache dauerhaft festlegen",
+    "statistics": {
+      "activityRate": "Du nutzt DailyTxT an {percent}% aller Tage seit dem ersten Eintrag",
+      "averageWordsPerLog": "{wordCount, plural, one {Durchschnittlich {wordCount} Wort pro Eintrag} other {Durchschnittlich {wordCount} Wörter pro Eintrag}}",
+      "bookmarked": "Markiert",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> markierter Tag} other {<b>{days}</b> markierte Tage}}",
+      "bookpages": "{pages, plural, one {Du hast bereits {pages} Buchseite geschrieben (bei 300 Wörtern pro Seite)} other {Du hast bereits {pages} Buchseiten geschrieben (bei 300 Wörtern pro Seite)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} Tag} other {{dayCount} Tage}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> Tag mit Aktivität} other {<b>{days}</b> Tage mit Aktivität}}",
+      "error_loading_data": "Unbekannter Fehler beim Laden der Statistik",
+      "favoriteWritingDay": "Lieblings-Wochentag zum Schreiben",
+      "fileCount": "{fileCount, plural, one {{fileCount} Datei} other {{fileCount} Dateien}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> Datei, die <b>{diskUsage}</b> belegt} other {<b>{fileCount}</b> Dateien, die <b>{diskUsage}</b> belegen}}",
+      "funFacts": "Fun Facts",
+      "legend": "Legende",
+      "loading_data": "Daten werden geladen",
+      "longestWritingStreak": "Längste Schreibserie",
+      "mostProductiveDay": "Produktivster Tag",
+      "no_data": "Noch keine Daten vorhanden",
+      "open": "Öffnen",
+      "tagUsedCount": "<b>{count}x</b> verwendet",
+      "title": "Statistik",
+      "toast_error_user_delete": "Fehler beim Löschen des Users",
+      "toast_success_user_delete": "Benutzer wurde gelöscht",
+      "total": "Insgesamt",
+      "wordCount": "{wordCount, plural, one {{wordCount} Wort} other {{wordCount} Wörter}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> Wort} other {<b>{wordCount}</b> Wörter}}",
+      "words": "Wörter"
+    },
+    "tags": "Tags",
+    "tags.delete_confirmation": "<b>Tag dauerhaft löschen?</b><br/>Dies kann einen Moment dauern, da jeder Eintrag nach potenziellen Verlinkungen durchsucht werden muss. Änderungen werden zudem u. U. erst nach einem Neuladen im Browser angezeigt.",
+    "tags.description": "Hier können Tags bearbeitet oder auch vollständig aus DailyTxT gelöscht werden.",
+    "tags.no_tags": "Es sind noch keine Tags vorhanden. Erstelle ein neues Tag im Schreibmodus.",
+    "template": {
+      "content_of_template": "Inhalt der Vorlage",
+      "name_of_template": "Name der Vorlage",
+      "save_template": "Vorlage speichern"
+    },
+    "templates": "Vorlagen",
+    "templates.create_new": "Neue Vorlage erstellen...",
+    "templates.delete_confirmation": "Vorlage <b>{template}</b> wirklich löschen?",
+    "timezone": "Zeitzone",
+    "timezone.auto_detect": "Zeitzone automatisch anhand des Browsers ermitteln.<br/>Aktuell: ",
+    "timezone.description": "Stelle die Zeitzone ein, die für den Timestamp (\"{written_on}\") genutzt werden soll.",
+    "timezone.help_text": "Wenn man auf Reisen ist, kann es sinnvoll sein, die Zeitzone anhand des Browsers zu ermitteln. Dann werden Datum und Uhrzeit am Zielort vorraussichtlich besser erkannt.<br />Wenn man hingegen zuhause im privaten Browser teils andere Zeitzonen (z. B. immer UTC) verwendet, kann es sinnvoll sein, hier eine bestimmte Zeitzone festzulegen.",
+    "timezone.manual": "Für dieses Benutzerkonto immer die folgende Zeitzone verwenden:",
+    "timezone.selected": "Ausgewählt:",
+    "title": "Einstellungen",
+    "toast": {
+      "delete_tag_error": "Fehler beim Löschen des Tags!",
+      "delete_template_error": "Fehler beim Löschen der Vorlage",
+      "delete_template_success": "Vorlage gelöscht",
+      "export_data_error": "Fehler beim Exportieren!",
+      "invalid_template_double": "Name der Vorlage existiert bereits!",
+      "invalid_template_empty": "Name oder Inhalt einer Vorlage dürfen nicht leer sein!",
+      "logout_error": "Fehler beim Logout",
+      "saved_edit_tag_error": "Fehler beim Speichern der Änderungen!",
+      "saved_edit_tag_success": "Änderungen wurden gespeichert!",
+      "saved_settings_error": "Fehler beim Speichern der Einstellungen!",
+      "saved_settings_success": "Einstellungen gespeichert",
+      "saved_template_success": "Vorlage gespeichert"
+    },
+    "unsaved_changes": "Ungespeicherte Änderungen",
+    "updates": {
+      "check_for_updates": "Benachrichtige mich über neue Versionen",
+      "include_test_versions": "Benachrichtige mich auch über neue Test-Versionen, die \"testing\" im Versions-Namen tragen. Diese können potenziell fehlerhaft sein - unbedingt davor ein Backup machen!"
+    }
+  },
+  "tags": {
+    "description": "Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Mit <span>Ctrl</span> + <span>G</span> wird das Suchfeld fokussiert (nur am Desktop).<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln.",
+    "hide_selector": "Tagauswahl schließen",
+    "input": "Tag...",
+    "new_tag": "Neu",
+    "no_tags_found": "Keine Tags gefunden...",
+    "tags": "Tags",
+    "toast": {
+      "error_adding": "Fehler beim Hinzufügen des Tags zum ausgewählten Datum!",
+      "error_removing": "Fehler beim Enfternen des Tags!",
+      "error_saving": "Fehler beim Erstellen des Tags!",
+      "error_saving_exists": "Tag-Name existiert bereits"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Vorlage einfügen..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Noch {count} Backup-Code verfügbar!} other {Noch {count} Backup-Codes verfügbar!}}"
+    }
+  },
+  "weekdays": {
+    "friday": "Freitag",
+    "monday": "Montag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag",
+    "thursday": "Donnerstag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch"
+  }
+}

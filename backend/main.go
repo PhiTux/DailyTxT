@@ -17,12 +17,13 @@ import (
 // Application version - UPDATE THIS FOR NEW RELEASES
 const AppVersion = "2.0.0-testing.1"
 
-// longTimeoutEndpoints defines endpoints that need extended timeouts
+// longTimeoutEndpoints defines endpoints that need extended/none timeouts
+// Paths are checked against the request URL path as seen by the top-level handler.
 var longTimeoutEndpoints = map[string]bool{
-	"/logs/uploadFile":   true,
-	"/logs/downloadFile": true,
-	"/logs/exportData":   true,
-	"/users/login":       true,
+	"/api/logs/uploadFile":   true,
+	"/api/logs/downloadFile": true,
+	"/api/logs/exportData":   true,
+	"/api/users/login":       true,
 }
 
 // timeoutMiddleware applies different timeouts based on the endpoint
@@ -57,63 +58,68 @@ func main() {
 	// Check and handle old data migration if needed
 	utils.HandleOldData(logger)
 
-	// Create a new router
-	mux := http.NewServeMux()
+	// API sub-router
+	api := http.NewServeMux()
 
 	// Public routes (no authentication required)
-	mux.HandleFunc("GET /version", handlers.GetVersionInfo)
+	api.HandleFunc("GET /version", handlers.GetVersionInfo)
 
-	// Register routes
-	mux.HandleFunc("POST /users/login", handlers.Login)
-	mux.HandleFunc("GET /users/migrationProgress", handlers.GetMigrationProgress)
-	mux.HandleFunc("GET /users/isRegistrationAllowed", handlers.IsRegistrationAllowed)
-	mux.HandleFunc("POST /users/register", handlers.RegisterHandler)
-	mux.HandleFunc("GET /users/logout", handlers.Logout)
-	mux.HandleFunc("GET /users/check", middleware.RequireAuth(handlers.CheckLogin))
-	mux.HandleFunc("GET /users/getUserSettings", middleware.RequireAuth(handlers.GetUserSettings))
-	mux.HandleFunc("POST /users/saveUserSettings", middleware.RequireAuth(handlers.SaveUserSettings))
-	mux.HandleFunc("POST /users/changePassword", middleware.RequireAuth(handlers.ChangePassword))
-	mux.HandleFunc("POST /users/changeUsername", middleware.RequireAuth(handlers.ChangeUsername))
-	mux.HandleFunc("POST /users/deleteAccount", middleware.RequireAuth(handlers.DeleteAccount))
-	mux.HandleFunc("POST /users/createBackupCodes", middleware.RequireAuth(handlers.CreateBackupCodes))
-	mux.HandleFunc("POST /users/validatePassword", middleware.RequireAuth(handlers.ValidatePassword))
-	mux.HandleFunc("GET /users/statistics", middleware.RequireAuth(handlers.GetStatistics))
+	// Users
+	api.HandleFunc("POST /users/login", handlers.Login)
+	api.HandleFunc("GET /users/migrationProgress", handlers.GetMigrationProgress)
+	api.HandleFunc("GET /users/isRegistrationAllowed", handlers.IsRegistrationAllowed)
+	api.HandleFunc("POST /users/register", handlers.RegisterHandler)
+	api.HandleFunc("GET /users/logout", handlers.Logout)
+	api.HandleFunc("GET /users/check", middleware.RequireAuth(handlers.CheckLogin))
+	api.HandleFunc("GET /users/getUserSettings", middleware.RequireAuth(handlers.GetUserSettings))
+	api.HandleFunc("POST /users/saveUserSettings", middleware.RequireAuth(handlers.SaveUserSettings))
+	api.HandleFunc("POST /users/changePassword", middleware.RequireAuth(handlers.ChangePassword))
+	api.HandleFunc("POST /users/changeUsername", middleware.RequireAuth(handlers.ChangeUsername))
+	api.HandleFunc("POST /users/deleteAccount", middleware.RequireAuth(handlers.DeleteAccount))
+	api.HandleFunc("POST /users/createBackupCodes", middleware.RequireAuth(handlers.CreateBackupCodes))
+	api.HandleFunc("POST /users/validatePassword", middleware.RequireAuth(handlers.ValidatePassword))
+	api.HandleFunc("GET /users/statistics", middleware.RequireAuth(handlers.GetStatistics))
 
-	mux.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
-	mux.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))
-	mux.HandleFunc("GET /logs/getMarkedDays", middleware.RequireAuth(handlers.GetMarkedDays))
-	mux.HandleFunc("GET /logs/getTags", middleware.RequireAuth(handlers.GetTags))
-	mux.HandleFunc("POST /logs/saveNewTag", middleware.RequireAuth(handlers.SaveTags))
-	mux.HandleFunc("POST /logs/editTag", middleware.RequireAuth(handlers.EditTag))
-	mux.HandleFunc("GET /logs/deleteTag", middleware.RequireAuth(handlers.DeleteTag))
-	mux.HandleFunc("POST /logs/addTagToLog", middleware.RequireAuth(handlers.AddTagToLog))
-	mux.HandleFunc("POST /logs/removeTagFromLog", middleware.RequireAuth(handlers.RemoveTagFromLog))
-	mux.HandleFunc("GET /logs/getTemplates", middleware.RequireAuth(handlers.GetTemplates))
-	mux.HandleFunc("POST /logs/saveTemplates", middleware.RequireAuth(handlers.SaveTemplates))
-	mux.HandleFunc("GET /logs/getALookBack", middleware.RequireAuth(handlers.GetALookBack))
-	mux.HandleFunc("GET /logs/searchString", middleware.RequireAuth(handlers.Search))
-	mux.HandleFunc("GET /logs/searchTag", middleware.RequireAuth(handlers.SearchTag))
-	mux.HandleFunc("GET /logs/loadMonthForReading", middleware.RequireAuth(handlers.LoadMonthForReading))
-	mux.HandleFunc("POST /logs/uploadFile", middleware.RequireAuth(handlers.UploadFile))
-	mux.HandleFunc("GET /logs/downloadFile", middleware.RequireAuth(handlers.DownloadFile))
-	mux.HandleFunc("GET /logs/deleteFile", middleware.RequireAuth(handlers.DeleteFile))
-	mux.HandleFunc("POST /logs/renameFile", middleware.RequireAuth(handlers.RenameFile))
-	mux.HandleFunc("POST /logs/reorderFiles", middleware.RequireAuth(handlers.ReorderFiles))
-	mux.HandleFunc("GET /logs/getHistory", middleware.RequireAuth(handlers.GetHistory))
-	mux.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
-	mux.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
-	mux.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
+	// Logs
+	api.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
+	api.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))
+	api.HandleFunc("GET /logs/getMarkedDays", middleware.RequireAuth(handlers.GetMarkedDays))
+	api.HandleFunc("GET /logs/getTags", middleware.RequireAuth(handlers.GetTags))
+	api.HandleFunc("POST /logs/saveNewTag", middleware.RequireAuth(handlers.SaveTags))
+	api.HandleFunc("POST /logs/editTag", middleware.RequireAuth(handlers.EditTag))
+	api.HandleFunc("GET /logs/deleteTag", middleware.RequireAuth(handlers.DeleteTag))
+	api.HandleFunc("POST /logs/addTagToLog", middleware.RequireAuth(handlers.AddTagToLog))
+	api.HandleFunc("POST /logs/removeTagFromLog", middleware.RequireAuth(handlers.RemoveTagFromLog))
+	api.HandleFunc("GET /logs/getTemplates", middleware.RequireAuth(handlers.GetTemplates))
+	api.HandleFunc("POST /logs/saveTemplates", middleware.RequireAuth(handlers.SaveTemplates))
+	api.HandleFunc("GET /logs/getALookBack", middleware.RequireAuth(handlers.GetALookBack))
+	api.HandleFunc("GET /logs/searchString", middleware.RequireAuth(handlers.Search))
+	api.HandleFunc("GET /logs/searchTag", middleware.RequireAuth(handlers.SearchTag))
+	api.HandleFunc("GET /logs/loadMonthForReading", middleware.RequireAuth(handlers.LoadMonthForReading))
+	api.HandleFunc("POST /logs/uploadFile", middleware.RequireAuth(handlers.UploadFile))
+	api.HandleFunc("GET /logs/downloadFile", middleware.RequireAuth(handlers.DownloadFile))
+	api.HandleFunc("GET /logs/deleteFile", middleware.RequireAuth(handlers.DeleteFile))
+	api.HandleFunc("POST /logs/renameFile", middleware.RequireAuth(handlers.RenameFile))
+	api.HandleFunc("POST /logs/reorderFiles", middleware.RequireAuth(handlers.ReorderFiles))
+	api.HandleFunc("GET /logs/getHistory", middleware.RequireAuth(handlers.GetHistory))
+	api.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
+	api.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
+	api.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
 
 	// Admin routes
-	mux.HandleFunc("POST /admin/validate-password", middleware.RequireAuth(handlers.ValidateAdminPassword))
-	mux.HandleFunc("POST /admin/get-data", middleware.RequireAuth(handlers.GetAdminData))
-	mux.HandleFunc("POST /admin/delete-user", middleware.RequireAuth(handlers.DeleteUser))
-	mux.HandleFunc("POST /admin/delete-old-data", middleware.RequireAuth(handlers.DeleteOldData))
-	mux.HandleFunc("POST /admin/open-registration", middleware.RequireAuth(handlers.OpenRegistrationTemp))
+	api.HandleFunc("POST /admin/validate-password", middleware.RequireAuth(handlers.ValidateAdminPassword))
+	api.HandleFunc("POST /admin/get-data", middleware.RequireAuth(handlers.GetAdminData))
+	api.HandleFunc("POST /admin/delete-user", middleware.RequireAuth(handlers.DeleteUser))
+	api.HandleFunc("POST /admin/delete-old-data", middleware.RequireAuth(handlers.DeleteOldData))
+	api.HandleFunc("POST /admin/open-registration", middleware.RequireAuth(handlers.OpenRegistrationTemp))
+
+	// Root mux mounts API under /api/
+	rootMux := http.NewServeMux()
+	rootMux.Handle("/api/", http.StripPrefix("/api", api))
 
 	// Create a handler chain with Timeout, Logger and CORS middleware
 	// Timeout middleware will be executed first, then Logger, then CORS
-	handler := timeoutMiddleware(middleware.Logger(middleware.CORS(mux)))
+	handler := timeoutMiddleware(middleware.Logger(middleware.CORS(rootMux)))
 
 	// Create the server without ReadTimeout/WriteTimeout (managed by middleware)
 	server := &http.Server{

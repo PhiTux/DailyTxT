@@ -42,7 +42,6 @@ function needsReauthentication() {
 }
 
 function generateNeonMesh(dark) {
-	/* const baseColors = ['#ff00ff', '#00ffff', '#ffea00', '#ff0080', '#00ff80', '#ff4500']; */
 	const baseColors = ["#ff00ff", "#00ffff", "#ffea00", "#ff0080", "#00ff80", "#ff4500",
     "#ff1493", "#00ffcc", "#ff3333", "#66ff66", "#3399ff", "#ffcc00",
     "#ff6666", "#00ccff", "#cc33ff", "#33ffcc", "#ffff99", "#ff99ff",
