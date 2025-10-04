@@ -703,6 +703,7 @@
 		min-height: 10%;
 		filter: drop-shadow(0 0 0.7rem #7e7e7e);
 		transition: 0.3s ease;
+		overflow: visible;
 	}
 
 	#largeLogo:hover {

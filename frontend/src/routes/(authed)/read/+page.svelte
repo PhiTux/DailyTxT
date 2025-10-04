@@ -108,7 +108,7 @@
 
 	// copy of files, which are images
 	$effect(() => {
-		if (logs) {
+		if (logs.length > 0) {
 			logs.forEach((log) => {
 				if (log.files) {
 					if (!log.images) {
@@ -129,7 +129,6 @@
 					});
 				}
 			});
-			getImagesTotalSize();
 		}
 	});
 
@@ -404,6 +403,10 @@
 						}
 					}
 				});
+
+				setTimeout(() => {
+					getImagesTotalSize();
+				}, 100);
 			});
 	}
 
