@@ -136,6 +136,7 @@
 	function on_key_down(event) {
 		if (event.key === 'Alt') {
 			event.preventDefault();
+			console.log('huhu');
 			altPressed = true;
 		}
 		if (event.key === 'ArrowRight' && altPressed) {

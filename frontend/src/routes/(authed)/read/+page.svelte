@@ -378,9 +378,30 @@
 				});
 			});
 	}
+
+	let altPressed = false;
+	function on_key_down(event) {
+		if (event.key === 'Alt') {
+			event.preventDefault();
+			altPressed = true;
+		}
+		if (event.key === 'ArrowRight' && altPressed) {
+			event.preventDefault();
+		} else if (event.key === 'ArrowLeft' && altPressed) {
+			event.preventDefault();
+		}
+	}
+
+	function on_key_up(event) {
+		if (event.key === 'Alt') {
+			event.preventDefault();
+			altPressed = false;
+		}
+	}
 </script>
 
 <DatepickerLogic />
+<svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
 
 <!-- shown on small Screen, when triggered -->
 <div class="offcanvas offcanvas-start p-3" id="sidenav" tabindex="-1">

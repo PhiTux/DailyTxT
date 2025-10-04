@@ -558,7 +558,7 @@
 
 	.text {
 		flex-grow: 1;
-		word-wrap: break-word;
+		overflow-wrap: anywhere;
 		border-left: 1px solid #68a1da;
 		margin-left: 1rem;
 		padding-left: 1rem;
