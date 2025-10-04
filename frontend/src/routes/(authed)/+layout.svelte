@@ -2798,6 +2798,7 @@
 		background-color: rgba(240, 240, 240, 0.9);
 		padding: 4px;
 		border-radius: 5px;
+		z-index: 10;
 	}
 
 	.modal-body {

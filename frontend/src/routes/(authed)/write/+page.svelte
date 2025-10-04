@@ -2025,6 +2025,10 @@
 </div>
 
 <style>
+	.text-muted.fst-italic {
+		color: rgba(228, 226, 230, 0.4) !important;
+	}
+
 	#sidenav {
 		padding-left: 1rem;
 		padding-right: 1rem;

@@ -13,7 +13,7 @@
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
-	import { alwaysShowSidenav } from '$lib/helpers.js';
+	import { alwaysShowSidenav, formatBytes } from '$lib/helpers.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 
 	const { t } = getTranslate();
@@ -129,6 +129,7 @@
 					});
 				}
 			});
+			getImagesTotalSize();
 		}
 	});
 
@@ -205,6 +206,32 @@
 			log.images.forEach((image) => {
 				if (!image.src) {
 					loadImage(image.uuid_filename);
+				}
+			});
+		}
+	}
+
+	let totalImageSize = $state(0);
+	let totalImageAmount = $state(0);
+	let imageSizeCalculated = false;
+	function getImagesTotalSize() {
+		if (imageSizeCalculated) return;
+		imageSizeCalculated = true;
+		totalImageSize = 0;
+		totalImageAmount = 0;
+
+		for (let i = 0; i < logs.length; i++) {
+			let log = logs[i];
+
+			// skip log if no images in this day/log
+			if (!log.images) {
+				continue;
+			}
+
+			log.images.forEach((image) => {
+				if (image.size) {
+					totalImageSize += image.size;
+					totalImageAmount += 1;
 				}
 			});
 		}
@@ -320,6 +347,7 @@
 			return;
 		}
 		isLoadingMonthForReading = true;
+		imageSizeCalculated = false;
 
 		axios
 			.get(API_URL + '/logs/loadMonthForReading', {
@@ -472,7 +500,10 @@
 										<div class="d-flex flex-row">
 											<button type="button" class="loadImageBtn" onclick={() => loadImages()}>
 												<Fa icon={faCloudArrowDown} class="me-2" size="2x" fw /><br />
-												{$t('read.load_images')}
+												{$t('read.load_images', {
+													count: totalImageAmount,
+													size: formatBytes(totalImageSize)
+												})}
 											</button>
 										</div>
 									{:else}
@@ -540,10 +571,14 @@
 		margin-top: 0.5rem;
 		border-radius: 5px;
 		transition: all ease 0.2s;
+		max-width: 200px;
+	}
+
+	:global(body[data-bs-theme='light'] .loadImageBtn) {
 		background-color: #ccc;
 	}
 
-	.loadImageBtn:hover {
+	:global(body[data-bs-theme='light'] .loadImageBtn:hover) {
 		background-color: #bbb;
 	}
 

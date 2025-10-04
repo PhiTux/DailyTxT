@@ -122,11 +122,20 @@
 				<Fa icon={faChevronLeft} fw />
 			</button>
 			{#key images[currentIndex].uuid_filename}
-				<img
-					class="fullscreen-image"
-					alt={images[currentIndex].filename}
-					src={images[currentIndex].src}
-				/>
+				{#if images[currentIndex].src}
+					<img
+						class="fullscreen-image"
+						alt={images[currentIndex].filename}
+						src={images[currentIndex].src}
+					/>
+				{:else}
+					<div
+						class="spinner-border text-light position-absolute top-50 start-50 translate-middle"
+						role="status"
+					>
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				{/if}
 			{/key}
 			<div class="image-info">
 				<span class="image-name">{images[currentIndex].filename}</span>
@@ -153,7 +162,15 @@
 					class="image-container {index === currentIndex ? 'active' : ''}"
 					onclick={() => (currentIndex = index)}
 				>
-					<img class="image" alt={image.filename} src={image.src} />
+					<div class="image-thumb-wrapper">
+						{#if image.src}
+							<img class="image" alt={image.filename} src={image.src} />
+						{:else}
+							<div class="spinner-border text-light spinner-border-sm thumb-spinner" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{/if}
+					</div>
 				</button>
 			{/each}
 		</div>
@@ -169,7 +186,15 @@
 			onclick={() => openFullscreen(index)}
 			transition:slide={{ axis: 'x' }}
 		>
-			<img class="image" alt={image.filename} src={image.src} transition:fade />
+			<div class="image-thumb-wrapper">
+				{#if image.src}
+					<img class="image" alt={image.filename} src={image.src} transition:fade />
+				{:else}
+					<div class="spinner-border text-secondary spinner-border-sm thumb-spinner" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				{/if}
+			</div>
 		</button>
 	{/each}
 </div>
@@ -242,6 +267,15 @@
 		max-height: 100px;
 		border-radius: 8px;
 		transition: transform 0.3s ease;
+	}
+
+	.image-thumb-wrapper {
+		position: relative;
+		width: 150px;
+		height: 100px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.fullscreen-overlay {
