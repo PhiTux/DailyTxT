@@ -42,7 +42,7 @@
 	import { blur, slide, fade } from 'svelte/transition';
 	import Statistics from '$lib/settings/Statistics.svelte';
 	import Admin from '$lib/settings/Admin.svelte';
-	import { T, getTranslate, getTolgee } from '@tolgee/svelte';
+	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import github from '$lib/assets/GitHub-Logo.png';
 	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
 	import donate from '$lib/assets/bmc-button.png';
@@ -237,7 +237,7 @@
 	function logout(errorCode) {
 		axios
 			.get(API_URL + '/users/logout')
-			.then((response) => {
+			.then(() => {
 				localStorage.removeItem('user');
 				if (errorCode) {
 					goto(`/login?error=${errorCode}`);
@@ -540,7 +540,7 @@
 			generateNeonMesh($darkMode);
 			document
 				.querySelector('meta[name="theme-color"]')
-				.setAttribute('content', $darkMode ? '#171717' : '#ffffff');
+				.setAttribute('content', $darkMode ? 'rgba(83, 83, 83, 0.4)' : 'rgba(187, 187, 187, 0.3)');
 		}
 	}
 
@@ -1164,7 +1164,7 @@
 					<img src={dailytxt} alt="" height="38px" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
-				2
+				5
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">

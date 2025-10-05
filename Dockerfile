@@ -4,7 +4,7 @@
 FROM node:20-alpine AS frontend-builder
 WORKDIR /app/frontend
 
-# Install dependencies and build SvelteKit (adapter-static outputs to build/)
+# Install dependencies and build SvelteKit (outputs to build/)
 COPY frontend/package*.json ./
 RUN apk update && apk add build-base cairo-dev pango-dev giflib-dev g++ make py3-pip && npm ci
 COPY frontend/ ./
@@ -40,6 +40,9 @@ COPY --from=frontend-builder /app/frontend/build/ /usr/share/nginx/html/
 
 # Copy backend binary
 COPY --from=backend-builder /out/dailytxt /usr/local/bin/dailytxt
+
+# Copy application version file (read by backend at startup)
+COPY backend/version /version
 
 # Copy nginx config and entrypoint
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf

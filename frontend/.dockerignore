@@ -1,0 +1,11 @@
+node_modules
+.dockerignore
+build
+dev-dist
+.svelte-kit
+.env.development.local
+.gitignore
+.npmrc
+.prettierignore
+.prettierrc
+README.md

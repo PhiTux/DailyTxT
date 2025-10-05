@@ -105,13 +105,31 @@
 		// PWA auto-update with user prompt
 		const updateSW = registerSW({
 			onNeedRefresh() {
-				const toastEl = document.getElementById('toastPwaUpdate');
-				if (!toastEl) return;
-				toastEl.classList.remove('d-none');
-				const toast = new bootstrap.Toast(toastEl, { autohide: false });
-				toast.show();
+				// toast
+				setTimeout(() => {
+					const toast = new bootstrap.Toast(document.getElementById('toastPwaUpdate'), {
+						autohide: false
+					});
+					toast.show();
+				}, 500);
 				const btn = document.getElementById('btnPwaReload');
-				btn?.addEventListener('click', () => updateSW(true));
+				let swReloadScheduled = false;
+				btn?.addEventListener('click', async () => {
+					if (swReloadScheduled) return;
+					swReloadScheduled = true;
+					btn.setAttribute('disabled', 'true');
+					// Request update without auto-reload; we'll reload once on controller change
+					await updateSW();
+					// Reload exactly once when the new SW takes control
+					navigator.serviceWorker.addEventListener(
+						'controllerchange',
+						() => {
+							// Use a micro delay to ensure new assets are ready
+							setTimeout(() => window.location.reload(), 50);
+						},
+						{ once: true }
+					);
+				});
 			},
 			onOfflineReady() {
 				// not needed, we don't aim offline, skip toast
@@ -128,12 +146,13 @@
 			e.preventDefault();
 			deferredInstallPrompt = e;
 			if (!isStandalone) {
-				showInstallToast = true;
-				const toastEl = document.getElementById('toastPwaInstall');
-				if (toastEl) {
-					const toast = new bootstrap.Toast(toastEl, { autohide: false });
+				// show toast
+				setTimeout(() => {
+					const toast = new bootstrap.Toast(document.getElementById('toastPwaInstall'), {
+						autohide: false
+					});
 					toast.show();
-				}
+				}, 500);
 			}
 		});
 
@@ -141,8 +160,6 @@
 		window.addEventListener('appinstalled', () => {
 			deferredInstallPrompt = null;
 			showInstallToast = false;
-			const toastEl = document.getElementById('toastPwaInstall');
-			toastEl?.classList.add('d-none');
 		});
 	});
 
@@ -182,44 +199,42 @@
 		</div>
 
 		<div class="toast-container position-fixed bottom-0 end-0 p-3">
-			{#if showInstallToast}
-				<div
-					id="toastPwaInstall"
-					class="toast text-bg-primary"
-					role="alert"
-					aria-live="assertive"
-					aria-atomic="true"
-				>
-					<div class="d-flex align-items-center">
-						<div class="toast-body">{tolgee.t('toast.pwa.install_description')}</div>
-						<button
-							id="btnPwaInstall"
-							type="button"
-							class="btn btn-light btn-sm me-2 m-2"
-							onclick={installPWA}
-						>
-							{tolgee.t('toast.pwa.install_button')}
-						</button>
-						<button
-							type="button"
-							class="btn-close me-2 m-auto"
-							data-bs-dismiss="toast"
-							aria-label="Close"
-							onclick={() => (showInstallToast = false)}
-						></button>
-					</div>
+			<div
+				id="toastPwaInstall"
+				class="toast text-bg-primary"
+				role="alert"
+				aria-live="assertive"
+				aria-atomic="true"
+			>
+				<div class="d-flex align-items-center">
+					<div class="toast-body">{tolgee.t('toast.pwa.install_description')}</div>
+					<button
+						id="btnPwaInstall"
+						type="button"
+						class="btn btn-primary btn-sm me-2 m-2 toastBtn"
+						onclick={installPWA}
+					>
+						{tolgee.t('toast.pwa.install_button')}
+					</button>
+					<button
+						type="button"
+						class="btn-close me-2 m-auto"
+						data-bs-dismiss="toast"
+						aria-label="Close"
+						onclick={() => (showInstallToast = false)}
+					></button>
 				</div>
-			{/if}
+			</div>
 			<div
 				id="toastPwaUpdate"
-				class="toast text-bg-info d-none"
+				class="toast text-bg-info"
 				role="alert"
 				aria-live="assertive"
 				aria-atomic="true"
 			>
 				<div class="d-flex align-items-center">
 					<div class="toast-body">{tolgee.t('toast.pwa.update_available')}</div>
-					<button id="btnPwaReload" type="button" class="btn btn-light btn-sm me-2 m-2">
+					<button id="btnPwaReload" type="button" class="btn btn-primary btn-sm me-2 m-2 toastBtn">
 						{tolgee.t('toast.pwa.reload_button')}
 					</button>
 					<button
@@ -256,6 +271,16 @@
 </main>
 
 <style>
+	.toastBtn {
+		background-color: #f57c00 !important;
+		color: black !important;
+	}
+
+	.toastBtn:hover {
+		background-color: rgb(201, 100, 0) !important;
+		color: black !important;
+	}
+
 	:global(.toast-container) {
 		z-index: 9999;
 	}

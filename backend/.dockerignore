@@ -1,0 +1,6 @@
+data
+data.bak
+.envrc
+.gitignore
+backend
+.dockerignore
