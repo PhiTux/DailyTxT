@@ -51,8 +51,8 @@
 	const tolgee = getTolgee(['language']);
 
 	let { children } = $props();
-	let inDuration = 150; //150;
-	let outDuration = 150; //150;
+	let inDuration = 150;
+	let outDuration = 150;
 
 	let current_version = $state('');
 	let latest_stable_version = $state('');
@@ -1182,7 +1182,7 @@
 			<div
 				class="transition-wrapper overflow-y-auto position-absolute top-0 bottom-0 start-0 end-0"
 				out:blur={{ duration: outDuration }}
-				in:blur={{ duration: inDuration, delay: outDuration * 2 }}
+				in:blur={{ duration: inDuration, delay: outDuration }}
 			>
 				{@render children()}
 			</div>

@@ -624,6 +624,12 @@
 		max-height: 100vh; /* scroll area uses remaining viewport height */
 	}
 
+	.logContent {
+		width: 100%;
+		flex-wrap: wrap;
+		overflow-x: auto;
+	}
+
 	@media (min-width: 1300px) and (max-width: 1450px) {
 		.files {
 			max-width: 250px;
