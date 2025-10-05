@@ -132,6 +132,7 @@
     "delete": "Supprimer",
     "delete_account": "Supprimer le compte utilisateur",
     "delete_account.delete_button": "Supprimer le compte utilisateur",
+    "installation_help": "Tu peux aussi installer DailyTxT comme une application. Cela se fait via les paramètres du navigateur, mais tous les navigateurs ne le prennent pas en charge. Aucune installation n'a été détectée actuellement.<br/> \n<ul>\n<li>Android : \"Ajouter à l'écran d'accueil\"</li>\n<li>Apple : \"Partager\" -> \"Sur l'écran d'accueil\"</li>\n</ul>",
     "language": {
       "reload_info": "Certaines modifications ne seront visibles qu'après rechargement de la page."
     },
@@ -162,6 +163,14 @@
       "error_removing": "Erreur lors de la suppression du tag!",
       "error_saving": "Erreur lors de la création du tag!",
       "error_saving_exists": "\"Le nom du tag existe déjà\""
+    }
+  },
+  "toast": {
+    "pwa": {
+      "install_button": "Installer",
+      "install_description": "Installe DailyTxT pour qu'il se comporte comme une application normale.",
+      "reload_button": "Recharger",
+      "update_available": "Une nouvelle version est disponible."
     }
   }
 }

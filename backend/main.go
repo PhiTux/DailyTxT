@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -14,8 +15,8 @@ import (
 	"github.com/phitux/dailytxt/backend/utils"
 )
 
-// Application version - UPDATE THIS FOR NEW RELEASES
-const AppVersion = "2.0.0-testing.1"
+// Application version - loaded from local 'version' file at startup
+var AppVersion string
 
 // longTimeoutEndpoints defines endpoints that need extended/none timeouts
 // Paths are checked against the request URL path as seen by the top-level handler.
@@ -45,6 +46,16 @@ func main() {
 	// Setup logging
 	logger := log.New(os.Stdout, "dailytxt: ", log.LstdFlags|log.Lmicroseconds|log.Lshortfile)
 	logger.Println("Server starting...")
+
+	// Read application version as the very first step
+	data, err := os.ReadFile("version")
+	if err != nil {
+		log.Fatalf("Failed to read 'version' file: %v", err)
+	}
+	AppVersion = strings.TrimSpace(string(data))
+	if AppVersion == "" {
+		log.Fatalf("'version' file is empty")
+	}
 
 	// Set application version
 	utils.SetVersion(AppVersion)

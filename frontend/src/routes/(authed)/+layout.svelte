@@ -1112,6 +1112,17 @@
 				console.error('Error fetching version info:', error);
 			});
 	}
+
+	let showInstallationHelp = $state(false);
+	$effect(() => {
+		if (window.matchMedia('(display-mode: standalone)').matches) {
+			showInstallationHelp = false;
+			console.log("We're installed");
+		} else {
+			showInstallationHelp = true;
+			console.log("We're not installed");
+		}
+	});
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -1153,7 +1164,7 @@
 					<img src={dailytxt} alt="" height="38px" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
-				1
+				2
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
@@ -1363,6 +1374,9 @@
 										{/each}
 									</select>
 								</div>
+								{#if showInstallationHelp}
+									<div class="alert alert-info">{@html $t('settings.installation_help')}</div>
+								{/if}
 								<div id="appearance">
 									<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
 									<div id="lightdark">

@@ -285,6 +285,7 @@
     "images_loading_per_device": "Decide for each device whether images should be loaded automatically",
     "images_loading_this_device": "Automatically load images on <b>this device</b>",
     "images_title": "Automatically load images",
+    "installation_help": "You can also install DailyTxT like an app. This is done through the browser settings, but it is not supported by every browser. Currently, no installation has been detected.<br/>\n<ul>\n<li>Android: \"Add to Home screen\"</li>\n<li>Apple: \"Share\" -> \"Add to Home Screen\"</li>\n</ul>",
     "language": "Language",
     "language_auto_detect": "Determine language based on the browser. Currently:",
     "language_not_available": "The language <code>{browserLanguage}</code> is not available. The default language <code>{defaultLanguage}</code> is used.",
@@ -403,6 +404,12 @@
   "toast": {
     "password": {
       "available_backup_codes": "{count, plural, one {Still {count} backup code available!} other {Still {count} backup codes available!}}"
+    },
+    "pwa": {
+      "install_button": "Install",
+      "install_description": "Install DailyTxT for a better app-like experience.",
+      "reload_button": "Reload",
+      "update_available": "A new version is available."
     }
   },
   "weekdays": {
