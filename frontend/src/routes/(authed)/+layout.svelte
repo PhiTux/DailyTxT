@@ -1164,7 +1164,6 @@
 					<img src={dailytxt} alt="" height="38px" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
-				5
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
@@ -1374,9 +1373,6 @@
 										{/each}
 									</select>
 								</div>
-								{#if showInstallationHelp}
-									<div class="alert alert-info">{@html $t('settings.installation_help')}</div>
-								{/if}
 								<div id="appearance">
 									<h3 class="text-primary">🎨 {$t('settings.appearance')}</h3>
 									<div id="lightdark">
@@ -2315,6 +2311,10 @@
 
 								<div id="about">
 									<h3 class="text-primary">💡 {$t('settings.about')}</h3>
+
+									{#if showInstallationHelp}
+										<div class="alert alert-info">{@html $t('settings.installation_help')}</div>
+									{/if}
 
 									<span class="d-table mx-auto"
 										>{@html $t('settings.about.made_by', {

@@ -2,7 +2,7 @@
 	import { blur } from 'svelte/transition';
 	import axios from 'axios';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import '../scss/styles.scss';
 	import { page } from '$app/state';
 	import { API_URL } from '$lib/APIurl.js';
@@ -34,6 +34,9 @@
 	let { children } = $props();
 	let inDuration = 150;
 	let outDuration = 150;
+
+	// Keep a reference to the SW registration to allow immediate skipWaiting
+	let swRegistration = null;
 
 	// PWA install prompt state
 	let deferredInstallPrompt = $state(null);
@@ -94,6 +97,8 @@
 		calculateResize();
 	});
 
+	let isStandalone = false;
+
 	onMount(() => {
 		calculateResize();
 
@@ -102,42 +107,116 @@
 			generateNeonMesh($darkMode);
 		}
 
+		// helper to present the PWA update toast and wire the reload button once
+		function showPwaUpdateToast() {
+			setTimeout(() => {
+				const toast = new bootstrap.Toast(document.getElementById('toastPwaUpdate'), {
+					autohide: false
+				});
+				toast.show();
+				const btn = document.getElementById('btnPwaReload');
+				let swReloadScheduled = false;
+				if (btn) {
+					btn.removeAttribute('disabled');
+					btn.onclick = () => {
+						if (swReloadScheduled) return;
+						swReloadScheduled = true;
+						btn.setAttribute('disabled', 'true');
+						// Ask the waiting SW (if present) to activate immediately
+						try {
+							swRegistration?.waiting?.postMessage({ type: 'SKIP_WAITING' });
+						} catch (_) {}
+						// Request update with built-in reload once activated; don't await to keep UI responsive
+						try {
+							updateSW(true);
+						} catch (_) {}
+						// Fallback: force a reload after a brief delay in case the event doesn't fire on this platform
+						setTimeout(() => {
+							try {
+								window.location.reload();
+							} catch (_) {}
+						}, 1200);
+					};
+				}
+			}, 500);
+		}
+
 		// PWA auto-update with user prompt
 		const updateSW = registerSW({
 			onNeedRefresh() {
-				// toast
-				setTimeout(() => {
-					const toast = new bootstrap.Toast(document.getElementById('toastPwaUpdate'), {
-						autohide: false
-					});
-					toast.show();
-				}, 500);
-				const btn = document.getElementById('btnPwaReload');
-				let swReloadScheduled = false;
-				btn?.addEventListener('click', async () => {
-					if (swReloadScheduled) return;
-					swReloadScheduled = true;
-					btn.setAttribute('disabled', 'true');
-					// Request update without auto-reload; we'll reload once on controller change
-					await updateSW();
-					// Reload exactly once when the new SW takes control
-					navigator.serviceWorker.addEventListener(
-						'controllerchange',
-						() => {
-							// Use a micro delay to ensure new assets are ready
-							setTimeout(() => window.location.reload(), 50);
-						},
-						{ once: true }
-					);
-				});
+				showPwaUpdateToast();
 			},
 			onOfflineReady() {
 				// not needed, we don't aim offline, skip toast
+			},
+			onRegisteredSW(_swUrl, registration) {
+				// When the app stays open, explicitly ask the SW to check for updates
+				// on focus, visibility regain, going online, and periodically.
+				if (!registration) return;
+				swRegistration = registration;
+				const checkForUpdate = () => {
+					try {
+						registration.update();
+					} catch (_) {}
+				};
+				// If a waiting SW already exists (e.g. app was open when update installed), show the toast now.
+				if (registration.waiting) {
+					showPwaUpdateToast();
+				}
+				// Initial delayed check after mount
+				const initialTimer = setTimeout(checkForUpdate, 5000);
+				// Check on app focus / tab visible / network back
+				const onFocus = () => checkForUpdate();
+				const onVisibility = () => {
+					if (document.visibilityState === 'visible') checkForUpdate();
+				};
+				const onOnline = () => checkForUpdate();
+				window.addEventListener('focus', onFocus);
+				document.addEventListener('visibilitychange', onVisibility);
+				window.addEventListener('online', onOnline);
+				// Periodic check (e.g., every 30 minutes)
+				const intervalId = setInterval(checkForUpdate, 30 * 60 * 1000);
+				// Cleanup on destroy (main layout rarely unmounts, but keep things tidy)
+				onDestroy(() => {
+					clearTimeout(initialTimer);
+					clearInterval(intervalId);
+					window.removeEventListener('focus', onFocus);
+					document.removeEventListener('visibilitychange', onVisibility);
+					window.removeEventListener('online', onOnline);
+				});
+			},
+			onRegistered(registration) {
+				// Fallback for environments exposing onRegistered instead of onRegisteredSW
+				if (!registration) return;
+				swRegistration = registration;
+				const checkForUpdate = () => {
+					try {
+						registration.update();
+					} catch (_) {}
+				};
+				if (registration.waiting) showPwaUpdateToast();
+				const initialTimer = setTimeout(checkForUpdate, 5000);
+				const onFocus = () => checkForUpdate();
+				const onVisibility = () => {
+					if (document.visibilityState === 'visible') checkForUpdate();
+				};
+				const onOnline = () => checkForUpdate();
+				window.addEventListener('focus', onFocus);
+				document.addEventListener('visibilitychange', onVisibility);
+				window.addEventListener('online', onOnline);
+				const intervalId = setInterval(checkForUpdate, 30 * 60 * 1000);
+				onDestroy(() => {
+					clearTimeout(initialTimer);
+					clearInterval(intervalId);
+					window.removeEventListener('focus', onFocus);
+					document.removeEventListener('visibilitychange', onVisibility);
+					window.removeEventListener('online', onOnline);
+				});
 			}
 		});
 
 		// Detect standalone (already installed) and platforms where auto prompt won't show
-		const isStandalone =
+		isStandalone =
 			window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
 
 		// Capture the install prompt event (Android/Chrome etc.)
