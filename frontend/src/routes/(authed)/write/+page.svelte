@@ -136,7 +136,6 @@
 	function on_key_down(event) {
 		if (event.key === 'Alt') {
 			event.preventDefault();
-			console.log('huhu');
 			altPressed = true;
 		}
 		if (event.key === 'ArrowRight' && altPressed) {
@@ -2025,8 +2024,16 @@
 </div>
 
 <style>
-	.text-muted.fst-italic {
+	:global(body[data-bs-theme='light']) .text-muted.fst-italic {
+		color: rgba(99, 98, 98, 0.637) !important;
+	}
+
+	:global(body[data-bs-theme='dark']) .text-muted.fst-italic {
 		color: rgba(228, 226, 230, 0.4) !important;
+	}
+
+	:global(body[data-bs-theme='light'] .loadImageBtn, body[data-bs-theme='light'] .fileBtn) {
+		color: #000000;
 	}
 
 	#sidenav {
