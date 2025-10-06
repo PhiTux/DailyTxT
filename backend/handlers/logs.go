@@ -391,149 +391,109 @@ func GetMarkedDays(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// TemplatesRequest represents a templates request
-type TemplatesRequest struct {
-	Templates []struct {
-		Name string `json:"name"`
-		Text string `json:"text"`
-	} `json:"templates"`
-}
-
-// GetTemplates handles retrieving a user's templates
-func GetTemplates(w http.ResponseWriter, r *http.Request) {
-	// Get user ID and derived key from context
+// BookmarkDay handles bookmarking a day
+func BookmarkDay(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+
+	// Get parameters
+	dayStr := r.URL.Query().Get("day")
+	if dayStr == "" {
+		http.Error(w, "Missing day parameter", http.StatusBadRequest)
+		return
+	}
+	day, err := strconv.Atoi(dayStr)
+	if err != nil {
+		http.Error(w, "Invalid day parameter", http.StatusBadRequest)
+		return
+	}
+
+	monthStr := r.URL.Query().Get("month")
+	if monthStr == "" {
+		http.Error(w, "Missing month parameter", http.StatusBadRequest)
+		return
+	}
+	month, err := strconv.Atoi(monthStr)
+	if err != nil {
+		http.Error(w, "Invalid month parameter", http.StatusBadRequest)
+		return
+	}
+
+	yearStr := r.URL.Query().Get("year")
+	if yearStr == "" {
+		http.Error(w, "Missing year parameter", http.StatusBadRequest)
+		return
+	}
+	year, err := strconv.Atoi(yearStr)
+	if err != nil {
+		http.Error(w, "Invalid year parameter", http.StatusBadRequest)
+		return
+	}
+
+	// Get month data
+	content, err := utils.GetMonth(userID, year, month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	// Get or create days array
+	days, ok := content["days"].([]any)
 	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
+		days = []any{}
 	}
 
-	// Get templates
-	content, err := utils.GetTemplates(userID)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving templates: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// If no templates, return empty array
-	if templates, ok := content["templates"].([]any); !ok || len(templates) == 0 {
-		utils.JSONResponse(w, http.StatusOK, []any{})
-		return
-	}
-
-	// Get encryption key
-	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Decrypt template data
-	templates := content["templates"].([]any)
-	result := []any{}
-
-	for _, templateInterface := range templates {
-		template, ok := templateInterface.(map[string]any)
+	// Find day
+	dayFound := false
+	bookmarked := true
+	for i, dayInterface := range days {
+		dayObj, ok := dayInterface.(map[string]any)
 		if !ok {
 			continue
 		}
 
-		// Decrypt name and text
-		if encName, ok := template["name"].(string); ok {
-			decryptedName, err := utils.DecryptText(encName, encKey)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Error decrypting template name: %v", err), http.StatusInternalServerError)
-				return
-			}
-			template["name"] = decryptedName
+		dayNum, ok := dayObj["day"].(float64)
+		if !ok || int(dayNum) != day {
+			continue
 		}
 
-		if encText, ok := template["text"].(string); ok {
-			decryptedText, err := utils.DecryptText(encText, encKey)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("Error decrypting template text: %v", err), http.StatusInternalServerError)
-				return
-			}
-			template["text"] = decryptedText
+		// Day found, toggle bookmark
+		dayFound = true
+		if bookmark, ok := dayObj["isBookmarked"].(bool); ok && bookmark {
+			dayObj["isBookmarked"] = false
+			bookmarked = false
+		} else {
+			dayObj["isBookmarked"] = true
 		}
-
-		result = append(result, template)
+		days[i] = dayObj
+		break
 	}
 
-	// Return templates
-	utils.JSONResponse(w, http.StatusOK, result)
-}
-
-// SaveTemplates handles saving templates
-func SaveTemplates(w http.ResponseWriter, r *http.Request) {
-	// Get user ID and derived key from context
-	userID, ok := r.Context().Value(utils.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Parse request body
-	var req TemplatesRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	// Get encryption key
-	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Create new templates content
-	content := map[string]any{
-		"templates": []any{},
-	}
-
-	// Encrypt template data
-	templates := []any{}
-	for _, template := range req.Templates {
-		encName, err := utils.EncryptText(template.Name, encKey)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error encrypting template name: %v", err), http.StatusInternalServerError)
-			return
-		}
-
-		encText, err := utils.EncryptText(template.Text, encKey)
-		if err != nil {
-			http.Error(w, fmt.Sprintf("Error encrypting template text: %v", err), http.StatusInternalServerError)
-			return
-		}
-
-		templates = append(templates, map[string]any{
-			"name": encName,
-			"text": encText,
+	if !dayFound {
+		// Create new day with bookmark
+		days = append(days, map[string]any{
+			"day":          day,
+			"isBookmarked": true,
 		})
 	}
 
-	content["templates"] = templates
+	// Update days array
+	content["days"] = days
 
-	// Write templates
-	if err := utils.WriteTemplates(userID, content); err != nil {
-		http.Error(w, fmt.Sprintf("Error writing templates: %v", err), http.StatusInternalServerError)
+	// Write month data
+	if err := utils.WriteMonth(userID, year, month, content); err != nil {
+		http.Error(w, fmt.Sprintf("Failed to bookmark day - error writing log: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	// Return success
-	utils.JSONResponse(w, http.StatusOK, map[string]bool{
-		"success": true,
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success":    true,
+		"bookmarked": bookmarked,
 	})
 }
 
@@ -999,268 +959,6 @@ func DeleteDay(w http.ResponseWriter, r *http.Request) {
 		}
 
 		utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
-		return
-	}
-
-	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
-}
-
-// RenameFileRequest represents the rename file request body
-type RenameFileRequest struct {
-	UUID        string `json:"uuid"`
-	NewFilename string `json:"new_filename"`
-	Day         int    `json:"day"`
-	Month       int    `json:"month"`
-	Year        int    `json:"year"`
-}
-
-// RenameFile handles renaming a file
-func RenameFile(w http.ResponseWriter, r *http.Request) {
-	// Get user ID from context
-	userID, ok := r.Context().Value(utils.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Parse request body
-	var req RenameFileRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	// Validate input
-	req.NewFilename = strings.TrimSpace(req.NewFilename)
-	if req.NewFilename == "" {
-		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
-			"success": false,
-			"message": "New filename cannot be empty",
-		})
-		return
-	}
-
-	if req.UUID == "" {
-		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
-			"success": false,
-			"message": "File UUID is required",
-		})
-		return
-	}
-
-	// Get month data
-	content, err := utils.GetMonth(userID, req.Year, req.Month)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	enc_filename, err := utils.EncryptText(req.NewFilename, encKey)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error encrypting text: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Find and update the file
-	days, ok := content["days"].([]any)
-	if !ok {
-		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
-			"success": false,
-			"message": "No days found",
-		})
-		return
-	}
-
-	found := false
-	for _, d := range days {
-		day, ok := d.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		dayNum, ok := day["day"].(float64)
-		if !ok || int(dayNum) != req.Day {
-			continue
-		}
-
-		files, ok := day["files"].([]any)
-		if !ok {
-			continue
-		}
-
-		// Find and rename the specific file
-		for _, f := range files {
-			file, ok := f.(map[string]any)
-			if !ok {
-				continue
-			}
-
-			if uuid, ok := file["uuid_filename"].(string); ok && uuid == req.UUID {
-				file["enc_filename"] = enc_filename
-				found = true
-				break
-			}
-		}
-
-		if found {
-			break
-		}
-	}
-
-	if !found {
-		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
-			"success": false,
-			"message": "File not found",
-		})
-		return
-	}
-
-	// Save the updated month data
-	if err := utils.WriteMonth(userID, req.Year, req.Month, content); err != nil {
-		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	utils.Logger.Printf("File renamed successfully for user %d: %s -> %s", userID, req.UUID, req.NewFilename)
-	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
-}
-
-// ReorderFilesRequest represents the reorder files request body
-type ReorderFilesRequest struct {
-	Day       int            `json:"day"`
-	Month     int            `json:"month"`
-	Year      int            `json:"year"`
-	FileOrder map[string]int `json:"file_order"` // UUID -> order index
-}
-
-// ReorderFiles handles reordering files within a day
-func ReorderFiles(w http.ResponseWriter, r *http.Request) {
-	// Get user ID from context
-	userID, ok := r.Context().Value(utils.UserIDKey).(int)
-	if !ok {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-		return
-	}
-
-	// Parse request body
-	var req ReorderFilesRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	if len(req.FileOrder) == 0 {
-		utils.JSONResponse(w, http.StatusBadRequest, map[string]any{
-			"success": false,
-			"message": "File order mapping is required",
-		})
-		return
-	}
-
-	// Get month data
-	content, err := utils.GetMonth(userID, req.Year, req.Month)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
-		return
-	}
-
-	// Find and reorder files for the specific day
-	days, ok := content["days"].([]any)
-	if !ok {
-		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
-			"success": false,
-			"message": "No days found",
-		})
-		return
-	}
-
-	found := false
-	for _, d := range days {
-		day, ok := d.(map[string]any)
-		if !ok {
-			continue
-		}
-
-		dayNum, ok := day["day"].(float64)
-		if !ok || int(dayNum) != req.Day {
-			continue
-		}
-
-		files, ok := day["files"].([]any)
-		if !ok {
-			continue
-		}
-
-		// Create a slice to hold files with their new order
-		type fileWithOrder struct {
-			file  map[string]any
-			order int
-		}
-
-		var orderedFiles []fileWithOrder
-
-		// Assign order to each file
-		for _, f := range files {
-			file, ok := f.(map[string]any)
-			if !ok {
-				continue
-			}
-
-			uuid, ok := file["uuid_filename"].(string)
-			if !ok {
-				continue
-			}
-
-			if order, exists := req.FileOrder[uuid]; exists {
-				orderedFiles = append(orderedFiles, fileWithOrder{file: file, order: order})
-			} else {
-				// Files not in the reorder map get appended at the end
-				orderedFiles = append(orderedFiles, fileWithOrder{file: file, order: len(req.FileOrder)})
-			}
-		}
-
-		// Sort files by their order
-		for i := 0; i < len(orderedFiles)-1; i++ {
-			for j := i + 1; j < len(orderedFiles); j++ {
-				if orderedFiles[i].order > orderedFiles[j].order {
-					orderedFiles[i], orderedFiles[j] = orderedFiles[j], orderedFiles[i]
-				}
-			}
-		}
-
-		// Update the files array with the new order
-		newFiles := make([]any, len(orderedFiles))
-		for i, fileWithOrder := range orderedFiles {
-			newFiles[i] = fileWithOrder.file
-		}
-		day["files"] = newFiles
-
-		found = true
-		break
-	}
-
-	if !found {
-		utils.JSONResponse(w, http.StatusNotFound, map[string]any{
-			"success": false,
-			"message": "Day not found",
-		})
-		return
-	}
-
-	// Save the updated month data
-	if err := utils.WriteMonth(userID, req.Year, req.Month, content); err != nil {
-		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
 		return
 	}
 

@@ -308,8 +308,6 @@ func OpenRegistrationTemp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("%v", r.Body)
-
 	// Default duration 5 minutes; optionally allow custom seconds (max 15 min)
 	duration := 5 * 60 // seconds
 	if req.Seconds > 0 && req.Seconds <= 15*60 {
