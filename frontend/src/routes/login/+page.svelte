@@ -474,7 +474,9 @@
 				</h2>
 				<div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#loginAccordion">
 					<div class="accordion-body">
-						<div class="alert alert-info">{$t('login.create_account_info')}</div>
+						{#if registration_allowed || registration_allowed_temporary}
+							<div class="alert alert-info">{$t('login.create_account_info')}</div>
+						{/if}
 						{#if !registration_allowed && !registration_allowed_temporary}
 							<div class="alert alert-danger" role="alert">
 								{$t('login.alert.registration_not_allowed')}

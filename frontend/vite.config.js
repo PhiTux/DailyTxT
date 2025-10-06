@@ -25,5 +25,12 @@ export default defineConfig({
 	server: {
 		port: 5173,
 		https: false
+	},
+	css: {
+		preprocessorOptions: {
+			scss: {
+				silenceDeprecations: ['color-functions', 'import', 'global-builtin']
+			}
+		}
 	}
 });

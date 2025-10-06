@@ -1,6 +1,10 @@
-$modal-fade-transform: scale(0.8);
-$modal-backdrop-opacity: 0.0;
+//$modal-fade-transform: scale(0.8);
+//$modal-backdrop-opacity: 0.0;
 
 // Import all of Bootstrap's CSS
-@import "bootstrap/scss/bootstrap";
+//@import "bootstrap/scss/bootstrap";
+@use "bootstrap/scss/bootstrap" with (
+  $modal-fade-transform: scale(0.8),
+  $modal-backdrop-opacity: 0
+);
 
