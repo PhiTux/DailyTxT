@@ -2024,6 +2024,12 @@
 </div>
 
 <style>
+	@media screen and (max-width: 567px) {
+		:global(em-emoji-picker) {
+			right: 0;
+		}
+	}
+
 	:global(body[data-bs-theme='light']) .text-muted.fst-italic {
 		color: rgba(99, 98, 98, 0.637) !important;
 	}
