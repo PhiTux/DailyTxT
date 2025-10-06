@@ -516,7 +516,7 @@
 							</div>
 
 							{#if log.files && log.files.length > 0}
-								<div class="d-flex flex-column ms-3 files">
+								<div class="d-flex flex-column files">
 									<FileList files={log.files} {downloadFile} />
 								</div>
 							{/if}
