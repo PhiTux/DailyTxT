@@ -5,18 +5,20 @@
 	const { t } = getTranslate();
 </script>
 
-<select
-	bind:value={$insertTemplate}
-	class="form-select form-select-sm"
-	aria-label="Select template"
->
-	<option value="" disabled>{$t('template.dropdown_insert')}</option>
-	{#each $templates as template}
-		<option value={template.text}>
-			{template.name}
-		</option>
-	{/each}
-</select>
+{#if $templates.length > 0}
+	<select
+		bind:value={$insertTemplate}
+		class="form-select form-select-sm"
+		aria-label="Select template"
+	>
+		<option value="" disabled>{$t('template.dropdown_insert')}</option>
+		{#each $templates as template}
+			<option value={template.text}>
+				{template.name}
+			</option>
+		{/each}
+	</select>
+{/if}
 
 <style>
 	.form-select {
