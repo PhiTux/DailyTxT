@@ -535,6 +535,10 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='light'] .loadImageBtn, body[data-bs-theme='light'] .fileBtn) {
+		color: #000000;
+	}
+
 	#no-entries {
 		font-size: 1.5rem;
 		font-weight: 600;
@@ -565,6 +569,7 @@
 	}
 
 	.middle {
+		width: 100%;
 		overflow-x: auto;
 	}
 
