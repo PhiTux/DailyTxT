@@ -133,10 +133,21 @@
 
 	let altPressed = false;
 	let ctrlPressed = false;
+	let macAltPressed = $state(false);
+	let MacCtrlPressed = $state(false);
+	const isMac = navigator.platform.toUpperCase().includes('MAC');
 	function on_key_down(event) {
-		if (event.key === 'Alt') {
+		if (!isMac && event.key === 'Alt') {
 			event.preventDefault();
 			altPressed = true;
+		}
+		if (isMac && event.key === 'Alt') {
+			event.preventDefault();
+			macAltPressed = true;
+		}
+		if (isMac && event.key === 'Control') {
+			event.preventDefault();
+			MacCtrlPressed = true;
 		}
 		if (event.key === 'ArrowRight' && altPressed) {
 			event.preventDefault();
@@ -145,22 +156,40 @@
 			event.preventDefault();
 			changeDay(-1);
 		}
-		if (event.key === 'Control') {
+		if (!isMac && event.key === 'Control') {
 			event.preventDefault();
 			ctrlPressed = true;
 		}
-		if (event.key === 'g' && ctrlPressed) {
+		if (event.key === 'g' && (ctrlPressed || MacCtrlPressed)) {
 			event.preventDefault();
 			document.getElementById('tag-input').focus();
 		}
 	}
 
+	$effect(() => {
+		if (isMac) {
+			if (macAltPressed && MacCtrlPressed) {
+				altPressed = true;
+			} else {
+				altPressed = false;
+			}
+		}
+	});
+
 	function on_key_up(event) {
-		if (event.key === 'Alt') {
+		if (!isMac && event.key === 'Alt') {
 			event.preventDefault();
 			altPressed = false;
 		}
-		if (event.key === 'Control') {
+		if (isMac && event.key === 'Alt') {
+			event.preventDefault();
+			macAltPressed = false;
+		}
+		if (isMac && event.key === 'Control') {
+			event.preventDefault();
+			MacCtrlPressed = false;
+		}
+		if (!isMac && event.key === 'Control') {
 			event.preventDefault();
 			ctrlPressed = false;
 		}
