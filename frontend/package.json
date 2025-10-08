@@ -3,7 +3,7 @@
 	"version": "2.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --config vite.config.local.js",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",

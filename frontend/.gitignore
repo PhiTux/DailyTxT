@@ -21,3 +21,4 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 dev-dist
+vite.config.local.js

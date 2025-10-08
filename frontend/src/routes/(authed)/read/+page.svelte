@@ -339,7 +339,7 @@
 		}
 	}
 
-	let isLoadingMonthForReading = false;
+	let isLoadingMonthForReading = $state(false);
 
 	function loadMonthForReading() {
 		if (isLoadingMonthForReading) {
@@ -527,7 +527,11 @@
 		{:else}
 			<div class="d-flex align-items-center justify-content-center h-100">
 				<div class="glass p-5 rounded-5 no-entries">
-					<span id="no-entries">{$t('read.no_entries')}</span>
+					{#if isLoadingMonthForReading}
+						<span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
+					{:else}
+						<span id="no-entries">{$t('read.no_entries')}</span>
+					{/if}
 				</div>
 			</div>
 		{/if}
