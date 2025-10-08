@@ -1786,34 +1786,36 @@
 										<hr />
 
 										{#if confirmDeleteTemplate}
-											<div transition:slide class="d-flex flex-row align-items-center mb-2">
-												<span>
-													{@html $t('settings.templates.delete_confirmation', {
-														template: $templates[selectedTemplate]?.name
-													})}
-												</span>
-												<button
-													type="button"
-													class="btn btn-secondary ms-2"
-													onclick={() => (confirmDeleteTemplate = false)}
-													>{$t('settings.abort')}</button
-												>
-												<button
-													type="button"
-													class="btn btn-danger ms-2"
-													onclick={() => {
-														deleteTemplate();
-													}}
-													disabled={isDeletingTemplate}
-													>{$t('settings.delete')}
-													{#if isDeletingTemplate}
-														<span
-															class="spinner-border spinner-border-sm ms-2"
-															role="status"
-															aria-hidden="true"
-														></span>
-													{/if}
-												</button>
+											<div transition:slide>
+												<div class="d-flex flex-row align-items-center pb-2">
+													<span>
+														{@html $t('settings.templates.delete_confirmation', {
+															template: $templates[selectedTemplate]?.name
+														})}
+													</span>
+													<button
+														type="button"
+														class="btn btn-secondary ms-2"
+														onclick={() => (confirmDeleteTemplate = false)}
+														>{$t('settings.abort')}</button
+													>
+													<button
+														type="button"
+														class="btn btn-danger ms-2"
+														onclick={() => {
+															deleteTemplate();
+														}}
+														disabled={isDeletingTemplate}
+														>{$t('settings.delete')}
+														{#if isDeletingTemplate}
+															<span
+																class="spinner-border spinner-border-sm ms-2"
+																role="status"
+																aria-hidden="true"
+															></span>
+														{/if}
+													</button>
+												</div>
 											</div>
 										{/if}
 										<div class="d-flex flex-row">
@@ -1917,8 +1919,11 @@
 													</div>
 												</div>
 												{#if exportStartDate !== '' && exportEndDate !== '' && exportStartDate > exportEndDate}
-													<div class="alert alert-danger mt-2" role="alert" transition:slide>
-														{$t('settings.export.period_invalid')}
+													<div transition:slide>
+														<div class="pt-2"></div>
+														<div class="alert alert-danger mb-0" role="alert">
+															{$t('settings.export.period_invalid')}
+														</div>
 													</div>
 												{/if}
 											{/if}
@@ -2123,20 +2128,24 @@
 											</button>
 										</form>
 										{#if backupCodes.length > 0}
-											<div class="alert alert-success alert-dismissible mt-3" transition:slide>
-												{@html $t('settings.backup_codes.success')}
+											<div transition:slide>
+												<div class="pt-3">
+													<div class="alert alert-success alert-dismissible mb-0">
+														{@html $t('settings.backup_codes.success')}
 
-												<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
-													<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
-													{$t('settings.backup_codes.copy_button')}
-												</button>
-												<ul class="list-group">
-													{#each backupCodes as code}
-														<li class="list-group-item backupCode">
-															<code>{code}</code>
-														</li>
-													{/each}
-												</ul>
+														<button class="btn btn-secondary my-2" onclick={copyBackupCodes}>
+															<Fa icon={codesCopiedSuccess ? faCheck : faCopy} />
+															{$t('settings.backup_codes.copy_button')}
+														</button>
+														<ul class="list-group">
+															{#each backupCodes as code}
+																<li class="list-group-item backupCode">
+																	<code>{code}</code>
+																</li>
+															{/each}
+														</ul>
+													</div>
+												</div>
 											</div>
 										{/if}
 										{#if showBackupCodesError}
@@ -2296,30 +2305,34 @@
 											</div>
 										{/if}
 										{#if showConfirmDeleteAccount}
-											<div class="alert alert-danger mt-2" role="alert" transition:slide>
-												{$t('settings.delete_account.confirm')}
+											<div transition:slide>
+												<div class="pt-2">
+													<div class="alert alert-danger mb-0" role="alert">
+														{$t('settings.delete_account.confirm')}
 
-												<div class="d-flex flex-row mt-2">
-													<button
-														class="btn btn-secondary"
-														onclick={() => {
-															showConfirmDeleteAccount = false;
-															deleteAccountPassword = '';
-														}}>{$t('settings.abort')}</button
-													>
-													<button
-														class="btn btn-danger ms-3"
-														onclick={deleteAccount}
-														disabled={isDeletingAccount}
-														>{$t('settings.delete_account.confirm_button')}
-														{#if isDeletingAccount}
-															<span
-																class="spinner-border spinner-border-sm ms-2"
-																role="status"
-																aria-hidden="true"
-															></span>
-														{/if}
-													</button>
+														<div class="d-flex flex-row mt-2">
+															<button
+																class="btn btn-secondary"
+																onclick={() => {
+																	showConfirmDeleteAccount = false;
+																	deleteAccountPassword = '';
+																}}>{$t('settings.abort')}</button
+															>
+															<button
+																class="btn btn-danger ms-3"
+																onclick={deleteAccount}
+																disabled={isDeletingAccount}
+																>{$t('settings.delete_account.confirm_button')}
+																{#if isDeletingAccount}
+																	<span
+																		class="spinner-border spinner-border-sm ms-2"
+																		role="status"
+																		aria-hidden="true"
+																	></span>
+																{/if}
+															</button>
+														</div>
+													</div>
 												</div>
 											</div>
 										{/if}
