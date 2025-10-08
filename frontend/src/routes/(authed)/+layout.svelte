@@ -1162,7 +1162,7 @@
 
 			<div class=" col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
 				<div class="full-logo d-flex align-items-center">
-					<img src={dailytxt} alt="" height="38px" />
+					<img src={dailytxt} alt="" height="38px" class="user-select-none" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
 				</div>
 			</div>
