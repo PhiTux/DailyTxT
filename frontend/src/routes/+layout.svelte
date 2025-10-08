@@ -72,7 +72,7 @@
 				// logout
 				axios
 					.get(API_URL + '/users/logout')
-					.then((response) => {
+					.then(() => {
 						localStorage.removeItem('user');
 						goto(`/login?error=${error.response.status}`);
 					})
