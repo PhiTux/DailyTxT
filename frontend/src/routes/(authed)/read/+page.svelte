@@ -72,8 +72,10 @@
 		}
 	});
 
+	let tagsInitiallyLoaded = false;
 	$effect(() => {
-		if ($tagsLoaded) {
+		if ($tagsLoaded && !tagsInitiallyLoaded) {
+			tagsInitiallyLoaded = true;
 			loadMonthForReading();
 		}
 	});
@@ -348,6 +350,8 @@
 		isLoadingMonthForReading = true;
 		imageSizeCalculated = false;
 
+		logs = [];
+
 		axios
 			.get(API_URL + '/logs/loadMonthForReading', {
 				params: {
@@ -528,7 +532,9 @@
 			<div class="d-flex align-items-center justify-content-center h-100">
 				<div class="glass p-5 rounded-5 no-entries">
 					{#if isLoadingMonthForReading}
-						<span class="spinner-border spinner-border-lg" role="status" aria-hidden="true"></span>
+						<div class="spinner-border spinner-border-lg" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
 					{:else}
 						<span id="no-entries">{$t('read.no_entries')}</span>
 					{/if}
