@@ -1,6 +1,6 @@
 <script>
 	import * as bootstrap from 'bootstrap';
-	import Fa from 'svelte-fa';
+	import Fa, { FaLayers } from 'svelte-fa';
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
 	import {
@@ -33,7 +33,8 @@
 		faSun,
 		faMoon,
 		faCircleUp,
-		faBars
+		faBars,
+		faCircle
 	} from '@fortawesome/free-solid-svg-icons';
 	import Tag from '$lib/Tag.svelte';
 	import SelectTimezone from '$lib/SelectTimezone.svelte';
@@ -1173,11 +1174,10 @@
 				>
 					<Fa icon={faSliders} />
 					{#if updateAvailable}
-						<Fa
-							icon={faCircleUp}
-							size="1.2x"
-							class="position-absolute top-0 start-100 translate-middle text-info"
-						/>
+						<FaLayers class="position-absolute top-0 start-100 translate-middle">
+							<Fa icon={faCircle} size="1.2x" color="white" />
+							<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+						</FaLayers>
 					{/if}
 				</button>
 				<button class="btn btn-outline-secondary" onclick={() => logout(null)}
@@ -1346,7 +1346,10 @@
 									>
 										💡 {$t('settings.about')}
 										{#if updateAvailable}
-											<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+											<FaLayers>
+												<Fa icon={faCircle} size="1.2x" color="white" />
+												<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+											</FaLayers>
 										{/if}
 									</button>
 								</nav>
@@ -1573,21 +1576,29 @@
 											<label class="form-check-label" for="language_manual">
 												{$t('settings.set_language_manually')}
 												{#if !$tempSettings.useBrowserLanguage}
-													<select
-														transition:slide
-														class="form-select"
-														bind:value={$tempSettings.language}
-														disabled={$tempSettings.useBrowserLanguage}
-													>
-														{#each $tolgee.getInitialOptions().availableLanguages as lang}
-															<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
-														{/each}
-													</select>
+													<div transition:slide>
+														<select
+															class="form-select"
+															bind:value={$tempSettings.language}
+															disabled={$tempSettings.useBrowserLanguage}
+														>
+															{#each $tolgee.getInitialOptions().availableLanguages as lang}
+																<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+															{/each}
+														</select>
+													</div>
 												{/if}
 											</label>
 										</div>
 										<div class="form-text">
 											{$t('settings.language.reload_info')}
+										</div>
+										<div class="alert alert-info rounded-4 mt-2" role="alert">
+											{$t('settings.language.help_translate')}
+											<a
+												href="https://github.com/PhiTux/DailyTxT/blob/main/TRANSLATION.md"
+												target="_blank">GitHub</a
+											>
 										</div>
 									</div>
 									<div id="timezone">
@@ -1626,9 +1637,11 @@
 											<br />
 											<SelectTimezone />
 											{#if !$tempSettings.useBrowserTimezone}
-												<span transition:fade>
-													{$t('settings.timezone.selected')} <code>{$tempSettings.timezone}</code>
-												</span>
+												<div transition:slide>
+													<span>
+														{$t('settings.timezone.selected')} <code>{$tempSettings.timezone}</code>
+													</span>
+												</div>
 											{/if}
 										</div>
 
@@ -2039,7 +2052,11 @@
 													>{$t('settings.password.confirm_new_password')}</label
 												>
 											</div>
-											<button class="btn btn-primary" onclick={changePassword}>
+											<button
+												class="btn btn-primary"
+												disabled={!currentPassword || !newPassword || !confirmNewPassword}
+												onclick={changePassword}
+											>
 												{#if isChangingPassword}
 													<!-- svelte-ignore a11y_no_static_element_interactions -->
 													<div class="spinner-border" role="status">
@@ -2346,7 +2363,7 @@
 									<br />
 
 									{#if updateAvailable}
-										<p class="alert alert-info d-flex align-items-center mt-2 mb-2 p-2">
+										<p class="alert alert-info rounded-4 d-flex align-items-center mt-2 mb-2 p-2">
 											<Fa icon={faCircleUp} size="2x" class="text-info me-2" />
 											{$t('settings.about.update_available')}
 										</p>

@@ -281,7 +281,7 @@
 
 			<!-- Admin status bar -->
 			<div
-				class="d-flex align-items-center mb-4 p-3 bg-success bg-opacity-25 border border-success rounded"
+				class="d-flex align-items-center mb-4 p-3 alert alert-success border border-success rounded-4"
 			>
 				<span class="text-success me-3">🔓 {$t('settings.admin.authorized')} </span>
 				<button class="btn btn-outline-secondary btn-sm ms-2" onclick={resetAdminState}>
@@ -329,7 +329,7 @@
 						</div>
 
 						{#if registrationAllowedTemporary && registrationUntil}
-							<div class="alert alert-success" transition:slide>
+							<div class="alert alert-success rounded-4" transition:slide>
 								{@html $t('settings.admin.registration_allowed_until', {
 									date_and_time: new Date(registrationUntil).toLocaleString($tolgee.getLanguage(), {
 										year: 'numeric',
@@ -406,29 +406,31 @@
 												{/if}
 
 												{#if deleteUserId === user.id}
-													<div class="mt-2" transition:slide>
-														<div class="alert alert-danger">
-															<p class="mb-2">
-																<strong>{$t('settings.admin.confirm_delete')}</strong><br />
-																{$t('settings.admin.delete_warning', { username: user.username })}
-															</p>
-															<div class="d-flex gap-2">
-																<button
-																	class="btn btn-secondary btn-sm"
-																	onclick={() => (deleteUserId = null)}
-																>
-																	{$t('settings.admin.cancel')}
-																</button>
-																<button
-																	class="btn btn-danger btn-sm"
-																	onclick={() => deleteUser(user.id, user.username)}
-																	disabled={isDeletingUser}
-																>
-																	{#if isDeletingUser}
-																		<span class="spinner-border spinner-border-sm me-1"></span>
-																	{/if}
-																	{$t('settings.admin.delete')}
-																</button>
+													<div transition:slide>
+														<div class="pt-2">
+															<div class="alert alert-danger mb-0">
+																<p class="mb-2">
+																	<strong>{$t('settings.admin.confirm_delete')}</strong><br />
+																	{$t('settings.admin.delete_warning')}
+																</p>
+																<div class="d-flex gap-2">
+																	<button
+																		class="btn btn-secondary btn-sm"
+																		onclick={() => (deleteUserId = null)}
+																	>
+																		{$t('settings.admin.cancel')}
+																	</button>
+																	<button
+																		class="btn btn-danger btn-sm"
+																		onclick={() => deleteUser(user.id, user.username)}
+																		disabled={isDeletingUser}
+																	>
+																		{#if isDeletingUser}
+																			<span class="spinner-border spinner-border-sm me-1"></span>
+																		{/if}
+																		{$t('settings.admin.delete')}
+																	</button>
+																</div>
 															</div>
 														</div>
 													</div>
@@ -461,6 +463,15 @@
 							</div>
 						</div>
 					{/if}
+
+					<div class="mt-4 d-flex justify-content-center">
+						<button class="btn btn-outline-primary" onclick={loadUsers} disabled={isLoadingUsers}>
+							{#if isLoadingUsers}
+								<span class="spinner-border spinner-border-sm me-2"></span>
+							{/if}
+							{$t('settings.admin.refresh_users')}
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -506,29 +517,31 @@
 							</button>
 
 							{#if confirmDeleteOldData}
-								<div class="mt-3" transition:slide>
-									<div class="alert alert-danger">
-										<p class="mb-2">
-											<strong>{$t('settings.admin.confirm_delete_old_data')}</strong><br />
-											{@html $t('settings.admin.delete_old_data_warning')}
-										</p>
-										<div class="d-flex gap-2">
-											<button
-												class="btn btn-secondary btn-sm"
-												onclick={toggleDeleteOldDataConfirmation}
-											>
-												{$t('settings.admin.cancel')}
-											</button>
-											<button
-												class="btn btn-danger btn-sm"
-												onclick={deleteOldData}
-												disabled={isDeletingOldData}
-											>
-												{#if isDeletingOldData}
-													<span class="spinner-border spinner-border-sm me-1"></span>
-												{/if}
-												{$t('settings.admin.delete')}
-											</button>
+								<div transition:slide class="">
+									<div class="pt-3">
+										<div class="alert alert-danger mb-0">
+											<p class="mb-2">
+												<strong>{$t('settings.admin.confirm_delete_old_data')}</strong><br />
+												{@html $t('settings.admin.delete_old_data_warning')}
+											</p>
+											<div class="d-flex gap-2">
+												<button
+													class="btn btn-secondary btn-sm"
+													onclick={toggleDeleteOldDataConfirmation}
+												>
+													{$t('settings.admin.cancel')}
+												</button>
+												<button
+													class="btn btn-danger btn-sm"
+													onclick={deleteOldData}
+													disabled={isDeletingOldData}
+												>
+													{#if isDeletingOldData}
+														<span class="spinner-border spinner-border-sm me-1"></span>
+													{/if}
+													{$t('settings.admin.delete')}
+												</button>
+											</div>
 										</div>
 									</div>
 								</div>
@@ -581,16 +594,6 @@
 						<p class="text-muted">{$t('settings.admin.no_environment_variables')}</p>
 					{/if}
 				</div>
-			</div>
-
-			<!-- Reload Button moved to bottom -->
-			<div class="mt-4 d-flex justify-content-center">
-				<button class="btn btn-outline-primary" onclick={loadUsers} disabled={isLoadingUsers}>
-					{#if isLoadingUsers}
-						<span class="spinner-border spinner-border-sm me-2"></span>
-					{/if}
-					{$t('settings.admin.refresh_users')}
-				</button>
 			</div>
 		</div>
 	{/if}
