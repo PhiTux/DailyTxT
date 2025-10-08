@@ -452,6 +452,10 @@
 </div>
 
 <style>
+	.list-group-item-action {
+		color: inherit !important;
+	}
+
 	.btnSearchPopover {
 		border-bottom-left-radius: 0px;
 	}

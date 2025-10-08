@@ -63,7 +63,7 @@
 				/Mobi|Android/i.test(navigator.userAgent));
 
 		tinyMDE = new TinyMDE.Editor({ element: 'editor', content: '' });
-		let commandBar = new TinyMDE.CommandBar({ element: 'toolbar', editor: tinyMDE });
+		new TinyMDE.CommandBar({ element: 'toolbar', editor: tinyMDE });
 		document.getElementsByClassName('TinyMDE')[0].classList.add('focus-ring');
 
 		tinyMDE.addEventListener('change', (event) => {
@@ -79,7 +79,7 @@
 
 		// enable popovers
 		const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-		const popoverList = [...popoverTriggerList].map(
+		[...popoverTriggerList].map(
 			(popoverTriggerEl) =>
 				new bootstrap.Popover(popoverTriggerEl, { trigger: 'focus', html: true })
 		);
@@ -1138,7 +1138,6 @@
 		if (historySelected < 0 || historySelected >= history.length) return;
 
 		currentLog = history[historySelected].text;
-		//logDateWritten = history[historySelected].date_written;
 
 		tinyMDE.setContent(currentLog);
 		tinyMDE.setSelection({ row: 0, col: 0 });
@@ -2308,6 +2307,18 @@
 	#editor {
 		height: 400px;
 		word-break: break-word;
+	}
+
+	@media screen and (max-height: 800px) {
+		#editor {
+			height: 350px;
+		}
+	}
+
+	@media screen and (max-width: 600px) {
+		#editor {
+			height: 300px;
+		}
 	}
 
 	:global(.TinyMDE) {

@@ -80,6 +80,10 @@
 	const onDateClick = (date) => {
 		$selectedDate = date;
 
+		closeOffcanvas();
+	};
+
+	const closeOffcanvas = () => {
 		// close offcanvas/sidenav if open
 		if (oc) {
 			const bsOffcanvas = bootstrap.Offcanvas.getInstance(oc);
@@ -149,7 +153,6 @@
 	let swipeStartY = 0;
 	let swipeLastX = 0;
 	const SWIPE_THRESHOLD = 60; // required horizontal distance
-	const MAX_VERTICAL_DRIFT = 55; // abort if vertical movement dominates
 
 	function onTouchStart(e) {
 		if (e.touches.length !== 1) return;
@@ -279,6 +282,7 @@
 						month: new Date().getMonth() + 1,
 						year: new Date().getFullYear()
 					};
+					closeOffcanvas();
 				}}>{$t('calendar.button_today')}</button
 			>
 		</div>
@@ -500,9 +504,9 @@
 		-webkit-appearance: textfield;
 		-moz-appearance: textfield;
 		appearance: textfield;
-		width: 60px; /* Angepasste Breite */
-		padding: 2px 4px; /* Schmalere Paddings */
-		padding-right: 20px; /* Platz für die Pfeile */
+		width: 60px;
+		padding: 2px 4px;
+		padding-right: 20px;
 	}
 
 	.year-input::-webkit-inner-spin-button,

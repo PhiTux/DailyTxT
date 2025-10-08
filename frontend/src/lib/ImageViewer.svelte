@@ -177,7 +177,6 @@
 	</div>
 {/if}
 
-<!-- <div class="image-gallery"> -->
 <div class="horizontal-scroll px-2">
 	{#each images as image, index (image.uuid_filename)}
 		<button
@@ -271,7 +270,6 @@
 
 	.image-thumb-wrapper {
 		position: relative;
-		width: 150px;
 		height: 100px;
 		display: flex;
 		align-items: center;
