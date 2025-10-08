@@ -18,12 +18,12 @@
 		.use(FormatIcu())
 		.use(LanguageStorage())
 		.init({
-			availableLanguages: ['en', 'de', 'fr'],
+			availableLanguages: ['en', 'de'],
 			defaultLanguage: 'en',
+			fallbackLanguage: 'en',
 			staticData: {
 				en: () => import('../i18n/en.json'),
-				de: () => import('../i18n/de.json'),
-				fr: () => import('../i18n/fr.json')
+				de: () => import('../i18n/de.json')
 			},
 
 			// for development
