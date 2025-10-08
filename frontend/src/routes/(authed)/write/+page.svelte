@@ -1517,7 +1517,7 @@
 					<div transition:slide>
 						<div class="pt-2">
 							<div class="touch-tag-panel">
-								{#if $tags.length === 0}
+								{#if $tags.length - selectedTags.length === 0}
 									<em style="padding:0.2rem;">{$t('tags.no_tags_found')}</em>
 								{:else}
 									<div class="d-flex flex-row flex-wrap gap-1 selectTagTouchDevice">

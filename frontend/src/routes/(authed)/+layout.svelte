@@ -1132,7 +1132,7 @@
 			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start align-items-center">
 				{#if !$alwaysShowSidenav}
 					<button
-						class="btn d-xl-none"
+						class="btn d-xl-none ms-1"
 						type="button"
 						data-bs-toggle="offcanvas"
 						data-bs-target="#sidenav"
@@ -1215,7 +1215,7 @@
 <!-- Full screen modal -->
 <div class="modal fade" data-bs-backdrop="static" id="settingsModal">
 	<div
-		class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-sm-down"
+		class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-lg-down"
 	>
 		<!--  -->
 		<div class="modal-content shadow-lg glass glass-modal">
@@ -2343,7 +2343,11 @@
 									<h3 class="text-primary">💡 {$t('settings.about')}</h3>
 
 									{#if showInstallationHelp}
-										<div class="alert alert-info">{@html $t('settings.installation_help')}</div>
+										<span>
+											<div class="alert alert-info rounded-4 mt-3">
+												{@html $t('settings.installation_help')}
+											</div>
+										</span>
 									{/if}
 
 									<span class="d-table mx-auto"
@@ -2667,6 +2671,12 @@
 </div>
 
 <style>
+	.navbar {
+		border-top: 0 !important;
+		border-left: 0 !important;
+		border-right: 0 !important;
+	}
+
 	/* Allow the stacked absolute children to scroll without forcing the parent to expand */
 	.transition-stack {
 		min-height: 0;
@@ -2706,6 +2716,11 @@
 	@media (max-width: 450px) {
 		.modeSliderIcon {
 			font-size: 0.8rem !important;
+			margin: 0 !important;
+		}
+		#selectMode {
+			transform: scale(1) !important;
+			margin-left: -2.25rem !important;
 		}
 		.selectMode {
 			padding-left: 1rem !important;
@@ -2844,9 +2859,11 @@
 	}
 	:global(body[data-bs-theme='dark']) #settings-content > div > div {
 		background-color: #8080805d;
+		box-shadow: 3px 3px 8px 4px #0000003f;
 	}
 	:global(body[data-bs-theme='light']) #settings-content > div > div {
 		background-color: #dfdfdf5d;
+		box-shadow: 3px 3px 8px 4px #11111134;
 	}
 
 	h3.text-primary {
@@ -2867,7 +2884,6 @@
 
 	.modal-body.modal-body-scrollable {
 		/* For stats/admin tabs, let modal-body handle scrolling */
-		max-height: calc(100vh - 200px);
 		overflow-y: auto;
 	}
 

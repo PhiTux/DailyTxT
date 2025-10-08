@@ -18,7 +18,7 @@
 	});
 </script>
 
-<span class="shadow badge rounded-pill" style="background-color: {tag.color}; color: {fontColor}">
+<span class="badge rounded-pill" style="background-color: {tag.color}; color: {fontColor}">
 	<div class="d-flex flex-row">
 		<div>{tag.icon} #{tag.name}</div>
 		{#if isEditable}
@@ -45,6 +45,7 @@
 		color: #495057;
 		font-size: 11pt;
 		font-weight: 600;
+		box-shadow: 1px 1px 5px 2px rgba(24, 24, 24, 0.275);
 	}
 
 	button {
