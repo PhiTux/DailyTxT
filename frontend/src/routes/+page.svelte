@@ -1,10 +1,10 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	onMount(() => {
 		// Redirect root to login, honoring the app base path (e.g., /dailytxt)
-		goto(`${base}/login`, { replaceState: true });
+		goto(resolve('/login'), { replaceState: true });
 	});
 </script>
