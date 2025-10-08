@@ -104,7 +104,7 @@ func InitSettings() error {
 		AllowRegistration: false,
 	}
 
-	fmt.Print("\nDetected following settings:\n================\n")
+	fmt.Print("\nDetected the following settings:\n================\n")
 
 	// Override with environment variables if available
 	if dataPath := os.Getenv("DATA_PATH"); dataPath != "" {

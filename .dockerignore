@@ -1,0 +1,16 @@
+backend/data
+backend/data.bak
+backend/.envrc
+backend/.gitignore
+backend/backend
+
+frontend/node_modules
+frontend/build
+frontend/dev-dist
+frontend/.svelte-kit
+frontend/.env.development.local
+frontend/.gitignore
+frontend/.npmrc
+frontend/.prettierignore
+frontend/.prettierrc
+frontend/README.md
