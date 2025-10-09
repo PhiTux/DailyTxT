@@ -389,13 +389,13 @@
 	}
 
 	:global(body[data-bs-theme='dark'] .modal-content) {
-		backdrop-filter: blur(20px) saturate(150%);
+		backdrop-filter: blur(17px) saturate(150%);
 		background-color: rgba(70, 70, 70, 0.5) !important;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		color: #ececec;
 	}
 	:global(body[data-bs-theme='light'] .modal-content) {
-		backdrop-filter: blur(20px) saturate(150%);
+		backdrop-filter: blur(17px) saturate(150%);
 		background-color: rgba(211, 211, 211, 0.5) !important;
 		border: 1px solid rgba(255, 255, 255, 0.2);
 		color: #161616;
@@ -409,7 +409,7 @@
 	}
 	:global(body[data-bs-theme='light'] .glass) {
 		backdrop-filter: blur(14px) saturate(130%);
-		background-color: rgba(187, 187, 187, 0.3);
+		background-color: rgba(158, 158, 158, 0.3);
 		border: 1px solid #ccc;
 		color: #222;
 	}

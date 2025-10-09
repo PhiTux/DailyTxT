@@ -474,8 +474,13 @@
 		font-size: 25pt;
 		font-weight: 750;
 		text-align: center;
-		padding: 1rem;
+		padding-left: 0.5rem;
+		padding-right: 0.5rem;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 2rem;
 		user-select: none;
+		border-radius: 10px;
 	}
 
 	:global(body[data-bs-theme='dark']) .noResult {
@@ -483,7 +488,8 @@
 	}
 
 	:global(body[data-bs-theme='light']) .noResult {
-		color: #cccccc;
+		color: #9b9b9b;
+		background-color: #b8b8b879;
 	}
 
 	:global(.popover-body > span) {

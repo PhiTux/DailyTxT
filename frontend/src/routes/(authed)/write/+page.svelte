@@ -2329,7 +2329,7 @@
 	}
 
 	:global(body[data-bs-theme='light'] .TinyMDE) {
-		background-color: rgba(255, 255, 255, 0.7);
+		background-color: rgba(240, 240, 240, 0.6);
 		color: #1f1f1f;
 	}
 

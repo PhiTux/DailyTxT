@@ -1218,7 +1218,7 @@
 		class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl modal-fullscreen-lg-down"
 	>
 		<!--  -->
-		<div class="modal-content shadow-lg glass glass-modal">
+		<div class="modal-content shadow-lg">
 			<div class="modal-header flex-wrap gap-2">
 				<div class="d-flex w-100 align-items-center">
 					<div
