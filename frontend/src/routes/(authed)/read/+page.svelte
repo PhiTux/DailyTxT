@@ -105,8 +105,7 @@
 		}
 	});
 
-	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
-	//TODO: support svg? -> minsize is necessary...
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
 
 	// copy of files, which are images
 	$effect(() => {

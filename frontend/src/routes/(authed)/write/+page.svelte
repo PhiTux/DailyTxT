@@ -346,8 +346,7 @@
 		}
 	});
 
-	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp'];
-	//TODO: support svg? -> minsize is necessary...
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
 
 	$effect(() => {
 		if (filesOfDay) {
