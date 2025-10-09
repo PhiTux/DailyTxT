@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"slices"
 	"strings"
 	"time"
 
@@ -16,19 +17,12 @@ func CORS(next http.Handler) http.Handler {
 		origin := r.Header.Get("Origin")
 
 		// Check if origin is in allowed hosts
-		allowed := false
-		for _, host := range utils.Settings.AllowedHosts {
-			if origin == host {
-				allowed = true
-				break
-			}
-		}
+		allowed := slices.Contains(utils.Settings.AllowedHosts, origin)
 
 		// Set CORS headers if origin is allowed
 		if allowed {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, Content-Disposition")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 		}

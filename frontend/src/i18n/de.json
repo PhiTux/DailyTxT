@@ -288,6 +288,7 @@
     "installation_help": "Du kannst DailyTxT auch wie eine App installieren. Das geht über die Einstellungen des Browsers, wird aber nicht von jedem Browser unterstützt. Aktuell wurde keine Installation erkannt.<br/> \n<ul>\n<li>Android: \"Zum Startbildschirm hinzufügen\"</li>\n<li>Apple: \"Teilen\" -> \"Zum Home-Bildschirm\"</li>\n</ul>",
     "language": "Sprache",
     "language_auto_detect": "Sprache anhand des Browsers ermitteln. Aktuell:",
+    "language.help_translate": "Deine Sprache ist nicht enthalten? Dann hilf mit bei der Übersetzung! Infos dazu findest du hier:",
     "language_not_available": "Die Sprache <code>{browserLanguage}</code> ist nicht verfügbar. Es wird die Standardsprache <code>{defaultLanguage}</code> verwendet.",
     "language.reload_info": "Manche Änderungen werden erst nach einem Neuladen der Seite sichtbar.",
     "language_X_used": "wird verwendet",

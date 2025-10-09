@@ -128,9 +128,16 @@ func main() {
 	rootMux := http.NewServeMux()
 	rootMux.Handle("/api/", http.StripPrefix("/api", api))
 
+	var handler http.Handler = rootMux
+
 	// Create a handler chain with Timeout, Logger and CORS middleware
 	// Timeout middleware will be executed first, then Logger, then CORS
-	handler := timeoutMiddleware(middleware.Logger(middleware.CORS(rootMux)))
+	if len(utils.Settings.AllowedHosts) == 0 {
+		logger.Println("Warning: ALLOWED_HOSTS is empty, CORS will not allow any cross-origin requests")
+	} else {
+		handler = middleware.CORS(rootMux)
+	}
+	handler = timeoutMiddleware(middleware.Logger(handler))
 
 	// Create the server without ReadTimeout/WriteTimeout (managed by middleware)
 	server := &http.Server{

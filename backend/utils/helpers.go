@@ -99,7 +99,7 @@ func InitSettings() error {
 		Development:       false,
 		SecretToken:       GenerateSecretToken(),
 		LogoutAfterDays:   30,
-		AllowedHosts:      []string{"http://localhost:5173", "http://127.0.0.1:5173"},
+		AllowedHosts:      []string{},
 		Indent:            0,
 		AllowRegistration: false,
 	}
