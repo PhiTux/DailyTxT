@@ -1843,7 +1843,7 @@
 											placeholder={$t('settings.template.content_of_template')}
 										>
 										</textarea>
-										<div class="d-flex justify-content-end">
+										<div class="d-flex justify-content-start">
 											<button
 												disabled={(oldTemplateName === templateName &&
 													oldTemplateText === templateText) ||
