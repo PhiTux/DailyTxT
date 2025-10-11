@@ -1361,78 +1361,83 @@
 		<!-- Center -->
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
-			<div
-				class="d-flex flex-row textAreaHeader glass"
-				ontouchstart={onHeaderTouchStart}
-				ontouchend={onHeaderTouchEnd}
-			>
-				<div class="flex-fill d-flex">
-					<div class="w-50 textAreaDate">
-						{new Date(
-							Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-						).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br />
-						{new Date(
-							Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-						).toLocaleDateString($tolgee.getLanguage(), {
-							day: '2-digit',
-							month: '2-digit',
-							year: 'numeric',
-							timeZone: 'UTC'
-						})}
-					</div>
-					<div class="w-50 textAreaWrittenAt">
-						<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
-						{logDateWritten}
-					</div>
-				</div>
-				<!-- Desktop buttons -->
+			<div class="glass-shadow input-area">
 				<div
-					class="textAreaHistory header-btn-desktop d-flex flex-column justify-content-center {historyAvailable
-						? ''
-						: 'invisible'}"
+					class="d-flex flex-row textAreaHeader glass"
+					ontouchstart={onHeaderTouchStart}
+					ontouchend={onHeaderTouchEnd}
 				>
-					<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
-						<Fa icon={faClockRotateLeft} size="1.5x" fw />
-					</button>
-				</div>
-				<div class="textAreaDelete header-btn-desktop d-flex flex-column justify-content-center">
-					<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
-						<Fa icon={faTrash} size="1.5x" fw />
-					</button>
-				</div>
-				<!-- Mobile dropdown -->
-				<div class="dropdown header-actions-mobile d-flex flex-column justify-content-center ms-1">
-					<button
-						class="btn px-2 btn-hover"
-						type="button"
-						data-bs-toggle="dropdown"
-						aria-expanded="false"
+					<div class="flex-fill d-flex">
+						<div class="w-50 textAreaDate">
+							{new Date(
+								Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+							).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br
+							/>
+							{new Date(
+								Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
+							).toLocaleDateString($tolgee.getLanguage(), {
+								day: '2-digit',
+								month: '2-digit',
+								year: 'numeric',
+								timeZone: 'UTC'
+							})}
+						</div>
+						<div class="w-50 textAreaWrittenAt">
+							<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
+							{logDateWritten}
+						</div>
+					</div>
+					<!-- Desktop buttons -->
+					<div
+						class="textAreaHistory header-btn-desktop d-flex flex-column justify-content-center {historyAvailable
+							? ''
+							: 'invisible'}"
 					>
-						<Fa icon={faBars} fw />
-					</button>
-					<ul class="dropdown-menu dropdown-menu-end">
-						{#if historyAvailable}
+						<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
+							<Fa icon={faClockRotateLeft} size="1.5x" fw />
+						</button>
+					</div>
+					<div class="textAreaDelete header-btn-desktop d-flex flex-column justify-content-center">
+						<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
+							<Fa icon={faTrash} size="1.5x" fw />
+						</button>
+					</div>
+					<!-- Mobile dropdown -->
+					<div
+						class="dropdown header-actions-mobile d-flex flex-column justify-content-center ms-1"
+					>
+						<button
+							class="btn px-2 btn-hover"
+							type="button"
+							data-bs-toggle="dropdown"
+							aria-expanded="false"
+						>
+							<Fa icon={faBars} fw />
+						</button>
+						<ul class="dropdown-menu dropdown-menu-end">
+							{#if historyAvailable}
+								<li>
+									<button type="button" class="dropdown-item" onclick={() => getHistory()}>
+										<Fa icon={faClockRotateLeft} class="me-2" />{$t('log.dropdown.history')}
+									</button>
+								</li>
+							{/if}
 							<li>
-								<button type="button" class="dropdown-item" onclick={() => getHistory()}>
-									<Fa icon={faClockRotateLeft} class="me-2" />{$t('log.dropdown.history')}
+								<button
+									type="button"
+									class="dropdown-item text-danger"
+									onclick={() => showDeleteDayModal()}
+								>
+									<Fa icon={faTrash} class="me-2" />{$t('log.dropdown.deleteDay')}
 								</button>
 							</li>
-						{/if}
-						<li>
-							<button
-								type="button"
-								class="dropdown-item text-danger"
-								onclick={() => showDeleteDayModal()}
-							>
-								<Fa icon={faTrash} class="me-2" />{$t('log.dropdown.deleteDay')}
-							</button>
-						</li>
-					</ul>
+						</ul>
+					</div>
 				</div>
-			</div>
-			<div id="log" class="focus-ring">
-				<div id="toolbar"></div>
-				<div id="editor"></div>
+				<div id="log" class="focus-ring">
+					<div id="toolbar"></div>
+					<div id="editor"></div>
+				</div>
 			</div>
 			{#if images.length > 0}
 				{#if !autoLoadImages && images.find((image) => !image.src && !image.loading)}
@@ -1451,7 +1456,7 @@
 			{/if}
 
 			{#if $settings.useALookBack && aLookBack.length > 0}
-				<div class="mt-3 d-flex gap-2 overflow-x-auto mb-2 a-look-back">
+				<div class="mt-3 d-flex gap-3 overflow-x-auto mb-2 a-look-back">
 					{#each aLookBack as log}
 						<ALookBack {log} />
 					{/each}
@@ -1460,7 +1465,7 @@
 		</div>
 
 		<div id="right" class="d-flex flex-column">
-			<div class="tags glass">
+			<div class="tags glass glass-shadow">
 				<div class="d-flex flex-row justify-content-between">
 					<div class="d-flex flex-row">
 						<h3>{$t('tags.tags')}</h3>
@@ -1574,7 +1579,7 @@
 				</div>
 			</div>
 
-			<div class="files d-flex flex-column glass">
+			<div class="files d-flex flex-column glass glass-shadow">
 				<button
 					class="btn btn-secondary upload-btn {filesOfDay?.length > 0 ? '' : ''}"
 					id="uploadBtn"
@@ -2051,6 +2056,10 @@
 </div>
 
 <style>
+	.input-area {
+		border-radius: 10px;
+	}
+
 	@media screen and (max-width: 567px) {
 		:global(em-emoji-picker) {
 			right: 0;
@@ -2352,8 +2361,8 @@
 	:global(.TinyMDE) {
 		border: 1px solid lightgreen;
 
-		border-bottom-left-radius: 8px;
-		border-bottom-right-radius: 8px;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
 		overflow-y: auto;
 
 		transition: all ease 0.2s;
@@ -2380,8 +2389,8 @@
 		border-left: 1px solid #6a6a6a;
 		border-top: 1px solid #6a6a6a;
 		border-right: 1px solid #6a6a6a;
-		border-top-left-radius: 5px;
-		border-top-right-radius: 5px;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
 	}
 
 	.header-actions-mobile {

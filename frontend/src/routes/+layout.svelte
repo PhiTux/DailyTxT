@@ -350,6 +350,10 @@
 </main>
 
 <style>
+	:global(.glass-shadow) {
+		box-shadow: 3px 3px 8px 2px rgba(0, 0, 0, 0.2);
+	}
+
 	.toastBtn {
 		background-color: #f57c00 !important;
 		color: black !important;

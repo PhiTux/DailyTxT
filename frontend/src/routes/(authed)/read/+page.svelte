@@ -460,7 +460,7 @@
 	{/if}
 
 	<!-- Center -->
-	<div class="d-flex flex-column my-4 ms-4 flex-fill overflow-y-auto" id="scrollArea">
+	<div class="d-flex flex-column my-4 flex-fill overflow-y-auto" id="scrollArea">
 		{#if logs.length > 0}
 			{#each logs as log (log.day)}
 				<!-- Log-Area -->
@@ -609,6 +609,16 @@
 
 	.log {
 		border-radius: 15px;
+		margin-left: 1rem;
+		margin-right: 1rem;
+	}
+
+	:global(body[data-bs-theme='dark']) .log {
+		box-shadow: 3px 3px 8px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	:global(body[data-bs-theme='light']) .log {
+		box-shadow: 3px 3px 8px 4px rgba(0, 0, 0, 0.2);
 	}
 
 	:global(body[data-bs-theme='dark']) .glass {

@@ -199,7 +199,7 @@
 	}
 </script>
 
-<div class="datepicker glass">
+<div class="datepicker glass glass-shadow">
 	<div class="datepicker-header">
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
@@ -340,7 +340,7 @@
 	.datepicker {
 		display: inline-block;
 		font-family: Arial, sans-serif;
-		border-radius: 8px;
+		border-radius: 10px;
 		box-sizing: border-box;
 	}
 	.datepicker-header {
@@ -350,8 +350,8 @@
 		color: white;
 		padding: 8px 16px;
 		font-size: 16px;
-		border-top-left-radius: 8px;
-		border-top-right-radius: 8px;
+		border-top-left-radius: 10px;
+		border-top-right-radius: 10px;
 	}
 	.calendar-container {
 		position: relative;

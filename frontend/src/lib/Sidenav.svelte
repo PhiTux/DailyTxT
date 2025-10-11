@@ -276,7 +276,7 @@
 	<Datepicker {bookmarkDay} />
 	<br />
 
-	<div class="search d-flex flex-column">
+	<div class="search d-flex flex-column glass-shadow mb-2">
 		<form onsubmit={searchForString} class="input-group">
 			<button
 				class="btnSearchPopover btn btn-outline-secondary glass"
@@ -370,7 +370,7 @@
 				</div>
 			{/if}
 		{/if}
-		<div class="list-group flex-grow-1 mb-2 glass">
+		<div class="list-group flex-grow-1 glass">
 			{#if $searchResults.length > 0}
 				{#each $searchResults as result}
 					<button
@@ -458,6 +458,7 @@
 
 	.btnSearchPopover {
 		border-bottom-left-radius: 0px;
+		border-top-left-radius: 10px;
 	}
 
 	:global(.datepicker) {
@@ -580,19 +581,23 @@
 
 	#search-button {
 		border-bottom-right-radius: 0;
+		border-top-right-radius: 10px;
 	}
 
 	/* Dynamic search results panel: fill remaining space, but never below 250px */
 	.search {
 		flex: 1 1 auto; /* allow search area to grow */
-		min-height: 0; /* allow inner flex children to compute height */
+		/* min-height: 0; */ /* allow inner flex children to compute height */
 		display: flex;
 		flex-direction: column;
+		border-radius: 10px;
 	}
 
 	.list-group {
 		border-top-left-radius: 0;
 		border-top-right-radius: 0;
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
 		overflow-y: auto;
 		min-height: 250px; /* minimum requirement */
 		flex: 1 1 auto; /* take all remaining vertical space */
