@@ -178,12 +178,12 @@ func InitSettings() error {
 }
 
 func GetAppSettings() AppSettings {
-	// dont't show secret - remove it!
 	var tempSettings AppSettings
 
 	data, _ := json.Marshal(Settings)
 	json.Unmarshal(data, &tempSettings)
 
+	// dont't show secret - remove it!
 	tempSettings.SecretToken = ""
 	return tempSettings
 }
@@ -469,7 +469,6 @@ type DockerHubTag struct {
 }
 
 type DockerHubTagsResponse struct {
-	//Count   int            `json:"count"`
 	Results []DockerHubTag `json:"results"`
 }
 
@@ -642,4 +641,15 @@ func GetLatestVersion() (string, string) {
 	cachedLatestWithTest = latestOverall
 
 	return latestStable, latestOverall
+}
+
+// GetVersionInfo returns the current application version (public endpoint, no auth required)
+func GetVersionInfo(w http.ResponseWriter, r *http.Request) {
+	latest_stable, latest_overall := GetLatestVersion()
+
+	JSONResponse(w, http.StatusOK, map[string]string{
+		"current_version":        GetVersion(),
+		"latest_stable_version":  latest_stable,
+		"latest_overall_version": latest_overall,
+	})
 }

@@ -11,10 +11,10 @@ import (
 	"sync"
 )
 
-// Mutexes für Dateizugriffe
+// Mutexes for file operations
 var (
-	UsersFileMutex    sync.RWMutex // Für users.json
-	userSettingsMutex sync.RWMutex // Für Benutzereinstellungen
+	UsersFileMutex    sync.RWMutex // For users.json
+	userSettingsMutex sync.RWMutex // FFor user settings
 )
 
 // GetUsers retrieves the users from the users.json file

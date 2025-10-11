@@ -134,17 +134,17 @@ When all "old" users have logged in once (and it is ensured, that all data has b
 
 ## About encryption and data storage
 
-For encryption I use ChaCha20-Poly1305.
+For encryption ChaCha20-Poly1305 is used.
 
-When a user logs in, a key is derived from his password with Argon2id, it is called the *derived key*. This key is used to decrypt the user's *encryption key* (which is randomly generated when the user is created). The *derived key* is stored in a http-only cookie and send on every API-call. This *encryption key* is used to encrypt/decrypt all data of this user (entries and uploaded files) and never leaves the server. 
+When a user logs in, a key is derived from his password with Argon2id, it is called the *derived key*. The *derived key* is stored in a http-only cookie and send on every API-call. This key is used to decrypt the user's *encryption key* (which is randomly generated when the user is created). The *encryption key* is used to encrypt/decrypt all data of this user (entries and uploaded files) and never leaves the server. 
 
 When a user changes his password, the *encryption key* is decrypted with the old *derived key* and re-encrypted with a new *derived key* (derived from the new password).
 
 There is no E2E-encryption used on client-side, because the search-functionality would not work then. All data would have to be sent to client-side for searching.
 
-There are also backup-keys available which can be used as a password-replacement. When they are created, they store the *derived key* encrypted with a random *backup key*. This *backup key* is shown to the user only once and has to be stored safely by him. When a user loses his password, he can use this *backup key* to decrypt the *derived key* and from that the *encryption key*.
+There are also backup-keys available which can be used as a password-replacement. When they are created, they store the *derived key* encrypted with a random *backup key*. These *backup keys* are shown to the user only once and are to be stored safely by him. When a user loses his password, he can use this *backup key* to decrypt the *derived key* and from that the *encryption key*.
 
-All data is stored in json-files. I do not use a database, because I want to guarantee highest portability and longterm availability of the data.
+All data is stored in json-files. No database is used, because the main goal is to guarantee highest portability and longterm availability of the data.
 
 ## Changelog
 
@@ -163,7 +163,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/mk/git/DailyTxT
 
 ## Start developing
 
-You need [Go](https://golang.org/) (at least version 1.20) and [Node.js](https://nodejs.org/) (at least version 24) installed.
+You need [Go](https://golang.org/) (at least version 1.24) and [Node.js](https://nodejs.org/) (at least version 24) installed.
 
 ### Backend
 - `cd backend`

@@ -12,8 +12,6 @@ echo "Started backend (PID $BACKEND_PID)"
 
 # Edit some files to make dailytxt work on a subpath provided by BASE_PATH 
 if [ -n "${BASE_PATH:-}" ]; then
-    echo "Configuring frontend for BASE_PATH: $BASE_PATH"
-
     # remove leading and trailing slash if exists
     BASE_PATH="${BASE_PATH#/}"
     BASE_PATH="${BASE_PATH%/}"

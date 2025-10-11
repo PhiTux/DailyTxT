@@ -73,7 +73,7 @@ func main() {
 	api := http.NewServeMux()
 
 	// Public routes (no authentication required)
-	api.HandleFunc("GET /version", handlers.GetVersionInfo)
+	api.HandleFunc("GET /version", utils.GetVersionInfo)
 
 	// Users
 	api.HandleFunc("POST /users/login", handlers.Login)
