@@ -349,7 +349,7 @@
 	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
 
 	$effect(() => {
-		if (filesOfDay) {
+		if (filesOfDay && autoLoadImages !== undefined) {
 			// add all files to images if correct extension
 			filesOfDay.forEach((file) => {
 				// if image -> load it!
@@ -359,6 +359,7 @@
 				) {
 					images = [...images, file];
 
+					console.log(autoLoadImages);
 					if (autoLoadImages) {
 						loadImage(file);
 					}

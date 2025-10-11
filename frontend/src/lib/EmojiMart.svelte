@@ -31,10 +31,6 @@
 			}
 		});
 		emojiPickerEl.appendChild(picker);
-		setTimeout(() => {
-			// ensure click outside works
-			mounted = true;
-		}, 100);
 	}
 
 	onDestroy(() => {
