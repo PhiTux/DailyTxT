@@ -5,7 +5,7 @@
 
 > [!WARNING]  
 > - When you are coming from version 1 (most likely 1.0.15), you MUST read the [Migration Instructions](#migration-instructions) below!
-> - Additionally a tag like `...-testing.1` is a **non-stable** version and (obviously) used for testing. Please backup your data and help testing the new version 2 ❤️
+> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version 2 ❤️
 
 # DailyTxT
 
@@ -30,7 +30,7 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 
 ![DailyTxT Sreenshot](./readme/combined_readme.png)
 
-## 🎉 Features
+## Features
 
 - **Encryption**: Everything you write is encrypted before it's written to the server's storage. Even the admin can't read your private stuff!
 - **File-Upload**: You can upload arbitrary files for each day (500 MB max each). They are stored encrypted on the server as well. Images are automatically recognized and added to the...
@@ -39,7 +39,6 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 - **Tags**: You can add tags to your entries for better organization.
 - **Search**: You can search for any word, tag or filename in your entries.
 - **Custom Templates**: You can create and use custom templates for your entries.
-- **Update Notification**: You will be notified about new docker images.
 - **Read Mode**: A distraction-free mode for reading your entries of each month.
 - **Multi-Language**: DailyTxT is currently available in **<ins>German and English</ins>**. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
 - **Export to HTML**: You can export your entries (including uploaded files) to HTML format.
@@ -47,6 +46,7 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 - **Multi-User**: You can create multiple User Accounts. Each account uses its own encryption key.
 - **Admin Panel**: You can (among other things) manage users and open registration for 5 minutes.
 - **Statistics Panel**: Each user can see some statistics about his entries (among other things there is a GitHub-like statistic of your entry-distribution).
+- **Update Notification**: You will be notified about new docker images.
 
 
 ## Usage Tips
@@ -56,9 +56,9 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 - Use Alt + Left/Right (or Ctrl + Option + Left/Right on Mac) to switch between days.
 - Drag'n'drop files into DailyTxT to upload them.
 - The editor saves automatically. Green border means everything is saved, orange border means unsaved changes.
-- The orange button in the calendar can highlight the current day.
 - You can change the order of files (and images!) by dragging them (at the left side) in the file list.
-
+- A yellow dot in the calendar means, that there are uploaded files for this day.
+- The orange button in the calendar can highlight the current day.
 
 ## Installation
 
@@ -112,16 +112,16 @@ services:
       - 127.0.0.1:8000:80
 ```
 
-## Migration Instructions
+## Migration Instructions 
 
 When coming from version 1 (most likely 1.0.15), please follow these instructions carefully!
 
-**<ins>TLDR:</ins>**
+⚡ **<ins>TLDR:</ins>**
 1. **<ins>BACKUP YOUR DATA</ins>** (the whole data directory you used for version 1).
 2. Use the new `docker-compose.yml` file and adjust the environment variables accordingly. Use the same data directory as before.
 3. Migration starts automatically when an "old" user logs in for the first time.
 
-**<ins>More details:</ins>**  
+🔎 **<ins>More details:</ins>**  
 
 When coming from version 1, you will run into server-errors, if you're only updating the docker image tag. This is because version 2 is a full rewrite and exposes a different internal port (now 80).
 
@@ -134,7 +134,7 @@ When all "old" users have logged in once (and it is ensured, that all data has b
 
 ## About encryption and data storage
 
-For encryption ChaCha20-Poly1305 is used.
+🔒 For encryption ChaCha20-Poly1305 is used.
 
 When a user logs in, a key is derived from his password with Argon2id, it is called the *derived key*. The *derived key* is stored in a http-only cookie and send on every API-call. This key is used to decrypt the user's *encryption key* (which is randomly generated when the user is created). The *encryption key* is used to encrypt/decrypt all data of this user (entries and uploaded files) and never leaves the server. 
 
