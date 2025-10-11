@@ -47,6 +47,7 @@
 	import github from '$lib/assets/GitHub-Logo.png';
 	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
 	import donate from '$lib/assets/bmc-button.png';
+	import { selectedDate } from '$lib/calendarStore';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -202,6 +203,12 @@
 			goto('/reauth');
 			return; // Stop further initialization
 		}
+
+		$selectedDate = {
+			year: new Date().getFullYear(),
+			month: new Date().getMonth() + 1,
+			day: new Date().getDate()
+		};
 
 		// Normal initialization only if authenticated
 		getUserSettings();
