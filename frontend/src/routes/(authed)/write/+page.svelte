@@ -619,6 +619,11 @@
 			.then(() => {
 				// append to filesOfDay
 				filesOfDay = [...filesOfDay, { filename: f.name, size: f.size, uuid_filename: uuid }];
+
+				// add to calendar
+				if (!$cal.daysWithFiles.includes($selectedDate.day)) {
+					$cal.daysWithFiles = [...$cal.daysWithFiles, $selectedDate.day];
+				}
 			})
 			.catch((error) => {
 				console.error(error);
