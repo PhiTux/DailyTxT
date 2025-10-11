@@ -11,6 +11,7 @@
 	import { goto } from '$app/navigation';
 	import { selectedDate } from '$lib/calendarStore.js';
 	import { formatBytes } from '$lib/helpers';
+	import { resolve } from '$app/paths';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -251,7 +252,7 @@
 		}
 
 		// Navigate to write page
-		goto('/write');
+		goto(resolve('/write'));
 	}
 
 	function initTooltips() {

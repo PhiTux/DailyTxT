@@ -3,6 +3,7 @@
 	import Fa, { FaLayers } from 'svelte-fa';
 	import { goto } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 	import {
 		readingMode,
 		settings,
@@ -182,10 +183,10 @@
 	});
 
 	$effect(() => {
-		if ($readingMode === true && page.url.pathname !== '/read') {
-			goto('/read');
+		if ($readingMode === true && !page.url.pathname.endsWith('/read')) {
+			goto(resolve('/read'));
 		} else if ($readingMode === false) {
-			goto('/write');
+			goto(resolve('/write'));
 		}
 	});
 
@@ -200,7 +201,7 @@
 		if (!$isAuthenticated && needsReauth) {
 			// Save current route for return after reauth
 			localStorage.setItem('returnAfterReauth', window.location.pathname);
-			goto('/reauth');
+			goto(resolve('/reauth'));
 			return; // Stop further initialization
 		}
 
@@ -216,9 +217,9 @@
 		getVersionInfo();
 		loadTags();
 
-		if (page.url.pathname === '/read') {
+		if (page.url.pathname.endsWith('/read')) {
 			$readingMode = true;
-		} else if (page.url.pathname === '/write') {
+		} else if (page.url.pathname.endsWith('/write')) {
 			$readingMode = false;
 		}
 
@@ -248,9 +249,9 @@
 			.then(() => {
 				localStorage.removeItem('user');
 				if (errorCode) {
-					goto(`/login?error=${errorCode}`);
+					goto(resolve(`/login?error=${errorCode}`));
 				} else {
-					goto('/login');
+					goto(resolve('/login'));
 				}
 			})
 			.catch((error) => {

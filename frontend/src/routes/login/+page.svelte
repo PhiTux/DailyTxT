@@ -8,6 +8,7 @@
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import { isAuthenticated, loadFlagEmoji } from '$lib/helpers.js';
 	import { fade } from 'svelte/transition';
+	import { resolve } from '$app/paths';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -187,7 +188,7 @@
 				} else {
 					$isAuthenticated = true;
 					localStorage.setItem('user', response.data.username);
-					goto('/write');
+					goto(resolve('/write'));
 				}
 			})
 			.catch((error) => {

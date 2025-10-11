@@ -43,6 +43,7 @@ type AppSettings struct {
 	AllowedHosts      []string `json:"allowed_hosts"`
 	Indent            int      `json:"indent"`
 	AllowRegistration bool     `json:"allow_registration"`
+	BasePath          string   `json:"base_path"`
 }
 
 // Global settings
@@ -102,6 +103,7 @@ func InitSettings() error {
 		AllowedHosts:      []string{},
 		Indent:            0,
 		AllowRegistration: false,
+		BasePath:          "/",
 	}
 
 	fmt.Print("\nDetected the following settings:\n================\n")
@@ -159,6 +161,11 @@ func InitSettings() error {
 		}
 	}
 	fmt.Printf("Allow Registration: %t\n", Settings.AllowRegistration)
+
+	if basePath := os.Getenv("BASE_PATH"); basePath != "" {
+		Settings.BasePath = basePath
+	}
+	fmt.Printf("Base Path: %s\n", Settings.BasePath)
 
 	fmt.Print("================\n\n")
 

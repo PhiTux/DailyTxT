@@ -12,6 +12,7 @@
 	import { FormatIcu } from '@tolgee/format-icu';
 	import { darkMode } from '$lib/settingsStore.js';
 	import { registerSW } from 'virtual:pwa-register';
+	import { resolve } from '$app/paths';
 
 	const tolgee = Tolgee()
 		.use(DevTools())
@@ -74,7 +75,7 @@
 					.get(API_URL + '/users/logout')
 					.then(() => {
 						localStorage.removeItem('user');
-						goto(`/login?error=${error.response.status}`);
+						goto(resolve(`/login?error=${error.response.status}`));
 					})
 					.catch((error) => {
 						console.error(error);
@@ -103,7 +104,7 @@
 		calculateResize();
 
 		// if on login page, generate neon mesh
-		if (page.url.pathname === '/login') {
+		if (page.url.pathname.endsWith('/login')) {
 			generateNeonMesh($darkMode);
 		}
 
@@ -260,7 +261,7 @@
 		}
 	});
 
-	let routeToFromLoginKey = $derived(page.url.pathname === '/login');
+	let routeToFromLoginKey = $derived(page.url.pathname.endsWith('/login'));
 </script>
 
 <main class="d-flex flex-column background" use:focus={generateNeonMesh}>

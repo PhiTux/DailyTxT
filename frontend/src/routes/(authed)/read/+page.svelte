@@ -609,8 +609,13 @@
 
 	.log {
 		border-radius: 15px;
-		margin-left: 1rem;
-		margin-right: 1rem;
+	}
+
+	@media screen and (min-width: 576px) {
+		.log {
+			margin-left: 1rem;
+			margin-right: 1rem;
+		}
 	}
 
 	:global(body[data-bs-theme='dark']) .log {

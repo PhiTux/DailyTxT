@@ -103,6 +103,9 @@ services:
 
       # After how many days shall the login-cookie expire?
       - LOGOUT_AFTER_DAYS=40
+
+      # Set the BASE_PATH if you are running DailyTxT under a subpath (e.g. /dailytxt).
+      # - BASE_PATH=/dailytxt
     ports:
       # Change the left port to your needs.
       # You often would only see 8000:80. But this way, port 8000 is publicly accessible (without TLS!).

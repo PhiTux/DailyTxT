@@ -6,6 +6,7 @@
 	import { generateNeonMesh, isAuthenticated } from '$lib/helpers';
 	import { getTranslate } from '@tolgee/svelte';
 	import logo from '$lib/assets/locked_heart_with_keyhole.svg';
+	import { resolve } from '$app/paths';
 
 	const { t } = getTranslate();
 
@@ -40,7 +41,7 @@
 				$isAuthenticated = true;
 
 				// Authentication successful - return to original route
-				const returnPath = localStorage.getItem('returnAfterReauth') || '/write';
+				const returnPath = localStorage.getItem('returnAfterReauth') || resolve('/write');
 				localStorage.removeItem('returnAfterReauth');
 				goto(returnPath);
 			} else {

@@ -68,6 +68,7 @@ func validateAdminPasswordInRequest(r *http.Request) bool {
 // - all users with their disk usage
 // - free disk space
 // - migration-info
+// - app settings (env-vars)
 func GetAdminData(w http.ResponseWriter, r *http.Request) {
 	if !validateAdminPasswordInRequest(r) {
 		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
