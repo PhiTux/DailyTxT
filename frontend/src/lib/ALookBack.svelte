@@ -112,7 +112,7 @@
 		max-height: 100%;
 		line-height: 1.25;
 		backdrop-filter: blur(8px) saturate(150%);
-		mask-image: linear-gradient(0deg, transparent 0px, red 50px);
+		mask-image: linear-gradient(0deg, transparent -5px, red 50px);
 	}
 
 	:global(body[data-bs-theme='dark']) #zoomButton {

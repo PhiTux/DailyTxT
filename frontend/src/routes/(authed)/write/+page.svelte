@@ -615,7 +615,7 @@
 			.post(API_URL + '/logs/uploadFile', formData, {
 				...config
 			})
-			.then((response) => {
+			.then(() => {
 				// append to filesOfDay
 				filesOfDay = [...filesOfDay, { filename: f.name, size: f.size, uuid_filename: uuid }];
 			})
@@ -732,7 +732,7 @@
 					day: $selectedDate.day
 				}
 			})
-			.then((response) => {
+			.then(() => {
 				filesOfDay = filesOfDay.filter((file) => file.uuid_filename !== uuid);
 				images = images.filter((image) => image.uuid_filename !== uuid);
 			})
@@ -1292,8 +1292,6 @@
 			});
 	}
 </script>
-
-<!-- styles consolidated above -->
 
 <DatepickerLogic />
 <svelte:window
@@ -2134,7 +2132,6 @@
 		}
 
 		#right {
-			/* Revert fixed width for stacked layout */
 			flex: 1 1 auto !important;
 			width: 100% !important;
 			padding-right: 0 !important;
@@ -2167,7 +2164,6 @@
 
 	.middle-right {
 		justify-content: center;
-		/* width: 100%; */
 		min-width: 0;
 	}
 
@@ -2455,7 +2451,6 @@
 		padding-right: 2rem;
 	}
 
-	/* Allow middle/editor column to actually shrink instead of forcing siblings narrower */
 	#middle {
 		min-width: 0;
 		width: 100%;

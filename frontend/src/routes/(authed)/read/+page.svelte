@@ -317,7 +317,6 @@
 		}
 	}
 
-	// TODO adjust
 	function triggerAutomaticDownload(uuid) {
 		for (let i = 0; i < logs.length; i++) {
 			let log = logs[i];

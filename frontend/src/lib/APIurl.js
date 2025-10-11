@@ -1,10 +1,10 @@
 import { dev, browser } from '$app/environment';
-import { base } from '$app/paths';
+import { resolve } from '$app/paths';
 
 // Base-aware API root:
 // - Dev: talk to backend on port 8000 at same host
 // - Prod: prefix with SvelteKit base (works for subpath deployments like /dailytxt)
-const apiPath = `${base}`.replace(/\/$/, '') + '/api';
+const apiPath = resolve('/api');
 
 export const API_URL = browser
   ? (dev

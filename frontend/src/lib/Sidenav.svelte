@@ -13,7 +13,6 @@
 	import axios from 'axios';
 	import { cal } from '$lib/calendarStore.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
-	import { slide } from 'svelte/transition';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -22,7 +21,7 @@
 
 	onMount(() => {
 		const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
-		const popoverList = [...popoverTriggerList].map(
+		[...popoverTriggerList].map(
 			(popoverTriggerEl) =>
 				new bootstrap.Popover(popoverTriggerEl, { html: true, trigger: 'focus' })
 		);
@@ -127,7 +126,7 @@
 	let showTagDropdown = $state(false);
 	let filteredTags = $state([]);
 	let selectedTagIndex = $state(0);
-	// Touch-Geräte Erkennung für alternative Tag-Auswahl
+	// Touch device detection for alternative tag selection
 	let isTouchDevice = $state(false);
 	onMount(() => {
 		try {
@@ -207,7 +206,6 @@
 		}
 	});
 
-	//let searchTag = $state({});
 	function selectSearchTag(tagId) {
 		showTagDropdown = false;
 		const tag = $tags.find((tag) => tag.id === tagId);
@@ -215,7 +213,6 @@
 			return;
 		}
 		$searchTag = tag;
-		//$searchResults = [];
 
 		searchForTag();
 	}
@@ -401,7 +398,6 @@
 									}
 								)}
 							</div>
-							<!-- <div class="search-separator"></div> -->
 							<div class="text">
 								{@html result.text}
 							</div>
@@ -587,7 +583,6 @@
 	/* Dynamic search results panel: fill remaining space, but never below 250px */
 	.search {
 		flex: 1 1 auto; /* allow search area to grow */
-		/* min-height: 0; */ /* allow inner flex children to compute height */
 		display: flex;
 		flex-direction: column;
 		border-radius: 10px;
@@ -601,7 +596,7 @@
 		overflow-y: auto;
 		min-height: 250px; /* minimum requirement */
 		flex: 1 1 auto; /* take all remaining vertical space */
-		max-height: none; /* remove hard cap */
+		max-height: none;
 	}
 
 	.input-group {

@@ -184,8 +184,6 @@
 		if (!swipeActive) return;
 		const dx = swipeLastX - swipeStartX;
 		const absDx = Math.abs(dx);
-		// vertical validation (in case move ended early)
-		// compute approx vertical drift mid-gesture not stored; skip here
 		if (absDx >= SWIPE_THRESHOLD) {
 			if (dx < 0) {
 				// swipe left -> next month

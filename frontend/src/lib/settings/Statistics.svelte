@@ -27,10 +27,9 @@
 	let weeks = $state([]);
 	let maxWordCountYear = 0;
 	let minWordCountYear = 0; // smallest > 0 value
-	// Filter stats for selected year
-	// Iterate all days of the year
+
 	let legendRanges = $state([]);
-	// Bootstrap tooltip support
+
 	let heatmapEl = $state(null);
 	let dayMap = new Map(); // key -> day data
 
@@ -681,7 +680,6 @@
 	.day-cell.empty {
 		background: transparent;
 	}
-	/* Color scale (adjust to theme) */
 
 	:global(body[data-bs-theme='light']) .level-0 {
 		background: var(--heatmap-empty, #ebedf0);
@@ -779,8 +777,6 @@
 		background: #0056b3;
 		color: white;
 	}
-
-	/* Old tooltip styling (now removed as we use popovers) */
 
 	/* Desktop: Add pointer cursor for day cells */
 	@media (pointer: fine) {

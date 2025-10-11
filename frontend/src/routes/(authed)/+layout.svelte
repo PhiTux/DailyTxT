@@ -122,15 +122,6 @@
 	// Force indicator update when activeSettingsView changes or when modal is shown
 	let indicatorNeedsUpdate = $state(0);
 
-	/* $effect(() => {
-		// Trigger when activeSettingsView changes
-		activeSettingsView;
-		// Trigger a re-render to update indicator position
-		setTimeout(() => {
-			indicatorNeedsUpdate++;
-		}, 10);
-	}); */
-
 	// Function to compare version strings (semver-like)
 	function compareVersions(v1, v2) {
 		if (!v1 || !v2) return 0;

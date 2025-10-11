@@ -5,7 +5,6 @@
 
 	let emojiPickerEl;
 	let picker;
-	let mounted = false;
 
 	let { select } = $props();
 
