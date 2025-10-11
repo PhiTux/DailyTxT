@@ -1,0 +1,30 @@
+services:
+  dailytxt:
+    image: phitux/dailytxt:2.x.x
+    container_name: dailytxt
+    restart: unless-stopped
+    volumes:
+      # Change the left path to your needs
+      - ./data:/data
+    environment:
+      # Create a secret token by running: openssl rand -base64 32
+      - SECRET_TOKEN=...
+
+      # If you want to have the json-files pretty-printed, set some indent.
+      # (Otherwise just remove the line)
+      - INDENT=4
+
+      # Allow new user registrations.
+      # I strongly recommend to keep this disabled except for the first user.
+      # You can later temporarily enable it again in the admin panel.
+      - ALLOW_REGISTRATION=true
+
+      # Set the Admin-Password (for the admin-panel).
+      - ADMIN_PASSWORD=your_admin_password
+
+      # After how many days shall the login-cookie expire?
+      - LOGOUT_AFTER_DAYS=40
+    ports:
+      # Change the left port to your needs.
+      # You often would only see 8000:80. But this way, port 8000 is publicly accessible (without TLS!).
+      - 127.0.0.1:8000:80

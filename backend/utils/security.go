@@ -192,8 +192,8 @@ func DeriveKeyFromPassword(password, saltBase64 string) ([]byte, error) {
 		return nil, err
 	}
 
-	// Derive key (don't use config from above, as a variable amount of thread will lead to different results)
-	key := argon2.IDKey([]byte(password), salt, 2, 64*1024, 4, 32)
+	// Derive key
+	key := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
 	return key, nil
 }
 
