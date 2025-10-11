@@ -112,24 +112,7 @@
 		max-height: 100%;
 		line-height: 1.25;
 		backdrop-filter: blur(8px) saturate(150%);
-	}
-
-	.html-preview::after {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		right: 0;
-		height: 40px;
-		pointer-events: none;
-	}
-
-	:global(body[data-bs-theme='dark']) .html-preview::after {
-		background: linear-gradient(to bottom, transparent, rgba(80, 80, 80, 0.45) 80%);
-	}
-
-	:global(body[data-bs-theme='light']) .html-preview::after {
-		background: linear-gradient(to bottom, transparent, rgba(219, 219, 219, 0.45) 80%);
+		mask-image: linear-gradient(0deg, transparent 0px, red 50px);
 	}
 
 	:global(body[data-bs-theme='dark']) #zoomButton {

@@ -988,11 +988,7 @@
 		}, 40);
 	}
 
-	let showTagLoading = $state(false);
-
 	function selectTag(id) {
-		showTagLoading = true;
-
 		axios
 			.post(API_URL + '/logs/addTagToLog', {
 				day: $selectedDate.day,
@@ -1016,8 +1012,6 @@
 				toast.show();
 			})
 			.finally(() => {
-				showTagLoading = false;
-
 				if (isTouchDevice) {
 					showTouchTagPanel = false;
 				}
@@ -1027,8 +1021,6 @@
 	}
 
 	function removeTag(id) {
-		showTagLoading = true;
-
 		axios
 			.post(API_URL + '/logs/removeTagFromLog', {
 				day: $selectedDate.day,
@@ -1052,9 +1044,6 @@
 				// toast
 				const toast = new bootstrap.Toast(document.getElementById('toastErrorRemovingTagFromDay'));
 				toast.show();
-			})
-			.finally(() => {
-				showTagLoading = false;
 			});
 	}
 
@@ -1469,11 +1458,6 @@
 				<div class="d-flex flex-row justify-content-between">
 					<div class="d-flex flex-row">
 						<h3>{$t('tags.tags')}</h3>
-						{#if showTagLoading}
-							<div class="spinner-border ms-3" role="status">
-								<span class="visually-hidden">Loading...</span>
-							</div>
-						{/if}
 					</div>
 					<!-- svelte-ignore a11y_missing_attribute -->
 					<a
@@ -1959,7 +1943,7 @@
 						</button>
 					</div>
 					<div class="text mt-2">
-						{@html marked.parse(history[historySelected]?.text || 'Error!')}
+						{@html marked.parse(history[historySelected]?.text || '')}
 					</div>
 				</div>
 				<div class="modal-footer">
@@ -2126,7 +2110,6 @@
 		border-radius: 15px;
 		padding: 1rem;
 		word-wrap: anywhere;
-		white-space: break-spaces;
 	}
 
 	.history-btn {
