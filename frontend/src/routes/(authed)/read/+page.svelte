@@ -610,13 +610,6 @@
 		border-radius: 15px;
 	}
 
-	@media screen and (min-width: 576px) {
-		.log {
-			margin-left: 1rem;
-			margin-right: 1rem;
-		}
-	}
-
 	:global(body[data-bs-theme='dark']) .log {
 		box-shadow: 3px 3px 8px 4px rgba(0, 0, 0, 0.3);
 	}
@@ -647,7 +640,7 @@
 	}
 
 	#scrollArea {
-		padding-right: 1rem;
+		padding-right: 0.5rem;
 		overflow-y: auto;
 		max-height: 100vh; /* scroll area uses remaining viewport height */
 	}
@@ -658,9 +651,10 @@
 		overflow-x: auto;
 	}
 
-	@media (min-width: 1300px) and (max-width: 1450px) {
-		.files {
-			max-width: 250px;
+	@media screen and (min-width: 576px) {
+		.log {
+			margin-left: 1rem;
+			margin-right: 1rem;
 		}
 	}
 
@@ -687,10 +681,17 @@
 
 		.log {
 			flex-direction: column !important;
+			margin-left: 1rem !important;
+			margin-right: 0.5rem !important;
 		}
 
 		#scrollArea {
-			margin-left: 1rem !important;
+			margin-right: 0.5rem !important;
+		}
+
+		.layout-read {
+			padding-right: 0 !important;
+			padding-left: 0 !important;
 		}
 	}
 
@@ -706,6 +707,12 @@
 		#scrollArea {
 			margin-top: 1rem !important;
 			margin-bottom: 1rem !important;
+		}
+	}
+
+	@media (min-width: 1300px) and (max-width: 1450px) {
+		.files {
+			max-width: 250px;
 		}
 	}
 
