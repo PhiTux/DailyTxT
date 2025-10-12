@@ -2837,8 +2837,8 @@
 	}
 
 	#selectMode:checked {
-		border-color: #da880e;
-		background-color: #da880e;
+		border-color: #f57c00;
+		background-color: #f57c00;
 	}
 
 	#selectMode:not(:checked) {
