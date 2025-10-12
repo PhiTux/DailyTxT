@@ -5,7 +5,7 @@
 
 > [!WARNING]  
 > - When you are coming from version 1 (most likely 1.0.15), you MUST read the [Migration Instructions](#migration-instructions) below!
-> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version 2 ❤️
+> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version 2 ❤️ The first stable release of version 2 will probably be published in a few weeks.
 
 # DailyTxT
 
