@@ -43,10 +43,10 @@ else
 		--push)
 			echo "Pushing image to Docker registry..."
 			# Build for multiple platforms and push to registry
-			#docker buildx build \
-			#	--platform linux/amd64,linux/arm64 \
-			#	-t phitux/dailytxt:$IMAGE_TAG \
-			#	--push .
+			docker buildx build \
+				--platform linux/amd64,linux/arm64 \
+				-t phitux/dailytxt:$IMAGE_TAG \
+				--push .
 			;;
 		*)
 			echo "Unknown second argument: '$PUSH_FLAG'"

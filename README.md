@@ -79,6 +79,7 @@ You see it here:
 ```yaml
 services:
   dailytxt:
+    # choose the correct image tag
     image: phitux/dailytxt:2.x.x
     container_name: dailytxt
     restart: unless-stopped
