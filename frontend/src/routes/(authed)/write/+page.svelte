@@ -348,6 +348,11 @@
 
 	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
 
+	let autoLoadImages = $derived(
+		($settings.setAutoloadImagesPerDevice && $autoLoadImagesThisDevice) ||
+			(!$settings.setAutoloadImagesPerDevice && $settings.autoloadImagesByDefault)
+	);
+
 	$effect(() => {
 		if (filesOfDay && autoLoadImages !== undefined) {
 			// add all files to images if correct extension
@@ -359,7 +364,6 @@
 				) {
 					images = [...images, file];
 
-					console.log(autoLoadImages);
 					if (autoLoadImages) {
 						loadImage(file);
 					}
@@ -367,11 +371,6 @@
 			});
 		}
 	});
-
-	let autoLoadImages = $derived(
-		($settings.setAutoloadImagesPerDevice && $autoLoadImagesThisDevice) ||
-			(!$settings.setAutoloadImagesPerDevice && $settings.autoloadImagesByDefault)
-	);
 
 	function loadImage(file) {
 		images.map((image) => {

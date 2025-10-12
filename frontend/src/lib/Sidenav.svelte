@@ -586,6 +586,7 @@
 		display: flex;
 		flex-direction: column;
 		border-radius: 10px;
+		min-height: 0;
 	}
 
 	.list-group {

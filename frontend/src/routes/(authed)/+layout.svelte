@@ -1117,10 +1117,10 @@
 	$effect(() => {
 		if (window.matchMedia('(display-mode: standalone)').matches) {
 			showInstallationHelp = false;
-			console.log("We're installed");
+			console.log('DailyTxT is installed');
 		} else {
 			showInstallationHelp = true;
-			console.log("We're not installed");
+			console.log('DailyTxT is not installed');
 		}
 	});
 </script>
