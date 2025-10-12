@@ -160,7 +160,7 @@ In Version A.B.C:
 
 Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-stable** versions. These versions are not meant to be used in production, but for testing new features and bug fixes before they are released in a stable version.
 
-The old version 1 is moved to the [v1 branch](https://github.com/mk/git/DailyTxT/tree/v1).
+The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ## Start developing
 
