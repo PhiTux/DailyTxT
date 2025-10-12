@@ -2836,6 +2836,11 @@
 		cursor: pointer;
 	}
 
+	.selectMode > .form-check,
+	.selectMode {
+		margin-bottom: 0 !important;
+	}
+
 	#selectMode:checked {
 		border-color: #f57c00;
 		background-color: #f57c00;
