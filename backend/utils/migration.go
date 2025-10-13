@@ -257,16 +257,6 @@ func MigrateUserData(username, password string, registerFunc RegisterUserFunc, p
 
 	// Derive key from password and salt
 	oldDerivedKey := DeriveKeyFromOldPassword(password, oldSalt)
-	_, err = base64.StdEncoding.DecodeString(base64.URLEncoding.EncodeToString(oldDerivedKey))
-	if err != nil {
-		return handleError("Error decoding old derived key", err)
-	}
-
-	// Decode the old encrypted key (just for validation)
-	_, err = base64.URLEncoding.DecodeString(oldEncEncKey)
-	if err != nil {
-		return handleError("Error decoding old encrypted key", err)
-	}
 
 	// Decrypt the old encryption key
 	oldEncKey, err := FernetDecrypt(oldEncEncKey, oldDerivedKey)

@@ -163,6 +163,12 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
+### Newest Testing Versions:
+```
+2.0.0-testing.2 (2025-10-13)
+- Trying to fix a bug in the migration process by removing unnecessary code (that should validate some data, but was probably harmful instead).
+```
+
 ## Start developing
 
 You need [Go](https://golang.org/) (at least version 1.24) and [Node.js](https://nodejs.org/) (at least version 24) installed.
