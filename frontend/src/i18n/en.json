@@ -73,6 +73,7 @@
     "alert": {
       "empty_fields": "Fields must not be empty!",
       "login_failed": "Login failed!<br />\nPlease check your input data.",
+      "migration_failed": "The migration failed! Check the server logs (e.g., with <code>docker logs dailytxt</code>) to see if you can find more detailed information there!",
       "passwords_do_not_match": "Passwords do not match!",
       "registration_allowed_until": "Registration temporarily open until {date_and_time} (Server time).",
       "registration_failed": "Registration failed - please analyze the error messages!",

@@ -73,6 +73,7 @@
     "alert": {
       "empty_fields": "Eingabefelder dürfen nicht leer sein!",
       "login_failed": "Login fehlgeschlagen!<br />\nBitte Eingabedaten überprüfen.",
+      "migration_failed": "Die Migration ist fehlgeschlagen! Schaue in den Serverlogs nach (z. B. mit <code>docker logs dailytxt</code>), ob du dort genauere Informationen findest!",
       "passwords_do_not_match": "Passwörter stimmen nicht überein!",
       "registration_allowed_until": "Registrierung temporär geöffnet bis {date_and_time} (Serverzeit).",
       "registration_failed": "Registrierung fehlgeschlagen - bitte Fehlermeldungen analysieren!",

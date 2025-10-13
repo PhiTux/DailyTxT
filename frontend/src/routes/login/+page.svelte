@@ -123,6 +123,7 @@
 			});
 	}
 
+	let show_migration_failed = $state(false);
 	function handleMigrationProgress(username) {
 		// Poll the server for migration progress
 		const interval = setInterval(() => {
@@ -146,10 +147,12 @@
 
 					if (
 						!response.data.migration_in_progress &&
-						!response.data.progress.phase === 'not_started'
+						response.data.progress?.phase !== 'not_started' &&
+						response.data.progress?.phase !== 'completed'
 					) {
 						console.log('Migration stopped');
 						is_migrating = false;
+						show_migration_failed = true;
 						clearInterval(interval);
 					}
 				})
@@ -166,6 +169,7 @@
 		show_login_failed = false;
 		show_login_warning_empty_fields = false;
 		is_migrating = false;
+		show_migration_failed = false;
 
 		const username = document.getElementById('loginUsername').value;
 		const password = document.getElementById('loginPassword').value;
@@ -430,6 +434,11 @@
 											{@html $t('login.migration.account_info')}
 										</div>
 									{/if}
+								</div>
+							{/if}
+							{#if show_migration_failed}
+								<div class="alert alert-danger" role="alert">
+									{@html $t('login.alert.migration_failed')}
 								</div>
 							{/if}
 							{#if show_login_failed}

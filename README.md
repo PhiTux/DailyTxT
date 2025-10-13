@@ -165,6 +165,9 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 ### Newest Testing Versions:
 ```
+2.0.0-testing.3 (2025-10-13)
+- Updated the migration process in the frontend. When migration fails on serverside, the user now gets notified.
+
 2.0.0-testing.2 (2025-10-13)
 - Trying to fix a bug in the migration process by removing unnecessary code (that should validate some data, but was probably harmful instead).
 ```
