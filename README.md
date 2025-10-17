@@ -66,7 +66,7 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 
 Simply use the `docker-compose.yml` file provided in this repository. Adjust it to your needs and run
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 
