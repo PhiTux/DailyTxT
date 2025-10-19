@@ -119,9 +119,10 @@ When coming from version 1 (most likely 1.0.15), please follow these instruction
 
 ⚡ **<ins>TLDR:</ins>**
 1. **<ins>BACKUP YOUR DATA</ins>** (the whole data directory you used for version 1).
-2. Use the new `docker-compose.yml` file and adjust the environment variables accordingly. Use the same data directory as before.
-3. You will probably have to <ins>clear browser cache</ins> (only of the dailytxt-site) to be able to load the new version at all. You will also have to <ins>delete and reinstall</ins> the Apps on your mobile devices (if you used that).
-4. Migration starts automatically when an "old" user logs in for the first time.
+2. Use the new `docker-compose.yml` file and adjust the environment variables accordingly. 
+3. Use the <ins>same data directory ('volume') as before</ins>. Start the new docker image.
+4. You will probably have to <ins>clear browser cache</ins> (only of the dailytxt-site) to be able to load the new version at all. You will also have to <ins>delete and reinstall</ins> the Apps on your mobile devices (if you used that).
+5. Migration starts automatically when an "old" user logs in for the first time.
 
 🔎 **<ins>More details:</ins>**  
 
