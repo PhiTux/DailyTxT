@@ -1231,7 +1231,7 @@
 						<hr />
 						<div class="d-flex flex-row">
 							<button class="btn btn-outline-danger ms-auto" onclick={() => logout(null)}
-								>Logout <Fa icon={faPersonRunning} /></button
+								>{$t('nav.logout')} <Fa icon={faPersonRunning} /></button
 							>
 						</div>
 					</div>

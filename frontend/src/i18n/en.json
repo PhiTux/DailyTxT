@@ -142,6 +142,9 @@
       "title_new": "Create new tag"
     }
   },
+  "navbar": {
+    "greeting": "Hi {user}"
+  },
   "read": {
     "load_images": "{count, plural, one {Load {count} image of the month ({size})} other {Load all {count} images of the month ({size})}}",
     "no_entries": "No entries"
@@ -280,6 +283,8 @@
     "export.split_month": "One HTML per month",
     "export.split_year": "One HTML per year",
     "export.start_date": "From:",
+    "first_day_of_week": "Start of the week",
+    "first_day_of_week.help_text": "Select the day on which the week should start (affects the display in the calendar). Changes may only be visible after reloading the page.",
     "functions": "Functions",
     "images_description": "<ul>\n\t<li>\n\t\tWhen loading a text, uploaded images (if available) can be loaded automatically. <em>Increased data usage!</em>\n\t</li>\n\t<li>Alternatively, a button is displayed to load all images.</li>\n</ul>",
     "images_loading_default": "Automatically load images by default (on every device)",
