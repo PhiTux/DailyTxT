@@ -20,7 +20,11 @@
 	let lastYear = $cal.currentYear;
 
 	$effect(() => {
-		if ($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear) {
+		if (
+			($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear) &&
+			$settings.firstDayOfWeek !== undefined
+		) {
+			console.log($settings.firstDayOfWeek);
 			// set animation direction
 			animationDirection = $cal.currentMonth > lastMonth ? 1 : -1;
 			if ($cal.currentYear > lastYear) {
@@ -114,9 +118,15 @@
 		}
 	});
 
-	onMount(() => {
-		days = updateCalendar();
+	let firstDayOfWeekInitialized = false;
+	$effect(() => {
+		if (!firstDayOfWeekInitialized && $settings.firstDayOfWeek !== undefined) {
+			days = updateCalendar();
+			firstDayOfWeekInitialized = true;
+		}
+	});
 
+	onMount(() => {
 		oc = document.querySelector('.offcanvas');
 		oc.addEventListener('hidden.bs.offcanvas', () => {
 			$offcanvasIsOpen = false;
