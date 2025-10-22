@@ -284,15 +284,28 @@
 
 			// Update editor content
 			tinyMDE.setContent(currentLog);
-			// Only auto-focus/select on non-mobile devices
+			// Only auto-focus and place caret at end on non-mobile devices
 			if (!isMobile) {
 				try {
-					tinyMDE.setSelection({ row: 0, col: 0 });
-					// Ensure the underlying editable div gets focus
+					const content =
+						typeof tinyMDE.getContent === 'function' ? tinyMDE.getContent() : currentLog || '';
+					const text = typeof content === 'string' ? content : currentLog || '';
+					const lines = text.split('\n');
+					const lastRow = Math.max(0, lines.length - 1);
+					const lastCol = (lines[lastRow] && lines[lastRow].length) || 0;
+
+					// Focus the underlying editable element first
 					const editorEl = document.querySelector(
 						'#editor .TinyMDE textarea, #editor .TinyMDE [contenteditable="true"]'
 					);
 					if (editorEl) editorEl.focus();
+
+					// Then set the selection at the end on the next frame
+					requestAnimationFrame(() => {
+						try {
+							tinyMDE.setSelection({ row: lastRow, col: lastCol });
+						} catch {}
+					});
 				} catch {}
 			}
 
