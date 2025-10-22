@@ -39,8 +39,8 @@
 	const updateCalendar = () => {
 		const month = $cal.currentMonth;
 		const year = $cal.currentYear;
-		const firstDay = new Date(Date.UTC(year, month, 1));
-		const lastDay = new Date(Date.UTC(year, month + 1, 0));
+		const firstDay = new Date(year, month, 1);
+		const lastDay = new Date(year, month + 1, 0);
 
 		let tempDays = [];
 		// monday is first day
