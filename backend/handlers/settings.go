@@ -27,6 +27,7 @@ func GetDefaultSettings() map[string]any {
 		"checkForUpdates":            true,
 		"includeTestVersions":        false,
 		"requirePasswordOnPageLoad":  false,
+		"firstDayOfWeek":             "monday",
 	}
 }
 

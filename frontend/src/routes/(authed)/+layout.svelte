@@ -1649,6 +1649,20 @@
 										</div>
 									</div>
 
+									<div id="FirstDayOfWeek">
+										{#if $tempSettings.firstDayOfWeek !== $settings.firstDayOfWeek}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>{$t('settings.first_day_of_week')}</h5>
+										<div class="form-text mt-2">
+											{$t('settings.first_day_of_week.help_text')}
+										</div>
+										<select class="form-select w-auto" bind:value={$tempSettings.firstDayOfWeek}>
+											<option value="sunday">{$t('weekdays.sunday')}</option>
+											<option value="monday">{$t('weekdays.monday')}</option>
+										</select>
+									</div>
+
 									<div id="aLookBack">
 										{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
 													.trim()

@@ -1,6 +1,6 @@
 <script>
 	import { cal, selectedDate, readingDate } from '$lib/calendarStore.js';
-	import { readingMode } from '$lib/settingsStore.js';
+	import { readingMode, settings } from '$lib/settingsStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
@@ -43,9 +43,16 @@
 		const lastDay = new Date(year, month + 1, 0);
 
 		let tempDays = [];
-		// monday is first day
-		let firstDayIndex = firstDay.getDay() - 1;
-		if (firstDayIndex === -1) firstDayIndex = 6; // sunday gets 6
+		let firstDayIndex;
+
+		if ($settings.firstDayOfWeek === 'sunday') {
+			// sunday is first day
+			firstDayIndex = firstDay.getDay();
+		} else {
+			// monday is first day
+			firstDayIndex = firstDay.getDay() - 1;
+			if (firstDayIndex === -1) firstDayIndex = 6; // sunday gets 6
+		}
 
 		for (let i = 0; i < firstDayIndex; i++) {
 			tempDays.push(null); // Fill empty slots before the first day
@@ -136,16 +143,19 @@
 		}
 	};
 
-	// weekdays
-	const weekDays = [
-		$t('calendar.day_short.monday'),
-		$t('calendar.day_short.tuesday'),
-		$t('calendar.day_short.wednesday'),
-		$t('calendar.day_short.thursday'),
-		$t('calendar.day_short.friday'),
-		$t('calendar.day_short.saturday'),
-		$t('calendar.day_short.sunday')
-	];
+	// weekdays (reordered when first day of week is Sunday)
+	const weekDays = $derived.by(() => {
+		const base = [
+			$t('calendar.day_short.monday'),
+			$t('calendar.day_short.tuesday'),
+			$t('calendar.day_short.wednesday'),
+			$t('calendar.day_short.thursday'),
+			$t('calendar.day_short.friday'),
+			$t('calendar.day_short.saturday'),
+			$t('calendar.day_short.sunday')
+		];
+		return $settings.firstDayOfWeek === 'sunday' ? [base[6], ...base.slice(0, 6)] : base;
+	});
 
 	// --- Swipe Navigation (month) ---
 	let swipeActive = false;
