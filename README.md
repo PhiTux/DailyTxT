@@ -171,6 +171,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 - Added a feature to choose the first day of the week (Monday or Sunday) in the settings.
 - When a date is selected, the cursor is now placed at the end of the text (not at the beginning).
 - CSS fixes
+- Changed Navbar-buttons to dropdown-menu
 
 2.0.0-testing.3 (2025-10-13)
 - Updated the migration process in the frontend. When migration fails on serverside, the user now gets notified.

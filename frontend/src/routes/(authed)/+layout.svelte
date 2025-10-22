@@ -23,7 +23,7 @@
 	} from '$lib/helpers.js';
 	import { templates } from '$lib/templateStore';
 	import {
-		faRightFromBracket,
+		faPersonRunning,
 		faGlasses,
 		faPencil,
 		faSliders,
@@ -918,6 +918,27 @@
 
 	let currentUser = $state(localStorage.getItem('user'));
 
+	// Random smiley for greeting
+	const smileys = [
+		'😊',
+		'😄',
+		'👍',
+		'🎉',
+		'🙌',
+		'🤗',
+		'😎',
+		'✨',
+		'🌟',
+		'🥳',
+		'😇',
+		'🥇',
+		'🚀',
+		'🌞'
+	];
+	function pickSmiley() {
+		return smileys[Math.floor(Math.random() * smileys.length)];
+	}
+
 	function changeUsername() {
 		changeUsernameSuccess = false;
 		changeUsernameError = '';
@@ -1167,21 +1188,54 @@
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
-				<button
-					class="btn btn-outline-secondary me-2 position-relative"
-					onclick={openSettingsModal}
-				>
-					<Fa icon={faSliders} />
-					{#if updateAvailable}
-						<FaLayers class="position-absolute top-0 start-100 translate-middle">
-							<Fa icon={faCircle} size="1.2x" color="white" />
-							<Fa icon={faCircleUp} size="1.2x" class="text-info" />
-						</FaLayers>
-					{/if}
-				</button>
-				<button class="btn btn-outline-secondary" onclick={() => logout(null)}
-					><Fa icon={faRightFromBracket} /></button
-				>
+				<div class="dropdown">
+					<button
+						type="button"
+						class="btn btn-outline-secondary dropdown-toggle"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<Fa icon={faSliders} />
+						{#if updateAvailable}
+							<FaLayers class="position-absolute top-0 start-100 translate-middle">
+								<Fa icon={faCircle} size="1.2x" color="white" />
+								<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+							</FaLayers>
+						{/if}
+					</button>
+					<div class="dropdown-menu dropdown-menu-end glass-shadow p-4 greet-menu">
+						<div class="d-flex flex-row justify-content-center mb-3">
+							<h3 class="greeting">
+								{@html $t('navbar.greeting', {
+									user: `<span class="username">${currentUser}</span>`
+								})}
+								{pickSmiley()}
+							</h3>
+						</div>
+						<div class="d-flex flex-row justify-content-center">
+							<button
+								class="btn btn-outline-secondary position-relative"
+								onclick={openSettingsModal}
+								data-bs-toggle="dropdown"
+							>
+								{$t('settings.title')}
+								<Fa icon={faSliders} />
+								{#if updateAvailable}
+									<FaLayers class="position-absolute top-0 start-100 translate-middle">
+										<Fa icon={faCircle} size="1.2x" color="white" />
+										<Fa icon={faCircleUp} size="1.2x" class="text-info" />
+									</FaLayers>
+								{/if}
+							</button>
+						</div>
+						<hr />
+						<div class="d-flex flex-row">
+							<button class="btn btn-outline-danger ms-auto" onclick={() => logout(null)}
+								>Logout <Fa icon={faPersonRunning} /></button
+							>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</nav>
@@ -2688,6 +2742,21 @@
 		border-top: 0 !important;
 		border-left: 0 !important;
 		border-right: 0 !important;
+		z-index: 15;
+	}
+
+	/* Limit settings dropdown width on viewport and keep greeting on one line when possible */
+	.greet-menu {
+		max-width: calc(100vw - 50px);
+		width: max-content; /* shrink-to-fit to content up to max */
+		min-width: 200px;
+		border-radius: 10px;
+	}
+	.greeting {
+		/* Let the dropdown grow up to its max-width and then wrap */
+		white-space: normal;
+		overflow-wrap: anywhere; /* allow breaking long words/usernames */
+		word-break: break-word;
 	}
 
 	/* Allow the stacked absolute children to scroll without forcing the parent to expand */
