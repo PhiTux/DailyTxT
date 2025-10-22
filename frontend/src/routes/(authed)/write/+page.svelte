@@ -2056,6 +2056,10 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='dark'] .TMIndentedCode) {
+		background-color: #444;
+	}
+
 	.input-area {
 		border-radius: 10px;
 	}
