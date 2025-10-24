@@ -145,6 +145,9 @@
   "navbar": {
     "greeting": "Hi {user}"
   },
+  "nav": {
+    "logout": "Logout"
+  },
   "read": {
     "load_images": "{count, plural, one {Load {count} image of the month ({size})} other {Load all {count} images of the month ({size})}}",
     "no_entries": "No entries"

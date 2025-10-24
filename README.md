@@ -166,6 +166,10 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 ### Newest Testing Versions:
 ```
+2.0.0-testing.6 (2025-10-24)
+- Added TB as file-/disksize
+- Update package dependencies
+
 2.0.0-testing.5 (2025-10-22)
 - Bugfix for wrong day-of-week in calendar
 

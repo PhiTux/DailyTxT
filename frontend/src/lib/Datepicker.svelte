@@ -24,7 +24,6 @@
 			($cal.currentMonth !== lastMonth || $cal.currentYear !== lastYear) &&
 			$settings.firstDayOfWeek !== undefined
 		) {
-			console.log($settings.firstDayOfWeek);
 			// set animation direction
 			animationDirection = $cal.currentMonth > lastMonth ? 1 : -1;
 			if ($cal.currentYear > lastYear) {
