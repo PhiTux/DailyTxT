@@ -196,10 +196,14 @@
 	}
 
 	function changeDay(increment) {
+		// Build a Date from the current selectedDate (note: JS Date months are 0-based)
+		const current = new Date($selectedDate.year, $selectedDate.month - 1, $selectedDate.day);
+		current.setDate(current.getDate() + increment);
+
 		$selectedDate = {
-			day: $selectedDate.day + increment,
-			month: $selectedDate.month,
-			year: $selectedDate.year
+			day: current.getDate(),
+			month: current.getMonth() + 1,
+			year: current.getFullYear()
 		};
 	}
 
