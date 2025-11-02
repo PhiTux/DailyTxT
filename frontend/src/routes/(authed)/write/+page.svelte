@@ -1402,12 +1402,12 @@
 							? ''
 							: 'invisible'}"
 					>
-						<button class="btn px-0 btn-hover" onclick={() => getHistory()}>
+						<button class="btn px-0 btn-hover editor-btn" onclick={() => getHistory()}>
 							<Fa icon={faClockRotateLeft} size="1.5x" fw />
 						</button>
 					</div>
 					<div class="textAreaDelete header-btn-desktop d-flex flex-column justify-content-center">
-						<button class="btn px-0 btn-hover" onclick={() => showDeleteDayModal()}>
+						<button class="btn px-0 btn-hover editor-btn" onclick={() => showDeleteDayModal()}>
 							<Fa icon={faTrash} size="1.5x" fw />
 						</button>
 					</div>
@@ -2060,6 +2060,14 @@
 </div>
 
 <style>
+	.editor-btn {
+		color: #c5c5c598;
+	}
+
+	.editor-btn:hover {
+		color: #ffffff;
+	}
+
 	:global(body[data-bs-theme='dark'] .TMIndentedCode) {
 		background-color: #444;
 	}
