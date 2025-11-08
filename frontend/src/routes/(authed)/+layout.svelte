@@ -148,9 +148,6 @@
 		const testingVersion1 = v1.split('-')[1] || '';
 		const testingVersion2 = v2.split('-')[1] || '';
 
-		if (testingVersion1 === '') return 1;
-		if (testingVersion2 === '') return -1;
-
 		return testingVersion1.localeCompare(testingVersion2) > 0;
 	}
 
