@@ -169,7 +169,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 - Fixed missing translation [1]
 - Bugfix for update notification
 ```
-[1]: Thanks to [kontaxis](https://github.com/kontaxis) for the pull request!
+[1]: Thanks to [@kontaxis](https://github.com/kontaxis) for the pull request!
 
 ### 2.0.0 (2025-11-08)
 ```
