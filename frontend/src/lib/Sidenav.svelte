@@ -303,7 +303,7 @@
 					id="search-input"
 					type="text"
 					class="form-control"
-					placeholder="..."
+					placeholder={$t('search.search')}
 					aria-label={$t('search.search')}
 					aria-describedby="search-button"
 					onkeydown={handleKeyDown}
