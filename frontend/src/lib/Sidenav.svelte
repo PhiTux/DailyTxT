@@ -279,7 +279,7 @@
 				class="btnSearchPopover btn btn-outline-secondary glass"
 				type="button"
 				data-bs-toggle="popover"
-				data-bs-title="Suche"
+				data-bs-title={$t('search.search')}
 				data-bs-content={$t('search.description')}
 				tabindex="0"
 				aria-label={$t('search.description')}><Fa icon={faQuestionCircle} /></button
@@ -303,7 +303,7 @@
 					id="search-input"
 					type="text"
 					class="form-control"
-					placeholder="Suche"
+					placeholder="..."
 					aria-label={$t('search.search')}
 					aria-describedby="search-button"
 					onkeydown={handleKeyDown}
