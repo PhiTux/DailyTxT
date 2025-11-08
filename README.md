@@ -5,7 +5,7 @@
 
 > [!WARNING]  
 > - When you are coming from version 1 (most likely 1.0.15), you MUST read the [Migration Instructions](#migration-instructions) below!
-> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version 2 ❤️ The first stable release of version 2 will probably be published in a few weeks.
+> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version which uses this testing-tag. You can set up notifications for this at the bottom of the settings ❤️
 
 # DailyTxT
 
@@ -163,6 +163,16 @@ In Version A.B.C:
 Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-stable** versions. These versions are not meant to be used in production, but for testing new features and bug fixes before they are released in a stable version.
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
+
+### 2.0.0 (2025-11-08)
+```
+- First stable release of version 2 after several testing versions.
+Changes to testing are:
+- Bugfix and better feedback on migration
+- Bugfix when changing month with shortcut
+- Changed calendar settings
+- Added TB as file-/disksize
+```
 
 ### Newest Testing Versions:
 ```
