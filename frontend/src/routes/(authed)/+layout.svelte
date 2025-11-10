@@ -545,6 +545,7 @@
 	function saveUserSettings() {
 		if (isSaving) return;
 		isSaving = true;
+		let reloadRequired = false;
 
 		$tempSettings.aLookBackYears = aLookBackYears
 			.trim()
@@ -555,6 +556,12 @@
 			.post(API_URL + '/users/saveUserSettings', $tempSettings)
 			.then((response) => {
 				if (response.data.success) {
+					if (
+						$settings.language !== $tempSettings.language ||
+						$settings.useBrowserLanguage !== $tempSettings.useBrowserLanguage
+					) {
+						reloadRequired = true;
+					}
 					$settings = $tempSettings;
 
 					// Save re-auth setting to localStorage for immediate availability
@@ -587,6 +594,9 @@
 			})
 			.finally(() => {
 				isSaving = false;
+				if (reloadRequired) {
+					location.reload();
+				}
 			});
 	}
 
@@ -1055,6 +1065,7 @@
 		],
 		dateFormat: $t('export.dateFormat'),
 		uiElements: {
+			// these will be overwritten when loading the correct language file
 			exportTitle: $t('export.title'),
 			user: $t('export.user'),
 			exportedOn: $t('export.exportedOn'),
@@ -1066,7 +1077,23 @@
 		}
 	};
 
-	function exportData() {
+	async function exportData() {
+		// get correct language file depending on tolgee current language
+		const currentLang = $tolgee.getLanguage();
+		// load translation file (await to ensure data is ready before exporting)
+		const module = await import(`../../i18n/${currentLang}.json`);
+		const translations = module.default;
+		// Use the loaded translations (original assignments, no extra fallback logic)
+		exportTranslations.dateFormat = translations.export.dateFormat;
+		exportTranslations.uiElements.exportTitle = translations.export.title;
+		exportTranslations.uiElements.user = translations.export.user;
+		exportTranslations.uiElements.exportedOn = translations.export.exportedOn;
+		exportTranslations.uiElements.exportedOnFormat = translations.export.exportedOnFormat;
+		exportTranslations.uiElements.entriesCount = translations.export.entriesCount;
+		exportTranslations.uiElements.images = translations.export.images;
+		exportTranslations.uiElements.files = translations.export.files;
+		exportTranslations.uiElements.tags = translations.export.tags;
+
 		if (isExporting) return;
 		isExporting = true;
 

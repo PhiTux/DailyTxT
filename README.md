@@ -164,6 +164,14 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
+### 2.1.0 (2025-11-10)
+```
+- Added french translation [1]
+- Bugfix for translated strings in exported data
+- Now auto-reloads the page, when changing the language in user settings
+```
+[1]: Thanks to [@Lancelot-Enguerrand](https://github.com/Lancelot-Enguerrand)
+
 ### 2.0.1 (2025-11-08)
 ```
 - Fixed missing translation [1]
