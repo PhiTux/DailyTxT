@@ -40,7 +40,7 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 - **Search**: You can search for any word, tag or filename in your entries.
 - **Custom Templates**: You can create and use custom templates for your entries.
 - **Read Mode**: A distraction-free mode for reading your entries of each month.
-- **Multi-Language**: DailyTxT is currently available in **<ins>German and English</ins>**. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
+- **Multi-Language**: DailyTxT is currently available in **<ins>English, German and French</ins>**. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
 - **Export to HTML**: You can export your entries (including uploaded files) to HTML format.
 - **Mobile**: Responsive design for easy use on mobile screen. Additionally: allows installation as a PWA (Progressive Web App) to your Homescreen.
 - **Multi-User**: You can create multiple User Accounts. Each account uses its own encryption key.
@@ -164,6 +164,26 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
+### 2.1.1 (2025-11-10)
+```
+- Bugfix for update notification
+```
+
+### 2.1.0 (2025-11-10)
+```
+- Added french translation [1]
+- Bugfix for translated strings in exported data
+- Now auto-reloads the page, when changing the language in user settings
+```
+[1]: Thanks to [@Lancelot-Enguerrand](https://github.com/Lancelot-Enguerrand)
+
+### 2.0.1 (2025-11-08)
+```
+- Fixed missing translation [1]
+- Bugfix for update notification
+```
+[1]: Thanks to [@kontaxis](https://github.com/kontaxis) for the pull request!
+
 ### 2.0.0 (2025-11-08)
 ```
 - First stable release of version 2 after several testing versions.
@@ -172,32 +192,6 @@ Changes to testing are:
 - Bugfix when changing month with shortcut
 - Changed calendar settings
 - Added TB as file-/disksize
-```
-
-### Newest Testing Versions:
-```
-2.0.0-testing.7 (2025-11-02)
-- Bugfix: Alt + Left/Right to switch days was not working correctly when switching months.
-
-2.0.0-testing.6 (2025-10-24)
-- Added TB as file-/disksize
-- Update package dependencies
-
-2.0.0-testing.5 (2025-10-22)
-- Bugfix for wrong day-of-week in calendar
-
-2.0.0-testing.4 (2025-10-22)
-- Fixed a bug, that showed wrong weekdays in the calendar
-- Added a feature to choose the first day of the week (Monday or Sunday) in the settings.
-- When a date is selected, the cursor is now placed at the end of the text (not at the beginning).
-- CSS fixes
-- Changed Navbar-buttons to dropdown-menu
-
-2.0.0-testing.3 (2025-10-13)
-- Updated the migration process in the frontend. When migration fails on serverside, the user now gets notified.
-
-2.0.0-testing.2 (2025-10-13)
-- Trying to fix a bug in the migration process by removing unnecessary code (that should validate some data, but was probably harmful instead).
 ```
 
 ## Start developing

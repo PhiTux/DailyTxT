@@ -1,0 +1,434 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {il y a {years_old} an} other {il y a {years_old} ans}}",
+    "open": "Ouvrir",
+    "Year_one_letter": "A"
+  },
+  "calendar": {
+    "button_bookmark": "Favori",
+    "button_today": "Aujourd’hui",
+    "day_short": {
+      "friday": "Ven",
+      "monday": "Lun",
+      "saturday": "Sam",
+      "sunday": "Dim",
+      "thursday": "Jeu",
+      "tuesday": "Mar",
+      "wednesday": "Mer"
+    },
+    "toast": {
+      "error_bookmarking": "Erreur lors de l’ajout du favori !"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %M/%D/%Y",
+    "entriesCount": "Nombre d’entrées",
+    "exportedOn": "Exporté le",
+    "exportedOnFormat": "01/02/2006 15:04:05",
+    "files": "Fichiers",
+    "images": "Images",
+    "tags": "Étiquettes",
+    "title": "Exportation DailyTxT",
+    "user": "Utilisateur"
+  },
+  "fileList": {
+    "change_filename": "Renommer le fichier",
+    "delete_file": "Supprimer le fichier"
+  },
+  "files": {
+    "decrypting": "Déchiffrement…",
+    "download": "Télécharger",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} fichier peut être téléversé} other {{count} fichiers peuvent être téléversés}}",
+      "release_to_upload": "Relâchez pour téléverser",
+      "title": "Déposez les fichiers ici"
+    },
+    "encrypting": "Chiffrement…",
+    "toast": {
+      "error_deleting": "Erreur lors de la suppression d’un fichier !",
+      "error_loading": "Erreur lors du téléchargement d’un fichier !",
+      "error_saving": "Erreur lors de l’enregistrement d’un fichier !"
+    },
+    "upload": "Téléverser"
+  },
+  "imageViewer": {
+    "download": "Télécharger"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Supprimer le journal",
+      "history": "Historique"
+    },
+    "load_images": "{amount, plural, one {{amount} image chargée} other {{amount} images chargées}}",
+    "toast": {
+      "error_deleting_day": "Erreur lors de la suppression de la journée !",
+      "error_loading": "Erreur lors du chargement du texte !",
+      "error_renaming_file": "Erreur lors du renommage du fichier !",
+      "error_reordering_files": "Erreur lors du changement d’ordre des fichiers !",
+      "error_saving": "Erreur lors de l’enregistrement du texte !"
+    },
+    "written_on": "Ecrit le :"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Les champs ne doivent pas être vides !",
+      "login_failed": "Échec de la connexion !<br />\nVeuillez vérifier vos informations.",
+      "migration_failed": "La migration a échoué ! Vérifiez les journaux du serveur (par exemple avec <code>docker logs dailytxt</code>) pour plus d’informations !",
+      "passwords_do_not_match": "Les mots de passe ne correspondent pas !",
+      "registration_allowed_until": "L’inscription est temporairement ouverte jusqu’à {date_and_time} (heure du serveur).",
+      "registration_failed": "Échec de l’inscription – veuillez analyser les messages d’erreur !",
+      "registration_failed_with_message": "Échec de l’inscription !<br />\nMessage d’erreur : <i>{message}</i>",
+      "registration_not_allowed": "L’inscription n’est pas disponible pour le moment !",
+      "registration_success": "Inscription réussie – veuillez vous connecter !<br/>\nEnsuite, consultez les <b><u>paramètres</u></b> !"
+    },
+    "confirm_password": "Confirmer le mot de passe",
+    "create_account": "Créer un compte",
+    "create_account_info": "Les noms d’utilisateur ne tiennent pas compte de la casse lors de la connexion. Il est conseillé d’écrire un nom normalement (par ex. « Tom ») pour qu’il s’affiche correctement dans les exports. Vous pouvez quand même vous connecter avec « tom ».",
+    "login": "Connexion",
+    "migration": {
+      "account_info": "Pendant la migration, les codes de secours (le cas échéant) ont été invalidés et doivent être recréés !<br/>\nPrenez également connaissance des nouveaux <b><u>paramètres</u></b> de votre compte !<br/><br/>\nUne fois toutes les migrations terminées sans erreur, les anciennes données peuvent être supprimées manuellement dans le panneau d’administration.",
+      "create_account": "Créer le compte utilisateur",
+      "migrate_files": "Migrer les fichiers",
+      "migrate_logs": "Migrer les entrées",
+      "migrate_templates": "Migrer les modèles",
+      "progress": "Progression :",
+      "start_message": "La migration des données a commencé. Cela peut prendre quelques instants.",
+      "success_message": "Migration terminée sans erreur détectée ! Veuillez redémarrer la connexion.<br />\nVérifiez ensuite que toutes les données ont bien été migrées.",
+      "warning": "En attendant, ne rechargez pas la page et ne vous reconnectez pas !"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migration terminée avec {error_count} erreur détectée ! Consultez les journaux du serveur pour plus de détails !<br />Si la connexion échoue ou que les données sont incorrectes, elles doivent être supprimées manuellement.} other {Migration terminée avec {error_count} erreurs détectées ! Consultez les journaux du serveur pour plus de détails !<br />Si la connexion échoue ou que les données sont incorrectes, elles doivent être supprimées manuellement.}}",
+    "password": "Mot de passe",
+    "toast": {
+      "account_deleted": "Compte supprimé avec succès.",
+      "login_expired": "La session a expiré. Veuillez vous reconnecter.",
+      "login_invalid": "Échec de l’authentification. Veuillez vous reconnecter."
+    },
+    "username": "Nom d’utilisateur"
+  },
+  "modal": {
+    "close": "Fermer",
+    "deleteDay": {
+      "bookmark": "Favori",
+      "button_close": "Fermer",
+      "button_delete": "Supprimer",
+      "description": "Vous supprimez <b><u>toutes les données</u></b> du <b><u>{month}/{day}/{year}</u></b> !",
+      "files": "{files, plural, one {1 fichier} other {{files} fichiers}}",
+      "history": "Historique",
+      "logEntry": "Entrée du journal",
+      "tags": "{tags, plural, one {{tags} étiquette} other {{tags} étiquettes}}",
+      "thisIncludes": "Cela comprend :",
+      "title": "Supprimer la journée complètement ?"
+    },
+    "deleteFile": {
+      "body": "Voulez-vous vraiment supprimer le fichier <u><b>{file}</b></u> ?",
+      "delete": "Supprimer",
+      "title": "Supprimer le fichier ?"
+    },
+    "history": {
+      "description": "En cliquant sur <b>Enregistrer</b>, vous rendez le texte affiché plus ancien comme texte principal actuel.",
+      "newer": "Plus récent",
+      "older": "Plus ancien",
+      "title": "Historique"
+    },
+    "save": "Enregistrer",
+    "tag": {
+      "color": "Couleur",
+      "emoji": "Émoji",
+      "name": "Nom",
+      "no_emoji": "Aucun émoji sélectionné…",
+      "preview": "Aperçu",
+      "select_emoji": "Choisir un émoji",
+      "title_edit": "Modifier l’étiquette",
+      "title_new": "Créer une nouvelle étiquette"
+    }
+  },
+  "navbar": {
+    "greeting": "Bonjour {user}"
+  },
+  "nav": {
+    "logout": "Déconnexion"
+  },
+  "read": {
+    "load_images": "{count, plural, one {Charger {count} image du mois ({size})} other {Charger toutes les {count} images du mois ({size})}}",
+    "no_entries": "Aucune entrée"
+  },
+  "reauth": {
+    "authentication_error": "Erreur d’authentification",
+    "confirmButton": "Confirmer",
+    "description": "Pour des raisons de sécurité, vous devez saisir à nouveau votre mot de passe.",
+    "title": "Confirmer le mot de passe",
+    "wrong_password": "Mot de passe incorrect"
+  },
+  "search": {
+    "description": "Avec <span>Ctrl</span> + <span>F</span>, le champ de recherche est activé.<br>\nVous pouvez rechercher du <b>texte</b>, des <b>noms de fichiers</b> et des <b>étiquettes</b> :<br>\n<ul>\n  <li><b><u>Texte</u></b> : lorsque plusieurs termes de recherche sont utilisés, les règles suivantes s’appliquent :\n    <ul>\n      <li><b>EXACT</b> : mettez le terme complet entre <u>guillemets doubles</u> pour rechercher la séquence exacte de mots.</li>\n      <li><b>OU</b> : séparez les termes de recherche par <b>|</b> pour trouver les entrées contenant au moins un des termes.</li>\n      <li><b>ET</b> : séparez les termes par des <u>espaces</u> pour trouver les entrées contenant tous les termes. L’ordre et la distance entre les termes n’ont pas d’importance.</li>\n    </ul>\n  </li>\n  <li><b><u>Noms de fichiers</u></b> : si le terme de recherche comporte <u>un seul mot</u>, la recherche inclura aussi les noms de fichiers.</li>\n  <li><b><u>Étiquettes</u></b> : le terme doit commencer par <b>#</b>. Tous les éléments marqués avec cette étiquette seront trouvés.</li>\n</ul>",
+    "no_results": "Aucun résultat",
+    "search": "Rechercher",
+    "toast": {
+      "error": "Erreur lors de la recherche !"
+    }
+  },
+  "settings": {
+    "abort": "Annuler",
+    "about": "À propos",
+    "about.changelog": "Journal des modifications",
+    "about.current_version": "Version actuelle",
+    "about.donate": "Vous appréciez DailyTxT ? Un petit don me ferait très plaisir ! ❤️<br/>Le développement et la maintenance de l’outil demandent beaucoup de temps. Merci ! \uD83E\uDD70",
+    "about.latest_version": "Dernière version",
+    "about.made_by": "Réalisé avec ❤️ par {creator}",
+    "about.source_code": "Code source",
+    "about.update_available": "Mise à jour disponible",
+    "about.update_notification": "Notification de mise à jour",
+    "about.version_info": "Remarque : cette détection automatique de version peut être incorrecte.",
+    "account": "Compte utilisateur",
+    "admin": {
+      "authorized": "Accès administrateur autorisé",
+      "button_open_5_minutes": "Ouvrir pendant 5 minutes",
+      "button_refresh_status": "Actualiser l’état",
+      "cancel": "Annuler",
+      "check_password": "Vérifier le mot de passe",
+      "confirm_delete": "Voulez-vous vraiment supprimer le compte utilisateur ?",
+      "confirm_delete_old_data": "Voulez-vous vraiment supprimer ?",
+      "current_status": "État actuel",
+      "delete": "Supprimer",
+      "delete_account": "Supprimer le compte utilisateur",
+      "delete_old_data": "Supprimer les anciennes données",
+      "delete_old_data_warning": "Je recommande vivement de créer une <b><u>sauvegarde</u></b> manuelle des anciennes données !",
+      "delete_warning": "Le compte utilisateur sera complètement et définitivement supprimé !",
+      "disk_usage": "Utilisation du disque",
+      "environment_variables": "Variables d’environnement",
+      "environment_variables_description": "Voici les variables d’environnement définies au démarrage de DailyTxT. Elles se trouvent probablement dans le fichier docker-compose.",
+      "free_disk_space": "Espace disque libre",
+      "hidden_for_security": "Masqué pour des raisons de sécurité",
+      "id": "ID",
+      "invalid_password": "Mot de passe invalide !",
+      "loading_users": "Chargement des utilisateurs",
+      "login_description": "Le mot de passe administrateur est défini côté serveur comme une variable d’environnement !",
+      "login_error": "Erreur inconnue lors de la vérification du mot de passe.",
+      "login_required": "Mot de passe administrateur requis",
+      "logout": "Déconnexion de l’administrateur",
+      "me": "Moi",
+      "no_environment_variables": "Aucune variable d’environnement trouvée",
+      "no_users": "Aucun compte utilisateur trouvé",
+      "old_data": "Données avant migration",
+      "old_data_description": "Les données de l’ancienne version 1.x.x de DailyTxT se trouvent actuellement dans le répertoire <code>old</code>.<br/>\nCe dossier occupe de l’espace <b>en plus</b> des données migrées. Si vous êtes sûr que tous les utilisateurs ci-dessous ont migré leurs données sans erreur, vous pouvez supprimer ces anciennes données.",
+      "old_data_size": "Espace disque du dossier <code>old</code>",
+      "old_users": "Utilisateurs avant migration",
+      "password": "Mot de passe administrateur",
+      "refresh_users": "Recharger les utilisateurs",
+      "registration": "Inscription",
+      "registration_allowed": "Autorisée",
+      "registration_allowed_until": "Inscription temporairement ouverte jusqu’à <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Bloquée",
+      "registration_description": "La création de nouveaux comptes est désactivée par défaut (via variable d’environnement). Ce menu permet d’activer temporairement l’inscription pendant 5 minutes. Elle sera ensuite automatiquement désactivée.",
+      "registration_open_error": "Erreur lors de l’ouverture temporaire des inscriptions.",
+      "registration_status_error": "Erreur lors de la vérification de l’état de l’inscription.",
+      "title": "Administration",
+      "toast_error_old_data_delete": "Erreur lors de la suppression des anciennes données",
+      "toast_success_old_data_delete": "Les anciennes données (avant migration) ont été supprimées",
+      "total_disk_usage": "Espace disque utilisé",
+      "total_users": "Nombre total d’utilisateurs",
+      "user_management": "Gestion des utilisateurs",
+      "username": "Nom d’utilisateur",
+      "warning_delete_self": "Votre propre compte utilisateur ne doit pas être supprimé ici, mais dans les « Paramètres »."
+    },
+    "aLookBack": "Un regard en arrière",
+    "aLookBack.description": "<li>Définissez les années passées dont les entrées du même jour du calendrier doivent s’afficher.</li>\n<li>S’applique uniquement au mode d’écriture.</li>\n<li>Exemple : <code>1,5,10</code> affichera les entrées d’il y a 1, 5 et 10 ans, si elles existent.</li>",
+    "ALookBack": {
+      "help_text": "Indiquez ici les années passées à afficher. Exemple : <code>1,5,10</code>. Séparez par des virgules, sans espaces.",
+      "input_placeholder": "Années, séparées par des virgules",
+      "invalid_input": "Veuillez n’entrer que des nombres séparés par des virgules.",
+      "useIt": "Afficher les entrées du même jour des années précédentes"
+    },
+    "appearance": "Apparence",
+    "background": "Arrière-plan",
+    "background_gradient": "Dégradé (généré à chaque rechargement de page)",
+    "background_monochrome": "Monochrome",
+    "backup_codes": "Codes de secours",
+    "backup_codes.copy_button": "Copier les codes",
+    "backup_codes.description": "<li>Les codes de secours fonctionnent comme des mots de passe à usage unique. Ils peuvent remplacer le mot de passe, mais ne sont valables qu’une seule fois.</li>\n<li>Six codes sont toujours générés, remplaçant les précédents.</li>\n<li>Vous devez les noter immédiatement ; ils ne pourront pas être affichés à nouveau !</li>",
+    "backup_codes.error": "Erreur lors de la création des codes de secours ! Le mot de passe est peut-être incorrect ?",
+    "backup_codes.generate_button": "Générer les codes de secours",
+    "backup_codes.success": "<h6>Vos codes de secours :</h6>\n<p>Notez-les immédiatement ; ils ne seront plus affichés après la fermeture de cette fenêtre !</p>",
+    "change_username": "Changer le nom d’utilisateur",
+    "change_username.button": "Changer le nom d’utilisateur",
+    "change_username.current_username": "Nom d’utilisateur actuel",
+    "change_username.description": "Remarque :<br/>\nL'identifiant n'est pas sensible à la casse. Cependant, un nom correctement écrit (par ex. « Tom » au lieu de « tom ») sera plus élégant.",
+    "change_username.error": "Erreur inconnue",
+    "change_username.new_username": "Nouveau nom d’utilisateur",
+    "change_username.success": "Le nom d’utilisateur a été modifié",
+    "change_username.username_taken": "Le nom d’utilisateur est déjà pris",
+    "close": "Fermer",
+    "dark_mode": "Sombre",
+    "data": "Données",
+    "delete": "Supprimer",
+    "delete_account": "Supprimer le compte utilisateur",
+    "delete_account.confirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible !",
+    "delete_account.confirm_button": "Confirmer la suppression",
+    "delete_account.delete_button": "Supprimer le compte utilisateur",
+    "delete_account.description": "Cette action supprime votre compte et toutes les données associées. Elle est définitive.",
+    "delete_account.password_incorrect": "Le mot de passe saisi est incorrect !",
+    "delete_account.success": "Votre compte a été supprimé avec succès !<br />\nVous allez être déconnecté automatiquement. Sinon, veuillez le faire manuellement.",
+    "export": "Exporter",
+    "export.description": "Exportez vos entrées en fichier HTML formaté. Les images peuvent être intégrées, et l’ensemble est fourni dans une archive ZIP.",
+    "export.end_date": "Jusqu’au :",
+    "export.export_button": "Exporter",
+    "export.help_text": "<u>Remarques :</u>\n<ul>\n\t<li>L’historique des jours n’est pas inclus dans le HTML.</li>\n\t<li>La réimportation n’est pas possible : il s’agit d’une exportation de lecture, pas d’une sauvegarde.</li>\n</ul>",
+    "export.period": "Période",
+    "export.period_all": "Période complète",
+    "export.period_invalid": "La date de début doit précéder la date de fin !",
+    "export.period_variable": "Période variable",
+    "export.show_images": "Afficher les images dans le HTML",
+    "export.show_images_description": "Afficher les images sous le texte <em>(elles sont toujours incluses en lien)</em>",
+    "export.show_tags": "Afficher les étiquettes",
+    "export.show_tags_description": "Afficher les étiquettes dans le HTML",
+    "export.split": "Nombre de documents HTML",
+    "export.split_aio": "Un seul HTML",
+    "export.split_month": "Un HTML par mois",
+    "export.split_year": "Un HTML par an",
+    "export.start_date": "À partir du :",
+    "first_day_of_week": "Premier jour de la semaine",
+    "first_day_of_week.help_text": "Choisissez le jour où la semaine commence (affecte l’affichage du calendrier). Les changements peuvent nécessiter un rechargement.",
+    "functions": "Fonctions",
+    "images_description": "<ul>\n\t<li>Lors du chargement d’un texte, les images peuvent être chargées automatiquement. <em>Augmente l’usage de données !</em></li>\n\t<li>Sinon, un bouton permet de les charger manuellement.</li>\n</ul>",
+    "images_loading_default": "Toujours charger automatiquement les images (sur tous les appareils)",
+    "images_loading_per_device": "Décider pour chaque appareil",
+    "images_loading_this_device": "Charger automatiquement sur <b>cet appareil</b>",
+    "images_title": "Chargement automatique des images",
+    "installation_help": "Vous pouvez installer DailyTxT comme une application via les paramètres du navigateur. Tous les navigateurs ne le permettent pas.<br/>\n<ul>\n<li>Android : « Ajouter à l’écran d’accueil »</li>\n<li>Apple : « Partager » → « Ajouter à l’écran d’accueil »</li>\n</ul>",
+    "language": "Langue",
+    "language_auto_detect": "Déterminer la langue selon le navigateur. Actuellement :",
+    "language.help_translate": "Votre langue n’est pas disponible ? Aidez à la traduire ici :",
+    "language_not_available": "La langue <code>{browserLanguage}</code> n’est pas disponible. La langue par défaut <code>{defaultLanguage}</code> est utilisée.",
+    "language.reload_info": "Les modifications de la langue entraînent un rechargement automatique de la page lors de l'enregistrement.",
+    "language_X_used": "est utilisée",
+    "light_dark_auto_detect": "Détecter automatiquement le mode. Actuellement :",
+    "light_dark_manual": "Définir le mode manuellement",
+    "light_dark_mode": "Mode clair/sombre",
+    "light_mode": "Clair",
+    "password": {
+      "change_error": "Erreur lors du changement de mot de passe !",
+      "change_password_button": "Changer le mot de passe",
+      "confirm_new_password": "Confirmer le nouveau mot de passe",
+      "confirm_password": "Confirmer le mot de passe",
+      "current_password": "Mot de passe actuel",
+      "current_password_incorrect": "Mot de passe actuel incorrect !",
+      "new_password": "Nouveau mot de passe",
+      "passwords_dont_match": "Les nouveaux mots de passe ne correspondent pas !",
+      "success": "Mot de passe modifié avec succès !",
+      "success_backup_codes_warning": "Attention : les codes de secours ont été invalidés et doivent être recréés."
+    },
+    "reauth": {
+      "description": "Pour renforcer la sécurité, le mot de passe peut être demandé à chaque rechargement de page.",
+      "label": "Demander le mot de passe à chaque chargement",
+      "title": "Mot de passe au chargement"
+    },
+    "save": "Enregistrer",
+    "security": "Sécurité",
+    "security.change_password": "Changer le mot de passe",
+    "selectTimezone": "Choisir le fuseau horaire",
+    "set_language_manually": "Définir la langue manuellement",
+    "statistics": {
+      "activityRate": "Vous avez utilisé DailyTxT {percent}% des jours depuis la première entrée",
+      "averageWordsPerLog": "{wordCount, plural, one {En moyenne {wordCount} mot par entrée} other {En moyenne {wordCount} mots par entrée}}",
+      "bookmarked": "En favori",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> journée en favori} other {<b>{days}</b> journées en favori}}",
+      "bookpages": "{pages, plural, one {Vous avez déjà écrit {pages} page de livre (300 mots/page)} other {Vous avez déjà écrit {pages} pages de livre (300 mots/page)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} jour} other {{dayCount} jours}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> jour actif} other {<b>{days}</b> jours actifs}}",
+      "error_loading_data": "Erreur inconnue lors du chargement des statistiques",
+      "favoriteWritingDay": "Jour préféré pour écrire",
+      "fileCount": "{fileCount, plural, one {{fileCount} fichier} other {{fileCount} fichiers}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> fichier occupant <b>{diskUsage}</b>} other {<b>{fileCount}</b> fichiers occupant <b>{diskUsage}</b>}}",
+      "funFacts": "Anecdotes",
+      "legend": "Légende",
+      "loading_data": "Chargement des données",
+      "longestWritingStreak": "Plus longue série d’écriture",
+      "mostProductiveDay": "Journée la plus productive",
+      "no_data": "Pas encore de données",
+      "open": "Ouvrir",
+      "tagUsedCount": "Utilisé <b>{count}×</b>",
+      "title": "Statistiques",
+      "toast_error_user_delete": "Erreur lors de la suppression de l’utilisateur",
+      "toast_success_user_delete": "Utilisateur supprimé",
+      "total": "Total",
+      "wordCount": "{wordCount, plural, one {{wordCount} mot} other {{wordCount} mots}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> mot} other {<b>{wordCount}</b> mots}}",
+      "words": "Mots"
+    },
+    "tags": "Étiquettes",
+    "tags.delete_confirmation": "<b>Supprimer l’étiquette définitivement ?</b><br/>Cette opération peut prendre du temps, chaque entrée étant analysée. Les changements peuvent nécessiter un rechargement.",
+    "tags.description": "Ici, vous pouvez modifier ou supprimer des étiquettes existantes.",
+    "tags.no_tags": "Aucune étiquette disponible. Créez-en une en mode écriture.",
+    "template": {
+      "content_of_template": "Contenu du modèle",
+      "name_of_template": "Nom du modèle",
+      "save_template": "Enregistrer le modèle"
+    },
+    "templates": "Modèles",
+    "templates.create_new": "Créer un nouveau modèle…",
+    "templates.delete_confirmation": "Voulez-vous vraiment supprimer le modèle <b>{template}</b> ?",
+    "timezone": "Fuseau horaire",
+    "timezone.auto_detect": "Déterminer automatiquement selon le navigateur.<br/>Actuellement : ",
+    "timezone.description": "Définir le fuseau horaire utilisé pour l’horodatage (« {written_on} »).",
+    "timezone.help_text": "Lors de voyages, il peut être utile d’utiliser le fuseau horaire du navigateur. Si vous utilisez un fuseau fixe (ex. UTC), définissez-le ici.",
+    "timezone.manual": "Toujours utiliser le fuseau suivant :",
+    "timezone.selected": "Sélectionné :",
+    "title": "Paramètres",
+    "toast": {
+      "delete_tag_error": "Erreur lors de la suppression de l’étiquette !",
+      "delete_template_error": "Erreur lors de la suppression du modèle",
+      "delete_template_success": "Modèle supprimé",
+      "export_data_error": "Erreur lors de l’exportation !",
+      "invalid_template_double": "Un modèle portant ce nom existe déjà !",
+      "invalid_template_empty": "Le nom et le contenu ne peuvent pas être vides !",
+      "logout_error": "Erreur lors de la déconnexion",
+      "saved_edit_tag_error": "Erreur lors de l’enregistrement des modifications !",
+      "saved_edit_tag_success": "Modifications enregistrées !",
+      "saved_settings_error": "Erreur lors de la sauvegarde des paramètres !",
+      "saved_settings_success": "Paramètres enregistrés",
+      "saved_template_success": "Modèle enregistré"
+    },
+    "unsaved_changes": "Modifications non enregistrées",
+    "updates": {
+      "check_for_updates": "M’avertir des nouvelles versions",
+      "include_test_versions": "Inclure aussi les versions de test (« testing »). Ces versions peuvent contenir des bogues — pensez à sauvegarder !"
+    }
+  },
+  "tags": {
+    "description": "Ajoutez ou supprimez des étiquettes pour la date sélectionnée afin de catégoriser vos entrées. Vous pouvez aussi créer de nouvelles étiquettes ici.<br/><br/>Avec <span>Ctrl</span> + <span>G</span>, le champ de recherche est activé (ordinateur uniquement).<br/><br/>Pour modifier ou supprimer une étiquette, allez dans les paramètres.",
+    "hide_selector": "Fermer le sélecteur d’étiquettes",
+    "input": "Étiquette...",
+    "new_tag": "Nouvelle",
+    "no_tags_found": "Aucune étiquette trouvée...",
+    "tags": "Étiquettes",
+    "toast": {
+      "error_adding": "Erreur lors de l’ajout de l’étiquette !",
+      "error_removing": "Erreur lors de la suppression de l’étiquette !",
+      "error_saving": "Erreur lors de la création de l’étiquette !",
+      "error_saving_exists": "Le nom d’étiquette existe déjà"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Insérer un modèle..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Encore {count} code de secours disponible !} other {Encore {count} codes de secours disponibles !}}"
+    },
+    "pwa": {
+      "install_button": "Installer",
+      "install_description": "Installez DailyTxT pour une meilleure expérience type application.",
+      "reload_button": "Recharger",
+      "update_available": "Une nouvelle version est disponible."
+    }
+  },
+  "weekdays": {
+    "friday": "Vendredi",
+    "monday": "Lundi",
+    "saturday": "Samedi",
+    "sunday": "Dimanche",
+    "thursday": "Jeudi",
+    "tuesday": "Mardi",
+    "wednesday": "Mercredi"
+  }
+}
