@@ -40,7 +40,7 @@ DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features)
 - **Search**: You can search for any word, tag or filename in your entries.
 - **Custom Templates**: You can create and use custom templates for your entries.
 - **Read Mode**: A distraction-free mode for reading your entries of each month.
-- **Multi-Language**: DailyTxT is currently available in **<ins>German and English</ins>**. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
+- **Multi-Language**: DailyTxT is currently available in **<ins>English, German and French</ins>**. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
 - **Export to HTML**: You can export your entries (including uploaded files) to HTML format.
 - **Mobile**: Responsive design for easy use on mobile screen. Additionally: allows installation as a PWA (Progressive Web App) to your Homescreen.
 - **Multi-User**: You can create multiple User Accounts. Each account uses its own encryption key.
