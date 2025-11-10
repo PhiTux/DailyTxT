@@ -22,7 +22,7 @@
   },
   "export": {
     "dateFormat": "%W, %D.%M.%Y",
-    "entriesCount": "Počet záznamů",
+    "entriesCount": "Počet zápisků",
     "exportedOn": "Exportováno",
     "exportedOnFormat": "01/02/2006 15:04:05",
     "files": "Soubory",
@@ -160,26 +160,26 @@
     "wrong_password": "Špatné heslo"
   },
   "search": {
-    "description": "With <span>Ctrl</span> + <span>F</span> the search field is focused.<br>\nYou can search for <b>text</b>, <b>file names</b>, and <b>tags</b>:<br>\n<ul>\n  <li><b><u>Text</u></b>: When using multiple search terms, the following rules apply:\n    <ul>\n      <li><b>EXACT</b>: Put the complete search term in <u>double quotation marks</u> to search for the exact sequence of words.</li>\n\t  <li><b>OR</b>: Separate search terms with <b>|</b> to find entries where at least one term is used.</li>\n\t  <li><b>AND</b>: Separate search terms with <u>spaces</u> to find entries where all terms are used. The order of the terms is irrelevant, as is the distance between them.</li>\n\t</ul>\n  </li>\n  <li><b><u>File names</u></b>: If the search term consists of <u>one word</u>, then it will search not only for text, but also for file names.</li>\n  <li><b><u>Tags</u></b>: The search term must start with <b>#</b>. It will search for every item tagged with the tag.</li>\n</ul>",
-    "no_results": "No results",
-    "search": "Search",
+    "description": "Pomocí <span>Ctrl</span> + <span>F</span> spusť hledání.<br>\nMůžeš hledat <b>text</b>, <b>názvy souborů</b> a <b>tagy</b>:<br>\n<ul>\n <li><b><u>Text</u></b>: Při použití více vyhledávacích výrazů platí následující pravidla:\n <ul>\n <li><b>PŘESNĚ</b>: Vlož celý vyhledávací výraz do <u>dvojitých uvozovek</u>, chceš-li vyhledat přesnou posloupnost slov.</li>\n\t <li><b>NEBO</b>: Odděl vyhledávací výrazy znakem <b>|</b>, chceš-li najít položky, kde je použit alespoň jeden výraz.</li>\n\t <li><b>A</b>: Odděl vyhledávací výrazy <u>mezerami</u>, chceš-li najít položky, kde jsou použity všechny výrazy. Pořadí výrazů není relevantní, stejně jako vzdálenost mezi nimi.</li>\n\t</ul>\n </li>\n <li><b><u>Názvy souborů</u></b>: Pokud hledaný výraz obsahuje <u>jedno slovo</u>, bude vyhledávat nejen text, ale i názvy souborů.</li>\n <li><b><u>Tagy</u></b>: Hledaný výraz musí začínat znakem <b>#</b>. Bude vyhledávat všechny položky označené daným tagem.</li>\n</ul>",
+    "no_results": "Žádné výsledky",
+    "search": "Hledat",
     "toast": {
-      "error": "Error during search!"
+      "error": "Chyba při hledání!"
     }
   },
   "settings": {
-    "abort": "Cancel",
-    "about": "About",
+    "abort": "Zrušit",
+    "about": "O DailtTxT",
     "about.changelog": "Changelog",
-    "about.current_version": "Current version",
-    "about.donate": "Do you enjoy DailyTxT? Then I would be very happy with a little donation! ❤️<br/>Development and maintenance of the tool take a lot of time. Thank you! \uD83E\uDD70",
-    "about.latest_version": "Latest version",
+    "about.current_version": "Aktuální verze",
+    "about.donate": "Líbí se ti DailyTxT? Moc bych ocenil malý donate! ❤️<br/>Vývoj a udržovaní DailyTxT zabere hodně času. Díky moc! \uD83E\uDD70",
+    "about.latest_version": "Nejnovější verze",
     "about.made_by": "Made with ❤️ by {creator}",
-    "about.source_code": "Source code",
-    "about.update_available": "Update available",
-    "about.update_notification": "Update notification",
-    "about.version_info": "Note: This automatic version detection may not always be correct.",
-    "account": "User account",
+    "about.source_code": "Zdrojový kód",
+    "about.update_available": "Aktualizace je dostupná",
+    "about.update_notification": "Oznámení o aktualizaci",
+    "about.version_info": "Poznámka: Automatická detekce verze nemusí vždy fungovat.",
+    "account": "Tvůj účet",
     "admin": {
       "authorized": "Admin access authorized",
       "button_open_5_minutes": "Open for 5 minutes",
