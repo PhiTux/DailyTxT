@@ -96,68 +96,68 @@
       "success_message": "Migrace proběhla úspěšně! Přihlaš se znovu. <br />\nPak zkotroluj, že migrace proběhla správně.",
       "warning": "Zatím nereloaduj stránku a nepříhlašuj se znovu!"
     },
-    "migration_completed_with_errors": "{error_count, plural, one {Migration completed with {error_count} detected error! Please check the server logs for details!<br />If the login doesn't work, or the data is incorrect, the migrated data must be manually removed.} other {Migration completed with {error_count} detected errors! Please check the server logs for details!<br />If the login doesn't work, or the data is incorrect, the migrated data must be manually removed.}}",
-    "password": "Password",
+    "migration_completed_with_errors": "{error_count, plural, one {Migrace dokončena s {error_count} chybou! Zkontroluj systémové logy pro podrobnosti!<br />Pokud nefunguje přihlášení nebo jsou data chybná, migrační data se musí manuálně smazat.} other {Migrace dokončena s {error_count} chybami! Zkontroluj systémové logy pro podrobnosti!<br />Pokud nefunguje přihlášení nebo jsou data chybná, migrační data se musí manuálně smazat.}}",
+    "password": "Heslo",
     "toast": {
-      "account_deleted": "Account successfully deleted.",
-      "login_expired": "Login has expired. Please log in again.",
-      "login_invalid": "Authentication failed. Please log in again."
+      "account_deleted": "Účet byl úspěšně smazán.",
+      "login_expired": "Přihlášení vypršelo. Přihlaš se prosím znovu.",
+      "login_invalid": "Ověření selhalo. Přihlaš se prosím znovu."
     },
-    "username": "Username"
+    "username": "Uživatelské jméno"
   },
   "modal": {
-    "close": "Close",
+    "close": "Zavřít",
     "deleteDay": {
-      "bookmark": "Bookmark",
-      "button_close": "Close",
-      "button_delete": "Delete",
-      "description": "You delete <b><u>all data</u></b> of <b><u>{month}/{day}/{year}</u></b>!",
-      "files": "{files, plural, one {1 File} other {{files} Files}}",
-      "history": "History",
-      "logEntry": "Diary entry",
-      "tags": "{tags, plural, one {{tags} Tag} other {{tags} Tags}}",
-      "thisIncludes": "This includes:",
-      "title": "Delete day completely?"
+      "bookmark": "Založeno",
+      "button_close": "Zavřít",
+      "button_delete": "Vymazat",
+      "description": "Vymažeš <b><u>všechna data</u></b> z <b><u>{month}/{day}/{year}</u></b>!",
+      "files": "{files, plural, one {1 soubor} few {{files} soubory} other {{files} souborů}}",
+      "history": "Historie",
+      "logEntry": "Zápisek",
+      "tags": "{tags, plural, one {{tags} tag} few {{tags} tagy} other {{tags} tagů}}",
+      "thisIncludes": "To zahrnuje:",
+      "title": "Vymazat úplně celý den?"
     },
     "deleteFile": {
-      "body": "Really delete file <u><b> {file}</b></u>?",
-      "delete": "Delete",
-      "title": "Delete file?"
+      "body": "Opravdu smazat soubor <u><b> {file}</b></u>?",
+      "delete": "Smazat",
+      "title": "Smazat soubor?"
     },
     "history": {
-      "description": "By clicking <b>Save</b>, you make the shown older text the current main text.",
-      "newer": "Newer",
-      "older": "Older",
-      "title": "History"
+      "description": "Kliknutím na <b>Uložit</b>, nastavíš tento starší text jako hlavní text.",
+      "newer": "Novější",
+      "older": "Starší",
+      "title": "Historie"
     },
-    "save": "Save",
+    "save": "Uložit",
     "tag": {
-      "color": "Color",
+      "color": "Barva",
       "emoji": "Emoji",
-      "name": "Name",
-      "no_emoji": "No emoji selected...",
-      "preview": "Preview",
-      "select_emoji": "Select emoji",
-      "title_edit": "Edit tag",
-      "title_new": "Create new tag"
+      "name": "Název",
+      "no_emoji": "Žádné emoji nevybráno...",
+      "preview": "Náhled",
+      "select_emoji": "Vybrat emoji",
+      "title_edit": "Upravit tag",
+      "title_new": "Vytvořit nový tag"
     }
   },
   "navbar": {
-    "greeting": "Hi {user}"
+    "greeting": "Ahoj {user}"
   },
   "nav": {
-    "logout": "Logout"
+    "logout": "Odhlásit se"
   },
   "read": {
-    "load_images": "{count, plural, one {Load {count} image of the month ({size})} other {Load all {count} images of the month ({size})}}",
-    "no_entries": "No entries"
+    "load_images": "{count, plural, one {Načíst jeden obrázek z tohoto měsíce ({size})} two {Načíst oba dva obrázky z tohoto měsíce ({size})} few {Load všechny {count} obrázky z tohoto měsíce ({size})} other {Načíst všech {count} obrázků z tohoto měsíce ({size})}}",
+    "no_entries": "Žádné zápisky"
   },
   "reauth": {
-    "authentication_error": "Authentication error",
-    "confirmButton": "Confirm",
-    "description": "For security reasons, you must enter your password again.",
-    "title": "Confirm Password",
-    "wrong_password": "Wrong password"
+    "authentication_error": "Chyba při ověření",
+    "confirmButton": "Potvrdit",
+    "description": "Z bezpečnostních důvodů se musíš znovu přihlásit.",
+    "title": "Potvrď heslo",
+    "wrong_password": "Špatné heslo"
   },
   "search": {
     "description": "With <span>Ctrl</span> + <span>F</span> the search field is focused.<br>\nYou can search for <b>text</b>, <b>file names</b>, and <b>tags</b>:<br>\n<ul>\n  <li><b><u>Text</u></b>: When using multiple search terms, the following rules apply:\n    <ul>\n      <li><b>EXACT</b>: Put the complete search term in <u>double quotation marks</u> to search for the exact sequence of words.</li>\n\t  <li><b>OR</b>: Separate search terms with <b>|</b> to find entries where at least one term is used.</li>\n\t  <li><b>AND</b>: Separate search terms with <u>spaces</u> to find entries where all terms are used. The order of the terms is irrelevant, as is the distance between them.</li>\n\t</ul>\n  </li>\n  <li><b><u>File names</u></b>: If the search term consists of <u>one word</u>, then it will search not only for text, but also for file names.</li>\n  <li><b><u>Tags</u></b>: The search term must start with <b>#</b>. It will search for every item tagged with the tag.</li>\n</ul>",
