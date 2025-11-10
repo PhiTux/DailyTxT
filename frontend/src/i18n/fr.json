@@ -299,7 +299,7 @@
     "language_auto_detect": "Déterminer la langue selon le navigateur. Actuellement :",
     "language.help_translate": "Votre langue n’est pas disponible ? Aidez à la traduire ici :",
     "language_not_available": "La langue <code>{browserLanguage}</code> n’est pas disponible. La langue par défaut <code>{defaultLanguage}</code> est utilisée.",
-    "language.reload_info": "Certains changements ne sont visibles qu’après rechargement.",
+    "language.reload_info": "Les modifications de la langue entraînent un rechargement automatique de la page lors de l'enregistrement.",
     "language_X_used": "est utilisée",
     "light_dark_auto_detect": "Détecter automatiquement le mode. Actuellement :",
     "light_dark_manual": "Définir le mode manuellement",
