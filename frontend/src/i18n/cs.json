@@ -1,0 +1,434 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {{years_old} rok zpátky} few {{years_old} roky zpátky} other {{years_old} let zpátky}}",
+    "open": "Otevřít",
+    "Year_one_letter": "R"
+  },
+  "calendar": {
+    "button_bookmark": "Záložka",
+    "button_today": "Dnes",
+    "day_short": {
+      "friday": "Pá",
+      "monday": "Po",
+      "saturday": "So",
+      "sunday": "Ne",
+      "thursday": "Čt",
+      "tuesday": "Út",
+      "wednesday": "St"
+    },
+    "toast": {
+      "error_bookmarking": "Chyba při ukládání záložky!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %D.%M.%Y",
+    "entriesCount": "Počet zápisků",
+    "exportedOn": "Exportováno",
+    "exportedOnFormat": "01/02/2006 15:04:05",
+    "files": "Soubory",
+    "images": "Obrázky",
+    "tags": "Tagy",
+    "title": "DailyTxT Export",
+    "user": "Uživatel"
+  },
+  "fileList": {
+    "change_filename": "Přejmenovat soubor",
+    "delete_file": "Smazat soubor"
+  },
+  "files": {
+    "decrypting": "Dešifrování...",
+    "download": "Stáhnout",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} soubor lze nahrát} other {{count} souborů lze nahrát}}",
+      "release_to_upload": "Pusť pro nahrání",
+      "title": "Soubory přetáhni sem"
+    },
+    "encrypting": "Šifrování...",
+    "toast": {
+      "error_deleting": "Chyba při mazání souboru!",
+      "error_loading": "Chyba při načítání souboru!",
+      "error_saving": "Chyba při ukládání souboru!"
+    },
+    "upload": "Nahrát"
+  },
+  "imageViewer": {
+    "download": "Stáhnout"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Smazat den",
+      "history": "Historie"
+    },
+    "load_images": "{amount, plural, one {{amount} načíst obrázek} other {{amount} načíst obrázky}}",
+    "toast": {
+      "error_deleting_day": "Chyba při mazání dne!",
+      "error_loading": "Chyba při načítaní text!",
+      "error_renaming_file": "Chyba při přejmenování souboru",
+      "error_reordering_files": "Chyba při změně pořadí souborů",
+      "error_saving": "Chyba při ukládání text!"
+    },
+    "written_on": "Uloženo:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Pole nemohou být prázdná!",
+      "login_failed": "Přihlášení selhalo!<br />\nZkontroluj prosím zadané údaje.",
+      "migration_failed": "Migrace selhala! Zkontroluj logy (např. pomocí <code>docker logs dailytxt</code>) k nalezení podrobnějších informací!",
+      "passwords_do_not_match": "Hesla se neshodují!",
+      "registration_allowed_until": "Registrace dočasně povoleny do {date_and_time} (Server time).",
+      "registration_failed": "Registrace selhala - zkontroluj chybové hlášky!",
+      "registration_failed_with_message": "Registrace selhala!<br />\nChyba: <i>{message}</i>",
+      "registration_not_allowed": "Registrace teď není povolena!",
+      "registration_success": "Registrace proběhla úspěšně - přihlaš se!<br/>\nPak se můžeš podívat do <b><u>Nastavení</u></b>!"
+    },
+    "confirm_password": "Potvrď heslo",
+    "create_account": "Vytvořit účet",
+    "create_account_info": "Na velikosti písmen při přihlašování nezáleží (case-insensitive). Doporuřuji napsat jméno normálně (např. \"Pepa\"), aby vypadalo správně při exportu. Můžeš se příhlásit s \"pepa\".",
+    "login": "Přihlásit se",
+    "migration": {
+      "account_info": "Při migraci byly záložní kódy (pokud byly vytvořeny) zneplatněny a je potřeba je vytvořit znovu!<br/>\nTaké se prosím seznam s <b><u>nastavením</u></b> tvého účtu!<br/><br/>\nAž dojde k migraci všech účtů bez chyb, \"stará\" data lze manuálně smazat v admin panelu.",
+      "create_account": "Vytvořit účet",
+      "migrate_files": "Migrovat soubory",
+      "migrate_logs": "Migrovat zápisky",
+      "migrate_templates": "Migrovat šablony",
+      "progress": "Průběh:",
+      "start_message": "Migrace spuštěna. To může chvilku trvat.",
+      "success_message": "Migrace proběhla úspěšně! Přihlaš se znovu. <br />\nPak zkotroluj, že migrace proběhla správně.",
+      "warning": "Zatím nereloaduj stránku a nepříhlašuj se znovu!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migrace dokončena s {error_count} chybou! Zkontroluj systémové logy pro podrobnosti!<br />Pokud nefunguje přihlášení nebo jsou data chybná, migrační data se musí manuálně smazat.} other {Migrace dokončena s {error_count} chybami! Zkontroluj systémové logy pro podrobnosti!<br />Pokud nefunguje přihlášení nebo jsou data chybná, migrační data se musí manuálně smazat.}}",
+    "password": "Heslo",
+    "toast": {
+      "account_deleted": "Účet byl úspěšně smazán.",
+      "login_expired": "Přihlášení vypršelo. Přihlaš se prosím znovu.",
+      "login_invalid": "Ověření selhalo. Přihlaš se prosím znovu."
+    },
+    "username": "Uživatelské jméno"
+  },
+  "modal": {
+    "close": "Zavřít",
+    "deleteDay": {
+      "bookmark": "Založeno",
+      "button_close": "Zavřít",
+      "button_delete": "Vymazat",
+      "description": "Vymažeš <b><u>všechna data</u></b> z <b><u>{month}/{day}/{year}</u></b>!",
+      "files": "{files, plural, one {1 soubor} few {{files} soubory} other {{files} souborů}}",
+      "history": "Historie",
+      "logEntry": "Zápisek",
+      "tags": "{tags, plural, one {{tags} tag} few {{tags} tagy} other {{tags} tagů}}",
+      "thisIncludes": "To zahrnuje:",
+      "title": "Vymazat úplně celý den?"
+    },
+    "deleteFile": {
+      "body": "Opravdu smazat soubor <u><b> {file}</b></u>?",
+      "delete": "Smazat",
+      "title": "Smazat soubor?"
+    },
+    "history": {
+      "description": "Kliknutím na <b>Uložit</b>, nastavíš tento starší text jako hlavní text.",
+      "newer": "Novější",
+      "older": "Starší",
+      "title": "Historie"
+    },
+    "save": "Uložit",
+    "tag": {
+      "color": "Barva",
+      "emoji": "Emoji",
+      "name": "Název",
+      "no_emoji": "Žádné emoji nevybráno...",
+      "preview": "Náhled",
+      "select_emoji": "Vybrat emoji",
+      "title_edit": "Upravit tag",
+      "title_new": "Vytvořit nový tag"
+    }
+  },
+  "navbar": {
+    "greeting": "Ahoj {user}"
+  },
+  "nav": {
+    "logout": "Odhlásit se"
+  },
+  "read": {
+    "load_images": "{count, plural, one {Načíst jeden obrázek z tohoto měsíce ({size})} two {Načíst oba dva obrázky z tohoto měsíce ({size})} few {Load všechny {count} obrázky z tohoto měsíce ({size})} other {Načíst všech {count} obrázků z tohoto měsíce ({size})}}",
+    "no_entries": "Žádné zápisky"
+  },
+  "reauth": {
+    "authentication_error": "Chyba při ověření",
+    "confirmButton": "Potvrdit",
+    "description": "Z bezpečnostních důvodů se musíš znovu přihlásit.",
+    "title": "Potvrď heslo",
+    "wrong_password": "Špatné heslo"
+  },
+  "search": {
+    "description": "Pomocí <span>Ctrl</span> + <span>F</span> spusť hledání.<br>\nMůžeš hledat <b>text</b>, <b>názvy souborů</b> a <b>tagy</b>:<br>\n<ul>\n <li><b><u>Text</u></b>: Při použití více vyhledávacích výrazů platí následující pravidla:\n <ul>\n <li><b>PŘESNĚ</b>: Vlož celý vyhledávací výraz do <u>dvojitých uvozovek</u>, chceš-li vyhledat přesnou posloupnost slov.</li>\n\t <li><b>NEBO</b>: Odděl vyhledávací výrazy znakem <b>|</b>, chceš-li najít položky, kde je použit alespoň jeden výraz.</li>\n\t <li><b>A</b>: Odděl vyhledávací výrazy <u>mezerami</u>, chceš-li najít položky, kde jsou použity všechny výrazy. Pořadí výrazů není relevantní, stejně jako vzdálenost mezi nimi.</li>\n\t</ul>\n </li>\n <li><b><u>Názvy souborů</u></b>: Pokud hledaný výraz obsahuje <u>jedno slovo</u>, bude vyhledávat nejen text, ale i názvy souborů.</li>\n <li><b><u>Tagy</u></b>: Hledaný výraz musí začínat znakem <b>#</b>. Bude vyhledávat všechny položky označené daným tagem.</li>\n</ul>",
+    "no_results": "Žádné výsledky",
+    "search": "Hledat",
+    "toast": {
+      "error": "Chyba při hledání!"
+    }
+  },
+  "settings": {
+    "abort": "Zrušit",
+    "about": "O DailtTxT",
+    "about.changelog": "Changelog",
+    "about.current_version": "Aktuální verze",
+    "about.donate": "Líbí se ti DailyTxT? Moc bych ocenil malý donate! ❤️<br/>Vývoj a udržovaní DailyTxT zabere hodně času. Díky moc! \uD83E\uDD70",
+    "about.latest_version": "Nejnovější verze",
+    "about.made_by": "Made with ❤️ by {creator}",
+    "about.source_code": "Zdrojový kód",
+    "about.update_available": "Aktualizace je dostupná",
+    "about.update_notification": "Oznámení o aktualizaci",
+    "about.version_info": "Poznámka: Automatická detekce verze nemusí vždy fungovat.",
+    "account": "Tvůj účet",
+    "admin": {
+      "authorized": "Administrátorký přístup povolen",
+      "button_open_5_minutes": "Otevřít na 5 minut",
+      "button_refresh_status": "Obnovit stav",
+      "cancel": "Zrušit",
+      "check_password": "Zkontrolovat heslo",
+      "confirm_delete": "Opravdu smazat uživatelský účet?",
+      "confirm_delete_old_data": "Opravdu smazat?",
+      "current_status": "Aktuální stav",
+      "delete": "Smazat",
+      "delete_account": "Smazat uživatelský účet",
+      "delete_old_data": "Smazat stará data",
+      "delete_old_data_warning": "Důrazně doporučuji vytvořit <b><u>zálohu</u></b> starých dat ručně!",
+      "delete_warning": "Uživatelský účet bude kompletně a trvale smazán!",
+      "disk_usage": "Využití disku",
+      "environment_variables": "Proměnné prostředí",
+      "environment_variables_description": "Toto jsou proměnné prostředí, které byly definovány při spuštění DailyTxT. Pravděpodobně se nacházejí v souboru docker-compose.",
+      "free_disk_space": "Volné místo na disku",
+      "hidden_for_security": "Skryto z bezpečnostních důvodů",
+      "id": "ID",
+      "invalid_password": "Neplatné heslo!",
+      "loading_users": "Načítání uživatelů",
+      "login_description": "Heslo administrátora je definováno na straně serveru jako proměnná prostředí!",
+      "login_error": "Neznámá chyba při ověřování hesla.",
+      "login_required": "Vyžadováno heslo administrátora",
+      "logout": "Odhlásit administrátora",
+      "me": "Já",
+      "no_environment_variables": "Nebyly nalezeny žádné proměnné prostředí",
+      "no_users": "Nebyly nalezeny žádné uživatelské účty",
+      "old_data": "Data před migrací",
+      "old_data_description": "Data staré verze DailyTxT 1.x.x se aktuálně nacházejí ve složce <code>old</code>.<br/>\nSložka zabírá místo na disku <b>navíc</b> k aktuálně dostupným/migrovaným datům. Pokud si jsi jistý, že všichni uživatelé uvedení níže migrovali svá data bez chyb (a objevují se v seznamu výše), můžeš tato stará data také smazat!",
+      "old_data_size": "Využití disku složkou <code>old</code>",
+      "old_users": "Uživatelé před migrací",
+      "password": "Heslo administrátora",
+      "refresh_users": "Obnovit uživatele",
+      "registration": "Registrace",
+      "registration_allowed": "Povoleno",
+      "registration_allowed_until": "Registrace dočasně otevřena do <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Blokováno",
+      "registration_description": "Vytváření nových účtů je aktuálně ve výchozím nastavení zakázáno (pomocí proměnné prostředí). Pomocí tohoto menu lze registraci povolit na 5 minut. Poté bude automaticky znovu zakázána. Proměnná prostředí zůstane nezměněna.",
+      "registration_open_error": "Chyba při dočasném otevření registrace.",
+      "registration_status_error": "Chyba při kontrole, zda je registrace povolena.",
+      "title": "Administrátor",
+      "toast_error_old_data_delete": "Chyba při mazání starých dat",
+      "toast_success_old_data_delete": "Staré údaje (před migrací) byly smazány",
+      "total_disk_usage": "Využité místo na disku",
+      "total_users": "Celkem uživatelů",
+      "user_management": "Správa uživatelů",
+      "username": "Uživatelské jméno",
+      "warning_delete_self": "Vlastní uživatelský účet by neměl být mazán zde, ale raději v sekci \"Nastavení\"."
+    },
+    "aLookBack": "Pohled zpět",
+    "aLookBack.description": "<li>Rozhodni, z jakých minulých let se mají zobrazit deníkové záznamy stejného kalendářního dne.</li>\n<li>Platí pouze pro režim psaní.</li>\n<li>Příklad: <code>1,5,10</code> zobrazí záznamy z před 1 rokem, 5 lety a 10 lety pod textovým polem (pokud jsou k dispozici).</li>",
+    "ALookBack": {
+      "help_text": "Zadej všechna minulá léta, která se mají zobrazit. Příklad: <code>1,5,10</code>. Použij čárky pro oddělení, vyhni se mezerám.",
+      "input_placeholder": "Roky oddělené čárkami",
+      "invalid_input": "Zadej pouze čísla oddělená čárkami.",
+      "useIt": "Zobrazit záznamy stejného dne z minulosti"
+    },
+    "appearance": "Vzhled",
+    "background": "Pozadí",
+    "background_gradient": "Přechod (je nově generován při každém načtení stránky)",
+    "background_monochrome": "Jednobarevné",
+    "backup_codes": "Záložní kódy",
+    "backup_codes.copy_button": "Zkopírovat kódy",
+    "backup_codes.description": "<li>Záložní kódy fungují jako jednorázová hesla. Vždy mohou být použity místo hesla, ale jsou platné pouze jednou a poté jsou smazány.</li>\n<li>Vždy je vygenerováno 6 kódů, které nahrazují předchozí kódy (pokud existují).</li>\n<li>Kódy si musíš ihned po vytvoření zapsat; nelze je znovu zobrazit!</li>",
+    "backup_codes.error": "Chyba při vytváření záložních kódů! Možná je heslo nesprávné?",
+    "backup_codes.generate_button": "Vygenerovat záložní kódy",
+    "backup_codes.success": "<h6>Tvoje záložní kódy:</h6>\n<p>Zapiš si kódy; po zavření tohoto okna je nelze znovu zobrazit!</p>",
+    "change_username": "Změnit uživatelské jméno",
+    "change_username.button": "Změnit uživatelské jméno",
+    "change_username.current_username": "Aktuální uživatelské jméno",
+    "change_username.description": "Poznámka k uživatelskému jménu:<br/>\nNa velikosti písmen při přihlašování nezáleží. Nicméně správně napsané jméno (např. \"Tom\" místo \"tom\") vypadá lépe při exportu nebo v podobných situacích.",
+    "change_username.error": "Neznámá chyba",
+    "change_username.new_username": "Nové uživatelské jméno",
+    "change_username.success": "Uživatelské jméno bylo změněno",
+    "change_username.username_taken": "Uživatelské jméno je již obsazeno",
+    "close": "Zavřít",
+    "dark_mode": "Tmavý režim",
+    "data": "Data",
+    "delete": "Smazat",
+    "delete_account": "Smazat uživatelský účet",
+    "delete_account.confirm": "Opravdu chceš smazat svůj účet? Tuto akci nelze vrátit zpět!",
+    "delete_account.confirm_button": "Potvrdit smazání",
+    "delete_account.delete_button": "Smazat uživatelský účet",
+    "delete_account.description": "Tímto smažeš svůj účet a všechna data s ním spojená. Tuto akci nelze vrátit zpět!",
+    "delete_account.password_incorrect": "Zadané heslo je nesprávné!",
+    "delete_account.success": "Tvůj účet byl úspěšně smazán!<br />\nMěl bys být automaticky odhlášen. Pokud ne, odhlaš se prosím ručně.",
+    "export": "Export",
+    "export.description": "Exportuj své záznamy jako formátovaný HTML soubor. Obrázky mohou být volitelně vloženy do HTML. Všechny soubory jsou také poskytnuty v ZIP archivu.",
+    "export.end_date": "Do:",
+    "export.export_button": "Exportovat",
+    "export.help_text": "<u>Poznámky:</u>\n<ul>\n\t<li>HTML nebude obsahovat historii jednotlivých dnů.</li>\n\t<li>Znovuimport není možný. Tato funkce není záloha, ale čistě export pro získání snadno čitelného HTML souboru.</li>\n</ul>",
+    "export.period": "Období",
+    "export.period_all": "Celé období",
+    "export.period_invalid": "Počáteční datum musí být před koncovým datem!",
+    "export.period_variable": "Proměnné období",
+    "export.show_images": "Zobrazit obrázky v HTML",
+    "export.show_images_description": "Zobrazit obrázky přímo pod textem <em>(jsou také vždy poskytnuty jako odkazy)</em>",
+    "export.show_tags": "Zobrazit tagy",
+    "export.show_tags_description": "Zobrazit tagy v HTML",
+    "export.split": "Počet HTML dokumentů",
+    "export.split_aio": "Jedno HTML",
+    "export.split_month": "Jedno HTML na měsíc",
+    "export.split_year": "Jedno HTML na rok",
+    "export.start_date": "Od:",
+    "first_day_of_week": "Začátek týdne",
+    "first_day_of_week.help_text": "Vyber den, kterým má týden začínat (ovlivňuje zobrazení v kalendáři). Změny mohou být viditelné až po obnovení stránky.",
+    "functions": "Funkce",
+    "images_description": "<ul>\n\t<li>\n\t\tPři načítání textu mohou být automaticky načteny nahrané obrázky (pokud jsou k dispozici). <em>Zvýšená spotřeba dat!</em>\n\t</li>\n\t<li>Alternativně se zobrazí tlačítko pro načtení všech obrázků.</li>\n</ul>",
+    "images_loading_default": "Automaticky načítat obrázky ve výchozím nastavení (na každém zařízení)",
+    "images_loading_per_device": "Rozhodnout pro každé zařízení, zda se mají obrázky načítat automaticky",
+    "images_loading_this_device": "Automaticky načítat obrázky na <b>tomto zařízení</b>",
+    "images_title": "Automaticky načítat obrázky",
+    "installation_help": "Můžeš si také nainstalovat DailyTxT jako aplikaci. To se provádí přes nastavení prohlížeče, ale není to podporováno každým prohlížečem. Aktuálně nebyla detekována žádná instalace.<br/>\n<ul>\n<li>Android: \"Přidat na domovskou obrazovku\"</li>\n<li>Apple: \"Sdílet\" -> \"Přidat na domovskou obrazovku\"</li>\n</ul>",
+    "language": "Jazyk",
+    "language_auto_detect": "Určit jazyk na základě prohlížeče. Aktuálně:",
+    "language.help_translate": "Tvůj jazyk tu není? Pomoz s překladem! Informace najdeš zde:",
+    "language_not_available": "Jazyk <code>{browserLanguage}</code> není dostupný. Používá se výchozí jazyk <code>{defaultLanguage}</code>.",
+    "language.reload_info": "Některé změny se projeví až po obnovení stránky.",
+    "language_X_used": "je používán",
+    "light_dark_auto_detect": "Automaticky detekovat režim. Aktuálně:",
+    "light_dark_manual": "Nastavit režim ručně",
+    "light_dark_mode": "Světlý/Tmavý režim",
+    "light_mode": "Světlý režim",
+    "password": {
+      "change_error": "Chyba při změně hesla!",
+      "change_password_button": "Změnit heslo",
+      "confirm_new_password": "Potvrdit nové heslo",
+      "confirm_password": "Potvrdit heslo",
+      "current_password": "Aktuální heslo",
+      "current_password_incorrect": "Aktuální heslo je nesprávné!",
+      "new_password": "Nové heslo",
+      "passwords_dont_match": "Nová hesla se neshodují!",
+      "success": "Heslo bylo úspěšně změněno!",
+      "success_backup_codes_warning": "Pozor: Záložní kódy byly zneplatněny (pokud existují) a musí být znovu vytvořeny."
+    },
+    "reauth": {
+      "description": "Pro zvýšení bezpečnosti může být heslo znovu požadováno při každém načtení stránky.",
+      "label": "Požadovat heslo při každém načtení stránky",
+      "title": "Heslo při načtení stránky"
+    },
+    "save": "Uložit",
+    "security": "Bezpečnost",
+    "security.change_password": "Změnit heslo",
+    "selectTimezone": "Vybrat časové pásmo",
+    "set_language_manually": "Nastavit jazyk trvale",
+    "statistics": {
+      "activityRate": "DailyTxT používáš na {percent}% všech dní od prvního zápisu",
+      "averageWordsPerLog": "{wordCount, plural, one {Průměrně {wordCount} slovo na zápis} other {Průměrně {wordCount} slova na zápis}}",
+      "bookmarked": "Uloženo jako záložka",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> den se záložkou} other {<b>{days}</b> dny se záložkou}}",
+      "bookpages": "{pages, plural, one {Již jsi napsal {pages} stránku knihy (při 300 slovech na stránku)} other {Již jsi napsal {pages} stránky knihy (při 300 slovech na stránku)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} den} other {{dayCount} dní}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> den s aktivitou} other {<b>{days}</b> dny s aktivitou}}",
+      "error_loading_data": "Neznámá chyba při načítání statistik",
+      "favoriteWritingDay": "Oblíbený den v týdnu pro psaní",
+      "fileCount": "{fileCount, plural, one {{fileCount} Soubor} other {{fileCount} Soubory}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> soubor zabírající <b>{diskUsage}</b>} other {<b>{fileCount}</b> soubory zabírající <b>{diskUsage}</b>}}",
+      "funFacts": "Zajímavá fakta",
+      "legend": "Legenda",
+      "loading_data": "Načítání dat",
+      "longestWritingStreak": "Nejdelší psací maraton",
+      "mostProductiveDay": "Nejproduktivnější den",
+      "no_data": "Žádná data ještě nejsou",
+      "open": "Otevřít",
+      "tagUsedCount": "Použito <b>{count}x</b>",
+      "title": "Statistiky",
+      "toast_error_user_delete": "Chyba při mazání uživatele",
+      "toast_success_user_delete": "Uživatel smazán",
+      "total": "Celkem",
+      "wordCount": "{wordCount, plural, one {{wordCount} slovo} few {{wordCount} slova} other {{wordCount} slov}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> slovo} few {{wordCount} slova} other {<b>{wordCount}</b> slov}}",
+      "words": "Slov"
+    },
+    "tags": "Tagy",
+    "tags.delete_confirmation": "<b>Trvale smazat tag?</b><br/>To může chvíli trvat, protože každá položka musí být prohledána kvůli potenciálním odkazům. Změny mohou být viditelné až po obnovení stránky.",
+    "tags.description": "Zde můžeš upravit tagy nebo je úplně smazat z DailyTxT.",
+    "tags.no_tags": "Zatím nejsou k dispozici žádné tagy. Vytvoř nový tag v režimu psaní.",
+    "template": {
+      "content_of_template": "Obsah šablony",
+      "name_of_template": "Název šablony",
+      "save_template": "Uložit šablonu"
+    },
+    "templates": "Šablony",
+    "templates.create_new": "Vytvořit novou šablonu...",
+    "templates.delete_confirmation": "Opravu smazat šablonu <b>{template}</b>?",
+    "timezone": "Časové pásmo",
+    "timezone.auto_detect": "Automaticky určit časové pásmo na základě prohlížeče.<br/>Aktuálně: ",
+    "timezone.description": "Nastav časové pásmo, které má být použito pro časové razítko (\"{written_on}\").",
+    "timezone.help_text": "Při cestování může být užitečné určit časové pásmo na základě prohlížeče. Pak bude pravděpodobně lépe rozpoznáno datum a čas na místě určení.<br />Pokud naopak používáš různá časová pásma doma v soukromém prohlížeči (např. vždy UTC), může být užitečné nastavit zde konkrétní časové pásmo.",
+    "timezone.manual": "Vždy používat následující časové pásmo pro tento uživatelský účet:",
+    "timezone.selected": "Vybráno:",
+    "title": "Nastavení",
+    "toast": {
+      "delete_tag_error": "Chyba při mazání tagu!",
+      "delete_template_error": "Chyba při mazání šablony",
+      "delete_template_success": "Šablona smazána",
+      "export_data_error": "Chyba při exportu!",
+      "invalid_template_double": "Název šablony již existuje!",
+      "invalid_template_empty": "Název nebo obsah šablony nesmí být prázdný!",
+      "logout_error": "Chyba při odhlášení",
+      "saved_edit_tag_error": "Chyba při ukládání změn!",
+      "saved_edit_tag_success": "Změny byly uloženy!",
+      "saved_settings_error": "Chyba při ukládání nastavení!",
+      "saved_settings_success": "Nastavení uložena",
+      "saved_template_success": "Šablona uložena"
+    },
+    "unsaved_changes": "Neuložené změny",
+    "updates": {
+      "check_for_updates": "Informovat mě o nových verzích",
+      "include_test_versions": "Také mě informovat o nových testovacích verzích, které obsahují \"testing\" v názvu verze. Tyto verze mohou být chybné — nezapomeň nejprve vytvořit zálohu!"
+    }
+  },
+  "tags": {
+    "description": "Zde můžeš přidávat a odebírat tagy pro vybraný datum, aby seřadil své zápisky. Zde také můžeš vytvářet nové tagy.<br/><br/>S <span>Ctrl</span> + <span>G</span> je vyhledávací pole zaostřeno (pouze desktop).<br/><br/> Chcete-li změnit tag nebo jej úplně smazat, musíte přejít do nastavení.",
+    "hide_selector": "Zavřít výběr tagu",
+    "input": "Tag...",
+    "new_tag": "Nový",
+    "no_tags_found": "Žádné tagy nenalezeny...",
+    "tags": "Tagy",
+    "toast": {
+      "error_adding": "Chyba při přidávání tagu k vybranému datu!",
+      "error_removing": "Chyba při odstraňování tagu!",
+      "error_saving": "Chyba při vytváření tagu!",
+      "error_saving_exists": "Název tagu již existuje"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Vložit šablonu..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Už zbývá pouze jeden záložní kód!} few {Zbývají ještě {count} záložní kódy!} other {Zbývá ještě {count} Záložních kódů!}}"
+    },
+    "pwa": {
+      "install_button": "Instalovat",
+      "install_description": "Nainstaluj DailyTxT pro lepší zážitek podobný aplikaci.",
+      "reload_button": "Načíst znovu",
+      "update_available": "Nová verze je dostupná!"
+    }
+  },
+  "weekdays": {
+    "friday": "Pátek",
+    "monday": "Pondělí",
+    "saturday": "Sobota",
+    "sunday": "Neděle",
+    "thursday": "Čtvrtek",
+    "tuesday": "Úterý",
+    "wednesday": "Středa"
+  }
+}

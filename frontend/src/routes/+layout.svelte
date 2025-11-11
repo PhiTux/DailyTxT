@@ -25,7 +25,8 @@
 			staticData: {
 				en: () => import('../i18n/en.json'),
 				de: () => import('../i18n/de.json'),
-				fr: () => import('../i18n/fr.json')
+				fr: () => import('../i18n/fr.json'),
+				cs: () => import('../i18n/cs.json')
 			},
 
 			// for development
