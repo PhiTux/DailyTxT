@@ -19,7 +19,7 @@
 		.use(FormatIcu())
 		.use(LanguageStorage())
 		.init({
-			availableLanguages: ['en', 'de', 'fr'],
+			availableLanguages: ['en', 'de', 'fr', 'cs'],
 			defaultLanguage: 'en',
 			fallbackLanguage: 'en',
 			staticData: {
