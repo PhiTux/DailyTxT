@@ -39,7 +39,7 @@
     "decrypting": "Dešifrování...",
     "download": "Stáhnout",
     "drop": {
-      "ready_to_upload": "{count, plural, one {{count} soubor lze nahrát} other {{count} souborů lze nahrát}}",
+      "ready_to_upload": "{count, plural, one {{count} soubor lze nahrát} few {{count} soubory lze nahrát} other {{count} souborů lze nahrát}}",
       "release_to_upload": "Pusť pro nahrání",
       "title": "Soubory přetáhni sem"
     },
@@ -59,7 +59,7 @@
       "deleteDay": "Smazat den",
       "history": "Historie"
     },
-    "load_images": "{amount, plural, one {{amount} načíst obrázek} other {{amount} načíst obrázky}}",
+    "load_images": "{amount, plural, one {Načíst {amount} obrázek} few {Načíst {amount} obrázky} other {Načíst {amount} obrázků}}",
     "toast": {
       "error_deleting_day": "Chyba při mazání dne!",
       "error_loading": "Chyba při načítaní text!",
@@ -108,13 +108,13 @@
   "modal": {
     "close": "Zavřít",
     "deleteDay": {
-      "bookmark": "Založeno",
+      "bookmark": "založení",
       "button_close": "Zavřít",
       "button_delete": "Vymazat",
       "description": "Vymažeš <b><u>všechna data</u></b> z <b><u>{month}/{day}/{year}</u></b>!",
       "files": "{files, plural, one {1 soubor} few {{files} soubory} other {{files} souborů}}",
-      "history": "Historie",
-      "logEntry": "Zápisek",
+      "history": "historii",
+      "logEntry": " zápisek",
       "tags": "{tags, plural, one {{tags} tag} few {{tags} tagy} other {{tags} tagů}}",
       "thisIncludes": "To zahrnuje:",
       "title": "Vymazat úplně celý den?"
@@ -329,15 +329,15 @@
     "set_language_manually": "Nastavit jazyk trvale",
     "statistics": {
       "activityRate": "Do DailyTxT zapisuješ {percent}% všech dní od prvního zápisku",
-      "averageWordsPerLog": "{wordCount, plural, one {Průměrně {wordCount} slovo na zápis} other {Průměrně {wordCount} slova na zápis}}",
+      "averageWordsPerLog": "{wordCount, plural, one {Průměrně {wordCount} slovo na zápisek} few {Průměrně {wordCount} slova na zápisek} other {Průměrně {wordCount} slov na zápisek}}",
       "bookmarked": "Uloženo jako záložka",
       "bookmarkedDays": "{days, plural, one {<b>{days}</b> den se záložkou} few {<b>{days}</b> dny se záložkou} other {<b>{days}</b> dní se záložkou}}",
       "bookpages": "{pages, plural, one {Již jsi napsal {pages} stránku knihy (při 300 slovech na stránku)} few {Již jsi napsal {pages} stránky knihy (při 300 slovech na stránku)} other {Již jsi napsal {pages} stránek knihy (při 300 slovech na stránku)}}",
-      "dayCount": "{dayCount, plural, one {{dayCount} den} other {{dayCount} dní}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} den} few {{dayCount} dny}} other {{dayCount} dní}}",
       "daysWithActivity": "{days, plural, one {<b>{days}</b> den s aktivitou} few {<b>{days}</b> dny s aktivitou} other {<b>{days}</b> dní s aktivitou}}",
       "error_loading_data": "Neznámá chyba při načítání statistik",
       "favoriteWritingDay": "Oblíbený den v týdnu pro psaní",
-      "fileCount": "{fileCount, plural, one {{fileCount} Soubor} other {{fileCount} Soubory}}",
+      "fileCount": "{fileCount, plural, one {{fileCount} soubor} few {{fileCount} soubory}} other {{fileCount} souborů}}",
       "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> soubor zabírající <b>{diskUsage}</b>} few {<b>{fileCount}</b> soubory zabírající <b>{diskUsage}</b>} other {<b>{fileCount}</b> souborů zabírající <b>{diskUsage}</b>}}",
       "funFacts": "Zajímavá fakta",
       "legend": "Legenda",
