@@ -1,6 +1,6 @@
 <script>
 	import { cal, selectedDate, readingDate } from '$lib/calendarStore.js';
-	import { readingMode, settings } from '$lib/settingsStore.js';
+	import { languageLoaded, readingMode, settings } from '$lib/settingsStore.js';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import * as bootstrap from 'bootstrap';
@@ -135,9 +135,17 @@
 		});
 	});
 
-	let months = Array.from({ length: 12 }, (_, i) =>
-		new Date(2000, i).toLocaleString($tolgee.getLanguage(), { month: 'long' })
-	);
+	let months = $state([]);
+	let monthsInitialized = false;
+	$effect(() => {
+		if (!monthsInitialized && $languageLoaded) {
+			monthsInitialized = true;
+			// update month names on language change
+			months = Array.from({ length: 12 }, (_, i) =>
+				new Date(2000, i).toLocaleString($tolgee.getLanguage(), { month: 'long' })
+			);
+		}
+	});
 
 	const onMonthSelect = (event) => {
 		animationDirection = months.indexOf(event.target.value) > $cal.currentMonth ? 1 : -1;

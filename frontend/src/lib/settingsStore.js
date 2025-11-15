@@ -6,6 +6,8 @@ export const settings = writable({});
 
 export const tempSettings = writable({});
 
+export const languageLoaded = writable(false);
+
 // should be separate, since it interacts with localStorage
 export const autoLoadImagesThisDevice = writable(JSON.parse(localStorage.getItem('autoLoadImagesThisDevice')));
 

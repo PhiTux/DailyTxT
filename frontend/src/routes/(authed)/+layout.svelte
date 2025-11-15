@@ -1,7 +1,7 @@
 <script>
 	import * as bootstrap from 'bootstrap';
 	import Fa, { FaLayers } from 'svelte-fa';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { onDestroy, onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import {
@@ -9,7 +9,8 @@
 		settings,
 		tempSettings,
 		autoLoadImagesThisDevice,
-		darkMode
+		darkMode,
+		languageLoaded
 	} from '$lib/settingsStore.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags, tagsLoaded } from '$lib/tagStore.js';
@@ -430,7 +431,7 @@
 
 		axios
 			.get(API_URL + '/users/getUserSettings')
-			.then((response) => {
+			.then(async (response) => {
 				$settings = response.data;
 				$tempSettings = JSON.parse(JSON.stringify($settings));
 				aLookBackYears = $settings.aLookBackYears.toString();
@@ -441,7 +442,7 @@
 					$settings.requirePasswordOnPageLoad.toString()
 				);
 
-				updateLanguage();
+				await updateLanguage();
 
 				// set background
 				setBackground();
@@ -494,15 +495,16 @@
 				)
 	);
 
-	function updateLanguage() {
+	async function updateLanguage() {
 		if ($settings.useBrowserLanguage) {
 			let browserLanguage = tolgeesMatchForBrowserLanguage();
-			$tolgee.changeLanguage(
+			await $tolgee.changeLanguage(
 				browserLanguage === '' ? $tolgee.getInitialOptions().defaultLanguage : browserLanguage
 			);
 		} else {
-			$tolgee.changeLanguage($settings.language);
+			await $tolgee.changeLanguage($settings.language);
 		}
+		$languageLoaded = true;
 	}
 
 	// Check if Tolgee contains the browser language
@@ -598,6 +600,7 @@
 			.finally(() => {
 				isSaving = false;
 				if (reloadRequired) {
+					invalidateAll();
 					location.reload();
 				}
 			});
