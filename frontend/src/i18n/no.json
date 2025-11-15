@@ -1,0 +1,464 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {{years_old} år siden} other {{years_old} år siden}}",
+    "open": "Åpne",
+    "Year_one_letter": "Å"
+  },
+  "calendar": {
+    "button_bookmark": "Bokmerke",
+    "button_today": "I dag",
+    "day_short": {
+      "friday": "Fre",
+      "monday": "Man",
+      "saturday": "Lør",
+      "sunday": "Søn",
+      "thursday": "Tor",
+      "tuesday": "Tir",
+      "wednesday": "Ons"
+    },
+    "toast": {
+      "error_bookmarking": "Feil ved bokmerking av dagen!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %D.%M.%Y",
+    "entriesCount": "Antall oppføringer",
+    "exportedOn": "Eksportert",
+    "exportedOnFormat": "01/02/2006 15:04:05",
+    "files": "Filer",
+    "images": "Bilder",
+    "tags": "Tagger",
+    "title": "DailyTxT-eksport",
+    "user": "Bruker"
+  },
+  "fileList": {
+    "change_filename": "Gi nytt navn",
+    "delete_file": "Slett fil"
+  },
+  "files": {
+    "decrypting": "Dekrypterer...",
+    "download": "Last ned",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} fil kan lastes opp} other {{count} filer kan lastes opp}}",
+      "release_to_upload": "Slipp for å laste opp",
+      "title": "Slipp filer her"
+    },
+    "encrypting": "Krypterer...",
+    "toast": {
+      "error_deleting": "Feil ved sletting av fil!",
+      "error_loading": "Feil ved nedlasting av fil!",
+      "error_saving": "Feil ved lagring av fil!"
+    },
+    "upload": "Last opp"
+  },
+  "imageViewer": {
+    "download": "Last ned"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Slett dag",
+      "history": "Historikk"
+    },
+    "load_images": "{amount, plural, one {last {amount} bilde} other { last {amount} bilder}}",
+    "toast": {
+      "error_deleting_day": "Feil ved sletting av dagen!",
+      "error_loading": "Feil ved lasting av tekst!",
+      "error_renaming_file": "Feil ved endring av filnavn",
+      "error_reordering_files": "Feil ved endring av filrekkefølge",
+      "error_saving": "Feil ved lagring av tekst!"
+    },
+    "written_on": "Postet:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Feltene kan ikke være tomme!",
+      "login_failed": "Innlogging mislyktes!<br />\nSjekk opplysningene dine.",
+      "migration_failed": "Migreringen mislyktes! Sjekk serverloggene (f.eks. med <code>docker logs dailytxt</code>) for mer informasjon!",
+      "passwords_do_not_match": "Passordene samsvarer ikke!",
+      "registration_allowed_until": "Registrering midlertidig åpen til {date_and_time} (servertid).",
+      "registration_failed": "Registrering mislyktes – analyser feilmeldingene!",
+      "registration_failed_with_message": "Registrering mislyktes!<br />\nFeilmelding: <i>{message}</i>",
+      "registration_not_allowed": "Registrering er for øyeblikket ikke mulig!",
+      "registration_success": "Registrering fullført – vennligst logg inn!<br/>\nDeretter kan du ta en titt på <b><u>Innstillinger</u></b>!"
+    },
+    "confirm_password": "Bekreft passord",
+    "create_account": "Opprett konto",
+    "create_account_info": "Brukernavn skiller ikke mellom store og små bokstaver ved innlogging. Det anbefales å skrive et vanlig navn (f.eks. «Tom») så det ser riktig ut i eksporten. Du kan fortsatt logge inn med «tom».",
+    "login": "Logg inn",
+    "migration": {
+      "account_info": "Under migreringen ble reservekodene (hvis tilgjengelig) deaktivert og må opprettes på nytt!<br/>\nSe også gjennom de nye <b><u>innstillingene</u></b> for kontoen din!<br/><br/>\nNår alle kontoer er migrert uten feil, kan de «gamle» dataene slettes manuelt i adminpanelet.",
+      "create_account": "Opprett brukerkonto",
+      "migrate_files": "Migrer filer",
+      "migrate_logs": "Migrer oppføringer",
+      "migrate_templates": "Migrer maler",
+      "progress": "Fremdrift:",
+      "start_message": "Datamigrering har startet. Dette kan ta litt tid.",
+      "success_message": "Migrering fullført uten oppdagede feil! Start innloggingen på nytt. <br />\nSjekk deretter om alle data ble migrert riktig.",
+      "warning": "Ikke last siden på nytt eller logg inn igjen i mellomtiden!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migrering fullført med {error_count} oppdaget feil! Sjekk serverloggene for detaljer!<br />Hvis innlogging ikke fungerer eller data er feil, må de migrerte dataene slettes manuelt.} other {Migrering fullført med {error_count} oppdagede feil! Sjekk serverloggene for detaljer!<br />Hvis innlogging ikke fungerer eller data er feil, må de migrerte dataene slettes manuelt.}}",
+    "password": "Passord",
+    "toast": {
+      "account_deleted": "Kontoen ble slettet.",
+      "login_expired": "Innloggingen har utløpt. Logg inn igjen.",
+      "login_invalid": "Autentisering mislyktes. Logg inn igjen."
+    },
+    "username": "Brukernavn"
+  },
+  "modal": {
+    "close": "Lukk",
+    "deleteDay": {
+      "bookmark": "Bokmerke",
+      "button_close": "Lukk",
+      "button_delete": "Slett",
+      "description": "Du sletter <b><u>alle data</u></b> for <b><u>{day}.{month}.{year}</u></b>!",
+      "files": "{files, plural, one {1 fil} other {{files} filer}}",
+      "history": "Historikk",
+      "logEntry": "Dagbokoppføring",
+      "tags": "{tags, plural, one {{tags} tag} other {{tags} tagger}}",
+      "thisIncludes": "Dette inkluderer:",
+      "title": "Slette dagen helt?"
+    },
+    "deleteFile": {
+      "body": "Vil du virkelig slette filen <u><b>{file}</b></u>?",
+      "delete": "Slett",
+      "title": "Slette fil?"
+    },
+    "history": {
+      "description": "Ved å klikke <b>Lagre</b> gjør du den viste eldre teksten til hovedtekst.",
+      "newer": "Nyere",
+      "older": "Eldre",
+      "title": "Historikk"
+    },
+    "save": "Lagre",
+    "tag": {
+      "color": "Farge",
+      "emoji": "Emoji",
+      "name": "Navn",
+      "no_emoji": "Ingen emoji valgt...",
+      "preview": "Forhåndsvisning",
+      "select_emoji": "Velg emoji",
+      "title_edit": "Rediger tag",
+      "title_new": "Opprett ny tag"
+    }
+  },
+  "navbar": {
+    "greeting": "Hei {user}"
+  },
+  "nav": {
+    "logout": "Logg ut"
+  },
+  "read": {
+    "load_images": "{count, plural, one {Last {count} bilde for måneden ({size})} other {Last alle {count} bilder for måneden ({size})}}",
+    "no_entries": "Ingen oppføringer"
+  },
+  "reauth": {
+    "authentication_error": "Autentiseringsfeil",
+    "confirmButton": "Bekreft",
+    "description": "Av sikkerhetsgrunner må du skrive inn passordet ditt igjen.",
+    "title": "Bekreft passord",
+    "wrong_password": "Feil passord"
+  },
+  "search": {
+    "description": "Med <span>Ctrl</span> + <span>F</span> blir søkefeltet fokusert.<br>\nDu kan søke etter <b>tekst</b>, <b>filnavn</b> og <b>tagger</b>:<br>\n<ul>\n  <li><b><u>Tekst</u></b>: Ved flere søkeord gjelder følgende regler:\n    <ul>\n      <li><b>NØYAKTIG</b>: Sett hele søkeordet i <u>doble anførselstegn</u> for å finne den eksakte ordrekkefølgen.</li>\n\t  <li><b>ELLER</b>: Skill søkeord med <b>|</b> for å finne oppføringer med minst ett av ordene.</li>\n\t  <li><b>OG</b>: Skill søkeord med <u>mellomrom</u> for å finne oppføringer som inneholder alle ordene.</li>\n\t</ul>\n  </li>\n  <li><b><u>Filnavn</u></b>: Hvis søkeordet består av <u>ett ord</u>, søkes det også i filnavn.</li>\n  <li><b><u>Tagger</u></b>: Søkeordet må starte med <b>#</b>. Alle elementer med denne taggen blir funnet.</li>\n</ul>",
+    "no_results": "Ingen treff",
+    "search": "Søk",
+    "toast": {
+      "error": "Feil under søk!"
+    }
+  },
+  "settings": {
+    "abort": "Avbryt",
+    "about": "Om",
+    "about.changelog": "Endringslogg",
+    "about.current_version": "Nåværende versjon",
+    "about.donate": "Liker du DailyTxT? Da blir jeg veldig glad for en liten donasjon! ❤️<br/>Utvikling og vedlikehold tar mye tid. Takk! 🥰",
+    "about.latest_version": "Siste versjon",
+    "about.made_by": "Laget med ❤️ av {creator}",
+    "about.source_code": "Kildekode",
+    "about.update_available": "Oppdatering tilgjengelig",
+    "about.update_notification": "Varsel om oppdateringer",
+    "about.version_info": "Merk: Automatisk versjonsdeteksjon kan være unøyaktig.",
+    "account": "Brukerkonto",
+
+    "admin": {
+      "authorized": "Admin-tilgang bekreftet",
+      "button_open_5_minutes": "Åpne i 5 minutter",
+      "button_refresh_status": "Oppdater status",
+      "cancel": "Avbryt",
+      "check_password": "Sjekk passord",
+      "confirm_delete": "Vil du virkelig slette brukerkontoen?",
+      "confirm_delete_old_data": "Vil du virkelig slette?",
+      "current_status": "Nåværende status",
+      "delete": "Slett",
+      "delete_account": "Slett brukerkonto",
+      "delete_old_data": "Slett gamle data",
+      "delete_old_data_warning": "Jeg anbefaler sterkt å lage en <b><u>backup</u></b> av de gamle dataene manuelt!",
+      "delete_warning": "Brukerkontoen vil bli fullstendig og permanent slettet!",
+      "disk_usage": "Diskforbruk",
+      "environment_variables": "Miljøvariabler",
+      "environment_variables_description": "Dette er miljøvariablene som ble definert da DailyTxT startet, sannsynligvis i docker-compose-filen.",
+      "free_disk_space": "Ledig diskplass",
+      "hidden_for_security": "Skjult av sikkerhetsgrunner",
+      "id": "ID",
+      "invalid_password": "Ugyldig passord!",
+      "loading_users": "Laster brukere",
+      "login_description": "Adminpassordet er definert server-side som en miljøvariabel!",
+      "login_error": "Ukjent feil ved passordsjekk.",
+      "login_required": "Adminpassord kreves",
+      "logout": "Logg ut admin",
+      "me": "Meg",
+      "no_environment_variables": "Ingen miljøvariabler funnet",
+      "no_users": "Ingen brukerkontoer funnet",
+      "old_data": "Data før migrering",
+      "old_data_description": "Data fra DailyTxT versjon 1.x.x finnes i mappen <code>old</code>.<br/>\nMappen bruker lagringsplass <b>i tillegg</b> til de migrerte dataene. Hvis du er sikker på at alle brukere har migrert dataene sine feilfritt (og står i listen over), kan du slette disse gamle dataene.",
+      "old_data_size": "Diskforbruk for mappen <code>old</code>",
+      "old_users": "Brukere før migrering",
+      "password": "Adminpassord",
+      "refresh_users": "Oppdater brukere",
+      "registration": "Registrering",
+      "registration_allowed": "Tillatt",
+      "registration_allowed_until": "Registrering midlertidig åpen til <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Blokkert",
+      "registration_description": "Oppretting av nye kontoer er normalt deaktivert (via miljøvariabel). Med dette menyvalget kan du aktivere registrering i 5 minutter. Deretter deaktiveres det automatisk igjen.",
+      "registration_open_error": "Feil ved midlertidig åpning av registrering.",
+      "registration_status_error": "Feil ved sjekk av registreringsstatus.",
+      "title": "Admin",
+      "toast_error_old_data_delete": "Feil ved sletting av gamle data",
+      "toast_success_old_data_delete": "Gamle data (før migrering) ble slettet",
+      "total_disk_usage": "Brukt diskplass",
+      "total_users": "Totalt antall brukere",
+      "user_management": "Brukeradministrasjon",
+      "username": "Brukernavn",
+      "warning_delete_self": "Din egen brukerkonto bør ikke slettes her, men under «Innstillinger»."
+    },
+
+    "aLookBack": "Et tilbakeblikk",
+    "aLookBack.description": "<li>Velg hvilke tidligere år dagbokoppføringer fra samme kalenderdato skal vises for.</li>\n<li>Gjelder kun i skrivemodus.</li>\n<li>Eksempel: <code>1,5,10</code> viser oppføringer fra for 1, 5 og 10 år siden (hvis tilgjengelig).</li>",
+    "ALookBack": {
+      "help_text": "Skriv inn hvilke tidligere år som skal vises. Eksempel: <code>1,5,10</code>. Bruk komma som skilletegn og unngå mellomrom.",
+      "input_placeholder": "År, separert med komma",
+      "invalid_input": "Vennligst skriv kun tall separert med komma.",
+      "useIt": "Vis oppføringer fra samme dato tidligere år"
+    },
+
+    "appearance": "Utseende",
+    "background": "Bakgrunn",
+    "background_gradient": "Gradient (genereres på nytt ved hver lasting)",
+    "background_monochrome": "Monokrom",
+    "backup_codes": "Reservekoder",
+    "backup_codes.copy_button": "Kopier koder",
+    "backup_codes.description": "<li>Reservekoder fungerer som engangspassord. De kan alltid brukes i stedet for passordet, men kun én gang.</li>\n<li>Det genereres alltid 6 koder, som erstatter eventuelle tidligere koder.</li>\n<li>Skriv ned kodene med en gang; de kan ikke vises igjen!</li>",
+    "backup_codes.error": "Feil ved generering av reservekoder! Kanskje passordet er feil?",
+    "backup_codes.generate_button": "Generer reservekoder",
+    "backup_codes.success": "<h6>Dine reservekoder:</h6>\n<p>Skriv dem ned – de kan ikke vises igjen etter at du lukker dette vinduet!</p>",
+
+    "change_username": "Endre brukernavn",
+    "change_username.button": "Endre brukernavn",
+    "change_username.current_username": "Nåværende brukernavn",
+    "change_username.description": "Merk om brukernavn:<br/>\nStore og små bokstaver skilles ikke ved innlogging, men et navn skrevet med riktig form (f.eks. «Tom») ser penere ut i eksport.",
+    "change_username.error": "Ukjent feil",
+    "change_username.new_username": "Nytt brukernavn",
+    "change_username.success": "Brukernavnet ble endret",
+    "change_username.username_taken": "Brukernavnet er allerede i bruk",
+
+    "close": "Lukk",
+    "dark_mode": "Mørk",
+    "data": "Data",
+    "delete": "Slett",
+
+    "delete_account": "Slett brukerkonto",
+    "delete_account.confirm": "Er du sikker på at du vil slette kontoen? Dette kan ikke angres!",
+    "delete_account.confirm_button": "Bekreft sletting",
+    "delete_account.delete_button": "Slett brukerkonto",
+    "delete_account.description": "Dette sletter kontoen og alle tilknyttede data permanent!",
+    "delete_account.password_incorrect": "Feil passord!",
+    "delete_account.success": "Brukerkontoen din ble slettet!<br />\nDu bør logges ut automatisk. Hvis ikke, logg ut manuelt.",
+
+    "export": "Eksporter",
+    "export.description": "Eksporter oppføringene dine som en formatert HTML-fil. Bilder kan valgfritt bygges inn. Alle filer legges også ved i en ZIP-fil.",
+    "export.end_date": "Til:",
+    "export.export_button": "Eksporter",
+    "export.help_text": "<u>Merknader:</u>\n<ul>\n\t<li>HTML inkluderer ikke historikken for hver enkelt dag.</li>\n\t<li>Re-import er ikke mulig. Dette er ikke en backup – kun en eksport.</li>\n</ul>",
+    "export.period": "Periode",
+    "export.period_all": "Hele perioden",
+    "export.period_invalid": "Startdato må være før sluttdato!",
+    "export.period_variable": "Variabel periode",
+    "export.show_images": "Vis bilder i HTML",
+    "export.show_images_description": "Vis bilder direkte under teksten <em>(de er alltid tilgjengelige som lenker)</em>",
+    "export.show_tags": "Vis tagger",
+    "export.show_tags_description": "Vis tagger i HTML-en",
+    "export.split": "Antall HTML-filer",
+    "export.split_aio": "Én HTML",
+    "export.split_month": "Én HTML per måned",
+    "export.split_year": "Én HTML per år",
+    "export.start_date": "Fra:",
+
+    "first_day_of_week": "Ukens startdag",
+    "first_day_of_week.help_text": "Velg hvilken dag uken skal starte på (påvirker kalenderen). Endringen synes kanskje først etter at siden lastes på nytt.",
+
+    "functions": "Funksjoner",
+
+    "images_description": "<ul>\n\t<li>Bilder kan lastes automatisk ved visning av en tekst. <em>Økt databruk!</em></li>\n\t<li>Alternativt vises en knapp for å laste alle bilder.</li>\n</ul>",
+    "images_loading_default": "Last bilder automatisk som standard (på alle enheter)",
+    "images_loading_per_device": "Bestem per enhet om bilder skal lastes automatisk",
+    "images_loading_this_device": "Last bilder automatisk på <b>denne enheten</b>",
+    "images_title": "Automatisk lasting av bilder",
+
+    "installation_help": "Du kan også installere DailyTxT som en app via nettleseren, men ikke alle nettlesere støtter dette.<br/>\n<ul>\n<li>Android: «Legg til på startskjermen»</li>\n<li>Apple: «Del» → «Legg til på Hjem-skjerm»</li>\n</ul>",
+
+    "language": "Språk",
+    "language_auto_detect": "Bestem språk basert på nettleseren. Nåværende:",
+    "language.help_translate": "Mangler språket ditt? Hjelp til med oversettelsen! Mer info her:",
+    "language_not_available": "Språket <code>{browserLanguage}</code> er ikke tilgjengelig. Standard <code>{defaultLanguage}</code> brukes.",
+    "language.reload_info": "Endring av språk laster siden på nytt automatisk.",
+    "language_X_used": "brukes",
+
+    "light_dark_auto_detect": "Oppdag modus automatisk. Nåværende:",
+    "light_dark_manual": "Sett manuelt",
+    "light_dark_mode": "Lys/mørk-modus",
+    "light_mode": "Lys",
+
+    "password": {
+      "change_error": "Feil ved endring av passord!",
+      "change_password_button": "Endre passord",
+      "confirm_new_password": "Bekreft nytt passord",
+      "confirm_password": "Bekreft passord",
+      "current_password": "Nåværende passord",
+      "current_password_incorrect": "Nåværende passord er feil!",
+      "new_password": "Nytt passord",
+      "passwords_dont_match": "De nye passordene samsvarer ikke!",
+      "success": "Passord endret!",
+      "success_backup_codes_warning": "Merk: Reservekoder ble deaktivert og må genereres på nytt."
+    },
+
+    "reauth": {
+      "description": "For økt sikkerhet kan passordet kreves på nytt ved hver sidelasting.",
+      "label": "Be om passord ved hver sidelasting",
+      "title": "Passord ved sidelasting"
+    },
+
+    "save": "Lagre",
+    "security": "Sikkerhet",
+    "security.change_password": "Endre passord",
+
+    "selectTimezone": "Velg tidssone",
+
+    "set_language_manually": "Sett språk permanent",
+
+    "statistics": {
+      "activityRate": "Du bruker DailyTxT på {percent}% av alle dager siden første oppføring",
+      "averageWordsPerLog": "{wordCount, plural, one {I snitt {wordCount} ord per oppføring} other {I snitt {wordCount} ord per oppføring}}",
+      "bookmarked": "Bokmerket",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> bokmerket dag} other {<b>{days}</b> bokmerkede dager}}",
+      "bookpages": "{pages, plural, one {Du har allerede skrevet {pages} boksiden (300 ord per side)} other {Du har allerede skrevet {pages} boksider (300 ord per side)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} dag} other {{dayCount} dager}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> dag med aktivitet} other {<b>{days}</b> dager med aktivitet}}",
+      "error_loading_data": "Ukjent feil ved lasting av statistikk",
+      "favoriteWritingDay": "Favorittdag for skriving",
+      "fileCount": "{fileCount, plural, one {{fileCount} fil} other {{fileCount} filer}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> fil som bruker <b>{diskUsage}</b>} other {<b>{fileCount}</b> filer som bruker <b>{diskUsage}</b>}}",
+      "funFacts": "Fun facts",
+      "legend": "Forklaring",
+      "loading_data": "Laster data",
+      "longestWritingStreak": "Lengste skriveserie",
+      "mostProductiveDay": "Mest produktive dag",
+      "no_data": "Ingen data ennå",
+      "open": "Åpne",
+      "tagUsedCount": "Brukt <b>{count}x</b>",
+      "title": "Statistikk",
+      "toast_error_user_delete": "Feil ved sletting av bruker",
+      "toast_success_user_delete": "Bruker slettet",
+      "total": "Totalt",
+      "wordCount": "{wordCount, plural, one {{wordCount} ord} other {{wordCount} ord}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> ord} other {<b>{wordCount}</b> ord}}",
+      "words": "Ord"
+    },
+
+    "tags": "Tagger",
+    "tags.delete_confirmation": "<b>Slette tag permanent?</b><br/>Dette kan ta litt tid fordi alle oppføringer må sjekkes. Endringer vises kanskje først etter en sideoppdatering.",
+    "tags.description": "Her kan du redigere eller slette tagger helt fra DailyTxT.",
+    "tags.no_tags": "Ingen tagger tilgjengelig ennå. Opprett en ny tag i skrivemodus.",
+
+    "template": {
+      "content_of_template": "Malinnhold",
+      "name_of_template": "Navn på mal",
+      "save_template": "Lagre mal"
+    },
+
+    "templates": "Maler",
+    "templates.create_new": "Opprett ny mal...",
+    "templates.delete_confirmation": "Vil du virkelig slette malen <b>{template}</b>?",
+
+    "timezone": "Tidssone",
+    "timezone.auto_detect": "Oppdag tidssone automatisk basert på nettleseren.<br/>Nåværende: ",
+    "timezone.description": "Velg tidssonen som skal brukes for tidsstempelet («{written_on}»).",
+    "timezone.help_text": "Når du reiser, kan det være nyttig å bruke nettleserens tidssone. Dette gir riktig lokal tid.<br />Hvis du hjemme bruker ulike tidssoner (f.eks. alltid UTC), kan det være nyttig å sette en spesifikk tidssone her.",
+    "timezone.manual": "Bruk alltid følgende tidssone for denne kontoen:",
+    "timezone.selected": "Valgt:",
+
+    "title": "Innstillinger",
+
+    "toast": {
+      "delete_tag_error": "Feil ved sletting av tag!",
+      "delete_template_error": "Feil ved sletting av mal!",
+      "delete_template_success": "Mal slettet",
+      "export_data_error": "Feil ved eksport!",
+      "invalid_template_double": "Malnavnet finnes allerede!",
+      "invalid_template_empty": "Navn eller innhold kan ikke være tomt!",
+      "logout_error": "Feil ved utlogging",
+      "saved_edit_tag_error": "Feil ved lagring av endringer!",
+      "saved_edit_tag_success": "Endringer lagret!",
+      "saved_settings_error": "Feil ved lagring av innstillinger!",
+      "saved_settings_success": "Innstillinger lagret",
+      "saved_template_success": "Mal lagret"
+    },
+
+    "unsaved_changes": "Ulagrede endringer",
+    "updates": {
+      "check_for_updates": "Varsle om nye versjoner",
+      "include_test_versions": "Varsle også om testversjoner som inneholder «testing». Disse kan være ustabile – ta backup først!"
+    }
+  },
+
+  "tags": {
+    "description": "Her kan du legge til og fjerne tagger for valgt dato. Du kan også opprette nye tagger her.<br/><br/>Med <span>Ctrl</span> + <span>G</span> fokuseres søkefeltet (kun desktop).<br/><br/>For å endre eller slette tagger helt må du bruke innstillingene.",
+    "hide_selector": "Lukk tagvelger",
+    "input": "Tag...",
+    "new_tag": "Ny",
+    "no_tags_found": "Ingen tagger funnet...",
+    "tags": "Tagger",
+    "toast": {
+      "error_adding": "Feil ved legg til tag!",
+      "error_removing": "Feil ved fjerning av tag!",
+      "error_saving": "Feil ved oppretting av tag!",
+      "error_saving_exists": "Tag-navnet finnes allerede"
+    }
+  },
+
+  "template": {
+    "dropdown_insert": "Sett inn mal..."
+  },
+
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Fremdeles {count} reservekode tilgjengelig!} other {Fremdeles {count} reservekoder tilgjengelig!}}"
+    },
+    "pwa": {
+      "install_button": "Installer",
+      "install_description": "Installer DailyTxT for en bedre app-opplevelse.",
+      "reload_button": "Last inn på nytt",
+      "update_available": "En ny versjon er tilgjengelig."
+    }
+  },
+
+  "weekdays": {
+    "friday": "Fredag",
+    "monday": "Mandag",
+    "saturday": "Lørdag",
+    "sunday": "Søndag",
+    "thursday": "Torsdag",
+    "tuesday": "Tirsdag",
+    "wednesday": "Onsdag"
+  }
+}
