@@ -1,6 +1,6 @@
 {
   "aLookBack": {
-    "header_X_years_ago": "{years_old, plural, one {{years_old} år siden} other {{years_old} år siden}}",
+    "header_X_years_ago": "{years_old, plural, other {{years_old} år siden} }",
     "open": "Åpne",
     "Year_one_letter": "Å"
   },
@@ -172,7 +172,7 @@
     "about": "Om",
     "about.changelog": "Endringslogg",
     "about.current_version": "Nåværende versjon",
-    "about.donate": "Liker du DailyTxT? Da blir jeg veldig glad for en liten donasjon! ❤️<br/>Utvikling og vedlikehold tar mye tid. Takk! 🥰",
+    "about.donate": "Liker du DailyTxT? Da blir jeg veldig glad for en liten donasjon! ❤️<br/>Utvikling og vedlikehold tar mye tid. Takk! \uD83E\uDD70",
     "about.latest_version": "Siste versjon",
     "about.made_by": "Laget med ❤️ av {creator}",
     "about.source_code": "Kildekode",
@@ -180,7 +180,6 @@
     "about.update_notification": "Varsel om oppdateringer",
     "about.version_info": "Merk: Automatisk versjonsdeteksjon kan være unøyaktig.",
     "account": "Brukerkonto",
-
     "admin": {
       "authorized": "Admin-tilgang bekreftet",
       "button_open_5_minutes": "Åpne i 5 minutter",
@@ -232,7 +231,6 @@
       "username": "Brukernavn",
       "warning_delete_self": "Din egen brukerkonto bør ikke slettes her, men under «Innstillinger»."
     },
-
     "aLookBack": "Et tilbakeblikk",
     "aLookBack.description": "<li>Velg hvilke tidligere år dagbokoppføringer fra samme kalenderdato skal vises for.</li>\n<li>Gjelder kun i skrivemodus.</li>\n<li>Eksempel: <code>1,5,10</code> viser oppføringer fra for 1, 5 og 10 år siden (hvis tilgjengelig).</li>",
     "ALookBack": {
@@ -241,7 +239,6 @@
       "invalid_input": "Vennligst skriv kun tall separert med komma.",
       "useIt": "Vis oppføringer fra samme dato tidligere år"
     },
-
     "appearance": "Utseende",
     "background": "Bakgrunn",
     "background_gradient": "Gradient (genereres på nytt ved hver lasting)",
@@ -252,7 +249,6 @@
     "backup_codes.error": "Feil ved generering av reservekoder! Kanskje passordet er feil?",
     "backup_codes.generate_button": "Generer reservekoder",
     "backup_codes.success": "<h6>Dine reservekoder:</h6>\n<p>Skriv dem ned – de kan ikke vises igjen etter at du lukker dette vinduet!</p>",
-
     "change_username": "Endre brukernavn",
     "change_username.button": "Endre brukernavn",
     "change_username.current_username": "Nåværende brukernavn",
@@ -261,12 +257,10 @@
     "change_username.new_username": "Nytt brukernavn",
     "change_username.success": "Brukernavnet ble endret",
     "change_username.username_taken": "Brukernavnet er allerede i bruk",
-
     "close": "Lukk",
     "dark_mode": "Mørk",
     "data": "Data",
     "delete": "Slett",
-
     "delete_account": "Slett brukerkonto",
     "delete_account.confirm": "Er du sikker på at du vil slette kontoen? Dette kan ikke angres!",
     "delete_account.confirm_button": "Bekreft sletting",
@@ -274,7 +268,6 @@
     "delete_account.description": "Dette sletter kontoen og alle tilknyttede data permanent!",
     "delete_account.password_incorrect": "Feil passord!",
     "delete_account.success": "Brukerkontoen din ble slettet!<br />\nDu bør logges ut automatisk. Hvis ikke, logg ut manuelt.",
-
     "export": "Eksporter",
     "export.description": "Eksporter oppføringene dine som en formatert HTML-fil. Bilder kan valgfritt bygges inn. Alle filer legges også ved i en ZIP-fil.",
     "export.end_date": "Til:",
@@ -293,32 +286,25 @@
     "export.split_month": "Én HTML per måned",
     "export.split_year": "Én HTML per år",
     "export.start_date": "Fra:",
-
     "first_day_of_week": "Ukens startdag",
     "first_day_of_week.help_text": "Velg hvilken dag uken skal starte på (påvirker kalenderen). Endringen synes kanskje først etter at siden lastes på nytt.",
-
     "functions": "Funksjoner",
-
     "images_description": "<ul>\n\t<li>Bilder kan lastes automatisk ved visning av en tekst. <em>Økt databruk!</em></li>\n\t<li>Alternativt vises en knapp for å laste alle bilder.</li>\n</ul>",
     "images_loading_default": "Last bilder automatisk som standard (på alle enheter)",
     "images_loading_per_device": "Bestem per enhet om bilder skal lastes automatisk",
     "images_loading_this_device": "Last bilder automatisk på <b>denne enheten</b>",
     "images_title": "Automatisk lasting av bilder",
-
     "installation_help": "Du kan også installere DailyTxT som en app via nettleseren, men ikke alle nettlesere støtter dette.<br/>\n<ul>\n<li>Android: «Legg til på startskjermen»</li>\n<li>Apple: «Del» → «Legg til på Hjem-skjerm»</li>\n</ul>",
-
     "language": "Språk",
     "language_auto_detect": "Bestem språk basert på nettleseren. Nåværende:",
     "language.help_translate": "Mangler språket ditt? Hjelp til med oversettelsen! Mer info her:",
     "language_not_available": "Språket <code>{browserLanguage}</code> er ikke tilgjengelig. Standard <code>{defaultLanguage}</code> brukes.",
     "language.reload_info": "Endring av språk laster siden på nytt automatisk.",
     "language_X_used": "brukes",
-
     "light_dark_auto_detect": "Oppdag modus automatisk. Nåværende:",
     "light_dark_manual": "Sett manuelt",
     "light_dark_mode": "Lys/mørk-modus",
     "light_mode": "Lys",
-
     "password": {
       "change_error": "Feil ved endring av passord!",
       "change_password_button": "Endre passord",
@@ -331,24 +317,19 @@
       "success": "Passord endret!",
       "success_backup_codes_warning": "Merk: Reservekoder ble deaktivert og må genereres på nytt."
     },
-
     "reauth": {
       "description": "For økt sikkerhet kan passordet kreves på nytt ved hver sidelasting.",
       "label": "Be om passord ved hver sidelasting",
       "title": "Passord ved sidelasting"
     },
-
     "save": "Lagre",
     "security": "Sikkerhet",
     "security.change_password": "Endre passord",
-
     "selectTimezone": "Velg tidssone",
-
     "set_language_manually": "Sett språk permanent",
-
     "statistics": {
       "activityRate": "Du bruker DailyTxT på {percent}% av alle dager siden første oppføring",
-      "averageWordsPerLog": "{wordCount, plural, one {I snitt {wordCount} ord per oppføring} other {I snitt {wordCount} ord per oppføring}}",
+      "averageWordsPerLog": "{wordCount, plural, other {I snitt {wordCount} ord per oppføring} }",
       "bookmarked": "Bokmerket",
       "bookmarkedDays": "{days, plural, one {<b>{days}</b> bokmerket dag} other {<b>{days}</b> bokmerkede dager}}",
       "bookpages": "{pages, plural, one {Du har allerede skrevet {pages} boksiden (300 ord per side)} other {Du har allerede skrevet {pages} boksider (300 ord per side)}}",
@@ -370,35 +351,29 @@
       "toast_error_user_delete": "Feil ved sletting av bruker",
       "toast_success_user_delete": "Bruker slettet",
       "total": "Totalt",
-      "wordCount": "{wordCount, plural, one {{wordCount} ord} other {{wordCount} ord}}",
-      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> ord} other {<b>{wordCount}</b> ord}}",
+      "wordCount": "{wordCount, plural, other {{wordCount} ord} }",
+      "wordCountTotal": "{wordCount, plural, other {<b>{wordCount}</b> ord} }",
       "words": "Ord"
     },
-
     "tags": "Tagger",
     "tags.delete_confirmation": "<b>Slette tag permanent?</b><br/>Dette kan ta litt tid fordi alle oppføringer må sjekkes. Endringer vises kanskje først etter en sideoppdatering.",
     "tags.description": "Her kan du redigere eller slette tagger helt fra DailyTxT.",
     "tags.no_tags": "Ingen tagger tilgjengelig ennå. Opprett en ny tag i skrivemodus.",
-
     "template": {
       "content_of_template": "Malinnhold",
       "name_of_template": "Navn på mal",
       "save_template": "Lagre mal"
     },
-
     "templates": "Maler",
     "templates.create_new": "Opprett ny mal...",
     "templates.delete_confirmation": "Vil du virkelig slette malen <b>{template}</b>?",
-
     "timezone": "Tidssone",
     "timezone.auto_detect": "Oppdag tidssone automatisk basert på nettleseren.<br/>Nåværende: ",
     "timezone.description": "Velg tidssonen som skal brukes for tidsstempelet («{written_on}»).",
     "timezone.help_text": "Når du reiser, kan det være nyttig å bruke nettleserens tidssone. Dette gir riktig lokal tid.<br />Hvis du hjemme bruker ulike tidssoner (f.eks. alltid UTC), kan det være nyttig å sette en spesifikk tidssone her.",
     "timezone.manual": "Bruk alltid følgende tidssone for denne kontoen:",
     "timezone.selected": "Valgt:",
-
     "title": "Innstillinger",
-
     "toast": {
       "delete_tag_error": "Feil ved sletting av tag!",
       "delete_template_error": "Feil ved sletting av mal!",
@@ -413,14 +388,12 @@
       "saved_settings_success": "Innstillinger lagret",
       "saved_template_success": "Mal lagret"
     },
-
     "unsaved_changes": "Ulagrede endringer",
     "updates": {
       "check_for_updates": "Varsle om nye versjoner",
       "include_test_versions": "Varsle også om testversjoner som inneholder «testing». Disse kan være ustabile – ta backup først!"
     }
   },
-
   "tags": {
     "description": "Her kan du legge til og fjerne tagger for valgt dato. Du kan også opprette nye tagger her.<br/><br/>Med <span>Ctrl</span> + <span>G</span> fokuseres søkefeltet (kun desktop).<br/><br/>For å endre eller slette tagger helt må du bruke innstillingene.",
     "hide_selector": "Lukk tagvelger",
@@ -435,11 +408,9 @@
       "error_saving_exists": "Tag-navnet finnes allerede"
     }
   },
-
   "template": {
     "dropdown_insert": "Sett inn mal..."
   },
-
   "toast": {
     "password": {
       "available_backup_codes": "{count, plural, one {Fremdeles {count} reservekode tilgjengelig!} other {Fremdeles {count} reservekoder tilgjengelig!}}"
@@ -451,7 +422,6 @@
       "update_available": "En ny versjon er tilgjengelig."
     }
   },
-
   "weekdays": {
     "friday": "Fredag",
     "monday": "Mandag",
