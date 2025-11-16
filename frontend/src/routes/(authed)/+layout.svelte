@@ -563,7 +563,8 @@
 				if (response.data.success) {
 					if (
 						$settings.language !== $tempSettings.language ||
-						$settings.useBrowserLanguage !== $tempSettings.useBrowserLanguage
+						$settings.useBrowserLanguage !== $tempSettings.useBrowserLanguage ||
+						$settings.firstDayOfWeek !== $tempSettings.firstDayOfWeek
 					) {
 						reloadRequired = true;
 					}
@@ -1666,7 +1667,9 @@
 															disabled={$tempSettings.useBrowserLanguage}
 														>
 															{#each $tolgee.getInitialOptions().availableLanguages as lang}
-																<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+																{#if lang !== 'no'}
+																	<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
+																{/if}
 															{/each}
 														</select>
 													</div>

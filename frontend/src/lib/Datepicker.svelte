@@ -144,6 +144,12 @@
 			months = Array.from({ length: 12 }, (_, i) =>
 				new Date(2000, i).toLocaleString($tolgee.getLanguage(), { month: 'long' })
 			);
+
+			if ($tolgee.getLanguage() === 'no' || $tolgee.getLanguage() === 'nb') {
+				months = months.map((month) => {
+					return month.charAt(0).toUpperCase() + month.slice(1);
+				});
+			}
 		}
 	});
 
@@ -228,12 +234,7 @@
 	<div class="datepicker-header">
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
-			<select
-				value={new Date(2000, $cal.currentMonth).toLocaleString($tolgee.getLanguage(), {
-					month: 'long'
-				})}
-				onchange={onMonthSelect}
-			>
+			<select value={months[$cal.currentMonth]} onchange={onMonthSelect}>
 				{#each months as month}
 					<option value={month}>{month}</option>
 				{/each}

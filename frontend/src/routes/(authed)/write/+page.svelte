@@ -36,6 +36,7 @@
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
+	import { derived } from 'svelte/store';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -1313,6 +1314,19 @@
 				toast.show();
 			});
 	}
+
+	let weekday = $derived.by(() => {
+		const date = new Date(Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day));
+		let weekday = date.toLocaleDateString($tolgee.getLanguage(), {
+			weekday: 'long',
+			timeZone: 'UTC'
+		});
+		if ($tolgee.getLanguage() === 'no' || $tolgee.getLanguage() === 'nb') {
+			// Norwegian specific capitalization
+			weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+		}
+		return weekday;
+	});
 </script>
 
 <DatepickerLogic />
@@ -1378,10 +1392,7 @@
 				>
 					<div class="flex-fill d-flex">
 						<div class="w-50 textAreaDate">
-							{new Date(
-								Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
-							).toLocaleDateString($tolgee.getLanguage(), { weekday: 'long', timeZone: 'UTC' })}<br
-							/>
+							{weekday}<br />
 							{new Date(
 								Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
 							).toLocaleDateString($tolgee.getLanguage(), {
