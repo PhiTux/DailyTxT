@@ -28,7 +28,8 @@
 				fr: () => import('../i18n/fr.json'),
 				cs: () => import('../i18n/cs.json'),
 				nb: () => import('../i18n/nb-NO.json'),
-				no: () => import('../i18n/nb-NO.json')
+				no: () => import('../i18n/nb-NO.json'),
+				'zh-TW': () => import('../i18n/zh-TW.json')
 			},
 
 			// for development
