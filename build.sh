@@ -44,7 +44,7 @@ fi
 
 # Disallow 'latest' as PRIMARY_TAG; only allowed as SECONDARY_TAG
 if [[ "$PRIMARY_TAG" == "latest" ]]; then
-	echo "Error: PRIMARY_TAG must not be 'latest'. Use a concrete version (e.g., '2.3.1') and optionally set SECONDARY_TAG to 'latest'."
+	echo "Error: PRIMARY_TAG must not be 'latest'. Use a specific version (e.g., '2.3.1') and optionally set SECONDARY_TAG to 'latest'."
 	exit 1
 fi
 
