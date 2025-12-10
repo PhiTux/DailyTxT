@@ -12,7 +12,7 @@ RUN npm run build
 RUN npm prune --production
 
 # ---------- BACKEND BUILD ----------
-FROM golang:1.24-alpine AS backend-builder
+FROM golang:1.25-alpine AS backend-builder
 WORKDIR /src
 
 # Install git and CA certs for `go mod download`
