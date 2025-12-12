@@ -170,9 +170,11 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ```
 - Added czech translation [1]
 - Added norwegian translation [2]
+- Added zh-TW translation (Traditional Chinese / Taiwan) [3]
 ```
 [1]: Thanks to [@MrBurgerCZ](https://github.com/MrBurgerCZ)  
 [2]: Thanks to [@Erbros](https://github.com/Erbros)
+[3]: Thanks to [@nothing-body](https://github.com/nothing-body)
 
 ---
 
