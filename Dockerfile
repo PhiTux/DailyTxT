@@ -6,7 +6,7 @@ WORKDIR /app/frontend
 
 # Install dependencies and build SvelteKit (outputs to build/)
 COPY frontend/package*.json ./
-RUN apk update && apk add build-base cairo-dev pango-dev giflib-dev g++ make py3-pip && npm ci
+RUN apk update && apk upgrade --scripts=no apk-tools && apk add build-base cairo-dev pango-dev giflib-dev g++ make py3-pip && npm ci
 COPY frontend/ ./
 RUN npm run build
 RUN npm prune --production
@@ -16,7 +16,7 @@ FROM golang:1.25-alpine AS backend-builder
 WORKDIR /src
 
 # Install git and CA certs for `go mod download`
-RUN apk add --no-cache git ca-certificates && update-ca-certificates
+RUN apk upgrade --scripts=no apk-tools && apk add --no-cache git ca-certificates && update-ca-certificates
 
 COPY backend/go.mod backend/go.sum ./backend/
 WORKDIR /src/backend
