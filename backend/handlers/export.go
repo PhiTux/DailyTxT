@@ -125,6 +125,8 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	extendedFormatting := r.URL.Query().Get("extendedFormatting") == "true"
+
 	var translations TranslationData
 
 	if err := json.Unmarshal([]byte(translationsStr), &translations); err != nil {
@@ -351,7 +353,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per month
 		for monthKey, entries := range monthlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for month %s: %v", monthKey, err)
 				} else {
@@ -373,7 +375,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per year
 		for year, entries := range yearlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for year %d: %v", year, err)
 				} else {
@@ -394,7 +396,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	case "aio":
 		// Create one single HTML with all entries
 		if len(allEntries) > 0 {
-			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML, translations)
+			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
 			if err != nil {
 				utils.Logger.Printf("Error generating HTML: %v", err)
 			} else {
@@ -414,7 +416,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 }
 
 // generateHTML creates an HTML document with all diary entries
-func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool, translations TranslationData) ([]byte, error) {
+func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool, translations TranslationData, extendedFormatting bool) ([]byte, error) {
 	// Load and decrypt tags if needed
 	var tagMap map[int]Tag
 	if includeTags {
@@ -813,10 +815,10 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 		date := time.Date(entry.Year, time.Month(entry.Month), entry.Day, 0, 0, 0, 0, time.UTC)
 		weekday := translations.Weekdays[date.Weekday()]
 		dateStr := translations.DateFormat
-		dateStr = strings.ReplaceAll(dateStr, "%W", weekday)                          // Wochentag
-		dateStr = strings.ReplaceAll(dateStr, "%D", fmt.Sprintf("%02d", entry.Day))   // Tag mit führender Null
-		dateStr = strings.ReplaceAll(dateStr, "%M", fmt.Sprintf("%02d", entry.Month)) // Monat mit führender Null
-		dateStr = strings.ReplaceAll(dateStr, "%Y", fmt.Sprintf("%d", entry.Year))    // Jahr
+		dateStr = strings.ReplaceAll(dateStr, "%W", weekday)                          // weekday
+		dateStr = strings.ReplaceAll(dateStr, "%D", fmt.Sprintf("%02d", entry.Day))   // day with leading zero
+		dateStr = strings.ReplaceAll(dateStr, "%M", fmt.Sprintf("%02d", entry.Month)) // month with leading zero
+		dateStr = strings.ReplaceAll(dateStr, "%Y", fmt.Sprintf("%d", entry.Year))    // year
 		html.WriteString(fmt.Sprintf(`        <div class="entry-date">%s</div>
 `, htmlpkg.EscapeString(dateStr)))
 
@@ -827,7 +829,7 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 		if entry.Text != "" {
 			// Decode HTML entities and render markdown
 			text := htmlpkg.UnescapeString(entry.Text)
-			text = renderMarkdownToHTML(text)
+			text = renderMarkdownToHTML(text, extendedFormatting)
 			html.WriteString(fmt.Sprintf(`            <div class="entry-text">%s</div>
 `, text))
 		}
@@ -1077,13 +1079,23 @@ func generateUniqueFilename(usedFilenames map[string]bool, originalFilename stri
 }
 
 // renderMarkdownToHTML converts markdown to HTML using gomarkdown library
-func renderMarkdownToHTML(text string) string {
+func renderMarkdownToHTML(text string, extendedFormatting bool) string {
 	// Create parser with extensions including hard line breaks
 	extensions := parser.CommonExtensions | parser.AutoHeadingIDs | parser.NoEmptyLineBeforeBlock | parser.HardLineBreak
+
+	// Disable MathJax handling of $...$ and $$...$$
+	extensions &^= parser.MathJax
+
 	p := parser.NewWithExtensions(extensions)
 
 	// Create HTML renderer with options for Prism.js compatibility
-	htmlFlags := html.CommonFlags | html.HrefTargetBlank
+	// If extendedFormatting is disabled, drop html.CommonFlags entirely
+	var htmlFlags html.Flags
+	if !extendedFormatting {
+		htmlFlags = html.HrefTargetBlank
+	} else {
+		htmlFlags = html.CommonFlags | html.HrefTargetBlank
+	}
 	opts := html.RendererOptions{
 		Flags: htmlFlags,
 		RenderNodeHook: func(w io.Writer, node ast.Node, entering bool) (ast.WalkStatus, bool) {
