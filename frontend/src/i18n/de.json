@@ -272,6 +272,8 @@
     "export.description": "Exportiere deine Einträge in einer formatierten HTML-Datei. Bilder werden wahlweise in der HTML eingebunden. Alle Dateien werden außerdem in einer Zip-Datei bereitgestellt.",
     "export.end_date": "Bis:",
     "export.export_button": "Exportieren",
+    "export.extended_formatting": "Erweiterte Formatierung",
+    "export.extended_formatting_description": "Aktiviert erweiterte Formatierungen, die u. U. nicht gewollt sind (u. a. Umwandlung von Anführungszeichen oder Spiegelstrichen in andere Zeichen).",
     "export.help_text": "<u>Hinweise:</u>\n<ul>\n\t<li>Die HTML wird keinen Verlauf der einzelnen Tage enthalten.</li>\n\t<li>Ein Re-Import ist nicht möglich. Diese Funktion dient nicht dem Backup, sondern rein dem Export, um eine einfach lesbare HTML-Datei zu erhalten.</li>\n</ul>",
     "export.period": "Zeitraum",
     "export.period_all": "Gesamter Zeitraum",

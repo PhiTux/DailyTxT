@@ -272,6 +272,8 @@
     "export.description": "Eksporter oppføringene dine som en formatert HTML-fil. Bilder kan valgfritt bygges inn. Alle filer legges også ved i en ZIP-fil.",
     "export.end_date": "Til:",
     "export.export_button": "Eksporter",
+    "export.extended_formatting": "Utvidet formatering",
+    "export.extended_formatting_description": "Aktiverer avansert formatering som muligens ikke er ønsket (inkludert konvertering av anførselstegn eller tankestreker til andre tegn).",
     "export.help_text": "<u>Merknader:</u>\n<ul>\n\t<li>HTML inkluderer ikke historikken for hver enkelt dag.</li>\n\t<li>Re-import er ikke mulig. Dette er ikke en backup – kun en eksport.</li>\n</ul>",
     "export.period": "Periode",
     "export.period_all": "Hele perioden",

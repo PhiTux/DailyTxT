@@ -272,6 +272,8 @@
     "export.description": "Export your entries as a formatted HTML file. Images can optionally be embedded into the HTML. All files are also provided in a ZIP file.",
     "export.end_date": "To:",
     "export.export_button": "Export",
+    "export.extended_formatting": "Extended Formatting",
+    "export.extended_formatting_description": "Enables extended formatting that may not be desired (including, among others, the conversion of quotes or dashes into other characters).",
     "export.help_text": "<u>Notes:</u>\n<ul>\n\t<li>The HTML will not include the history of individual days.</li>\n\t<li>Re-import is not possible. This function is not a backup but purely for export to obtain an easily readable HTML file.</li>\n</ul>",
     "export.period": "Period",
     "export.period_all": "Entire period",

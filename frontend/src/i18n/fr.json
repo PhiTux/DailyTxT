@@ -272,6 +272,8 @@
     "export.description": "Exportez vos entrées en fichier HTML formaté. Les images peuvent être intégrées, et l’ensemble est fourni dans une archive ZIP.",
     "export.end_date": "Jusqu’au :",
     "export.export_button": "Exporter",
+    "export.extended_formatting": "Formatage avancé",
+    "export.extended_formatting_description": "Active les mises en forme avancées, qui peuvent ne pas être souhaitées (y compris la transformation des guillemets ou tirets en d'autres caractères).",
     "export.help_text": "<u>Remarques :</u>\n<ul>\n\t<li>L’historique des jours n’est pas inclus dans le HTML.</li>\n\t<li>La réimportation n’est pas possible : il s’agit d’une exportation de lecture, pas d’une sauvegarde.</li>\n</ul>",
     "export.period": "Période",
     "export.period_all": "Période complète",

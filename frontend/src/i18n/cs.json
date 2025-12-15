@@ -272,6 +272,8 @@
     "export.description": "Exportuj své záznamy jako formátovaný HTML soubor. Obrázky mohou být volitelně vloženy do HTML. Všechny soubory jsou také poskytnuty v ZIP archivu.",
     "export.end_date": "Do:",
     "export.export_button": "Exportovat",
+    "export.extended_formatting": "Rozšířené formátování",
+    "export.extended_formatting_description": "Aktivuje rozšířené formátování, které nemusí být žádoucí (např. převod uvozovek nebo pomlček na jiné znaky).",
     "export.help_text": "<u>Poznámky:</u>\n<ul>\n\t<li>HTML nebude obsahovat historii jednotlivých dnů.</li>\n\t<li>Znovuimport není možný. Tato funkce není záloha, ale čistě export pro získání snadno čitelného HTML souboru.</li>\n</ul>",
     "export.period": "Období",
     "export.period_all": "Celé období",
