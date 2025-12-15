@@ -1058,6 +1058,7 @@
 	let exportImagesInHTML = $state(true);
 	let exportSplit = $state('aio');
 	let exportTagsInHTML = $state(true);
+	let exportExtendedFormatting = $state(false);
 	let isExporting = $state(false);
 
 	const exportTranslations = {
@@ -1113,7 +1114,8 @@
 					imagesInHTML: exportImagesInHTML,
 					split: exportSplit,
 					tagsInHTML: exportTagsInHTML,
-					translations: JSON.stringify(exportTranslations)
+					translations: JSON.stringify(exportTranslations),
+					extendedFormatting: exportExtendedFormatting
 				},
 				responseType: 'blob' // Expect a binary response
 			})
@@ -2094,6 +2096,19 @@
 											/>
 											<label class="form-check-label" for="exportTagsInHTML">
 												{$t('settings.export.show_tags_description')}
+											</label>
+										</div>
+
+										<h6>{$t('settings.export.extended_formatting')}</h6>
+										<div class="form-check">
+											<input
+												class="form-check-input"
+												type="checkbox"
+												id="exportExtendedFormatting"
+												bind:checked={exportExtendedFormatting}
+											/>
+											<label class="form-check-label" for="exportExtendedFormatting">
+												{$t('settings.export.extended_formatting_description')}
 											</label>
 										</div>
 
