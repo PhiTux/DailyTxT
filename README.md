@@ -175,8 +175,9 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ```
 [1]: Thanks to [@MrBurgerCZ](https://github.com/MrBurgerCZ)  
 [2]: Thanks to [@Erbros](https://github.com/Erbros)  
-[3]: Thanks to [@nothing-body](https://github.com/nothing-body)
+[3]: Thanks to [@nothing-body](https://github.com/nothing-body)  
 [4]: Thanks to [@HypnoticOcelot](https://github.com/RealHypnoticOcelot)
+
 ---
 
 ### 2.1.1 (2025-11-10)
