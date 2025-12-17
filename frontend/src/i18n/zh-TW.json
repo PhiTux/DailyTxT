@@ -1,6 +1,6 @@
 {
   "aLookBack": {
-    "header_X_years_ago": "{years_old, plural, one {{years_old} 年前} other {{years_old} 年前}}",
+    "header_X_years_ago": "{years_old, plural, other {{years_old} 年前} }",
     "open": "開啟",
     "Year_one_letter": "年"
   },
@@ -39,7 +39,7 @@
     "decrypting": "正在解密...",
     "download": "下載",
     "drop": {
-      "ready_to_upload": "{count, plural, one {可以上傳 {count} 個檔案} other {可以上傳 {count} 個檔案}}",
+      "ready_to_upload": "{count, plural, other {可以上傳 {count} 個檔案} }",
       "release_to_upload": "放開即可上傳",
       "title": "將檔案拖曳至此"
     },
@@ -59,7 +59,7 @@
       "deleteDay": "刪除日誌",
       "history": "歷史記錄"
     },
-    "load_images": "{amount, plural, one {載入 {amount} 張圖片} other {載入 {amount} 張圖片}}",
+    "load_images": "{amount, plural, other {載入 {amount} 張圖片} }",
     "toast": {
       "error_deleting_day": "刪除當日日誌時發生錯誤！",
       "error_loading": "載入文字時發生錯誤！",
@@ -96,7 +96,7 @@
       "success_message": "遷移完成，未檢測到任何錯誤！請重新啟動登入。 <br />\n然後檢查所有資料是否已正確遷移。",
       "warning": "在此期間，請勿重新載入頁面，也請勿再次登入！"
     },
-    "migration_completed_with_errors": "{error_count, plural, one {遷移完成，檢測到 {error_count} 個錯誤！請查看伺服器日誌以獲取詳細資訊！<br />如果登入無效，或資料不正確，則必須手動移除遷移的資料。} other {遷移完成，檢測到 {error_count} 個錯誤！請查看伺服器日誌以獲取詳細資訊！<br />如果登入無效，或資料不正確，則必須手動移除遷移的資料。}}",
+    "migration_completed_with_errors": "{error_count, plural, other {遷移完成，檢測到 {error_count} 個錯誤！請查看伺服器日誌以獲取詳細資訊！<br />如果登入無效，或資料不正確，則必須手動移除遷移的資料。} }",
     "password": "密碼",
     "toast": {
       "account_deleted": "帳號已成功刪除。",
@@ -115,7 +115,7 @@
       "files": "{files, plural, one {1 個檔案} other {{files} 個檔案}}",
       "history": "歷史記錄",
       "logEntry": "日記條目",
-      "tags": "{tags, plural, one {{tags} 個標籤} other {{tags} 個標籤}}",
+      "tags": "{tags, plural, other {{tags} 個標籤} }",
       "thisIncludes": "這包括：",
       "title": "完全刪除當日日誌？"
     },
@@ -172,7 +172,7 @@
     "about": "關於",
     "about.changelog": "變更日誌",
     "about.current_version": "目前版本",
-    "about.donate": "您喜歡 DailyTxT 嗎？那麼我會非常樂意收到一點點捐款！❤️<br/>這個工具的開發和維護需要花費大量的時間。謝謝您！ 🤗",
+    "about.donate": "您喜歡 DailyTxT 嗎？那麼我會非常樂意收到一點點捐款！❤️<br/>這個工具的開發和維護需要花費大量的時間。謝謝您！ \uD83E\uDD17",
     "about.latest_version": "最新版本",
     "about.made_by": "由 {creator} 用 ❤️ 製作",
     "about.source_code": "原始碼",
@@ -272,6 +272,8 @@
     "export.description": "將您的日誌匯出為格式化的 HTML 檔案。圖片可選擇性地嵌入到 HTML 中。所有檔案也會以 ZIP 壓縮檔形式提供。",
     "export.end_date": "至：",
     "export.export_button": "匯出",
+    "export.extended_formatting": "進階格式化",
+    "export.extended_formatting_description": "啟用 擴展 格式化，其中可能包含不希望的內容（包括將引號或破折號轉換為其他字符）。",
     "export.help_text": "<u>注意：</u>\n<ul>\n\t<li>HTML 將不包含個別日誌的歷史記錄。</li>\n\t<li>無法重新匯入。此功能不是備份，純粹用於匯出以獲得一個易於閱讀的 HTML 檔案。</li>\n</ul>",
     "export.period": "期間",
     "export.period_all": "全部期間",
@@ -329,16 +331,16 @@
     "set_language_manually": "永久設定語言",
     "statistics": {
       "activityRate": "自第一個日誌以來，您在 {percent}% 的日子裡使用了 DailyTxT",
-      "averageWordsPerLog": "{wordCount, plural, one {平均每篇日誌 {wordCount} 個詞} other {平均每篇日誌 {wordCount} 個詞}}",
+      "averageWordsPerLog": "{wordCount, plural, other {平均每篇日誌 {wordCount} 個詞} }",
       "bookmarked": "已加入書籤",
-      "bookmarkedDays": "{days, plural, one {<b>{days}</b> 個已加入書籤的日期} other {<b>{days}</b> 個已加入書籤的日期}}",
-      "bookpages": "{pages, plural, one {您已經寫了 {pages} 本書頁（以每頁 300 個詞計算）} other {您已經寫了 {pages} 本書頁（以每頁 300 個詞計算）}}",
-      "dayCount": "{dayCount, plural, one {{dayCount} 天} other {{dayCount} 天}}",
-      "daysWithActivity": "{days, plural, one {<b>{days}</b> 天有活動} other {<b>{days}</b> 天有活動}}",
+      "bookmarkedDays": "{days, plural, other {<b>{days}</b> 個已加入書籤的日期} }",
+      "bookpages": "{pages, plural, other {您已經寫了 {pages} 本書頁（以每頁 300 個詞計算）} }",
+      "dayCount": "{dayCount, plural, other {{dayCount} 天} }",
+      "daysWithActivity": "{days, plural, other {<b>{days}</b> 天有活動} }",
       "error_loading_data": "載入統計資料時發生未知錯誤",
       "favoriteWritingDay": "最喜歡的寫作日",
-      "fileCount": "{fileCount, plural, one {{fileCount} 個檔案} other {{fileCount} 個檔案}}",
-      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> 個檔案，佔用 <b>{diskUsage}</b>} other {<b>{fileCount}</b> 個檔案，佔用 <b>{diskUsage}</b>}}",
+      "fileCount": "{fileCount, plural, other {{fileCount} 個檔案} }",
+      "fileCountWithDiskUsage": "{fileCount, plural, other {<b>{fileCount}</b> 個檔案，佔用 <b>{diskUsage}</b>} }",
       "funFacts": "趣味事實",
       "legend": "圖例",
       "loading_data": "正在載入資料",
@@ -351,8 +353,8 @@
       "toast_error_user_delete": "刪除使用者時發生錯誤",
       "toast_success_user_delete": "使用者已刪除",
       "total": "總計",
-      "wordCount": "{wordCount, plural, one {{wordCount} 個詞} other {{wordCount} 個詞}}",
-      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> 個詞} other {<b>{wordCount}</b> 個詞}}",
+      "wordCount": "{wordCount, plural, other {{wordCount} 個詞} }",
+      "wordCountTotal": "{wordCount, plural, other {<b>{wordCount}</b> 個詞} }",
       "words": "詞彙"
     },
     "tags": "標籤",
@@ -413,7 +415,7 @@
   },
   "toast": {
     "password": {
-      "available_backup_codes": "{count, plural, one {仍有 {count} 個備用碼可用！} other {仍有 {count} 個備用碼可用！}}"
+      "available_backup_codes": "{count, plural, other {仍有 {count} 個備用碼可用！} }"
     },
     "pwa": {
       "install_button": "安裝",
