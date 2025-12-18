@@ -165,6 +165,7 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
+---
 
 ### 2.2.0 (2025-12-18)
 ```
@@ -177,8 +178,6 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 [2]: Thanks to [@Erbros](https://github.com/Erbros)  
 [3]: Thanks to [@nothing-body](https://github.com/nothing-body)  
 [4]: Thanks to [@HypnoticOcelot](https://github.com/RealHypnoticOcelot)
-
----
 
 ### 2.1.1 (2025-11-10)
 ```
