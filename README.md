@@ -165,6 +165,11 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
+#### 2.3.0 (only as testing right now) 
+```
+- Added italian translation [1]
+```
+[1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)
 ---
 
 ### 2.2.0 (2025-12-18)

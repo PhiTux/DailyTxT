@@ -19,7 +19,7 @@
 		.use(FormatIcu())
 		.use(LanguageStorage())
 		.init({
-			availableLanguages: ['en', 'de', 'fr', 'cs', 'nb', 'no', 'zh-TW'],
+			availableLanguages: ['en', 'de', 'fr', 'cs', 'nb', 'no', 'zh-TW', 'it'],
 			defaultLanguage: 'en',
 			fallbackLanguage: 'en',
 			staticData: {
@@ -29,7 +29,8 @@
 				cs: () => import('../i18n/cs.json'),
 				nb: () => import('../i18n/nb-NO.json'),
 				no: () => import('../i18n/nb-NO.json'),
-				'zh-TW': () => import('../i18n/zh-TW.json')
+				'zh-TW': () => import('../i18n/zh-TW.json'),
+				it: () => import('../i18n/it.json')
 			},
 
 			// for development

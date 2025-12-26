@@ -1,436 +1,436 @@
-{  
-  "aLookBack": {  
-    "header_X_years_ago": "{years_old, plural, one {{years_old} anno fa} other {{years_old} anni fa}}",  
-    "open": "Apri",  
-    "Year_one_letter": "A"  
-  },  
-  "calendar": {  
-    "button_bookmark": "Segnalibro",  
-    "button_today": "Oggi",  
-    "day_short": {  
-      "friday": "Ven",  
-      "monday": "Lun",  
-      "saturday": "Sab",  
-      "sunday": "Dom",  
-      "thursday": "Gio",  
-      "tuesday": "Mar",  
-      "wednesday": "Mer"  
-    },  
-    "toast": {  
-      "error_bookmarking": "Errore durante l'aggiunta del segnalibro al giorno!"  
-    }  
-  },  
-  "export": {  
-    "dateFormat": "%W, %M/%D/%Y",  
-    "entriesCount": "Numero di voci",  
-    "exportedOn": "Esportato il",  
-    "exportedOnFormat": "01/02/2006 15:04:05",  
-    "files": "File",  
-    "images": "Immagini",  
-    "tags": "Tag",  
-    "title": "Esportazione DailyTxT",  
-    "user": "Utente"  
-  },  
-  "fileList": {  
-    "change_filename": "Rinomina file",  
-    "delete_file": "Elimina file"  
-  },  
-  "files": {  
-    "decrypting": "Decrittazione...",  
-    "download": "Scarica",  
-    "drop": {  
-      "ready_to_upload": "{count, plural, one {{count} file può essere caricato} other {{count} file possono essere caricati}}",  
-      "release_to_upload": "Rilascia per caricare",  
-      "title": "Rilascia i file qui"  
-    },  
-    "encrypting": "Crittazione...",  
-    "toast": {  
-      "error_deleting": "Errore durante l'eliminazione di un file!",  
-      "error_loading": "Errore durante il download di un file!",  
-      "error_saving": "Errore durante il salvataggio di un file!"  
-    },  
-    "upload": "Carica"  
-  },  
-  "imageViewer": {  
-    "download": "Scarica"  
-  },  
-  "log": {  
-    "dropdown": {  
-      "deleteDay": "Elimina log",  
-      "history": "Cronologia"  
-    },  
-    "load_images": "{amount, plural, one {{amount} carica immagine} other {{amount} carica immagini}}",  
-    "toast": {  
-      "error_deleting_day": "Errore durante l'eliminazione del giorno!",  
-      "error_loading": "Errore durante il caricamento del testo!",  
-      "error_renaming_file": "Errore durante la rinomina del file",  
-      "error_reordering_files": "Errore durante la modifica dell'ordine dei file",  
-      "error_saving": "Errore durante il salvataggio del testo!"  
-    },  
-    "written_on": "Scritto il:"  
-  },  
-  "login": {  
-    "alert": {  
-      "empty_fields": "I campi non devono essere vuoti!",  
-      "login_failed": "Accesso fallito!<br />\nControlla i tuoi dati di input.",  
-      "migration_failed": "La migrazione è fallita! Controlla i log del server (ad es. con <code>docker logs dailytxt</code>) per trovare informazioni più dettagliate!",  
-      "passwords_do_not_match": "Le password non corrispondono!",  
-      "registration_allowed_until": "Registrazione temporaneamente aperta fino al {date_and_time} (ora del server).",  
-      "registration_failed": "Registrazione fallita - analizza i messaggi di errore!",  
-      "registration_failed_with_message": "Registrazione fallita!<br />\nMessaggio di errore: <i>{message}</i>",  
-      "registration_not_allowed": "La registrazione non è attualmente possibile!",  
-      "registration_success": "Registrazione avvenuta con successo - effettua l'accesso!<br/>\nSuccessivamente, è meglio dare un'occhiata alle <b><u>Impostazioni</u></b>!"  
-    },  
-    "confirm_password": "Conferma Password",  
-    "create_account": "Crea Account",  
-    "create_account_info": "I nomi utente non fanno distinzione tra maiuscole e minuscole durante l'accesso. Si consiglia di scrivere un nome normalmente (ad es. \"Tom\") in modo che appaia corretto nelle esportazioni. Puoi comunque accedere con \"tom\".",  
-    "login": "Accedi",  
-    "migration": {  
-      "account_info": "Durante la migrazione, i codici di backup (se disponibili) sono stati invalidati e devono essere ricreati!<br/>\nInoltre, familiarizza con le nuove <b><u>impostazioni</u></b> per il tuo account!<br/><br/>\nUna volta che tutti gli account sono stati migrati senza errori, i dati \"vecchi\" possono essere eliminati manualmente nel pannello di amministrazione.",  
-      "create_account": "Crea account utente",  
-      "migrate_files": "Migra file",  
-      "migrate_logs": "Migra voci",  
-      "migrate_templates": "Migra modelli",  
-      "progress": "Progresso:",  
-      "start_message": "La migrazione dei dati è iniziata. Potrebbe richiedere alcuni istanti.",  
-      "success_message": "Migrazione completata senza errori rilevati! Riavvia l'accesso. <br />\nQuindi controlla se tutti i dati sono stati migrati correttamente.",  
-      "warning": "Nel frattempo, non ricaricare la pagina e non effettuare di nuovo l'accesso!"  
-    },  
-    "migration_completed_with_errors": "{error_count, plural, one {Migrazione completata con {error_count} errore rilevato! Controlla i log del server per i dettagli!<br />Se l'accesso non funziona o i dati non sono corretti, i dati migrati devono essere rimossi manualmente.} other {Migrazione completata con {error_count} errori rilevati! Controlla i log del server per i dettagli!<br />Se l'accesso non funziona o i dati non sono corretti, i dati migrati devono essere rimossi manualmente.}}",  
-    "password": "Password",  
-    "toast": {  
-      "account_deleted": "Account eliminato con successo.",  
-      "login_expired": "La sessione è scaduta. Effettua nuovamente l'accesso.",  
-      "login_invalid": "Autenticazione fallita. Effettua nuovamente l'accesso."  
-    },  
-    "username": "Nome utente"  
-  },  
-  "modal": {  
-    "close": "Chiudi",  
-    "deleteDay": {  
-      "bookmark": "Segnalibro",  
-      "button_close": "Chiudi",  
-      "button_delete": "Elimina",  
-      "description": "Eliminerai <b><u>tutti i dati</u></b> del <b><u>{month}/{day}/{year}</u></b>!",  
-      "files": "{files, plural, one {1 File} other {{files} File}}",  
-      "history": "Cronologia",  
-      "logEntry": "Voce del diario",  
-      "tags": "{tags, plural, one {{tags} Tag} other {{tags} Tag}}",  
-      "thisIncludes": "Questo include:",  
-      "title": "Eliminare completamente il giorno?"  
-    },  
-    "deleteFile": {  
-      "body": "Eliminare veramente il file <u><b> {file}</b></u>?",  
-      "delete": "Elimina",  
-      "title": "Eliminare il file?"  
-    },  
-    "history": {  
-      "description": "Cliccando su <b>Salva</b>, rendi il testo precedente visualizzato il testo principale corrente.",  
-      "newer": "Più recente",  
-      "older": "Più vecchio",  
-      "title": "Cronologia"  
-    },  
-    "save": "Salva",  
-    "tag": {  
-      "color": "Colore",  
-      "emoji": "Emoji",  
-      "name": "Nome",  
-      "no_emoji": "Nessuna emoji selezionata...",  
-      "preview": "Anteprima",  
-      "select_emoji": "Seleziona emoji",  
-      "title_edit": "Modifica tag",  
-      "title_new": "Crea nuovo tag"  
-    }  
-  },  
-  "navbar": {  
-    "greeting": "Ciao {user}"  
-  },  
-  "nav": {  
-    "logout": "Disconnetti"  
-  },  
-  "read": {  
-    "load_images": "{count, plural, one {Carica {count} immagine del mese ({size})} other {Carica tutte le {count} immagini del mese ({size})}}",  
-    "no_entries": "Nessuna voce"  
-  },  
-  "reauth": {  
-    "authentication_error": "Errore di autenticazione",  
-    "confirmButton": "Conferma",  
-    "description": "Per motivi di sicurezza, è necessario inserire nuovamente la password.",  
-    "title": "Conferma Password",  
-    "wrong_password": "Password errata"  
-  },  
-  "search": {  
-    "description": "Con <span>Ctrl</span> + <span>F</span> il campo di ricerca viene focalizzato.<br>\nPuoi cercare <b>testo</b>, <b>nomi di file</b> e <b>tag</b>:<br>\n<ul>\n  <li><b><u>Testo</u></b>: Quando si utilizzano più termini di ricerca, si applicano le seguenti regole:\n    <ul>\n      <li><b>ESATTO</b>: Inserisci l'intero termine di ricerca tra <u>virgolette doppie</u> per cercare la sequenza esatta di parole.</li>\n\t  <li><b>OR</b>: Separa i termini di ricerca con <b>|</b> per trovare voci in cui viene utilizzato almeno un termine.</li>\n\t  <li><b>AND</b>: Separa i termini di ricerca con <u>spazi</u> per trovare voci in cui vengono utilizzati tutti i termini. L'ordine dei termini è irrilevante, così come la distanza tra loro.</li>\n\t</ul>\n  </li>\n  <li><b><u>Nomi di file</u></b>: Se il termine di ricerca è composto da <u>una parola</u>, verrà cercato non solo il testo, ma anche i nomi dei file.</li>\n  <li><b><u>Tag</u></b>: Il termine di ricerca deve iniziare con <b>#</b>. Verrà cercato ogni elemento taggato con il tag.</li>\n</ul>",  
-    "no_results": "Nessun risultato",  
-    "search": "Cerca",  
-    "toast": {  
-      "error": "Errore durante la ricerca!"  
-    }  
-  },  
-  "settings": {  
-    "abort": "Annulla",  
-    "about": "Informazioni",  
-    "about.changelog": "Registro delle modifiche",  
-    "about.current_version": "Versione attuale",  
-    "about.donate": "Ti piace DailyTxT? Allora sarei molto felice di ricevere una piccola donazione! ❤️<br/>Lo sviluppo e la manutenzione dello strumento richiedono molto tempo. Grazie! \uD83E\uDD70",  
-    "about.latest_version": "Ultima versione",  
-    "about.made_by": "Realizzato con ❤️ da {creator}",  
-    "about.source_code": "Codice sorgente",  
-    "about.update_available": "Aggiornamento disponibile",  
-    "about.update_notification": "Notifica di aggiornamento",  
-    "about.version_info": "Nota: questo rilevamento automatico della versione potrebbe non essere sempre corretto.",  
-    "account": "Account utente",  
-    "admin": {  
-      "authorized": "Accesso amministratore autorizzato",  
-      "button_open_5_minutes": "Apri per 5 minuti",  
-      "button_refresh_status": "Aggiorna stato",  
-      "cancel": "Annulla",  
-      "check_password": "Controlla password",  
-      "confirm_delete": "Eliminare veramente l'account utente?",  
-      "confirm_delete_old_data": "Eliminare veramente?",  
-      "current_status": "Stato attuale",  
-      "delete": "Elimina",  
-      "delete_account": "Elimina account utente",  
-      "delete_old_data": "Elimina vecchi dati",  
-      "delete_old_data_warning": "Consiglio vivamente di creare un <b><u>backup</u></b> dei vecchi dati manualmente!",  
-      "delete_warning": "L'account utente verrà completamente e permanentemente eliminato!",  
-      "disk_usage": "Utilizzo del disco",  
-      "environment_variables": "Variabili d'ambiente",  
-      "environment_variables_description": "Queste sono le variabili d'ambiente che sono state definite all'avvio di DailyTxT. Probabilmente si trovano nel file docker-compose.",  
-      "free_disk_space": "Spazio libero su disco",  
-      "hidden_for_security": "Nascosto per motivi di sicurezza",  
-      "id": "ID",  
-      "invalid_password": "Password non valida!",  
-      "loading_users": "Caricamento utenti",  
-      "login_description": "La password di amministratore è definita lato server come variabile d'ambiente!",  
-      "login_error": "Errore sconosciuto durante il controllo della password.",  
-      "login_required": "Password amministratore richiesta",  
-      "logout": "Disconnetti amministratore",  
-      "me": "Io",  
-      "no_environment_variables": "Nessuna variabile d'ambiente trovata",  
-      "no_users": "Nessun account utente trovato",  
-      "old_data": "Dati precedenti alla migrazione",  
-      "old_data_description": "I dati della vecchia versione 1.x.x di DailyTxT si trovano attualmente nella directory <code>old</code>.<br/>\nLa cartella occupa spazio di archiviazione <b>in aggiunta</b> ai dati attualmente disponibili/migrati. Se sei sicuro che tutti gli utenti elencati di seguito hanno migrato i loro dati senza errori (e appaiono nell'elenco sopra), puoi anche eliminare questi vecchi dati!",  
-      "old_data_size": "Utilizzo del disco della cartella <code>old</code>",  
-      "old_users": "Utenti precedenti alla migrazione",  
-      "password": "Password amministratore",  
-      "refresh_users": "Ricarica utenti",  
-      "registration": "Registrazione",  
-      "registration_allowed": "Consentita",  
-      "registration_allowed_until": "Registrazione temporaneamente aperta fino al <strong>{date_and_time}</strong>.",  
-      "registration_blocked": "Bloccata",  
-      "registration_description": "La creazione di nuovi account è attualmente disabilitata per impostazione predefinita (tramite variabile d'ambiente). Con questo menu, la registrazione può essere abilitata per 5 minuti. Successivamente, verrà automaticamente disabilitata di nuovo. La variabile d'ambiente rimane invariata.",  
-      "registration_open_error": "Errore durante l'apertura temporanea della registrazione.",  
-      "registration_status_error": "Errore durante il controllo se la registrazione è consentita.",  
-      "title": "Amministratore",  
-      "toast_error_old_data_delete": "Errore durante l'eliminazione dei vecchi dati",  
-      "toast_success_old_data_delete": "Vecchi dati (precedenti alla migrazione) eliminati",  
-      "total_disk_usage": "Spazio su disco utilizzato",  
-      "total_users": "Utenti totali",  
-      "user_management": "Gestione utenti",  
-      "username": "Nome utente",  
-      "warning_delete_self": "Il tuo account utente non deve essere eliminato qui, ma preferibilmente all'interno delle \"Impostazioni\"."  
-    },  
-    "aLookBack": "Uno sguardo al passato",  
-    "aLookBack.description": "<li>Decidi da quali anni passati visualizzare le voci del diario dello stesso giorno di calendario.</li>\n<li>Si applica solo alla modalità scrittura.</li>\n<li>Esempio: <code>1,5,10</code> mostra le voci di 1 anno fa, 5 anni fa e 10 anni fa sotto il campo di testo (se disponibili).</li>",  
-    "ALookBack": {  
-      "help_text": "Inserisci tutti gli anni passati da visualizzare qui. Esempio: <code>1,5,10</code>. Usa le virgole per separare, evita gli spazi.",  
-      "input_placeholder": "Anni, separati da virgole",  
-      "invalid_input": "Inserisci solo numeri separati da virgole.",  
-      "useIt": "Mostra le voci dello stesso giorno del passato"  
-    },  
-    "appearance": "Aspetto",  
-    "background": "Sfondo",  
-    "background_gradient": "Gradiente (viene generato di nuovo ad ogni caricamento della pagina)",  
-    "background_monochrome": "Monocromatico",  
-    "backup_codes": "Codici di backup",  
-    "backup_codes.copy_button": "Copia codici",  
-    "backup_codes.description": "<li>I codici di backup funzionano come password monouso. Possono essere sempre utilizzati al posto della password, ma sono validi solo una volta e vengono quindi eliminati.</li>\n<li>Vengono sempre generati 6 codici, che sostituiscono i codici precedenti (se disponibili).</li>\n<li>È necessario annotare i codici immediatamente dopo la creazione; non possono essere visualizzati di nuovo!</li>",  
-    "backup_codes.error": "Errore durante la creazione dei codici di backup! Forse la password non è corretta?",  
-    "backup_codes.generate_button": "Genera codici di backup",  
-    "backup_codes.success": "<h6>I tuoi codici di backup:</h6>\n<p>Annota i codici; non potranno più essere visualizzati dopo aver chiuso questa finestra!</p>",  
-    "change_username": "Cambia nome utente",  
-    "change_username.button": "Cambia nome utente",  
-    "change_username.current_username": "Nome utente attuale",  
-    "change_username.description": "Nota sul nome utente:<br/>\nLa distinzione tra maiuscole e minuscole non viene presa in considerazione quando lo si utilizza per l'accesso. Tuttavia, un nome scritto correttamente (ad es. \"Tom\" invece di \"tom\") ha un aspetto migliore nell'esportazione o in situazioni simili.",  
-    "change_username.error": "Errore sconosciuto",  
-    "change_username.new_username": "Nuovo nome utente",  
-    "change_username.success": "Nome utente modificato",  
-    "change_username.username_taken": "Nome utente già in uso",  
-    "close": "Chiudi",  
-    "dark_mode": "Scuro",  
-    "data": "Dati",  
-    "delete": "Elimina",  
-    "delete_account": "Elimina account utente",  
-    "delete_account.confirm": "Sei sicuro di voler eliminare il tuo account? Questa operazione non può essere annullata!",  
-    "delete_account.confirm_button": "Conferma eliminazione",  
-    "delete_account.delete_button": "Elimina account utente",  
-    "delete_account.description": "Questo elimina il tuo account e tutti i dati associati. Questa operazione non può essere annullata!",  
-    "delete_account.password_incorrect": "La password inserita non è corretta!",  
-    "delete_account.success": "Il tuo account è stato eliminato con successo!<br />\nDovresti essere disconnesso automaticamente. In caso contrario, disconnettiti manualmente.",  
-    "export": "Esporta",  
-    "export.description": "Esporta le tue voci come un file HTML formattato. Le immagini possono essere facoltativamente incorporate nell'HTML. Tutti i file vengono forniti anche in un file ZIP.",  
-    "export.end_date": "A:",  
-    "export.export_button": "Esporta",  
-    "export.extended_formatting": "Formattazione estesa",  
-    "export.extended_formatting_description": "Abilita la formattazione estesa che potrebbe non essere desiderata (inclusa, tra le altre cose, la conversione di virgolette o trattini in altri caratteri).",  
-    "export.help_text": "<u>Note:</u>\n<ul>\n\t<li>L'HTML non includerà la cronologia dei singoli giorni.</li>\n\t<li>La re-importazione non è possibile. Questa funzione non è un backup, ma puramente per l'esportazione per ottenere un file HTML facilmente leggibile.</li>\n</ul>",  
-    "export.period": "Periodo",  
-    "export.period_all": "Intero periodo",  
-    "export.period_invalid": "La data di inizio deve essere precedente alla data di fine!",  
-    "export.period_variable": "Periodo variabile",  
-    "export.show_images": "Mostra immagini in HTML",  
-    "export.show_images_description": "Mostra le immagini direttamente sotto il testo <em>(sono anche sempre fornite come collegamenti)</em>",  
-    "export.show_tags": "Mostra tag",  
-    "export.show_tags_description": "Mostra i tag nell'HTML",  
-    "export.split": "Numero di documenti HTML",  
-    "export.split_aio": "Singolo HTML",  
-    "export.split_month": "Un HTML per mese",  
-    "export.split_year": "Un HTML per anno",  
-    "export.start_date": "Da:",  
-    "first_day_of_week": "Inizio settimana",  
-    "first_day_of_week.help_text": "Seleziona il giorno in cui dovrebbe iniziare la settimana (influenza la visualizzazione nel calendario). Le modifiche potrebbero essere visibili solo dopo aver ricaricato la pagina.",  
-    "functions": "Funzioni",  
-    "images_description": "<ul>\n\t<li>\n\t\tQuando si carica un testo, le immagini caricate (se disponibili) possono essere caricate automaticamente. <em>Maggiore utilizzo dei dati!</em>\n\t</li>\n\t<li>In alternativa, viene visualizzato un pulsante per caricare tutte le immagini.</li>\n</ul>",  
-    "images_loading_default": "Carica automaticamente le immagini per impostazione predefinita (su ogni dispositivo)",  
-    "images_loading_per_device": "Decidi per ogni dispositivo se le immagini devono essere caricate automaticamente",  
-    "images_loading_this_device": "Carica automaticamente le immagini su <b>questo dispositivo</b>",  
-    "images_title": "Carica automaticamente le immagini",  
-    "installation_help": "Puoi anche installare DailyTxT come un'app. Questo viene fatto tramite le impostazioni del browser, ma non è supportato da tutti i browser. Attualmente, non è stata rilevata alcuna installazione.<br/>\n<ul>\n<li>Android: \"Aggiungi alla schermata Home\"</li>\n<li>Apple: \"Condividi\" -> \"Aggiungi alla schermata Home\"</li>\n</ul>",  
-    "language": "Lingua",  
-    "language_auto_detect": "Determina la lingua in base al browser. Attualmente:",  
-    "language.help_translate": "La tua lingua non è inclusa? Aiuta a tradurre! Puoi trovare informazioni a riguardo qui:",  
-    "language_not_available": "La lingua <code>{browserLanguage}</code> non è disponibile. Viene utilizzata la lingua predefinita <code>{defaultLanguage}</code>.",  
-    "language.reload_info": "Le modifiche alla lingua comportano un ricaricamento automatico della pagina al salvataggio.",  
-    "language_X_used": "è usata",  
-    "light_dark_auto_detect": "Rileva la modalità automaticamente. Attualmente:",  
-    "light_dark_manual": "Imposta la modalità manualmente",  
-    "light_dark_mode": "Modalità Chiaro/Scuro",  
-    "light_mode": "Chiaro",  
-    "password": {  
-      "change_error": "Errore durante la modifica della password!",  
-      "change_password_button": "Cambia password",  
-      "confirm_new_password": "Conferma nuova password",  
-      "confirm_password": "Conferma Password",  
-      "current_password": "Password attuale",  
-      "current_password_incorrect": "Password attuale errata!",  
-      "new_password": "Nuova password",  
-      "passwords_dont_match": "Le nuove password non corrispondono!",  
-      "success": "Password modificata con successo!",  
-      "success_backup_codes_warning": "Attenzione: i codici di backup sono stati invalidati (se disponibili) e devono essere ricreati."  
-    },  
-    "reauth": {  
-      "description": "Per aumentare la sicurezza, la password potrebbe essere richiesta di nuovo ad ogni caricamento della pagina.",  
-      "label": "Richiedi password ad ogni caricamento della pagina",  
-      "title": "Password al caricamento della pagina"  
-    },  
-    "save": "Salva",  
-    "security": "Sicurezza",  
-    "security.change_password": "Cambia password",  
-    "selectTimezone": "Seleziona fuso orario",  
-    "set_language_manually": "Imposta la lingua in modo permanente",  
-    "statistics": {  
-      "activityRate": "Utilizzi DailyTxT nel {percent}% di tutti i giorni dal primo inserimento",  
-      "averageWordsPerLog": "{wordCount, plural, one {In media {wordCount} parola per voce} other {In media {wordCount} parole per voce}}",  
-      "bookmarked": "Aggiunti ai segnalibri",  
-      "bookmarkedDays": "{days, plural, one {<b>{days}</b> giorno aggiunto ai segnalibri} other {<b>{days}</b> giorni aggiunti ai segnalibri}}",  
-      "bookpages": "{pages, plural, one {Hai già scritto {pages} pagina di un libro (a 300 parole per pagina)} other {Hai già scritto {pages} pagine di un libro (a 300 parole per pagina)}}",  
-      "dayCount": "{dayCount, plural, one {{dayCount} giorno} other {{dayCount} giorni}}",  
-      "daysWithActivity": "{days, plural, one {<b>{days}</b> giorno con attività} other {<b>{days}</b> giorni con attività}}",  
-      "error_loading_data": "Errore sconosciuto durante il caricamento delle statistiche",  
-      "favoriteWritingDay": "Giorno della settimana preferito per la scrittura",  
-      "fileCount": "{fileCount, plural, one {{fileCount} File} other {{fileCount} File}}",  
-      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> file che occupa <b>{diskUsage}</b>} other {<b>{fileCount}</b> file che occupano <b>{diskUsage}</b>}}",  
-      "funFacts": "Curiosità",  
-      "legend": "Legenda",  
-      "loading_data": "Caricamento dati",  
-      "longestWritingStreak": "Serie di scrittura più lunga",  
-      "mostProductiveDay": "Giorno più produttivo",  
-      "no_data": "Ancora nessun dato",  
-      "open": "Apri",  
-      "tagUsedCount": "Usato <b>{count}x</b>",  
-      "title": "Statistiche",  
-      "toast_error_user_delete": "Errore durante l'eliminazione dell'utente",  
-      "toast_success_user_delete": "Utente eliminato",  
-      "total": "Totale",  
-      "wordCount": "{wordCount, plural, one {{wordCount} Parola} other {{wordCount} Parole}}",  
-      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> parola} other {<b>{wordCount}</b> parole}}",  
-      "words": "Parole"  
-    },  
-    "tags": "Tag",  
-    "tags.delete_confirmation": "<b>Eliminare il tag in modo permanente?</b><br/>Potrebbe richiedere un momento perché ogni voce deve essere cercata per potenziali collegamenti. Le modifiche potrebbero diventare visibili solo dopo un ricaricamento della pagina.",  
-    "tags.description": "Qui puoi modificare i tag o eliminarli completamente da DailyTxT.",  
-    "tags.no_tags": "Nessun tag disponibile al momento. Crea un nuovo tag in modalità scrittura.",  
-    "template": {  
-      "content_of_template": "Contenuto del modello",  
-      "name_of_template": "Nome del modello",  
-      "save_template": "Salva modello"  
-    },  
-    "templates": "Modelli",  
-    "templates.create_new": "Crea nuovo modello...",  
-    "templates.delete_confirmation": "Eliminare veramente il modello <b>{template}</b>?",  
-    "timezone": "Fuso orario",  
-    "timezone.auto_detect": "Determina automaticamente il fuso orario in base al browser.<br/>Attualmente:",  
-    "timezone.description": "Imposta il fuso orario da utilizzare per il timestamp (\"{written_on}\").",  
-    "timezone.help_text": "Quando si viaggia, può essere utile determinare il fuso orario in base al browser. Quindi la data e l'ora a destinazione saranno probabilmente riconosciute meglio.<br />Se, d'altra parte, si utilizzano diversi fusi orari a casa in un browser privato (ad es. sempre UTC), può essere utile impostare un fuso orario specifico qui.",  
-    "timezone.manual": "Usa sempre il seguente fuso orario per questo account utente:",  
-    "timezone.selected": "Selezionato:",  
-    "title": "Impostazioni",  
-    "toast": {  
-      "delete_tag_error": "Errore durante l'eliminazione del tag!",  
-      "delete_template_error": "Errore durante l'eliminazione del modello",  
-      "delete_template_success": "Modello eliminato",  
-      "export_data_error": "Errore durante l'esportazione!",  
-      "invalid_template_double": "Nome modello già esistente!",  
-      "invalid_template_empty": "Il nome o il contenuto di un modello non devono essere vuoti!",  
-      "logout_error": "Errore durante la disconnessione",  
-      "saved_edit_tag_error": "Errore durante il salvataggio delle modifiche!",  
-      "saved_edit_tag_success": "Modifiche salvate!",  
-      "saved_settings_error": "Errore durante il salvataggio delle impostazioni!",  
-      "saved_settings_success": "Impostazioni salvate",  
-      "saved_template_success": "Modello salvato"  
-    },  
-    "unsaved_changes": "Modifiche non salvate",  
-    "updates": {  
-      "check_for_updates": "Avvisami delle nuove versioni",  
-      "include_test_versions": "Avvisami anche delle nuove versioni di test che contengono \"testing\" nel nome della versione. Queste potrebbero essere difettose — assicurati di fare prima un backup!"  
-    }  
-  },  
-  "tags": {  
-    "description": "Qui puoi aggiungere e rimuovere tag per la data selezionata per categorizzare le tue voci. Puoi anche creare nuovi tag qui.<br/><br/>Con <span>Ctrl</span> + <span>G</span> il campo di ricerca viene focalizzato (solo desktop).<br/><br/> Per modificare un tag o eliminarlo completamente, devi passare alle impostazioni.",  
-    "hide_selector": "Chiudi selettore tag",  
-    "input": "Tag...",  
-    "new_tag": "Nuovo",  
-    "no_tags_found": "Nessun tag trovato...",  
-    "tags": "Tag",  
-    "toast": {  
-      "error_adding": "Errore durante l'aggiunta del tag alla data selezionata!",  
-      "error_removing": "Errore durante la rimozione del tag!",  
-      "error_saving": "Errore durante la creazione del tag!",  
-      "error_saving_exists": "Nome del tag già esistente"  
-    }  
-  },  
-  "template": {  
-    "dropdown_insert": "Inserisci modello..."  
-  },  
-  "toast": {  
-    "password": {  
-      "available_backup_codes": "{count, plural, one {Ancora {count} codice di backup disponibile!} other {Ancora {count} codici di backup disponibili!}}"  
-    },  
-    "pwa": {  
-      "install_button": "Installa",  
-      "install_description": "Installa DailyTxT per una migliore esperienza simile a un'app.",  
-      "reload_button": "Ricarica",  
-      "update_available": "Una nuova versione è disponibile."  
-    }  
-  },  
-  "weekdays": {  
-    "friday": "Venerdì",  
-    "monday": "Lunedì",  
-    "saturday": "Sabato",  
-    "sunday": "Domenica",  
-    "thursday": "Giovedì",  
-    "tuesday": "Martedì",  
-    "wednesday": "Mercoledì"  
-  }  
-}  
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {{years_old} anno fa} other {{years_old} anni fa}}",
+    "open": "Apri",
+    "Year_one_letter": "A"
+  },
+  "calendar": {
+    "button_bookmark": "Segnalibro",
+    "button_today": "Oggi",
+    "day_short": {
+      "friday": "Ven",
+      "monday": "Lun",
+      "saturday": "Sab",
+      "sunday": "Dom",
+      "thursday": "Gio",
+      "tuesday": "Mar",
+      "wednesday": "Mer"
+    },
+    "toast": {
+      "error_bookmarking": "Errore durante l'aggiunta del segnalibro al giorno!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %M/%D/%Y",
+    "entriesCount": "Numero di voci",
+    "exportedOn": "Esportato il",
+    "exportedOnFormat": "01/02/2006 15:04:05",
+    "files": "File",
+    "images": "Immagini",
+    "tags": "Tag",
+    "title": "Esportazione DailyTxT",
+    "user": "Utente"
+  },
+  "fileList": {
+    "change_filename": "Rinomina file",
+    "delete_file": "Elimina file"
+  },
+  "files": {
+    "decrypting": "Decrittazione...",
+    "download": "Scarica",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} file può essere caricato} other {{count} file possono essere caricati}}",
+      "release_to_upload": "Rilascia per caricare",
+      "title": "Rilascia i file qui"
+    },
+    "encrypting": "Crittazione...",
+    "toast": {
+      "error_deleting": "Errore durante l'eliminazione di un file!",
+      "error_loading": "Errore durante il download di un file!",
+      "error_saving": "Errore durante il salvataggio di un file!"
+    },
+    "upload": "Carica"
+  },
+  "imageViewer": {
+    "download": "Scarica"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Elimina log",
+      "history": "Cronologia"
+    },
+    "load_images": "{amount, plural, one {{amount} carica immagine} other {{amount} carica immagini}}",
+    "toast": {
+      "error_deleting_day": "Errore durante l'eliminazione del giorno!",
+      "error_loading": "Errore durante il caricamento del testo!",
+      "error_renaming_file": "Errore durante la rinomina del file",
+      "error_reordering_files": "Errore durante la modifica dell'ordine dei file",
+      "error_saving": "Errore durante il salvataggio del testo!"
+    },
+    "written_on": "Scritto il:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "I campi non devono essere vuoti!",
+      "login_failed": "Accesso fallito!<br />\nControlla i tuoi dati di input.",
+      "migration_failed": "La migrazione è fallita! Controlla i log del server (ad es. con <code>docker logs dailytxt</code>) per trovare informazioni più dettagliate!",
+      "passwords_do_not_match": "Le password non corrispondono!",
+      "registration_allowed_until": "Registrazione temporaneamente aperta fino al {date_and_time} (ora del server).",
+      "registration_failed": "Registrazione fallita - analizza i messaggi di errore!",
+      "registration_failed_with_message": "Registrazione fallita!<br />\nMessaggio di errore: <i>{message}</i>",
+      "registration_not_allowed": "La registrazione non è attualmente possibile!",
+      "registration_success": "Registrazione avvenuta con successo - effettua l'accesso!<br/>\nSuccessivamente, è meglio dare un'occhiata alle <b><u>Impostazioni</u></b>!"
+    },
+    "confirm_password": "Conferma Password",
+    "create_account": "Crea Account",
+    "create_account_info": "I nomi utente non fanno distinzione tra maiuscole e minuscole durante l'accesso. Si consiglia di scrivere un nome normalmente (ad es. \"Tom\") in modo che appaia corretto nelle esportazioni. Puoi comunque accedere con \"tom\".",
+    "login": "Accedi",
+    "migration": {
+      "account_info": "Durante la migrazione, i codici di backup (se disponibili) sono stati invalidati e devono essere ricreati!<br/>\nInoltre, familiarizza con le nuove <b><u>impostazioni</u></b> per il tuo account!<br/><br/>\nUna volta che tutti gli account sono stati migrati senza errori, i dati \"vecchi\" possono essere eliminati manualmente nel pannello di amministrazione.",
+      "create_account": "Crea account utente",
+      "migrate_files": "Migra file",
+      "migrate_logs": "Migra voci",
+      "migrate_templates": "Migra modelli",
+      "progress": "Progresso:",
+      "start_message": "La migrazione dei dati è iniziata. Potrebbe richiedere alcuni istanti.",
+      "success_message": "Migrazione completata senza errori rilevati! Riavvia l'accesso. <br />\nQuindi controlla se tutti i dati sono stati migrati correttamente.",
+      "warning": "Nel frattempo, non ricaricare la pagina e non effettuare di nuovo l'accesso!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migrazione completata con {error_count} errore rilevato! Controlla i log del server per i dettagli!<br />Se l'accesso non funziona o i dati non sono corretti, i dati migrati devono essere rimossi manualmente.} other {Migrazione completata con {error_count} errori rilevati! Controlla i log del server per i dettagli!<br />Se l'accesso non funziona o i dati non sono corretti, i dati migrati devono essere rimossi manualmente.}}",
+    "password": "Password",
+    "toast": {
+      "account_deleted": "Account eliminato con successo.",
+      "login_expired": "La sessione è scaduta. Effettua nuovamente l'accesso.",
+      "login_invalid": "Autenticazione fallita. Effettua nuovamente l'accesso."
+    },
+    "username": "Nome utente"
+  },
+  "modal": {
+    "close": "Chiudi",
+    "deleteDay": {
+      "bookmark": "Segnalibro",
+      "button_close": "Chiudi",
+      "button_delete": "Elimina",
+      "description": "Eliminerai <b><u>tutti i dati</u></b> del <b><u>{month}/{day}/{year}</u></b>!",
+      "files": "{files, plural, one {1 File} other {{files} File}}",
+      "history": "Cronologia",
+      "logEntry": "Voce del diario",
+      "tags": "{tags, plural, other {{tags} Tag} }",
+      "thisIncludes": "Questo include:",
+      "title": "Eliminare completamente il giorno?"
+    },
+    "deleteFile": {
+      "body": "Eliminare veramente il file <u><b> {file}</b></u>?",
+      "delete": "Elimina",
+      "title": "Eliminare il file?"
+    },
+    "history": {
+      "description": "Cliccando su <b>Salva</b>, rendi il testo precedente visualizzato il testo principale corrente.",
+      "newer": "Più recente",
+      "older": "Più vecchio",
+      "title": "Cronologia"
+    },
+    "save": "Salva",
+    "tag": {
+      "color": "Colore",
+      "emoji": "Emoji",
+      "name": "Nome",
+      "no_emoji": "Nessuna emoji selezionata...",
+      "preview": "Anteprima",
+      "select_emoji": "Seleziona emoji",
+      "title_edit": "Modifica tag",
+      "title_new": "Crea nuovo tag"
+    }
+  },
+  "navbar": {
+    "greeting": "Ciao {user}"
+  },
+  "nav": {
+    "logout": "Disconnetti"
+  },
+  "read": {
+    "load_images": "{count, plural, one {Carica {count} immagine del mese ({size})} other {Carica tutte le {count} immagini del mese ({size})}}",
+    "no_entries": "Nessuna voce"
+  },
+  "reauth": {
+    "authentication_error": "Errore di autenticazione",
+    "confirmButton": "Conferma",
+    "description": "Per motivi di sicurezza, è necessario inserire nuovamente la password.",
+    "title": "Conferma Password",
+    "wrong_password": "Password errata"
+  },
+  "search": {
+    "description": "Con <span>Ctrl</span> + <span>F</span> il campo di ricerca viene focalizzato.<br>\nPuoi cercare <b>testo</b>, <b>nomi di file</b> e <b>tag</b>:<br>\n<ul>\n  <li><b><u>Testo</u></b>: Quando si utilizzano più termini di ricerca, si applicano le seguenti regole:\n    <ul>\n      <li><b>ESATTO</b>: Inserisci l'intero termine di ricerca tra <u>virgolette doppie</u> per cercare la sequenza esatta di parole.</li>\n\t  <li><b>OR</b>: Separa i termini di ricerca con <b>|</b> per trovare voci in cui viene utilizzato almeno un termine.</li>\n\t  <li><b>AND</b>: Separa i termini di ricerca con <u>spazi</u> per trovare voci in cui vengono utilizzati tutti i termini. L'ordine dei termini è irrilevante, così come la distanza tra loro.</li>\n\t</ul>\n  </li>\n  <li><b><u>Nomi di file</u></b>: Se il termine di ricerca è composto da <u>una parola</u>, verrà cercato non solo il testo, ma anche i nomi dei file.</li>\n  <li><b><u>Tag</u></b>: Il termine di ricerca deve iniziare con <b>#</b>. Verrà cercato ogni elemento taggato con il tag.</li>\n</ul>",
+    "no_results": "Nessun risultato",
+    "search": "Cerca",
+    "toast": {
+      "error": "Errore durante la ricerca!"
+    }
+  },
+  "settings": {
+    "abort": "Annulla",
+    "about": "Informazioni",
+    "about.changelog": "Registro delle modifiche",
+    "about.current_version": "Versione attuale",
+    "about.donate": "Ti piace DailyTxT? Allora sarei molto felice di ricevere una piccola donazione! ❤️<br/>Lo sviluppo e la manutenzione dello strumento richiedono molto tempo. Grazie! \uD83E\uDD70",
+    "about.latest_version": "Ultima versione",
+    "about.made_by": "Realizzato con ❤️ da {creator}",
+    "about.source_code": "Codice sorgente",
+    "about.update_available": "Aggiornamento disponibile",
+    "about.update_notification": "Notifica di aggiornamento",
+    "about.version_info": "Nota: questo rilevamento automatico della versione potrebbe non essere sempre corretto.",
+    "account": "Account utente",
+    "admin": {
+      "authorized": "Accesso amministratore autorizzato",
+      "button_open_5_minutes": "Apri per 5 minuti",
+      "button_refresh_status": "Aggiorna stato",
+      "cancel": "Annulla",
+      "check_password": "Controlla password",
+      "confirm_delete": "Eliminare veramente l'account utente?",
+      "confirm_delete_old_data": "Eliminare veramente?",
+      "current_status": "Stato attuale",
+      "delete": "Elimina",
+      "delete_account": "Elimina account utente",
+      "delete_old_data": "Elimina vecchi dati",
+      "delete_old_data_warning": "Consiglio vivamente di creare un <b><u>backup</u></b> dei vecchi dati manualmente!",
+      "delete_warning": "L'account utente verrà completamente e permanentemente eliminato!",
+      "disk_usage": "Utilizzo del disco",
+      "environment_variables": "Variabili d'ambiente",
+      "environment_variables_description": "Queste sono le variabili d'ambiente che sono state definite all'avvio di DailyTxT. Probabilmente si trovano nel file docker-compose.",
+      "free_disk_space": "Spazio libero su disco",
+      "hidden_for_security": "Nascosto per motivi di sicurezza",
+      "id": "ID",
+      "invalid_password": "Password non valida!",
+      "loading_users": "Caricamento utenti",
+      "login_description": "La password di amministratore è definita lato server come variabile d'ambiente!",
+      "login_error": "Errore sconosciuto durante il controllo della password.",
+      "login_required": "Password amministratore richiesta",
+      "logout": "Disconnetti amministratore",
+      "me": "Io",
+      "no_environment_variables": "Nessuna variabile d'ambiente trovata",
+      "no_users": "Nessun account utente trovato",
+      "old_data": "Dati precedenti alla migrazione",
+      "old_data_description": "I dati della vecchia versione 1.x.x di DailyTxT si trovano attualmente nella directory <code>old</code>.<br/>\nLa cartella occupa spazio di archiviazione <b>in aggiunta</b> ai dati attualmente disponibili/migrati. Se sei sicuro che tutti gli utenti elencati di seguito hanno migrato i loro dati senza errori (e appaiono nell'elenco sopra), puoi anche eliminare questi vecchi dati!",
+      "old_data_size": "Utilizzo del disco della cartella <code>old</code>",
+      "old_users": "Utenti precedenti alla migrazione",
+      "password": "Password amministratore",
+      "refresh_users": "Ricarica utenti",
+      "registration": "Registrazione",
+      "registration_allowed": "Consentita",
+      "registration_allowed_until": "Registrazione temporaneamente aperta fino al <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Bloccata",
+      "registration_description": "La creazione di nuovi account è attualmente disabilitata per impostazione predefinita (tramite variabile d'ambiente). Con questo menu, la registrazione può essere abilitata per 5 minuti. Successivamente, verrà automaticamente disabilitata di nuovo. La variabile d'ambiente rimane invariata.",
+      "registration_open_error": "Errore durante l'apertura temporanea della registrazione.",
+      "registration_status_error": "Errore durante il controllo se la registrazione è consentita.",
+      "title": "Amministratore",
+      "toast_error_old_data_delete": "Errore durante l'eliminazione dei vecchi dati",
+      "toast_success_old_data_delete": "Vecchi dati (precedenti alla migrazione) eliminati",
+      "total_disk_usage": "Spazio su disco utilizzato",
+      "total_users": "Utenti totali",
+      "user_management": "Gestione utenti",
+      "username": "Nome utente",
+      "warning_delete_self": "Il tuo account utente non deve essere eliminato qui, ma preferibilmente all'interno delle \"Impostazioni\"."
+    },
+    "aLookBack": "Uno sguardo al passato",
+    "aLookBack.description": "<li>Decidi da quali anni passati visualizzare le voci del diario dello stesso giorno di calendario.</li>\n<li>Si applica solo alla modalità scrittura.</li>\n<li>Esempio: <code>1,5,10</code> mostra le voci di 1 anno fa, 5 anni fa e 10 anni fa sotto il campo di testo (se disponibili).</li>",
+    "ALookBack": {
+      "help_text": "Inserisci tutti gli anni passati da visualizzare qui. Esempio: <code>1,5,10</code>. Usa le virgole per separare, evita gli spazi.",
+      "input_placeholder": "Anni, separati da virgole",
+      "invalid_input": "Inserisci solo numeri separati da virgole.",
+      "useIt": "Mostra le voci dello stesso giorno del passato"
+    },
+    "appearance": "Aspetto",
+    "background": "Sfondo",
+    "background_gradient": "Gradiente (viene generato di nuovo ad ogni caricamento della pagina)",
+    "background_monochrome": "Monocromatico",
+    "backup_codes": "Codici di backup",
+    "backup_codes.copy_button": "Copia codici",
+    "backup_codes.description": "<li>I codici di backup funzionano come password monouso. Possono essere sempre utilizzati al posto della password, ma sono validi solo una volta e vengono quindi eliminati.</li>\n<li>Vengono sempre generati 6 codici, che sostituiscono i codici precedenti (se disponibili).</li>\n<li>È necessario annotare i codici immediatamente dopo la creazione; non possono essere visualizzati di nuovo!</li>",
+    "backup_codes.error": "Errore durante la creazione dei codici di backup! Forse la password non è corretta?",
+    "backup_codes.generate_button": "Genera codici di backup",
+    "backup_codes.success": "<h6>I tuoi codici di backup:</h6>\n<p>Annota i codici; non potranno più essere visualizzati dopo aver chiuso questa finestra!</p>",
+    "change_username": "Cambia nome utente",
+    "change_username.button": "Cambia nome utente",
+    "change_username.current_username": "Nome utente attuale",
+    "change_username.description": "Nota sul nome utente:<br/>\nLa distinzione tra maiuscole e minuscole non viene presa in considerazione quando lo si utilizza per l'accesso. Tuttavia, un nome scritto correttamente (ad es. \"Tom\" invece di \"tom\") ha un aspetto migliore nell'esportazione o in situazioni simili.",
+    "change_username.error": "Errore sconosciuto",
+    "change_username.new_username": "Nuovo nome utente",
+    "change_username.success": "Nome utente modificato",
+    "change_username.username_taken": "Nome utente già in uso",
+    "close": "Chiudi",
+    "dark_mode": "Scuro",
+    "data": "Dati",
+    "delete": "Elimina",
+    "delete_account": "Elimina account utente",
+    "delete_account.confirm": "Sei sicuro di voler eliminare il tuo account? Questa operazione non può essere annullata!",
+    "delete_account.confirm_button": "Conferma eliminazione",
+    "delete_account.delete_button": "Elimina account utente",
+    "delete_account.description": "Questo elimina il tuo account e tutti i dati associati. Questa operazione non può essere annullata!",
+    "delete_account.password_incorrect": "La password inserita non è corretta!",
+    "delete_account.success": "Il tuo account è stato eliminato con successo!<br />\nDovresti essere disconnesso automaticamente. In caso contrario, disconnettiti manualmente.",
+    "export": "Esporta",
+    "export.description": "Esporta le tue voci come un file HTML formattato. Le immagini possono essere facoltativamente incorporate nell'HTML. Tutti i file vengono forniti anche in un file ZIP.",
+    "export.end_date": "A:",
+    "export.export_button": "Esporta",
+    "export.extended_formatting": "Formattazione estesa",
+    "export.extended_formatting_description": "Abilita la formattazione estesa che potrebbe non essere desiderata (inclusa, tra le altre cose, la conversione di virgolette o trattini in altri caratteri).",
+    "export.help_text": "<u>Note:</u>\n<ul>\n\t<li>L'HTML non includerà la cronologia dei singoli giorni.</li>\n\t<li>La re-importazione non è possibile. Questa funzione non è un backup, ma puramente per l'esportazione per ottenere un file HTML facilmente leggibile.</li>\n</ul>",
+    "export.period": "Periodo",
+    "export.period_all": "Intero periodo",
+    "export.period_invalid": "La data di inizio deve essere precedente alla data di fine!",
+    "export.period_variable": "Periodo variabile",
+    "export.show_images": "Mostra immagini in HTML",
+    "export.show_images_description": "Mostra le immagini direttamente sotto il testo <em>(sono anche sempre fornite come collegamenti)</em>",
+    "export.show_tags": "Mostra tag",
+    "export.show_tags_description": "Mostra i tag nell'HTML",
+    "export.split": "Numero di documenti HTML",
+    "export.split_aio": "Singolo HTML",
+    "export.split_month": "Un HTML per mese",
+    "export.split_year": "Un HTML per anno",
+    "export.start_date": "Da:",
+    "first_day_of_week": "Inizio settimana",
+    "first_day_of_week.help_text": "Seleziona il giorno in cui dovrebbe iniziare la settimana (influenza la visualizzazione nel calendario). Le modifiche potrebbero essere visibili solo dopo aver ricaricato la pagina.",
+    "functions": "Funzioni",
+    "images_description": "<ul>\n\t<li>\n\t\tQuando si carica un testo, le immagini caricate (se disponibili) possono essere caricate automaticamente. <em>Maggiore utilizzo dei dati!</em>\n\t</li>\n\t<li>In alternativa, viene visualizzato un pulsante per caricare tutte le immagini.</li>\n</ul>",
+    "images_loading_default": "Carica automaticamente le immagini per impostazione predefinita (su ogni dispositivo)",
+    "images_loading_per_device": "Decidi per ogni dispositivo se le immagini devono essere caricate automaticamente",
+    "images_loading_this_device": "Carica automaticamente le immagini su <b>questo dispositivo</b>",
+    "images_title": "Carica automaticamente le immagini",
+    "installation_help": "Puoi anche installare DailyTxT come un'app. Questo viene fatto tramite le impostazioni del browser, ma non è supportato da tutti i browser. Attualmente, non è stata rilevata alcuna installazione.<br/>\n<ul>\n<li>Android: \"Aggiungi alla schermata Home\"</li>\n<li>Apple: \"Condividi\" -> \"Aggiungi alla schermata Home\"</li>\n</ul>",
+    "language": "Lingua",
+    "language_auto_detect": "Determina la lingua in base al browser. Attualmente:",
+    "language.help_translate": "La tua lingua non è inclusa? Aiuta a tradurre! Puoi trovare informazioni a riguardo qui:",
+    "language_not_available": "La lingua <code>{browserLanguage}</code> non è disponibile. Viene utilizzata la lingua predefinita <code>{defaultLanguage}</code>.",
+    "language.reload_info": "Le modifiche alla lingua comportano un ricaricamento automatico della pagina al salvataggio.",
+    "language_X_used": "è usata",
+    "light_dark_auto_detect": "Rileva la modalità automaticamente. Attualmente:",
+    "light_dark_manual": "Imposta la modalità manualmente",
+    "light_dark_mode": "Modalità Chiaro/Scuro",
+    "light_mode": "Chiaro",
+    "password": {
+      "change_error": "Errore durante la modifica della password!",
+      "change_password_button": "Cambia password",
+      "confirm_new_password": "Conferma nuova password",
+      "confirm_password": "Conferma Password",
+      "current_password": "Password attuale",
+      "current_password_incorrect": "Password attuale errata!",
+      "new_password": "Nuova password",
+      "passwords_dont_match": "Le nuove password non corrispondono!",
+      "success": "Password modificata con successo!",
+      "success_backup_codes_warning": "Attenzione: i codici di backup sono stati invalidati (se disponibili) e devono essere ricreati."
+    },
+    "reauth": {
+      "description": "Per aumentare la sicurezza, la password potrebbe essere richiesta di nuovo ad ogni caricamento della pagina.",
+      "label": "Richiedi password ad ogni caricamento della pagina",
+      "title": "Password al caricamento della pagina"
+    },
+    "save": "Salva",
+    "security": "Sicurezza",
+    "security.change_password": "Cambia password",
+    "selectTimezone": "Seleziona fuso orario",
+    "set_language_manually": "Imposta la lingua in modo permanente",
+    "statistics": {
+      "activityRate": "Utilizzi DailyTxT nel {percent}% di tutti i giorni dal primo inserimento",
+      "averageWordsPerLog": "{wordCount, plural, one {In media {wordCount} parola per voce} other {In media {wordCount} parole per voce}}",
+      "bookmarked": "Aggiunti ai segnalibri",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> giorno aggiunto ai segnalibri} other {<b>{days}</b> giorni aggiunti ai segnalibri}}",
+      "bookpages": "{pages, plural, one {Hai già scritto {pages} pagina di un libro (a 300 parole per pagina)} other {Hai già scritto {pages} pagine di un libro (a 300 parole per pagina)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} giorno} other {{dayCount} giorni}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> giorno con attività} other {<b>{days}</b> giorni con attività}}",
+      "error_loading_data": "Errore sconosciuto durante il caricamento delle statistiche",
+      "favoriteWritingDay": "Giorno della settimana preferito per la scrittura",
+      "fileCount": "{fileCount, plural, other {{fileCount} File} }",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> file che occupa <b>{diskUsage}</b>} other {<b>{fileCount}</b> file che occupano <b>{diskUsage}</b>}}",
+      "funFacts": "Curiosità",
+      "legend": "Legenda",
+      "loading_data": "Caricamento dati",
+      "longestWritingStreak": "Serie di scrittura più lunga",
+      "mostProductiveDay": "Giorno più produttivo",
+      "no_data": "Ancora nessun dato",
+      "open": "Apri",
+      "tagUsedCount": "Usato <b>{count}x</b>",
+      "title": "Statistiche",
+      "toast_error_user_delete": "Errore durante l'eliminazione dell'utente",
+      "toast_success_user_delete": "Utente eliminato",
+      "total": "Totale",
+      "wordCount": "{wordCount, plural, one {{wordCount} Parola} other {{wordCount} Parole}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> parola} other {<b>{wordCount}</b> parole}}",
+      "words": "Parole"
+    },
+    "tags": "Tag",
+    "tags.delete_confirmation": "<b>Eliminare il tag in modo permanente?</b><br/>Potrebbe richiedere un momento perché ogni voce deve essere cercata per potenziali collegamenti. Le modifiche potrebbero diventare visibili solo dopo un ricaricamento della pagina.",
+    "tags.description": "Qui puoi modificare i tag o eliminarli completamente da DailyTxT.",
+    "tags.no_tags": "Nessun tag disponibile al momento. Crea un nuovo tag in modalità scrittura.",
+    "template": {
+      "content_of_template": "Contenuto del modello",
+      "name_of_template": "Nome del modello",
+      "save_template": "Salva modello"
+    },
+    "templates": "Modelli",
+    "templates.create_new": "Crea nuovo modello...",
+    "templates.delete_confirmation": "Eliminare veramente il modello <b>{template}</b>?",
+    "timezone": "Fuso orario",
+    "timezone.auto_detect": "Determina automaticamente il fuso orario in base al browser.<br/>Attualmente:",
+    "timezone.description": "Imposta il fuso orario da utilizzare per il timestamp (\"{written_on}\").",
+    "timezone.help_text": "Quando si viaggia, può essere utile determinare il fuso orario in base al browser. Quindi la data e l'ora a destinazione saranno probabilmente riconosciute meglio.<br />Se, d'altra parte, si utilizzano diversi fusi orari a casa in un browser privato (ad es. sempre UTC), può essere utile impostare un fuso orario specifico qui.",
+    "timezone.manual": "Usa sempre il seguente fuso orario per questo account utente:",
+    "timezone.selected": "Selezionato:",
+    "title": "Impostazioni",
+    "toast": {
+      "delete_tag_error": "Errore durante l'eliminazione del tag!",
+      "delete_template_error": "Errore durante l'eliminazione del modello",
+      "delete_template_success": "Modello eliminato",
+      "export_data_error": "Errore durante l'esportazione!",
+      "invalid_template_double": "Nome modello già esistente!",
+      "invalid_template_empty": "Il nome o il contenuto di un modello non devono essere vuoti!",
+      "logout_error": "Errore durante la disconnessione",
+      "saved_edit_tag_error": "Errore durante il salvataggio delle modifiche!",
+      "saved_edit_tag_success": "Modifiche salvate!",
+      "saved_settings_error": "Errore durante il salvataggio delle impostazioni!",
+      "saved_settings_success": "Impostazioni salvate",
+      "saved_template_success": "Modello salvato"
+    },
+    "unsaved_changes": "Modifiche non salvate",
+    "updates": {
+      "check_for_updates": "Avvisami delle nuove versioni",
+      "include_test_versions": "Avvisami anche delle nuove versioni di test che contengono \"testing\" nel nome della versione. Queste potrebbero essere difettose — assicurati di fare prima un backup!"
+    }
+  },
+  "tags": {
+    "description": "Qui puoi aggiungere e rimuovere tag per la data selezionata per categorizzare le tue voci. Puoi anche creare nuovi tag qui.<br/><br/>Con <span>Ctrl</span> + <span>G</span> il campo di ricerca viene focalizzato (solo desktop).<br/><br/> Per modificare un tag o eliminarlo completamente, devi passare alle impostazioni.",
+    "hide_selector": "Chiudi selettore tag",
+    "input": "Tag...",
+    "new_tag": "Nuovo",
+    "no_tags_found": "Nessun tag trovato...",
+    "tags": "Tag",
+    "toast": {
+      "error_adding": "Errore durante l'aggiunta del tag alla data selezionata!",
+      "error_removing": "Errore durante la rimozione del tag!",
+      "error_saving": "Errore durante la creazione del tag!",
+      "error_saving_exists": "Nome del tag già esistente"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Inserisci modello..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Ancora {count} codice di backup disponibile!} other {Ancora {count} codici di backup disponibili!}}"
+    },
+    "pwa": {
+      "install_button": "Installa",
+      "install_description": "Installa DailyTxT per una migliore esperienza simile a un'app.",
+      "reload_button": "Ricarica",
+      "update_available": "Una nuova versione è disponibile."
+    }
+  },
+  "weekdays": {
+    "friday": "Venerdì",
+    "monday": "Lunedì",
+    "saturday": "Sabato",
+    "sunday": "Domenica",
+    "thursday": "Giovedì",
+    "tuesday": "Martedì",
+    "wednesday": "Mercoledì"
+  }
+}
