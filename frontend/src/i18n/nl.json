@@ -1,0 +1,436 @@
+{
+  "aLookBack": {
+    "header_X_years_ago": "{years_old, plural, one {{years_old} jaar geleden} other {{years_old} jaar geleden}}",
+    "open": "Open",
+    "Year_one_letter": "J"
+  },
+  "calendar": {
+    "button_bookmark": "Bladwijzer",
+    "button_today": "Vandaag",
+    "day_short": {
+      "friday": "Vr",
+      "monday": "Ma",
+      "saturday": "Za",
+      "sunday": "Zo",
+      "thursday": "Do",
+      "tuesday": "Di",
+      "wednesday": "Wo"
+    },
+    "toast": {
+      "error_bookmarking": "Fout bij het toevoegen van bladwijzer!"
+    }
+  },
+  "export": {
+    "dateFormat": "%W, %D-%M-%Y",
+    "entriesCount": "Aantal notities",
+    "exportedOn": "Geëxporteerd op",
+    "exportedOnFormat": "02-01-2006 15:04:05",
+    "files": "Bestanden",
+    "images": "Afbeeldingen",
+    "tags": "Tags",
+    "title": "DailyTxT Export",
+    "user": "Gebruiker"
+  },
+  "fileList": {
+    "change_filename": "Bestandsnaam wijzigen",
+    "delete_file": "Bestand verwijderen"
+  },
+  "files": {
+    "decrypting": "Ontsleutelen...",
+    "download": "Download",
+    "drop": {
+      "ready_to_upload": "{count, plural, one {{count} bestand kan worden geüpload} other {{count} bestanden kunnen worden geüpload}}",
+      "release_to_upload": "Drop om te uploaden",
+      "title": "Sleep bestanden hierheen"
+    },
+    "encrypting": "Versleutelen...",
+    "toast": {
+      "error_deleting": "Fout bij het verwijderen van een bestand!",
+      "error_loading": "Fout bij het downloaden van een bestand!",
+      "error_saving": "Fout bij het opslaan van een bestand!"
+    },
+    "upload": "Upload"
+  },
+  "imageViewer": {
+    "download": "Download"
+  },
+  "log": {
+    "dropdown": {
+      "deleteDay": "Logboek verwijderen",
+      "history": "Geschiedenis"
+    },
+    "load_images": "{amount, plural, one {{amount} afbeelding laden} other {{amount} afbeeldingen laden}}",
+    "toast": {
+      "error_deleting_day": "Fout bij het verwijderen van de dag!",
+      "error_loading": "Fout bij het laden van de tekst!",
+      "error_renaming_file": "Fout bij het hernoemen van het bestand",
+      "error_reordering_files": "Fout bij het wijzigen van de volgorde van bestanden",
+      "error_saving": "Fout bij het opslaan van de tekst!"
+    },
+    "written_on": "Geplaatst op:"
+  },
+  "login": {
+    "alert": {
+      "empty_fields": "Velden mogen niet leeg zijn!",
+      "login_failed": "Inloggen mislukt!<br />\nControleer uw invoergegevens.",
+      "migration_failed": "De migratie is mislukt! Controleer de serverlogs (bijv. met <code>docker logs dailytxt</code>) om te zien of u daar meer gedetailleerde informatie kunt vinden!",
+      "passwords_do_not_match": "Wachtwoorden komen niet overeen!",
+      "registration_allowed_until": "Registratie tijdelijk geopend tot {date_and_time} (Servertijd).",
+      "registration_failed": "Registratie mislukt - analyseer de foutmeldingen!",
+      "registration_failed_with_message": "Registratie mislukt!<br />\nFoutmelding: <i>{message}</i>",
+      "registration_not_allowed": "Registratie is momenteel niet mogelijk!",
+      "registration_success": "Registratie geslaagd - log in!<br/>\nDaarna kunt u het beste de <b><u>Instellingen</u></b> bekijken!"
+    },
+    "confirm_password": "Bevestig wachtwoord",
+    "create_account": "Account aanmaken",
+    "create_account_info": "Gebruikersnamen zijn hoofdletterongevoelig bij het inloggen. Het wordt aanbevolen om een naam normaal te schrijven (bijv. \"Tom\") zodat het er correct uitziet in exports. U kunt nog steeds inloggen met \"tom\".",
+    "login": "Inloggen",
+    "migration": {
+      "account_info": "Tijdens de migratie zijn back-upcodes (indien beschikbaar) ongeldig gemaakt en moeten opnieuw worden aangemaakt!<br/>\nMaak u daarnaast vertrouwd met de nieuwe <b><u>instellingen</u></b> voor uw account!<br/><br/>\nZodra alle accounts zonder fouten zijn gemigreerd, kunnen de \"oude\" gegevens handmatig worden verwijderd in het beheerderspaneel.",
+      "create_account": "Gebruikersaccount aanmaken",
+      "migrate_files": "Bestanden migreren",
+      "migrate_logs": "Notities migreren",
+      "migrate_templates": "Sjablonen migreren",
+      "progress": "Voortgang:",
+      "start_message": "Gegevensmigratie is gestart. Dit kan even duren.",
+      "success_message": "Migratie voltooid zonder gedetecteerde fouten! Start opnieuw op bij de login. <br />\nControleer vervolgens of alle gegevens correct zijn gemigreerd.",
+      "warning": "Ververs de pagina niet en log niet opnieuw in!"
+    },
+    "migration_completed_with_errors": "{error_count, plural, one {Migratie voltooid met {error_count} gedetecteerde fout! Controleer de serverlogs voor details!<br />Als het inloggen niet werkt of de gegevens onjuist zijn, moeten de gemigreerde gegevens handmatig worden verwijderd.} other {Migratie voltooid met {error_count} gedetecteerde fouten! Controleer de serverlogs voor details!<br />Als het inloggen niet werkt of de gegevens onjuist zijn, moeten de gemigreerde gegevens handmatig worden verwijderd.}}",
+    "password": "Wachtwoord",
+    "toast": {
+      "account_deleted": "Account succesvol verwijderd.",
+      "login_expired": "Login is verlopen. Log opnieuw in.",
+      "login_invalid": "Authenticatie mislukt. Log opnieuw in."
+    },
+    "username": "Gebruikersnaam"
+  },
+  "modal": {
+    "close": "Sluiten",
+    "deleteDay": {
+      "bookmark": "Bladwijzer",
+      "button_close": "Sluiten",
+      "button_delete": "Verwijderen",
+      "description": "U verwijdert <b><u>alle gegevens</u></b> van <b><u>{day}-{month}-{year}</u></b>!",
+      "files": "{files, plural, one {1 bestand} other {{files} bestanden}}",
+      "history": "Geschiedenis",
+      "logEntry": "Dagboeknotitie",
+      "tags": "{tags, plural, one {{tags} tag} other {{tags} tags}}",
+      "thisIncludes": "Dit omvat:",
+      "title": "Dag volledig verwijderen?"
+    },
+    "deleteFile": {
+      "body": "Bestand <u><b>{file}</b></u> echt verwijderen?",
+      "delete": "Verwijderen",
+      "title": "Bestand verwijderen?"
+    },
+    "history": {
+      "description": "Door op <b>Opslaan</b> te klikken, maakt u de getoonde oudere tekst de huidige hoofdtekst.",
+      "newer": "Nieuwer",
+      "older": "Ouder",
+      "title": "Geschiedenis"
+    },
+    "save": "Opslaan",
+    "tag": {
+      "color": "Kleur",
+      "emoji": "Emoji",
+      "name": "Naam",
+      "no_emoji": "Geen emoji geselecteerd...",
+      "preview": "Voorbeeld",
+      "select_emoji": "Selecteer emoji",
+      "title_edit": "Tag bewerken",
+      "title_new": "Nieuwe tag maken"
+    }
+  },
+  "navbar": {
+    "greeting": "Hoi {user}"
+  },
+  "nav": {
+    "logout": "Uitloggen"
+  },
+  "read": {
+    "load_images": "{count, plural, one {Laad {count} afbeelding van de maand ({size})} other {Laad alle {count} afbeeldingen van de maand ({size})}}",
+    "no_entries": "Geen notities"
+  },
+  "reauth": {
+    "authentication_error": "Authenticatiefout",
+    "confirmButton": "Bevestigen",
+    "description": "Om veiligheidsredenen moet u uw wachtwoord opnieuw invoeren.",
+    "title": "Bevestig wachtwoord",
+    "wrong_password": "Verkeerd wachtwoord"
+  },
+  "search": {
+    "description": "Met <span>Ctrl</span> + <span>F</span> wordt het zoekveld gefocust.<br>\nU kunt zoeken naar <b>tekst</b>, <b>bestandsnamen</b> en <b>tags</b>:<br>\n<ul>\n  <li><b><u>Tekst</u></b>: Bij gebruik van meerdere zoektermen gelden de volgende regels:\n    <ul>\n      <li><b>EXACT</b>: Plaats de volledige zoekterm tussen <u>dubbele aanhalingstekens</u> om te zoeken naar de exacte woordvolgorde.</li>\n\t  <li><b>OF</b>: Scheid zoektermen met <b>|</b> om notities te vinden waarin ten minste één term wordt gebruikt.</li>\n\t  <li><b>EN</b>: Scheid zoektermen met <u>spaties</u> om notities te vinden waarin alle termen worden gebruikt. De volgorde van de termen is niet relevant, evenmin als de afstand ertussen.</li>\n\t</ul>\n  </li>\n  <li><b><u>Bestandsnamen</u></b>: Als de zoekterm uit <u>één woord</u> bestaat, wordt niet alleen in tekst gezocht, maar ook in bestandsnamen.</li>\n  <li><b><u>Tags</u></b>: De zoekterm moet beginnen met <b>#</b>. Er wordt gezocht naar elk item met de tag.</li>\n</ul>",
+    "no_results": "Geen resultaten",
+    "search": "Zoeken",
+    "toast": {
+      "error": "Fout tijdens zoeken!"
+    }
+  },
+  "settings": {
+    "abort": "Annuleren",
+    "about": "Over",
+    "about.changelog": "Wijzigingslogboek",
+    "about.current_version": "Huidige versie",
+    "about.donate": "Geniet u van DailyTxT? Dan zou ik heel blij zijn met een kleine donatie! ❤️<br/>Ontwikkeling en onderhoud van de tool kosten veel tijd. Dank u! 🥰",
+    "about.latest_version": "Laatste versie",
+    "about.made_by": "Gemaakt met ❤️ door {creator}",
+    "about.source_code": "Broncode",
+    "about.update_available": "Update beschikbaar",
+    "about.update_notification": "Updatemelding",
+    "about.version_info": "Let op: Deze automatische versiedetectie is mogelijk niet altijd correct.",
+    "account": "Gebruikersaccount",
+    "admin": {
+      "authorized": "Beheerderstoegang geautoriseerd",
+      "button_open_5_minutes": "Open voor 5 minuten",
+      "button_refresh_status": "Status vernieuwen",
+      "cancel": "Annuleren",
+      "check_password": "Wachtwoord controleren",
+      "confirm_delete": "Gebruikersaccount echt verwijderen?",
+      "confirm_delete_old_data": "Echt verwijderen?",
+      "current_status": "Huidige status",
+      "delete": "Verwijderen",
+      "delete_account": "Gebruikersaccount verwijderen",
+      "delete_old_data": "Oude gegevens verwijderen",
+      "delete_old_data_warning": "Ik raad ten zeerste aan om handmatig een <b><u>back-up</u></b> van de oude gegevens te maken!",
+      "delete_warning": "Het gebruikersaccount wordt volledig en permanent verwijderd!",
+      "disk_usage": "Schijfgebruik",
+      "environment_variables": "Omgevingsvariabelen",
+      "environment_variables_description": "Dit zijn de omgevingsvariabelen die waren gedefinieerd toen DailyTxT startte. Ze zijn waarschijnlijk te vinden in het docker-compose bestand.",
+      "free_disk_space": "Vrije schijfruimte",
+      "hidden_for_security": "Verborgen om veiligheidsredenen",
+      "id": "ID",
+      "invalid_password": "Ongeldig wachtwoord!",
+      "loading_users": "Gebruikers laden",
+      "login_description": "Het beheerderswachtwoord is server-side gedefinieerd als omgevingsvariabele!",
+      "login_error": "Onbekende fout bij het controleren van het wachtwoord.",
+      "login_required": "Beheerderswachtwoord vereist",
+      "logout": "Beheerder uitloggen",
+      "me": "Ik",
+      "no_environment_variables": "Geen omgevingsvariabelen gevonden",
+      "no_users": "Geen gebruikersaccounts gevonden",
+      "old_data": "Gegevens vóór migratie",
+      "old_data_description": "De gegevens van de oude DailyTxT versie 1.x.x bevinden zich momenteel in de <code>old</code> map.<br/>\nDe map neemt opslagruimte in <b>naast</b> de momenteel beschikbare/gemigreerde gegevens. Als u zeker bent dat alle onderstaande gebruikers hun gegevens zonder fouten hebben gemigreerd (en in de bovenstaande lijst verschijnen), kunt u deze oude gegevens ook verwijderen!",
+      "old_data_size": "Schijfgebruik van map <code>old</code>",
+      "old_users": "Gebruikers vóór migratie",
+      "password": "Beheerderswachtwoord",
+      "refresh_users": "Gebruikers opnieuw laden",
+      "registration": "Registratie",
+      "registration_allowed": "Toegestaan",
+      "registration_allowed_until": "Registratie tijdelijk geopend tot <strong>{date_and_time}</strong>.",
+      "registration_blocked": "Geblokkeerd",
+      "registration_description": "Het aanmaken van nieuwe accounts is momenteel standaard uitgeschakeld (via omgevingsvariabele). Met dit menu kan registratie voor 5 minuten worden ingeschakeld. Daarna wordt het automatisch weer uitgeschakeld. De omgevingsvariabele blijft ongewijzigd.",
+      "registration_open_error": "Fout bij het tijdelijk openen van de registratie.",
+      "registration_status_error": "Fout bij het controleren of registratie is toegestaan.",
+      "title": "Beheerder",
+      "toast_error_old_data_delete": "Fout bij het verwijderen van oude gegevens",
+      "toast_success_old_data_delete": "Oude gegevens (vóór migratie) zijn verwijderd",
+      "total_disk_usage": "Gebruikte schijfruimte",
+      "total_users": "Totaal aantal gebruikers",
+      "user_management": "Gebruikersbeheer",
+      "username": "Gebruikersnaam",
+      "warning_delete_self": "Uw eigen gebruikersaccount moet niet hier worden verwijderd, maar bij voorkeur in de \"Instellingen\"."
+    },
+    "aLookBack": "Een blik terug",
+    "aLookBack.description": "<li>Bepaal uit welke voorgaande jaren dagboeknotities van dezelfde kalenderdag moeten worden weergegeven.</li>\n<li>Geldt alleen voor schrijfmodus.</li>\n<li>Voorbeeld: <code>1,5,10</code> toont notities van 1 jaar geleden, 5 jaar geleden en 10 jaar geleden onder het tekstveld (indien beschikbaar).</li>",
+    "ALookBack": {
+      "help_text": "Voer hier alle voorgaande jaren in die moeten worden weergegeven. Voorbeeld: <code>1,5,10</code>. Gebruik komma's om te scheiden, vermijd spaties.",
+      "input_placeholder": "Jaren, gescheiden door komma's",
+      "invalid_input": "Voer alleen nummers gescheiden door komma's in.",
+      "useIt": "Toon notities van dezelfde dag uit het verleden"
+    },
+    "appearance": "Uiterlijk",
+    "background": "Achtergrond",
+    "background_gradient": "Gradiënt (wordt opnieuw gegenereerd bij elke pagina-lading)",
+    "background_monochrome": "Effen kleur",
+    "backup_codes": "Back-upcodes",
+    "backup_codes.copy_button": "Codes kopiëren",
+    "backup_codes.description": "<li>Back-upcodes werken als eenmalige wachtwoorden. Ze kunnen altijd in plaats van het wachtwoord worden gebruikt, maar zijn slechts één keer geldig en worden daarna verwijderd.</li>\n<li>Er worden altijd 6 codes gegenereerd, die de vorige codes vervangen (indien beschikbaar).</li>\n<li>U moet de codes onmiddellijk na het aanmaken opschrijven; ze kunnen niet opnieuw worden getoond!</li>",
+    "backup_codes.error": "Fout bij het aanmaken van back-upcodes! Misschien is het wachtwoord onjuist?",
+    "backup_codes.generate_button": "Back-upcodes genereren",
+    "backup_codes.success": "<h6>Uw back-upcodes:</h6>\n<p>Schrijf de codes op; ze kunnen niet opnieuw worden weergegeven na het sluiten van dit venster!</p>",
+    "change_username": "Gebruikersnaam wijzigen",
+    "change_username.button": "Gebruikersnaam wijzigen",
+    "change_username.current_username": "Huidige gebruikersnaam",
+    "change_username.description": "Opmerking over de gebruikersnaam:<br/>\nHoofdletters worden niet in aanmerking genomen bij het inloggen. Een correct geschreven naam (bijv. \"Tom\" in plaats van \"tom\") ziet er echter mooier uit in de export of vergelijkbare situaties.",
+    "change_username.error": "Onbekende fout",
+    "change_username.new_username": "Nieuwe gebruikersnaam",
+    "change_username.success": "Gebruikersnaam is gewijzigd",
+    "change_username.username_taken": "Gebruikersnaam is al in gebruik",
+    "close": "Sluiten",
+    "dark_mode": "Donker",
+    "data": "Gegevens",
+    "delete": "Verwijderen",
+    "delete_account": "Gebruikersaccount verwijderen",
+    "delete_account.confirm": "Weet u zeker dat u uw account wilt verwijderen? Dit kan niet ongedaan worden gemaakt!",
+    "delete_account.confirm_button": "Verwijdering bevestigen",
+    "delete_account.delete_button": "Gebruikersaccount verwijderen",
+    "delete_account.description": "Dit verwijdert uw account en alle bijbehorende gegevens. Dit kan niet ongedaan worden gemaakt!",
+    "delete_account.password_incorrect": "Het ingevoerde wachtwoord is onjuist!",
+    "delete_account.success": "Uw account is succesvol verwijderd!<br />\nU wordt automatisch uitgelogd. Zo niet, log dan handmatig uit.",
+    "export": "Exporteren",
+    "export.description": "Exporteer uw notities als een opgemaakt HTML-bestand. Afbeeldingen kunnen optioneel in de HTML worden ingesloten. Alle bestanden worden ook geleverd in een ZIP-bestand.",
+    "export.end_date": "Tot:",
+    "export.export_button": "Exporteren",
+    "export.extended_formatting": "Uitgebreide opmaak",
+    "export.extended_formatting_description": "Schakelt uitgebreide opmaak in die mogelijk niet gewenst is (inclusief onder andere de conversie van aanhalingstekens of streepjes naar andere tekens).",
+    "export.help_text": "<u>Opmerkingen:</u>\n<ul>\n\t<li>De HTML bevat niet de geschiedenis van individuele dagen.</li>\n\t<li>Her-importeren is niet mogelijk. Deze functie is geen back-up maar puur voor export om een gemakkelijk leesbaar HTML-bestand te verkrijgen.</li>\n</ul>",
+    "export.period": "Periode",
+    "export.period_all": "Hele periode",
+    "export.period_invalid": "De startdatum moet vóór de einddatum liggen!",
+    "export.period_variable": "Variabele periode",
+    "export.show_images": "Toon afbeeldingen in HTML",
+    "export.show_images_description": "Toon afbeeldingen direct onder de tekst <em>(ze worden ook altijd als links geleverd)</em>",
+    "export.show_tags": "Toon tags",
+    "export.show_tags_description": "Toon tags in de HTML",
+    "export.split": "Aantal HTML-documenten",
+    "export.split_aio": "Enkel HTML-bestand",
+    "export.split_month": "Eén HTML per maand",
+    "export.split_year": "Eén HTML per jaar",
+    "export.start_date": "Van:",
+    "first_day_of_week": "Begin van de week",
+    "first_day_of_week.help_text": "Selecteer de dag waarop de week moet beginnen (beïnvloedt de weergave in de kalender). Wijzigingen zijn mogelijk pas zichtbaar na het herladen van de pagina.",
+    "functions": "Functies",
+    "images_description": "<ul>\n\t<li>\n\t\tBij het laden van een tekst kunnen geüploade afbeeldingen (indien beschikbaar) automatisch worden geladen. <em>Verhoogd gegevensgebruik!</em>\n\t</li>\n\t<li>Anders wordt er een knop weergegeven om alle afbeeldingen te laden.</li>\n</ul>",
+    "images_loading_default": "Automatisch afbeeldingen laden standaard (op elk apparaat)",
+    "images_loading_per_device": "Bepaal per apparaat of afbeeldingen automatisch moeten worden geladen",
+    "images_loading_this_device": "Automatisch afbeeldingen laden op <b>dit apparaat</b>",
+    "images_title": "Automatisch afbeeldingen laden",
+    "installation_help": "U kunt DailyTxT ook installeren als een app. Dit gebeurt via de browserinstellingen, maar wordt niet door elke browser ondersteund. Momenteel is geen installatie gedetecteerd.<br/>\n<ul>\n<li>Android: \"Toevoegen aan startscherm\"</li>\n<li>Apple: \"Deel\" -> \"Zet op beginscherm\"</li>\n</ul>",
+    "language": "Taal",
+    "language_auto_detect": "Taal bepalen op basis van de browser. Momenteel:",
+    "language.help_translate": "Uw taal is niet inbegrepen? Help dan met vertalen! U kunt hier informatie hierover vinden:",
+    "language_not_available": "De taal <code>{browserLanguage}</code> is niet beschikbaar. De standaardtaal <code>{defaultLanguage}</code> wordt gebruikt.",
+    "language.reload_info": "Wijzigingen in de taal leiden tot een automatische herlaadbeurt van de pagina bij het opslaan.",
+    "language_X_used": "wordt gebruikt",
+    "light_dark_auto_detect": "Modus automatisch detecteren. Momenteel:",
+    "light_dark_manual": "Modus handmatig instellen",
+    "light_dark_mode": "Lichte/donkere modus",
+    "light_mode": "Licht",
+    "password": {
+      "change_error": "Fout bij het wijzigen van het wachtwoord!",
+      "change_password_button": "Wachtwoord wijzigen",
+      "confirm_new_password": "Bevestig nieuw wachtwoord",
+      "confirm_password": "Bevestig wachtwoord",
+      "current_password": "Huidig wachtwoord",
+      "current_password_incorrect": "Huidig wachtwoord onjuist!",
+      "new_password": "Nieuw wachtwoord",
+      "passwords_dont_match": "De nieuwe wachtwoorden komen niet overeen!",
+      "success": "Wachtwoord succesvol gewijzigd!",
+      "success_backup_codes_warning": "Let op: Back-upcodes zijn ongeldig gemaakt (indien beschikbaar) en moeten opnieuw worden aangemaakt."
+    },
+    "reauth": {
+      "description": "Om de beveiliging te verbeteren, kan het wachtwoord opnieuw worden gevraagd bij elke pagina-lading.",
+      "label": "Wachtwoord vragen bij elke pagina-lading",
+      "title": "Wachtwoord bij pagina-lading"
+    },
+    "save": "Opslaan",
+    "security": "Beveiliging",
+    "security.change_password": "Wachtwoord wijzigen",
+    "selectTimezone": "Selecteer tijdzone",
+    "set_language_manually": "Taal permanent instellen",
+    "statistics": {
+      "activityRate": "U gebruikt DailyTxT op {percent}% van alle dagen sinds de eerste notitie",
+      "averageWordsPerLog": "{wordCount, plural, one {Gemiddeld {wordCount} woord per notitie} other {Gemiddeld {wordCount} woorden per notitie}}",
+      "bookmarked": "Met bladwijzer",
+      "bookmarkedDays": "{days, plural, one {<b>{days}</b> dag met bladwijzer} other {<b>{days}</b> dagen met bladwijzer}}",
+      "bookpages": "{pages, plural, one {U heeft al {pages} boekpagina geschreven (bij 300 woorden per pagina)} other {U heeft al {pages} boekpagina's geschreven (bij 300 woorden per pagina)}}",
+      "dayCount": "{dayCount, plural, one {{dayCount} dag} other {{dayCount} dagen}}",
+      "daysWithActivity": "{days, plural, one {<b>{days}</b> dag met activiteit} other {<b>{days}</b> dagen met activiteit}}",
+      "error_loading_data": "Onbekende fout bij het laden van statistieken",
+      "favoriteWritingDay": "Favoriete weekdag om te schrijven",
+      "fileCount": "{fileCount, plural, one {{fileCount} bestand} other {{fileCount} bestanden}}",
+      "fileCountWithDiskUsage": "{fileCount, plural, one {<b>{fileCount}</b> bestand neemt <b>{diskUsage}</b> in} other {<b>{fileCount}</b> bestanden nemen <b>{diskUsage}</b> in}}",
+      "funFacts": "Leuke weetjes",
+      "legend": "Legenda",
+      "loading_data": "Gegevens laden",
+      "longestWritingStreak": "Langste schrijfreeks",
+      "mostProductiveDay": "Meest productieve dag",
+      "no_data": "Nog geen gegevens",
+      "open": "Open",
+      "tagUsedCount": "<b>{count}x</b> gebruikt",
+      "title": "Statistieken",
+      "toast_error_user_delete": "Fout bij het verwijderen van gebruiker",
+      "toast_success_user_delete": "Gebruiker verwijderd",
+      "total": "Totaal",
+      "wordCount": "{wordCount, plural, one {{wordCount} woord} other {{wordCount} woorden}}",
+      "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> woord} other {<b>{wordCount}</b> woorden}}",
+      "words": "Woorden"
+    },
+    "tags": "Tags",
+    "tags.delete_confirmation": "<b>Tag permanent verwijderen?</b><br/>Dit kan even duren omdat elke notitie moet worden doorzocht op mogelijke koppelingen. Wijzigingen worden mogelijk pas zichtbaar na het herladen van de pagina.",
+    "tags.description": "Hier kunt u tags bewerken of volledig uit DailyTxT verwijderen.",
+    "tags.no_tags": "Er zijn nog geen tags beschikbaar. Maak een nieuwe tag aan in de schrijfmodus.",
+    "template": {
+      "content_of_template": "Inhoud van het sjabloon",
+      "name_of_template": "Naam van het sjabloon",
+      "save_template": "Sjabloon opslaan"
+    },
+    "templates": "Sjablonen",
+    "templates.create_new": "Nieuw sjabloon maken...",
+    "templates.delete_confirmation": "Sjabloon <b>{template}</b> echt verwijderen?",
+    "timezone": "Tijdzone",
+    "timezone.auto_detect": "Tijdzone automatisch bepalen op basis van de browser.<br/>Momenteel: ",
+    "timezone.description": "Stel de tijdzone in die moet worden gebruikt voor de tijdstempel (\"{written_on}\").",
+    "timezone.help_text": "Bij het reizen kan het handig zijn om de tijdzone te bepalen op basis van de browser. Dan wordt de datum en tijd op de bestemming waarschijnlijk beter herkend.<br />Als u daarentegen thuis verschillende tijdzones gebruikt in een privébrowser (bijv. altijd UTC), kan het handig zijn om hier een specifieke tijdzone in te stellen.",
+    "timezone.manual": "Gebruik altijd de volgende tijdzone voor dit gebruikersaccount:",
+    "timezone.selected": "Geselecteerd:",
+    "title": "Instellingen",
+    "toast": {
+      "delete_tag_error": "Fout bij het verwijderen van de tag!",
+      "delete_template_error": "Fout bij het verwijderen van het sjabloon",
+      "delete_template_success": "Sjabloon verwijderd",
+      "export_data_error": "Fout bij exporteren!",
+      "invalid_template_double": "Sjabloonnaam bestaat al!",
+      "invalid_template_empty": "Naam of inhoud van een sjabloon mag niet leeg zijn!",
+      "logout_error": "Fout bij uitloggen",
+      "saved_edit_tag_error": "Fout bij het opslaan van wijzigingen!",
+      "saved_edit_tag_success": "Wijzigingen zijn opgeslagen!",
+      "saved_settings_error": "Fout bij het opslaan van de instellingen!",
+      "saved_settings_success": "Instellingen opgeslagen",
+      "saved_template_success": "Sjabloon opgeslagen"
+    },
+    "unsaved_changes": "Niet-opgeslagen wijzigingen",
+    "updates": {
+      "check_for_updates": "Breng me op de hoogte van nieuwe versies",
+      "include_test_versions": "Breng me ook op de hoogte van nieuwe testversies die \"testing\" in de versienaam bevatten. Deze kunnen foutief zijn — maak eerst een back-up!"
+    }
+  },
+  "tags": {
+    "description": "Hier kunt u tags toevoegen en verwijderen voor de geselecteerde datum om uw notities te categoriseren. U kunt hier ook nieuwe tags maken.<br/><br/>Met <span>Ctrl</span> + <span>G</span> wordt het zoekveld gefocust (alleen desktop).<br/><br/> Om een tag te wijzigen of volledig te verwijderen, moet u naar de instellingen gaan.",
+    "hide_selector": "Tagselector sluiten",
+    "input": "Tag...",
+    "new_tag": "Nieuw",
+    "no_tags_found": "Geen tags gevonden...",
+    "tags": "Tags",
+    "toast": {
+      "error_adding": "Fout bij het toevoegen van de tag aan de geselecteerde datum!",
+      "error_removing": "Fout bij het verwijderen van de tag!",
+      "error_saving": "Fout bij het aanmaken van de tag!",
+      "error_saving_exists": "Tagnaam bestaat al"
+    }
+  },
+  "template": {
+    "dropdown_insert": "Sjabloon invoegen..."
+  },
+  "toast": {
+    "password": {
+      "available_backup_codes": "{count, plural, one {Nog {count} back-upcode beschikbaar!} other {Nog {count} back-upcodes beschikbaar!}}"
+    },
+    "pwa": {
+      "install_button": "Installeren",
+      "install_description": "Installeer DailyTxT voor een betere app-achtige ervaring.",
+      "reload_button": "Herladen",
+      "update_available": "Een nieuwe versie is beschikbaar."
+    }
+  },
+  "weekdays": {
+    "friday": "Vrijdag",
+    "monday": "Maandag",
+    "saturday": "Zaterdag",
+    "sunday": "Zondag",
+    "thursday": "Donderdag",
+    "tuesday": "Dinsdag",
+    "wednesday": "Woensdag"
+  }
+}
