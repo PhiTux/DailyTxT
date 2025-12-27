@@ -1,6 +1,6 @@
 {
   "aLookBack": {
-    "header_X_years_ago": "{years_old, plural, one {{years_old} jaar geleden} other {{years_old} jaar geleden}}",
+    "header_X_years_ago": "{years_old, plural, other {{years_old} jaar geleden} }",
     "open": "Open",
     "Year_one_letter": "J"
   },
@@ -172,7 +172,7 @@
     "about": "Over",
     "about.changelog": "Wijzigingslogboek",
     "about.current_version": "Huidige versie",
-    "about.donate": "Geniet u van DailyTxT? Dan zou ik heel blij zijn met een kleine donatie! ❤️<br/>Ontwikkeling en onderhoud van de tool kosten veel tijd. Dank u! 🥰",
+    "about.donate": "Geniet u van DailyTxT? Dan zou ik heel blij zijn met een kleine donatie! ❤️<br/>Ontwikkeling en onderhoud van de tool kosten veel tijd. Dank u! \uD83E\uDD70",
     "about.latest_version": "Laatste versie",
     "about.made_by": "Gemaakt met ❤️ door {creator}",
     "about.source_code": "Broncode",

@@ -168,8 +168,12 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### 2.3.0 (only as testing right now) 
 ```
 - Added italian translation [1]
+- Added dutch translation [2]
 ```
-[1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)
+[1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)  
+[2]: Thanks to [@Mike Bos](https://github.com/mbos)
+
+
 ---
 
 ### 2.2.0 (2025-12-18)
