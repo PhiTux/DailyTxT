@@ -9,6 +9,7 @@
 	import { isAuthenticated, loadFlagEmoji } from '$lib/helpers.js';
 	import { fade } from 'svelte/transition';
 	import { resolve } from '$app/paths';
+	import DemoModeText from '$lib/DemoModeText.svelte';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -280,6 +281,11 @@
 	<div class="logo-wrapper d-flex flex-column align-items-center">
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
 		<span class="dailytxt">DailyTxT</span>
+		{#if window.DEMO_MODE}
+			<div class="alert alert-info" role="alert" id="demoAlert">
+				<DemoModeText />
+			</div>
+		{/if}
 	</div>
 	<div class="login-wrapper">
 		<div class="fill"></div>
@@ -668,6 +674,11 @@
 </div>
 
 <style>
+	#demoAlert {
+		margin-top: 3rem;
+		width: min(90%, 580px);
+	}
+
 	.dailytxt {
 		margin-top: 1.5rem;
 		color: #f57c00;

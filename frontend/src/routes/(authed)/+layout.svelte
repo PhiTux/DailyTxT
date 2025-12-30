@@ -50,6 +50,7 @@
 	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
 	import donate from '$lib/assets/bmc-button.png';
 	import { selectedDate } from '$lib/calendarStore';
+	import DemoModeText from '$lib/DemoModeText.svelte';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -1213,7 +1214,7 @@
 				</div>
 			</div>
 
-			<div class=" col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
+			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">
 				<div class="full-logo d-flex align-items-center">
 					<img src={dailytxt} alt="" height="38px" class="user-select-none" />
 					<span class="dailytxt ms-2 user-select-none">DailyTxT</span>
@@ -1221,6 +1222,22 @@
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
+				{#if window.DEMO_MODE}
+					<div class="dropdown me-2" id="demoInNavbar">
+						<button
+							class="btn btn-info dropdown-toggle"
+							type="button"
+							data-bs-toggle="dropdown"
+							aria-expanded="false"
+						>
+							DEMO
+						</button>
+						<div class="dropdown-menu dropdown-menu-end" id="demoModeDropdown">
+							<DemoModeText />
+						</div>
+					</div>
+				{/if}
+
 				<div class="dropdown">
 					<button
 						type="button"
@@ -2786,6 +2803,17 @@
 </div>
 
 <style>
+	#demoModeDropdown {
+		width: min(500px, 90vw);
+		padding: 1rem;
+	}
+
+	@media (max-width: 840px) {
+		#demoInNavbar {
+			display: none;
+		}
+	}
+
 	.navbar {
 		border-top: 0 !important;
 		border-left: 0 !important;

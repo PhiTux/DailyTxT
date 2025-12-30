@@ -32,5 +32,8 @@ if [ -n "${BASE_PATH:-}" ]; then
     sed -i "s|src\":\"|src\":\"/$BASE_PATH|g" /usr/share/nginx/html/manifest.webmanifest
 fi
 
+# export PUBLIC_DEMO_MODE variable for frontend usage
+sed -i "s|\'%PUBLIC_DEMO_MODE%\'|$PUBLIC_DEMO_MODE|g" /usr/share/nginx/html/index.html
+
 # Start nginx in foreground
 exec nginx -g 'daemon off;'

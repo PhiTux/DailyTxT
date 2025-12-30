@@ -36,7 +36,7 @@
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
-	import { derived } from 'svelte/store';
+	import DemoModeText from '$lib/DemoModeText.svelte';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -1382,8 +1382,36 @@
 
 	<div class="d-flex flex-row middle-right flex-grow-1">
 		<!-- Center -->
+
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
+			{#if window.DEMO_MODE}
+				<div class="accordion pb-3" id="demoAccordion">
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button
+								class="accordion-button"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#demoDescription"
+								aria-expanded="true"
+								aria-controls="demoDescription"
+							>
+								DEMO
+							</button>
+						</h2>
+						<div
+							id="demoDescription"
+							class="accordion-collapse collapse"
+							data-bs-parent="#demoAccordion"
+						>
+							<div class="accordion-body">
+								<DemoModeText />
+							</div>
+						</div>
+					</div>
+				</div>
+			{/if}
 			<div class="glass-shadow input-area">
 				<div
 					class="d-flex flex-row textAreaHeader glass"
@@ -2071,6 +2099,12 @@
 </div>
 
 <style>
+	@media (min-width: 840px) {
+		#demoAccordion {
+			display: none;
+		}
+	}
+
 	.editor-btn {
 		color: #c5c5c598;
 	}

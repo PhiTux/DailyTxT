@@ -4,13 +4,16 @@
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.svg" />
 		<link rel="manifest" href="/manifest.webmanifest" />
-		<link rel="apple-touch-icon" href="/icons/apple-180-white.png">
+		<link rel="apple-touch-icon" href="/icons/apple-180-white.png" />
 		<meta name="theme-color" content="rgba(83, 83, 83, 0.4)" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>DailyTxT</title>
 		%sveltekit.head%
+		<script>
+			window.DEMO_MODE = '%PUBLIC_DEMO_MODE%';
+		</script>
 	</head>
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
