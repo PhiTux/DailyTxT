@@ -1,6 +1,7 @@
 You are using the <strong>demo mode</strong> of
 <a href="https://github.com/PhiTux/DailyTxT" target="_blank">DailyTxT</a>.<br />
-Data resets every 30 minutes (:00 and :30) - this includes all accounts and logs/files.<br /><br />
+Data resets every 30 minutes (:00 and :30) - this includes all accounts and entries or files.<br
+/><br />
 
 <strong><u>Create your own individual testing-account, login and have fun </u></strong>🚀<br /><br
 />
