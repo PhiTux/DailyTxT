@@ -1385,7 +1385,7 @@
 
 		<div class="d-flex flex-column pt-4 px-4 flex-grow-1" id="middle">
 			<!-- Input-Area -->
-			{#if window.DEMO_MODE}
+			{#if window.DEMO_MODE === true}
 				<div class="accordion pb-3" id="demoAccordion">
 					<div class="accordion-item">
 						<h2 class="accordion-header">

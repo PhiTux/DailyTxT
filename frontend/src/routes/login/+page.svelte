@@ -281,7 +281,7 @@
 	<div class="logo-wrapper d-flex flex-column align-items-center">
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
 		<span class="dailytxt">DailyTxT</span>
-		{#if window.DEMO_MODE}
+		{#if window.DEMO_MODE === true}
 			<div class="alert alert-info" role="alert" id="demoAlert">
 				<DemoModeText />
 			</div>

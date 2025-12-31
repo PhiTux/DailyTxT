@@ -1222,7 +1222,7 @@
 			</div>
 
 			<div class="col-lg-4 col-sm-5 col pe-0 d-flex flex-row justify-content-end">
-				{#if window.DEMO_MODE}
+				{#if window.DEMO_MODE === true}
 					<div class="dropdown me-2" id="demoInNavbar">
 						<button
 							class="btn btn-info dropdown-toggle"
