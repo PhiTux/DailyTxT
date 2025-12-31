@@ -762,7 +762,7 @@
 		justify-content: center;
 		align-items: center;
 		overflow-y: hidden;
-		min-height: 100vh;
+		min-height: 100dvh;
 	}
 
 	@media screen and (min-width: 769px) and (max-width: 1000px) {
@@ -778,7 +778,7 @@
 			overflow-y: auto;
 			-webkit-overflow-scrolling: touch;
 			height: 100dvh;
-			min-height: 100vh;
+			min-height: 100dvh;
 			touch-action: pan-y;
 			overscroll-behavior-y: contain;
 		}
