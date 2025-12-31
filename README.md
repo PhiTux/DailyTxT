@@ -11,6 +11,7 @@
 
 DailyTxT is an encrypted Diary/Journal WebApp with several [features](#features). It is written in [Svelte](https://svelte.dev/) and [Go](https://golang.org/) and meant to be run by [Docker](https://www.docker.com/) - supports AMD64 and ARM64.
 
+Try the [live demo](https://dailytxt.phitux.de) 🚀
 
 > 🗣️🌍 You want to add new languages? See [TRANSLATION.md](TRANSLATION.md) for instructions.
 
@@ -169,6 +170,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ```
 - Added italian translation [1]
 - Added dutch translation [2]
+- Added demo-feature (irrelevant for normal user)
 ```
 [1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)  
 [2]: Thanks to [@Mike Bos](https://github.com/mbos)
