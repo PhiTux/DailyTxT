@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -340,6 +341,7 @@ func Register(username string, password string) (bool, error) {
 				{
 					"user_id":          1,
 					"dailytxt_version": 2,
+					"last_seen_version": utils.AppVersion,
 					"username":         username,
 					"password":         hashedPassword,
 					"salt":             salt,
@@ -365,6 +367,7 @@ func Register(username string, password string) (bool, error) {
 		usersList = append(usersList, map[string]any{
 			"user_id":          int(idCounter),
 			"dailytxt_version": 2,
+			"last_seen_version": utils.AppVersion,
 			"username":         username,
 			"password":         hashedPassword,
 			"salt":             salt,
@@ -1005,5 +1008,102 @@ func ValidatePassword(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, http.StatusOK, map[string]any{
 		"valid":                  derived_key != "",
 		"available_backup_codes": available_backup_codes,
+	})
+}
+
+// CheckChangelog checks if the user needs to see the changelog (or "forces" to see it).
+// If not forced, it checks the last seen version in the users file.
+// If the last seen version is different from the current version, it returns the changelog (except if the current version is a testing version!)
+func CheckChangelog(w http.ResponseWriter, r *http.Request) {
+	// Get user ID from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	// Get query parameter force_show
+	show_changelog := true
+	var err error
+	show_changelog, err = strconv.ParseBool(r.URL.Query().Get("force_show"))
+	if err != nil {
+		show_changelog = false
+	}
+
+	var changelog map[string]any
+
+	// Check the user's last seen version
+	if !show_changelog {
+		utils.UsersFileMutex.Lock()
+		defer utils.UsersFileMutex.Unlock()
+
+		users, err := utils.GetUsers()
+		if err != nil {
+			utils.Logger.Printf("Error getting users: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		usersList, ok := users["users"].([]any)
+		if !ok {
+			utils.Logger.Printf("Error parsing users list")
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		currentVersion := utils.GetVersion()
+		// If current version is a testing version, do not show changelog
+		if strings.Contains(currentVersion, "testing") {
+			utils.JSONResponse(w, http.StatusOK, map[string]any{
+				"changelog": changelog,
+			})
+			return
+		}
+
+		var user map[string]any
+		userIndex := -1
+
+		// Find user
+		for i, u := range usersList {
+			uMap, ok := u.(map[string]any)
+			if !ok {
+				continue
+			}
+			if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+				user = uMap
+				userIndex = i
+				break
+			}
+		}
+
+		if user != nil {
+			lastSeen, ok := user["last_seen_version"].(string)
+			if !ok || lastSeen != currentVersion {
+				user["last_seen_version"] = currentVersion
+				usersList[userIndex] = user
+				users["users"] = usersList
+
+				if err := utils.WriteUsers(users); err != nil {
+					utils.Logger.Printf("Error updating users file: %v", err)
+					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					return
+				}
+				show_changelog = true
+			}
+		}
+	}
+
+	
+	if show_changelog {
+		changelog, err = utils.GetChangelog()
+		if err != nil {
+			utils.Logger.Printf("Error getting changelog: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"changelog": changelog,
 	})
 }

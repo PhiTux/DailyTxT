@@ -171,6 +171,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 - Added italian translation [1]
 - Added dutch translation [2]
 - Added demo-feature (irrelevant for normal user)
+- Added automatic changelog modal after update (can be disabled in user settings)
 ```
 [1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)  
 [2]: Thanks to [@Mike Bos](https://github.com/mbos)

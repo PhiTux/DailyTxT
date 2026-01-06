@@ -329,6 +329,8 @@
     "security.change_password": "Changer le mot de passe",
     "selectTimezone": "Choisir le fuseau horaire",
     "set_language_manually": "Définir la langue manuellement",
+    "show_changelog_on_update": "Journal des modifications après la mise à jour",
+    "show_changelog_on_update.description": "Afficher le journal des modifications après la mise à jour (fortement recommandé)",
     "statistics": {
       "activityRate": "Vous avez utilisé DailyTxT {percent}% des jours depuis la première entrée",
       "averageWordsPerLog": "{wordCount, plural, one {En moyenne {wordCount} mot par entrée} other {En moyenne {wordCount} mots par entrée}}",

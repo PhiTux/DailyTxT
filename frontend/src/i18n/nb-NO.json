@@ -329,6 +329,8 @@
     "security.change_password": "Endre passord",
     "selectTimezone": "Velg tidssone",
     "set_language_manually": "Sett språk permanent",
+    "show_changelog_on_update": "Endringslogg etter oppdatering",
+    "show_changelog_on_update.description": "Vis endringslogg etter oppdatering (anbefales på det sterkeste)",
     "statistics": {
       "activityRate": "Du bruker DailyTxT på {percent}% av alle dager siden første oppføring",
       "averageWordsPerLog": "{wordCount, plural, other {I snitt {wordCount} ord per oppføring} }",

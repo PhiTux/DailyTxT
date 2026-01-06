@@ -495,3 +495,28 @@ func SaveBackupCodes(userID int, codes []map[string]any) error {
 
 	return nil
 }
+
+
+func GetChangelog() (map[string]any, error) {
+	// Try to open the changelog.json file
+	filePath := "changelog.json"
+	file, err := os.Open(filePath)
+	if err != nil {
+		Logger.Printf("Error opening %s: %v", filePath, err)
+		return nil, fmt.Errorf("internal server error when trying to open changelog.json")
+	}
+	defer file.Close()
+
+	// Read the file content
+	var content map[string]any
+	decoder := json.NewDecoder(file)
+	if err := decoder.Decode(&content); err != nil {
+		if err == io.EOF {
+			return map[string]any{}, nil
+		}
+		Logger.Printf("Error decoding %s: %v", filePath, err)
+		return nil, fmt.Errorf("internal server error when trying to decode changelog.json")
+	}
+	
+	return content, nil
+}

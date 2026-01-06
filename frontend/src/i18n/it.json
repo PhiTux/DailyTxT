@@ -329,6 +329,8 @@
     "security.change_password": "Cambia password",
     "selectTimezone": "Seleziona fuso orario",
     "set_language_manually": "Imposta la lingua in modo permanente",
+    "show_changelog_on_update": "Registro delle modifiche dopo l'aggiornamento",
+    "show_changelog_on_update.description": "Visualizzare il registro delle modifiche dopo l'aggiornamento (altamente consigliato)",
     "statistics": {
       "activityRate": "Utilizzi DailyTxT nel {percent}% di tutti i giorni dal primo inserimento",
       "averageWordsPerLog": "{wordCount, plural, one {In media {wordCount} parola per voce} other {In media {wordCount} parole per voce}}",

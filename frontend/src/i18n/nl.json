@@ -329,6 +329,8 @@
     "security.change_password": "Wachtwoord wijzigen",
     "selectTimezone": "Selecteer tijdzone",
     "set_language_manually": "Taal permanent instellen",
+    "show_changelog_on_update": "Wijzigingslogboek na update",
+    "show_changelog_on_update.description": "Wijzigingslogboek weergeven na update (sterk aanbevolen)",
     "statistics": {
       "activityRate": "U gebruikt DailyTxT op {percent}% van alle dagen sinds de eerste notitie",
       "averageWordsPerLog": "{wordCount, plural, one {Gemiddeld {wordCount} woord per notitie} other {Gemiddeld {wordCount} woorden per notitie}}",

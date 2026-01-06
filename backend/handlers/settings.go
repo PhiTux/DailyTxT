@@ -28,6 +28,7 @@ func GetDefaultSettings() map[string]any {
 		"includeTestVersions":        false,
 		"requirePasswordOnPageLoad":  false,
 		"firstDayOfWeek":             "monday",
+		"showChangelogOnUpdate":      true,
 	}
 }
 

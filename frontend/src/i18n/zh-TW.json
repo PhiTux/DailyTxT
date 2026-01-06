@@ -329,6 +329,8 @@
     "security.change_password": "更改密碼",
     "selectTimezone": "選擇時區",
     "set_language_manually": "永久設定語言",
+    "show_changelog_on_update": "更新后的更改日志",
+    "show_changelog_on_update.description": "更新后显示更改日志（强烈推荐）",
     "statistics": {
       "activityRate": "自第一個日誌以來，您在 {percent}% 的日子裡使用了 DailyTxT",
       "averageWordsPerLog": "{wordCount, plural, other {平均每篇日誌 {wordCount} 個詞} }",

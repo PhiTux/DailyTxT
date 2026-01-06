@@ -15,6 +15,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags, tagsLoaded } from '$lib/tagStore.js';
 	import TagModal from '$lib/TagModal.svelte';
+	import ChangelogModal from '$lib/ChangelogModal.svelte';
 	import {
 		alwaysShowSidenav,
 		generateNeonMesh,
@@ -220,6 +221,47 @@
 			backupCodes = [];
 		});
 	});
+
+	let changelog = $state({});
+
+	/**
+	 * Triggers GET request to check if the user already logged in with the new version. If not, it returns the changelog.
+	 * When set to force_show=true, it will show the changelog regardless of the version.
+	 */
+	function checkChangelog(force_show) {
+		// close settings modal if force_show is true
+		if (force_show) {
+			const settingsModalEl = document.getElementById('settingsModal');
+			const settingsModal = bootstrap.Modal.getInstance(settingsModalEl);
+			if (settingsModal) {
+				settingsModal.hide();
+			}
+		}
+
+		axios
+			.get(API_URL + '/users/checkChangelog', { params: { force_show: force_show } })
+			.then((response) => {
+				// don't show anything if showChangelogOnUpdate is false and force_show is not set
+				if (!$settings.showChangelogOnUpdate && !force_show) {
+					return;
+				}
+				if (response.data.changelog) {
+					const sortedChangelog = {};
+					Object.keys(response.data.changelog)
+						.sort((a, b) => compareVersions(b, a))
+						.forEach((key) => {
+							sortedChangelog[key] = response.data.changelog[key];
+						});
+					changelog = sortedChangelog;
+					// show changelog modal
+					const changelogModal = new bootstrap.Modal(document.getElementById('changelogModal'));
+					changelogModal.show();
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
 
 	function loadTags() {
 		axios
@@ -447,6 +489,9 @@
 
 				// set background
 				setBackground();
+
+				// check if an update was made to show changelog
+				checkChangelog(false);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -1311,6 +1356,8 @@
 	{saveEditedTag}
 />
 
+<ChangelogModal {changelog} {current_version} />
+
 {#snippet unsavedChanges()}
 	<div class="unsaved-changes" data-content={$t('settings.unsaved_changes')} transition:slide></div>
 {/snippet}
@@ -1813,6 +1860,25 @@
 											<div id="useALookBackHelpBlock" class="form-text">
 												{@html $t('settings.ALookBack.help_text')}
 											</div>
+										</div>
+									</div>
+
+									<div id="showChangelogOnUpdate">
+										{#if $tempSettings.showChangelogOnUpdate !== $settings.showChangelogOnUpdate}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>{$t('settings.show_changelog_on_update')}</h5>
+										<div class="form-check form-switch">
+											<input
+												class="form-check-input"
+												bind:checked={$tempSettings.showChangelogOnUpdate}
+												type="checkbox"
+												role="switch"
+												id="showChangelogOnUpdateSwitch"
+											/>
+											<label class="form-check-label" for="showChangelogOnUpdateSwitch">
+												{$t('settings.show_changelog_on_update.description')}
+											</label>
 										</div>
 									</div>
 								</div>
@@ -2520,13 +2586,13 @@
 
 									<span class="form-text">{$t('settings.about.version_info')}</span><br />
 
-									<a
-										class="btn btn-secondary my-2"
-										href="https://github.com/PhiTux/DailyTxT#changelog"
-										target="_blank"
+									<button
+										type="button"
+										class="btn btn-secondary"
+										onclick={() => checkChangelog(true)}
 									>
 										{$t('settings.about.changelog')}
-									</a>
+									</button>
 
 									<div id="updateSettings" class="mt-2">
 										{#if $tempSettings.checkForUpdates !== $settings.checkForUpdates || $tempSettings.includeTestVersions !== $settings.includeTestVersions}

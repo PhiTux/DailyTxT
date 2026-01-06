@@ -90,6 +90,7 @@ func main() {
 	api.HandleFunc("POST /users/createBackupCodes", middleware.RequireAuth(handlers.CreateBackupCodes))
 	api.HandleFunc("POST /users/validatePassword", middleware.RequireAuth(handlers.ValidatePassword))
 	api.HandleFunc("GET /users/statistics", middleware.RequireAuth(handlers.GetStatistics))
+	api.HandleFunc("GET /users/checkChangelog", middleware.RequireAuth(handlers.CheckChangelog))
 
 	// Logs
 	api.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))

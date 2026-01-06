@@ -1,0 +1,50 @@
+{
+  "2.3.0": {
+    "date": "2026-01-xx",
+    "changes": [
+      "🌐 Added italian translation",
+      "🌐 Added dutch translation",
+      "✨ Added demo-feature (irrelevant for normal user)",
+      "✨ Added automatic changelog modal after update (can be disabled in user settings)"
+    ]
+  },
+  "2.2.0": {
+    "date": "2025-12-18",
+    "changes": [
+      "🌐 Added czech translation",
+      "🌐 Added norwegian translation",
+      "🌐 Added Traditional Chinese / Taiwan translation (zh-TW)",
+      "✨ Added option for extended formatting in HTML export (e.g. smart quotes, etc.)"
+    ]
+  },
+  "2.1.1": {
+    "date": "2025-11-10",
+    "changes": ["🐞 Bugfix for update notification"]
+  },
+  "2.1.0": {
+    "date": "2025-11-10",
+    "changes": [
+      "🌐 Added french translation",
+      "🐞 Bugfix for translated strings in exported data",
+      "⚙️ Now auto-reloads the page, when changing the language in user settings"
+    ]
+  },
+  "2.0.1": {
+    "date": "2025-11-08",
+    "changes": [
+      "🐞 Fixed missing translation",
+      "🐞 Bugfix for update notification"
+    ]
+  },
+
+  "2.0.0": {
+    "date": "2025-11-08",
+    "changes": [
+      "🚀 First stable release of version 2 after several testing versions.",
+      "✨ Added TB as file-/disksize",
+      "🐞 Bugfix and better feedback on migration",
+      "🐞 Bugfix when changing month with shortcut",
+      "⚙️ Changed calendar settings"
+    ]
+  }
+}

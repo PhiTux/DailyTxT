@@ -329,6 +329,8 @@
     "security.change_password": "Změnit heslo",
     "selectTimezone": "Vybrat časové pásmo",
     "set_language_manually": "Nastavit jazyk trvale",
+    "show_changelog_on_update": "Protokol změn po aktualizaci",
+    "show_changelog_on_update.description": "Zobrazení protokolu změn po aktualizaci (velmi doporučeno)",
     "statistics": {
       "activityRate": "Do DailyTxT zapisuješ {percent}% všech dní od prvního zápisku",
       "averageWordsPerLog": "{wordCount, plural, one {Průměrně {wordCount} slovo na zápisek} few {Průměrně {wordCount} slova na zápisek} other {Průměrně {wordCount} slov na zápisek}}",
