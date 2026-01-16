@@ -245,6 +245,7 @@
     "background_monochrome": "Jednobarevné",
     "backup": "Záloha",
     "backup.additionalSettings": "Další nastavení",
+    "backup.API_endpoint": "API koncový bod",
     "backup.backup_button": "Stáhnout zálohu",
     "backup.backup_error": "Chyba zálohování! Je heslo správné?",
     "backup_codes": "Záložní kódy",

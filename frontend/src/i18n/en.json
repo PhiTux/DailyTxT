@@ -245,6 +245,7 @@
     "background_monochrome": "Monochrome",
     "backup": "Backup",
     "backup.additionalSettings": "Additional settings",
+    "backup.API_endpoint": "API Endpoint",
     "backup.backup_button": "Download backup",
     "backup.backup_error": "Backup error! Password correct?",
     "backup_codes": "Backup codes",

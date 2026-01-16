@@ -245,6 +245,7 @@
     "background_monochrome": "Monokrom",
     "backup": "Sikkerhetskopiering",
     "backup.additionalSettings": "Ytterligere innstillinger",
+    "backup.API_endpoint": "API-endepunkt",
     "backup.backup_button": "Last ned sikkerhetskopi",
     "backup.backup_error": "Feil ved sikkerhetskopiering! Passord riktig?",
     "backup_codes": "Reservekoder",

@@ -245,6 +245,7 @@
     "background_monochrome": "單色",
     "backup": "备份",
     "backup.additionalSettings": "附加设置",
+    "backup.API_endpoint": "API 端點",
     "backup.backup_button": "下載備份",
     "backup.backup_error": "备份错误！密码是否正确？",
     "backup_codes": "備用碼",

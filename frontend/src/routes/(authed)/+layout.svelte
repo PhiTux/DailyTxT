@@ -1167,6 +1167,21 @@
 	let backupIncludeBookmarks = $state(true);
 	let isBackingUp = $state(false);
 	let showBackupError = $state(false);
+	const curlCommand = String.raw`curl 
+-X POST 
+-H "Content-Type: application/json" 
+-d '{
+"username":"user",
+"password":"password",
+"encrypted":true,
+"includeFiles":true,
+"includeTemplates":true,
+"includeTags":true,
+"startDate":"",
+"endDate":""
+}' 
+https://dailytxt.mydomain.tld/api/logs/backupUser 
+-o ./backup.zip`;
 
 	function backupData() {
 		if (isBackingUp) return;
@@ -1197,7 +1212,6 @@
 				const a = document.createElement('a');
 				a.href = url;
 
-				const contentDisposition = response.headers['content-disposition'];
 				let filename = `DailyTxT_Backup_${localStorage.getItem('user')}_${backupEncrypted ? 'encrypted' : 'decrypted'}_${new Date().toISOString().split('T')[0]}.zip`;
 
 				a.download = filename;
@@ -2526,6 +2540,39 @@
 												{$t('settings.backup.backup_error')}
 											</div>
 										{/if}
+
+										<hr />
+
+										<div class="accordion mt-2" id="APIaccordion">
+											<div class="accordion-item">
+												<h2 class="accordion-header">
+													<button
+														class="accordion-button collapsed"
+														type="button"
+														data-bs-toggle="collapse"
+														data-bs-target="#collapseOne"
+														aria-expanded="false"
+														aria-controls="collapseOne"
+													>
+														{$t('settings.backup.API_endpoint')}
+													</button>
+												</h2>
+												<div
+													id="collapseOne"
+													class="accordion-collapse collapse"
+													data-bs-parent="#APIaccordion"
+												>
+													<div class="accordion-body">
+														<p style="text-decoration: underline">Example:</p>
+
+														<pre><code class="text-danger-emphasis">{@html curlCommand}</code></pre>
+
+														// Note: Empty startDate and endDate will backup all data.<br />
+														// Otherwise, use format "YYYY-MM-DD".
+													</div>
+												</div>
+											</div>
+										</div>
 									</div>
 
 									<div>
