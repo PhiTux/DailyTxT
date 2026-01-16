@@ -331,6 +331,22 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 
 					if !includeFiles {
 						delete(day, "files")
+					} else if req.Encrypted {
+						if files, ok := day["files"].([]any); ok {
+							for _, f := range files {
+								if fileMap, ok := f.(map[string]any); ok {
+									uuid := ""
+									if u, ok := fileMap["uuid"].(string); ok {
+										uuid = u
+									} else if u, ok := fileMap["uuid_filename"].(string); ok {
+										uuid = u
+									}
+									if uuid != "" {
+										filesToExport[uuid] = uuid
+									}
+								}
+							}
+						}
 					}
 
 					// Decrypt keys if requested
@@ -433,42 +449,27 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 
 	// 5. Export Files
 	if includeFiles {
-		if req.Encrypted {
-			// Encrypted: Export entire files directory
-			filesDir := filepath.Join(utils.Settings.DataPath, fmt.Sprintf("%d", userID), "files")
-			if entries, err := os.ReadDir(filesDir); err == nil {
-				for _, entry := range entries {
-					if entry.IsDir() {
-						continue
-					}
-					filePath := filepath.Join(filesDir, entry.Name())
-					fileContent, err := os.ReadFile(filePath)
-					if err == nil {
-						f, err := zw.Create(fmt.Sprintf("files/%s", entry.Name()))
-						if err == nil {
-							f.Write(fileContent)
-						}
-					}
-				}
-			}
-		} else {
-			// Decrypted: Export collected files
-			for uuid, targetName := range filesToExport {
-				filePath := filepath.Join(utils.Settings.DataPath, fmt.Sprintf("%d", userID), "files", uuid)
-				if _, err := os.Stat(filePath); err == nil {
-					// Read and decrypt
-					rawContent, errRead := os.ReadFile(filePath)
-					if errRead == nil {
+		for uuid, targetName := range filesToExport {
+			filePath := filepath.Join(utils.Settings.DataPath, fmt.Sprintf("%d", userID), "files", uuid)
+			if _, err := os.Stat(filePath); err == nil {
+				rawContent, errRead := os.ReadFile(filePath)
+				if errRead == nil {
+					var contentToWrite []byte
+					if req.Encrypted {
+						contentToWrite = rawContent
+					} else {
 						decrypted, errDec := utils.DecryptFile(rawContent, encKey)
 						if errDec == nil {
-							// Store in zip
-							f, err := zw.Create(fmt.Sprintf("files/%s", targetName))
-							if err == nil {
-								f.Write(decrypted)
-							}
+							contentToWrite = decrypted
 						} else {
 							utils.Logger.Printf("Error decrypting file %s: %v", uuid, errDec)
+							continue
 						}
+					}
+
+					f, err := zw.Create(fmt.Sprintf("files/%s", targetName))
+					if err == nil {
+						f.Write(contentToWrite)
 					}
 				}
 			}
