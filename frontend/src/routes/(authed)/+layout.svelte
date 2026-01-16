@@ -1199,12 +1199,6 @@
 
 				const contentDisposition = response.headers['content-disposition'];
 				let filename = `DailyTxT_Backup_${localStorage.getItem('user')}_${backupEncrypted ? 'encrypted' : 'decrypted'}_${new Date().toISOString().split('T')[0]}.zip`;
-				if (contentDisposition) {
-					const filenameMatch = contentDisposition.match(/filename="(.+)"/);
-					if (filenameMatch) {
-						filename = filenameMatch[1];
-					}
-				}
 
 				a.download = filename;
 				document.body.appendChild(a);
