@@ -279,6 +279,7 @@
 		</div>
 	{/if}
 	<div class="logo-wrapper d-flex flex-column align-items-center">
+		<div class="fill"></div>
 		<img id="largeLogo" src={img} alt="locked heart with keyhole" />
 		<span class="dailytxt">DailyTxT</span>
 		{#if window.DEMO_MODE === true}
@@ -286,6 +287,7 @@
 				<DemoModeText />
 			</div>
 		{/if}
+		<div class="fill"></div>
 	</div>
 	<div class="login-wrapper">
 		<div class="fill"></div>
@@ -719,11 +721,13 @@
 	.logo-wrapper {
 		width: 50%;
 		z-index: 1;
+		height: 100%;
+		overflow-y: auto;
 	}
 
 	#largeLogo {
 		width: 40%;
-		min-height: 10%;
+		min-height: 20%;
 		filter: drop-shadow(0 0 0.7rem #7e7e7e);
 		transition: 0.3s ease;
 		overflow: visible;
@@ -801,6 +805,8 @@
 		.logo-wrapper {
 			width: 70%;
 			margin-top: 3rem;
+			height: auto;
+			overflow-y: visible;
 		}
 
 		.fill {
