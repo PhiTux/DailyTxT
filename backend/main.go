@@ -117,6 +117,9 @@ func main() {
 	api.HandleFunc("GET /logs/bookmarkDay", middleware.RequireAuth(handlers.BookmarkDay))
 	api.HandleFunc("GET /logs/deleteDay", middleware.RequireAuth(handlers.DeleteDay))
 	api.HandleFunc("GET /logs/exportData", middleware.RequireAuth(handlers.ExportData))
+	api.HandleFunc("POST /logs/importData", middleware.RequireAuth(handlers.ImportData))
+	api.HandleFunc("POST /logs/backup", middleware.RequireAuth(handlers.Backup))
+	api.HandleFunc("POST /logs/backupUser", handlers.BackupUser)
 
 	// Admin routes
 	api.HandleFunc("POST /admin/validate-password", middleware.RequireAuth(handlers.ValidateAdminPassword))

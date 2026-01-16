@@ -220,8 +220,8 @@ func GenerateUUID() (string, error) {
 		return "", fmt.Errorf("failed to marshal UUID to binary: %v", err)
 	}
 
-	// Kodiere die UUID als Base64URL ohne Padding
-	// für die Kompatibilität mit existierenden UUIDs wie "JVsDBnHCZbqoAjSKUPLgGn"
+	// Encode UUID in base64 (url-safe, no padding)
+	// for the compatibility with URLs etc. like "JVsDBnHCZbqoAjSKUPLgGn"
 	encodedUUID := base64.RawURLEncoding.EncodeToString(uuidBytes)
 
 	return encodedUUID, nil
@@ -410,7 +410,7 @@ func GetEncryptionKey(userID int, derivedKey string) (string, error) {
 }
 
 // CheckPasswordForUser checks if the provided password matches the user's password OR on of his backup codes.
-// Returns the derivedKey, if successfully validating password, otherwise empty string
+// Returns the derivedKey, if successfully validating password, otherwise empty string.
 // Return the amount of backup codes available for the user (-1 if password does not match or if backup code was NOT used).
 func CheckPasswordForUser(userID int, password string) (string, int, error) {
 	UsersFileMutex.Lock()

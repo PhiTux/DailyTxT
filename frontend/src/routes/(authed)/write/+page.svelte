@@ -22,7 +22,7 @@
 		faBars
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
-	import { v4 as uuidv4 } from 'uuid';
+	import { v7 as uuidv7 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
 	import { settings, autoLoadImagesThisDevice } from '$lib/settingsStore';
 	import { tags, tagsLoaded } from '$lib/tagStore';
@@ -607,7 +607,7 @@
 	}
 
 	function uploadFile(f) {
-		let uuid = uuidv4();
+		let uuid = uuidv7();
 
 		uploadingFiles = [...uploadingFiles, { name: f.name, progress: 0, size: f.size, uuid: uuid }];
 

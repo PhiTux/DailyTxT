@@ -5,7 +5,8 @@
       "🌐 Added italian translation",
       "🌐 Added dutch translation",
       "✨ Added demo-feature (irrelevant for normal user)",
-      "✨ Added automatic changelog modal after update (can be disabled in user settings)"
+      "✨ Added automatic changelog popup after update (can be disabled in user settings)",
+      "✨ Added backup & import feature (both encrypted or decrypted) - including an API-endpoint for automatic backup"
     ]
   },
   "2.2.0": {
