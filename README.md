@@ -5,7 +5,7 @@
 
 > [!WARNING]  
 > - When you are coming from version 1 (most likely 1.0.15), you MUST read the [Migration Instructions](#migration-instructions) below!
-> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version which uses this testing-tag. You can set up notifications for this at the bottom of the settings ❤️
+> - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version which uses this testing-tag. You can set up notifications for this at the end of the settings ❤️
 
 # DailyTxT
 
@@ -41,7 +41,7 @@ Try the [live demo](https://dailytxt.phitux.de) 🚀
 - **Search**: You can search for any word, tag or filename in your entries.
 - **Custom Templates**: You can create and use custom templates for your entries.
 - **Read Mode**: A distraction-free mode for reading your entries of each month.
-- **Multi-Language**: DailyTxT is currently available in <ins>**🇺🇸 English, 🇩🇪 German, 🇫🇷 French, 🇨🇿 Czech, 🇳🇴 Norwegian, 🇹🇼 Traditional-Chinese (Taiwan)**</ins>. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
+- **Multi-Language**: DailyTxT is currently available in <ins>**🇺🇸 English, 🇩🇪 German, 🇫🇷 French, 🇨🇿 Czech, 🇳🇴 Norwegian, 🇹🇼 Traditional-Chinese (Taiwan), 🇮🇹 Italian, 🇳🇱 Dutch**</ins>. New languages can be added easily, see [TRANSLATION.md](TRANSLATION.md) for instructions.
 - **Export to HTML**: You can export your entries (including uploaded files) to HTML format.
 - **Mobile**: Responsive design for easy use on mobile screen. Additionally: allows installation as a PWA (Progressive Web App) to your Homescreen.
 - **Multi-User**: You can create multiple User Accounts. Each account uses its own encryption key.
@@ -166,7 +166,9 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
-#### 2.3.0 (only as testing right now) 
+
+
+### 2.3.0 (2026-01-17) 
 ```
 - Added italian translation [1]
 - Added dutch translation [2]
@@ -177,8 +179,6 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 [1]: Thanks to [@albanobattistella](https://github.com/albanobattistella)  
 [2]: Thanks to [@Mike Bos](https://github.com/mbos)
 
-
----
 
 ### 2.2.0 (2025-12-18)
 ```
