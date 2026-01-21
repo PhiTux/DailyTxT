@@ -31,7 +31,8 @@
 				no: () => import('../i18n/nb-NO.json'),
 				'zh-TW': () => import('../i18n/zh-TW.json'),
 				it: () => import('../i18n/it.json'),
-				nl: () => import('../i18n/nl.json')
+				nl: () => import('../i18n/nl.json'), 
+                zh: () => import('../i18n/zh.json') 
 			},
 
 			// for development
