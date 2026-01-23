@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "通知我有新版本",
       "include_test_versions": "同時通知我新測試版本，版本名稱中包含「testing」。這些版本可能存在錯誤 — 請務必先進行備份！"
-    }
+    },
+    "writeDateFormat": "日期格式",
+    "writeDateFormat.2-digit": "两位数（如 {example}",
+    "writeDateFormat.description": "在写入模式下，指定所选日期在最左侧文本字段正上方的显示方式。目前只能更改月份的显示方式。",
+    "writeDateFormat.long": "长（例如 {example}",
+    "writeDateFormat.month": "月"
   },
   "tags": {
     "description": "您可以在此為選定的日期新增和移除標籤，以對您的日誌進行分類。您也可以在此建立新的標籤。<br/><br/>按下 <span>Ctrl</span> + <span>G</span> 可聚焦到搜尋欄（僅限桌面）。<br/><br/>要更改或完全刪除標籤，您必須切換到設定。",

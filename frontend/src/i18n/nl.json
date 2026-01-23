@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Breng me op de hoogte van nieuwe versies",
       "include_test_versions": "Breng me ook op de hoogte van nieuwe testversies die \"testing\" in de versienaam bevatten. Deze kunnen foutief zijn — maak eerst een back-up!"
-    }
+    },
+    "writeDateFormat": "Datum formaat",
+    "writeDateFormat.2-digit": "2-cijferig (bijv. {example})",
+    "writeDateFormat.description": "Geef aan hoe de geselecteerde datum moet worden weergegeven in de schrijfmodus direct boven het tekstveld uiterst links. Momenteel kan alleen de weergave van de maand worden gewijzigd.",
+    "writeDateFormat.long": "Lang (bijv. {example})",
+    "writeDateFormat.month": "maand"
   },
   "tags": {
     "description": "Hier kunt u tags toevoegen en verwijderen voor de geselecteerde datum om uw notities te categoriseren. U kunt hier ook nieuwe tags maken.<br/><br/>Met <span>Ctrl</span> + <span>G</span> wordt het zoekveld gefocust (alleen desktop).<br/><br/> Om een tag te wijzigen of volledig te verwijderen, moet u naar de instellingen gaan.",

@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Avvisami delle nuove versioni",
       "include_test_versions": "Avvisami anche delle nuove versioni di test che contengono \"testing\" nel nome della versione. Queste potrebbero essere difettose — assicurati di fare prima un backup!"
-    }
+    },
+    "writeDateFormat": "Formato della data",
+    "writeDateFormat.2-digit": "2 cifre (ad es. {example})",
+    "writeDateFormat.description": "Specificare come la data selezionata deve essere visualizzata in modalità di scrittura direttamente sopra il campo di testo all'estrema sinistra. Attualmente è possibile modificare solo la visualizzazione del mese.",
+    "writeDateFormat.long": "Lungo (ad es. {example})",
+    "writeDateFormat.month": "mese"
   },
   "tags": {
     "description": "Qui puoi aggiungere e rimuovere tag per la data selezionata per categorizzare le tue voci. Puoi anche creare nuovi tag qui.<br/><br/>Con <span>Ctrl</span> + <span>G</span> il campo di ricerca viene focalizzato (solo desktop).<br/><br/> Per modificare un tag o eliminarlo completamente, devi passare alle impostazioni.",

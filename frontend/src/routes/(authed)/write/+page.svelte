@@ -1425,7 +1425,7 @@
 								Date.UTC($selectedDate.year, $selectedDate.month - 1, $selectedDate.day)
 							).toLocaleDateString($tolgee.getLanguage(), {
 								day: '2-digit',
-								month: '2-digit',
+								month: $settings.writeDateFormat,
 								year: 'numeric',
 								timeZone: 'UTC'
 							})}

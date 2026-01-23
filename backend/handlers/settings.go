@@ -29,6 +29,7 @@ func GetDefaultSettings() map[string]any {
 		"requirePasswordOnPageLoad":  false,
 		"firstDayOfWeek":             "monday",
 		"showChangelogOnUpdate":      true,
+		"writeDateFormat":            "2-digit",
 	}
 }
 

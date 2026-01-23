@@ -1948,6 +1948,40 @@ https://dailytxt.mydomain.tld/api/logs/backupUser
 										</select>
 									</div>
 
+									<div id="writeDateFormat">
+										{#if $tempSettings.writeDateFormat !== $settings.writeDateFormat}
+											{@render unsavedChanges()}
+										{/if}
+										<h5>{$t('settings.writeDateFormat')}</h5>
+										{$t('settings.writeDateFormat.description')}<br />
+										<u class="mt-2">{$t('settings.writeDateFormat.month')}:</u>
+										<select
+											class="form-select w-auto mt-2"
+											bind:value={$tempSettings.writeDateFormat}
+										>
+											<option value="2-digit"
+												>{$t('settings.writeDateFormat.2-digit', {
+													example: new Date().toLocaleDateString($tolgee.getLanguage(), {
+														day: '2-digit',
+														month: '2-digit',
+														year: 'numeric',
+														timeZone: 'UTC'
+													})
+												})}</option
+											>
+											<option value="long">
+												{$t('settings.writeDateFormat.long', {
+													example: new Date().toLocaleDateString($tolgee.getLanguage(), {
+														day: 'numeric',
+														month: 'long',
+														year: 'numeric',
+														timeZone: 'UTC'
+													})
+												})}
+											</option></select
+										>
+									</div>
+
 									<div id="aLookBack">
 										{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
 													.trim()

@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Notify me about new versions",
       "include_test_versions": "Also notify me about new test versions that contain \"testing\" in the version name. These may be faulty — be sure to make a backup first!"
-    }
+    },
+    "writeDateFormat": "Date format",
+    "writeDateFormat.2-digit": "2-digit (e.g. {example})",
+    "writeDateFormat.description": "Specify how the selected date should be displayed in write mode directly above the text field on the far left. Currently, only the display of the month can be changed.",
+    "writeDateFormat.long": "Long (e.g. {example})",
+    "writeDateFormat.month": "month"
   },
   "tags": {
     "description": "Here you can add and remove tags for the selected date to categorize your entries. You can also create new tags here.<br/><br/>With <span>Ctrl</span> + <span>G</span> the search field is focused (desktop only).<br/><br/> To change a tag or delete it entirely, you must switch to the settings.",

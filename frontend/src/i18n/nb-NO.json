@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Varsle om nye versjoner",
       "include_test_versions": "Varsle også om testversjoner som inneholder «testing». Disse kan være ustabile – ta backup først!"
-    }
+    },
+    "writeDateFormat": "Datoformat",
+    "writeDateFormat.2-digit": "2-sifret (f.eks. {example})",
+    "writeDateFormat.description": "Angi hvordan den valgte datoen skal vises i skrivemodus rett over tekstfeltet helt til venstre. For øyeblikket er det bare visningen av måneden som kan endres.",
+    "writeDateFormat.long": "Lang (f.eks. {example})",
+    "writeDateFormat.month": "måned"
   },
   "tags": {
     "description": "Her kan du legge til og fjerne tagger for valgt dato. Du kan også opprette nye tagger her.<br/><br/>Med <span>Ctrl</span> + <span>G</span> fokuseres søkefeltet (kun desktop).<br/><br/>For å endre eller slette tagger helt må du bruke innstillingene.",

@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Benachrichtige mich über neue Versionen",
       "include_test_versions": "Benachrichtige mich auch über neue Test-Versionen, die \"testing\" im Versions-Namen tragen. Diese können potenziell fehlerhaft sein - unbedingt davor ein Backup machen!"
-    }
+    },
+    "writeDateFormat": "Datumsformat",
+    "writeDateFormat.2-digit": "2-stellig (z. B. {example})",
+    "writeDateFormat.description": "Lege fest, wie das jeweils ausgewählte Datum im Schreibmodus direkt oberhalb des Textfeldes ganz links angezeigt werden soll. Aktuell ist nur die Darstellung des Monats veränderbar. ",
+    "writeDateFormat.long": "Lang (z. B. {example})",
+    "writeDateFormat.month": "Monat"
   },
   "tags": {
     "description": "Hier kannst du Tags zum ausgewählten Datum hinzufügen und entfernen, um deine Einträge zu kategorisieren. Ebenso kannst du hier neue Tags erstellen.<br/><br/>Mit <span>Ctrl</span> + <span>G</span> wird das Suchfeld fokussiert (nur am Desktop).<br/><br/>Um ein Tag zu ändern oder auch vollständig zu löschen, musst du in die Einstellungen wechseln.",

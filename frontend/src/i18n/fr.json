@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "M’avertir des nouvelles versions",
       "include_test_versions": "Inclure aussi les versions de test (« testing »). Ces versions peuvent contenir des bogues — pensez à sauvegarder !"
-    }
+    },
+    "writeDateFormat": "Format de la date",
+    "writeDateFormat.2-digit": "2 chiffres (par ex. {example})",
+    "writeDateFormat.description": "Définit comment la date sélectionnée doit être affichée en mode écriture directement au-dessus du champ de texte à l'extrême gauche. Actuellement, seul l'affichage du mois est modifiable.",
+    "writeDateFormat.long": "Long (par exemple {example})",
+    "writeDateFormat.month": "Mois"
   },
   "tags": {
     "description": "Ajoutez ou supprimez des étiquettes pour la date sélectionnée afin de catégoriser vos entrées. Vous pouvez aussi créer de nouvelles étiquettes ici.<br/><br/>Avec <span>Ctrl</span> + <span>G</span>, le champ de recherche est activé (ordinateur uniquement).<br/><br/>Pour modifier ou supprimer une étiquette, allez dans les paramètres.",

@@ -422,7 +422,12 @@
     "updates": {
       "check_for_updates": "Informovat mě o nových verzích",
       "include_test_versions": "Také mě informovat o nových testovacích verzích, které obsahují \"testing\" v názvu verze. Tyto verze mohou být chybné — nezapomeň nejprve vytvořit zálohu!"
-    }
+    },
+    "writeDateFormat": "Formát data",
+    "writeDateFormat.2-digit": "dvoumístný (např. {example})",
+    "writeDateFormat.description": "Určete, jak se má vybrané datum zobrazit v režimu zápisu přímo nad textovým polem zcela vlevo. V současné době lze změnit pouze zobrazení měsíce.",
+    "writeDateFormat.long": "Long (např. {example})",
+    "writeDateFormat.month": "měsíc"
   },
   "tags": {
     "description": "Zde můžeš přidávat a odebírat tagy pro vybraný datum, abys kategorizoval své zápisky. Zde také můžeš vytvářet nové tagy.<br/><br/>S <span>Ctrl</span> + <span>G</span> zaostříš na vyhledávací pole (pouze desktop).<br/><br/> Chceš-li změnit tag nebo jej úplně smazat, musíš přejít do nastavení.",
