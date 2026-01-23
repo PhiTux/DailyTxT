@@ -1,4 +1,8 @@
 {
+  "2.4.0": {
+    "date": "2026-02-xx",
+    "changes": ["🌐 Added simplified chinese translation"]
+  },
   "2.3.0": {
     "date": "2026-01-17",
     "changes": [
