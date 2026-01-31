@@ -56,3 +56,9 @@
 		{/each}
 	</div>
 </div>
+
+<style>
+	.tagAlert {
+		margin-bottom: 0 !important;
+	}
+</style>

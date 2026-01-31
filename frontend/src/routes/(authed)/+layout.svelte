@@ -2108,10 +2108,6 @@
 		filter: drop-shadow(0px 0px 4px #4891ff);
 	}
 
-	.tagAlert {
-		margin-bottom: 0 !important;
-	}
-
 	.modal-header > div > div > button {
 		border: none;
 		border-radius: 10px !important;
