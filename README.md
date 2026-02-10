@@ -169,10 +169,12 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### 2.4.0 (2026-02-xx) - Only as TESTING right now
 ```
 - Added simplified chinese translation [1]
+- Added catalan translation [2]
 - Added option to choose month format in write-mode (2-digit or long)
 - Internal refactoring of settings
 ```
 [1]: Thanks to [@cokei521](https://github.com/cokei521)
+[2]: Thanks to [@Rubens](https://github.com/rubenixnagios)
 
 
 ---
