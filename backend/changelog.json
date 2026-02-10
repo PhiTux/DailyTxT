@@ -3,6 +3,7 @@
     "date": "2026-02-xx",
     "changes": [
       "🌐 Added simplified chinese translation",
+      "🌐 Added catalan translation",
       "✨ Added option to choose month format in write-mode (2-digit or long)",
       "⚙️ Internal refactoring of settings"
     ]
