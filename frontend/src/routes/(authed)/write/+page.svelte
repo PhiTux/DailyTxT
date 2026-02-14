@@ -506,6 +506,53 @@
 		}
 	}
 
+	function handlePaste(event) {
+		const clipboardData = event.clipboardData;
+		if (!clipboardData) return;
+
+		const filesToUpload = [];
+		const seenFileReferences = new Set();
+		const seenFileSignatures = new Set();
+
+		function addFileIfUnique(file) {
+			if (!file) return;
+
+			if (seenFileReferences.has(file)) {
+				return;
+			}
+
+			const signature = `${file.name}|${file.size}|${file.type}|${file.lastModified}`;
+			if (seenFileSignatures.has(signature)) {
+				return;
+			}
+
+			seenFileReferences.add(file);
+			seenFileSignatures.add(signature);
+			filesToUpload.push(file);
+		}
+
+		if (clipboardData.items && clipboardData.items.length > 0) {
+			for (let i = 0; i < clipboardData.items.length; i++) {
+				const item = clipboardData.items[i];
+				if (item.kind === 'file') {
+					const file = item.getAsFile();
+					addFileIfUnique(file);
+				}
+			}
+		}
+
+		if (clipboardData.files && clipboardData.files.length > 0) {
+			for (let i = 0; i < clipboardData.files.length; i++) {
+				addFileIfUnique(clipboardData.files[i]);
+			}
+		}
+
+		if (filesToUpload.length > 0) {
+			event.preventDefault();
+			filesToUpload.forEach((file) => uploadFile(file));
+		}
+	}
+
 	let uploadingFiles = $state([]);
 	let isDragOver = $state(false);
 	let dragCounter = $state(0); // Track drag enter/leave events
@@ -1333,6 +1380,7 @@
 <svelte:window
 	onkeydown={on_key_down}
 	onkeyup={on_key_up}
+	onpaste={handlePaste}
 	ondragenter={handleDragEnter}
 	ondragleave={handleDragLeave}
 	ondragover={handleDragOver}

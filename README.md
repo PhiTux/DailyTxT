@@ -166,18 +166,17 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
-#### 2.4.0 (2026-02-xx) - Only as TESTING right now
+
+### 2.4.0 (2026-02-14)
 ```
 - Added simplified chinese translation [1]
 - Added catalan translation [2]
+- Added possibility to paste & upload files or screenshots from clipboard
 - Added option to choose month format in write-mode (2-digit or long)
 - Internal refactoring of settings
 ```
-[1]: Thanks to [@cokei521](https://github.com/cokei521)
+[1]: Thanks to [@cokei521](https://github.com/cokei521)  
 [2]: Thanks to [@Rubens](https://github.com/rubenixnagios)
-
-
----
 
 
 ### 2.3.0 (2026-01-17) 

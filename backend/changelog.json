@@ -1,9 +1,10 @@
 {
   "2.4.0": {
-    "date": "2026-02-xx",
+    "date": "2026-02-14",
     "changes": [
       "🌐 Added simplified chinese translation",
       "🌐 Added catalan translation",
+      "✨ Added possibility to paste & upload files or screenshots from clipboard",
       "✨ Added option to choose month format in write-mode (2-digit or long)",
       "⚙️ Internal refactoring of settings"
     ]
