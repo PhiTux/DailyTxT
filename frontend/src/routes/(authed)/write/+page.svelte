@@ -521,7 +521,7 @@
 				return;
 			}
 
-			const signature = `${file.name}|${file.size}|${file.type}|${file.lastModified}`;
+			const signature = `${file.name}|${file.size}|${file.type}`;
 			if (seenFileSignatures.has(signature)) {
 				return;
 			}
