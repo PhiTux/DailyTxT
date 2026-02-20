@@ -108,6 +108,21 @@ services:
 
       # Set the BASE_PATH if you are running DailyTxT under a subpath (e.g. /dailytxt).
       # - BASE_PATH=/dailytxt
+
+      # Optional: Protect shared links with email verification.
+      # Email whitelist is managed per user in Settings -> Sharing.
+      # SMTP can also be managed per user in Settings -> Sharing.
+      # The SMTP values below act as global defaults/fallback.
+      # Verification code validity in minutes (default: 10):
+      # - SHARE_CODE_TTL_MINUTES=10
+      # Verification cookie validity in days (default: 30):
+      # - SHARE_COOKIE_DAYS=30
+      # SMTP config for sending verification codes:
+      # - SMTP_HOST=smtp.example.com
+      # - SMTP_PORT=587
+      # - SMTP_USERNAME=mailer@example.com
+      # - SMTP_PASSWORD=your_smtp_password
+      # - SMTP_FROM=mailer@example.com
     ports:
       # Change the left port to your needs.
       # You often would only see 8000:80. But this way, port 8000 is publicly accessible (without TLS!).
@@ -260,6 +275,15 @@ You need [Go](https://golang.org/) (at least version 1.24) and [Node.js](https:/
   - `ALLOW_REGISTRATION=true`
   - `ADMIN_PASSWORD=adminpassword`
   - `LOGOUT_AFTER_DAYS=40`
+    - Optional share verification env vars:
+      - `SHARE_CODE_TTL_MINUTES=10`
+      - `SHARE_COOKIE_DAYS=30`
+      - SMTP can be configured in the app UI (Settings -> Sharing), or via global fallback env vars:
+      - `SMTP_HOST=smtp.example.com`
+      - `SMTP_PORT=587`
+      - `SMTP_USERNAME=mailer@example.com`
+      - `SMTP_PASSWORD=...`
+      - `SMTP_FROM=mailer@example.com`
 - `go build && ./backend`
 
 ### Frontend

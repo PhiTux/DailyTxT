@@ -36,14 +36,21 @@ const (
 
 // Settings holds the application settings
 type AppSettings struct {
-	DataPath          string   `json:"data_path"`
-	Development       bool     `json:"development"`
-	SecretToken       string   `json:"secret_token"`
-	LogoutAfterDays   int      `json:"logout_after_days"`
-	AllowedHosts      []string `json:"allowed_hosts"`
-	Indent            int      `json:"indent"`
-	AllowRegistration bool     `json:"allow_registration"`
-	BasePath          string   `json:"base_path"`
+	DataPath            string   `json:"data_path"`
+	Development         bool     `json:"development"`
+	SecretToken         string   `json:"secret_token"`
+	LogoutAfterDays     int      `json:"logout_after_days"`
+	AllowedHosts        []string `json:"allowed_hosts"`
+	Indent              int      `json:"indent"`
+	AllowRegistration   bool     `json:"allow_registration"`
+	BasePath            string   `json:"base_path"`
+	ShareCodeTTLMinutes int      `json:"share_code_ttl_minutes"`
+	ShareCookieDays     int      `json:"share_cookie_days"`
+	SMTPHost            string   `json:"smtp_host"`
+	SMTPPort            int      `json:"smtp_port"`
+	SMTPUsername        string   `json:"smtp_username"`
+	SMTPPassword        string   `json:"smtp_password"`
+	SMTPFrom            string   `json:"smtp_from"`
 }
 
 // Global settings
@@ -96,14 +103,17 @@ func GetVersion() string {
 func InitSettings() error {
 	// Default settings
 	Settings = AppSettings{
-		DataPath:          "/data",
-		Development:       false,
-		SecretToken:       GenerateSecretToken(),
-		LogoutAfterDays:   30,
-		AllowedHosts:      []string{},
-		Indent:            0,
-		AllowRegistration: false,
-		BasePath:          "/",
+		DataPath:            "/data",
+		Development:         false,
+		SecretToken:         GenerateSecretToken(),
+		LogoutAfterDays:     30,
+		AllowedHosts:        []string{},
+		Indent:              0,
+		AllowRegistration:   false,
+		BasePath:            "/",
+		ShareCodeTTLMinutes: 10,
+		ShareCookieDays:     30,
+		SMTPPort:            587,
 	}
 
 	fmt.Print("\nDetected the following settings:\n================\n")
@@ -166,6 +176,50 @@ func InitSettings() error {
 		Settings.BasePath = basePath
 	}
 	fmt.Printf("Base Path: %s\n", Settings.BasePath)
+
+	if shareCodeTTL := os.Getenv("SHARE_CODE_TTL_MINUTES"); shareCodeTTL != "" {
+		var minutes int
+		if _, err := fmt.Sscanf(shareCodeTTL, "%d", &minutes); err == nil && minutes > 0 {
+			Settings.ShareCodeTTLMinutes = minutes
+		}
+	}
+	fmt.Printf("Share Code TTL Minutes: %d\n", Settings.ShareCodeTTLMinutes)
+
+	if shareCookieDays := os.Getenv("SHARE_COOKIE_DAYS"); shareCookieDays != "" {
+		var days int
+		if _, err := fmt.Sscanf(shareCookieDays, "%d", &days); err == nil && days > 0 {
+			Settings.ShareCookieDays = days
+		}
+	}
+	fmt.Printf("Share Cookie Days: %d\n", Settings.ShareCookieDays)
+
+	if smtpHost := os.Getenv("SMTP_HOST"); smtpHost != "" {
+		Settings.SMTPHost = smtpHost
+	}
+	fmt.Printf("SMTP Host configured: %t\n", Settings.SMTPHost != "")
+
+	if smtpPort := os.Getenv("SMTP_PORT"); smtpPort != "" {
+		var port int
+		if _, err := fmt.Sscanf(smtpPort, "%d", &port); err == nil && port > 0 {
+			Settings.SMTPPort = port
+		}
+	}
+	fmt.Printf("SMTP Port: %d\n", Settings.SMTPPort)
+
+	if smtpUsername := os.Getenv("SMTP_USERNAME"); smtpUsername != "" {
+		Settings.SMTPUsername = smtpUsername
+	}
+	fmt.Printf("SMTP Username configured: %t\n", Settings.SMTPUsername != "")
+
+	if smtpPassword := os.Getenv("SMTP_PASSWORD"); smtpPassword != "" {
+		Settings.SMTPPassword = smtpPassword
+	}
+	fmt.Printf("SMTP Password configured: %t\n", Settings.SMTPPassword != "")
+
+	if smtpFrom := os.Getenv("SMTP_FROM"); smtpFrom != "" {
+		Settings.SMTPFrom = smtpFrom
+	}
+	fmt.Printf("SMTP From: %s\n", Settings.SMTPFrom)
 
 	fmt.Print("================\n\n")
 

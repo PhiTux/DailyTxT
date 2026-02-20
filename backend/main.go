@@ -95,6 +95,13 @@ func main() {
 	api.HandleFunc("POST /users/generateShareToken", middleware.RequireAuth(handlers.GenerateShareToken))
 	api.HandleFunc("GET /users/revokeShareToken", middleware.RequireAuth(handlers.RevokeShareToken))
 	api.HandleFunc("GET /users/getShareTokenInfo", middleware.RequireAuth(handlers.GetShareTokenInfo))
+	api.HandleFunc("GET /users/getShareVerificationSettings", middleware.RequireAuth(handlers.GetShareVerificationSettings))
+	api.HandleFunc("POST /users/saveShareVerificationSettings", middleware.RequireAuth(handlers.SaveShareVerificationSettings))
+	api.HandleFunc("GET /users/getShareAccessLogs", middleware.RequireAuth(handlers.GetShareAccessLogs))
+	api.HandleFunc("POST /users/clearShareAccessLogs", middleware.RequireAuth(handlers.ClearShareAccessLogs))
+	api.HandleFunc("GET /users/getShareSMTPSettings", middleware.RequireAuth(handlers.GetShareSMTPSettings))
+	api.HandleFunc("POST /users/saveShareSMTPSettings", middleware.RequireAuth(handlers.SaveShareSMTPSettings))
+	api.HandleFunc("POST /users/testShareSMTP", middleware.RequireAuth(handlers.TestShareSMTP))
 
 	// Logs
 	api.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
@@ -126,6 +133,9 @@ func main() {
 	api.HandleFunc("POST /logs/backupUser", handlers.BackupUser)
 
 	// Share routes (public, validated by share token query parameter)
+	api.HandleFunc("GET /share/verificationStatus", handlers.ShareVerificationStatus)
+	api.HandleFunc("POST /share/requestVerificationCode", handlers.RequestShareVerificationCode)
+	api.HandleFunc("POST /share/verifyCode", handlers.VerifyShareVerificationCode)
 	api.HandleFunc("GET /share/getMarkedDays", handlers.SharedGetMarkedDays)
 	api.HandleFunc("GET /share/loadMonthForReading", handlers.SharedLoadMonthForReading)
 	api.HandleFunc("GET /share/downloadFile", handlers.SharedDownloadFile)

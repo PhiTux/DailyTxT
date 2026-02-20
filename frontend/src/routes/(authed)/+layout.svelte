@@ -1058,15 +1058,203 @@
 	let isRevokingShareToken = $state(false);
 	let linkCopiedSuccess = $state(false);
 	let showShareTokenError = $state(false);
+	let shareVerificationEmailsText = $state('');
+	let isLoadingShareVerificationSettings = $state(false);
+	let isSavingShareVerificationSettings = $state(false);
+	let showShareVerificationSettingsError = $state(false);
+	let showShareVerificationSettingsSuccess = $state(false);
+	let shareVerificationSMTPConfigured = $state(false);
+	let shareAccessLogs = $state([]);
+	let isLoadingShareAccessLogs = $state(false);
+	let shareSMTPHost = $state('');
+	let shareSMTPPort = $state(587);
+	let shareSMTPUsername = $state('');
+	let shareSMTPPassword = $state('');
+	let shareSMTPFrom = $state('');
+	let shareSMTPTestRecipient = $state('');
+	let isSavingShareSMTPSettings = $state(false);
+	let isTestingShareSMTP = $state(false);
+	let showShareSMTPSettingsError = $state(false);
+	let showShareSMTPSettingsSuccess = $state(false);
+	let showShareSMTPTestError = $state(false);
+	let showShareSMTPTestSuccess = $state(false);
+	let isClearingShareAccessLogs = $state(false);
 
 	function loadShareTokenInfo() {
 		axios
 			.get(API_URL + '/users/getShareTokenInfo')
 			.then((response) => {
 				hasShareToken = response.data.has_token;
+				loadShareVerificationSettings();
+				loadShareSMTPSettings();
+				loadShareAccessLogs();
 			})
 			.catch((error) => {
 				console.error(error);
+			});
+	}
+
+	function loadShareVerificationSettings() {
+		isLoadingShareVerificationSettings = true;
+		showShareVerificationSettingsError = false;
+
+		axios
+			.get(API_URL + '/users/getShareVerificationSettings')
+			.then((response) => {
+				const emails = response.data.emails || [];
+				shareVerificationEmailsText = emails.join('\n');
+				shareVerificationSMTPConfigured = response.data.smtp_configured === true;
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareVerificationSettingsError = true;
+			})
+			.finally(() => {
+				isLoadingShareVerificationSettings = false;
+			});
+	}
+
+	function saveShareVerificationSettings() {
+		if (isSavingShareVerificationSettings) return;
+		isSavingShareVerificationSettings = true;
+		showShareVerificationSettingsError = false;
+		showShareVerificationSettingsSuccess = false;
+
+		const emails = shareVerificationEmailsText
+			.split(/[,\n]/)
+			.map((value) => value.trim())
+			.filter((value) => value !== '');
+
+		axios
+			.post(API_URL + '/users/saveShareVerificationSettings', { emails })
+			.then((response) => {
+				const savedEmails = response.data.emails || [];
+				shareVerificationEmailsText = savedEmails.join('\n');
+				showShareVerificationSettingsSuccess = true;
+				setTimeout(() => {
+					showShareVerificationSettingsSuccess = false;
+				}, 3000);
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareVerificationSettingsError = true;
+			})
+			.finally(() => {
+				isSavingShareVerificationSettings = false;
+			});
+	}
+
+	function loadShareAccessLogs() {
+		isLoadingShareAccessLogs = true;
+
+		axios
+			.get(API_URL + '/users/getShareAccessLogs')
+			.then((response) => {
+				shareAccessLogs = response.data.logs || [];
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				isLoadingShareAccessLogs = false;
+			});
+	}
+
+	function clearShareAccessLogs() {
+		if (isClearingShareAccessLogs) return;
+		isClearingShareAccessLogs = true;
+
+		axios
+			.post(API_URL + '/users/clearShareAccessLogs')
+			.then(() => {
+				shareAccessLogs = [];
+			})
+			.catch((error) => {
+				console.error(error);
+			})
+			.finally(() => {
+				isClearingShareAccessLogs = false;
+			});
+	}
+
+	function loadShareSMTPSettings() {
+		axios
+			.get(API_URL + '/users/getShareSMTPSettings')
+			.then((response) => {
+				const settings = response.data.settings || {};
+				shareSMTPHost = settings.host || '';
+				shareSMTPPort = settings.port || 587;
+				shareSMTPUsername = settings.username || '';
+				shareSMTPPassword = settings.password || '';
+				shareSMTPFrom = settings.from || '';
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
+
+	function saveShareSMTPSettings() {
+		if (isSavingShareSMTPSettings) return;
+		isSavingShareSMTPSettings = true;
+		showShareSMTPSettingsError = false;
+		showShareSMTPSettingsSuccess = false;
+
+		axios
+			.post(API_URL + '/users/saveShareSMTPSettings', {
+				host: shareSMTPHost,
+				port: Number(shareSMTPPort),
+				username: shareSMTPUsername,
+				password: shareSMTPPassword,
+				from: shareSMTPFrom
+			})
+			.then((response) => {
+				const settings = response.data.settings || {};
+				shareSMTPHost = settings.host || '';
+				shareSMTPPort = settings.port || 587;
+				shareSMTPUsername = settings.username || '';
+				shareSMTPPassword = settings.password || '';
+				shareSMTPFrom = settings.from || '';
+				showShareSMTPSettingsSuccess = true;
+				setTimeout(() => {
+					showShareSMTPSettingsSuccess = false;
+				}, 3000);
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareSMTPSettingsError = true;
+			})
+			.finally(() => {
+				isSavingShareSMTPSettings = false;
+			});
+	}
+
+	function testShareSMTP() {
+		if (isTestingShareSMTP) return;
+		isTestingShareSMTP = true;
+		showShareSMTPTestError = false;
+		showShareSMTPTestSuccess = false;
+
+		axios
+			.post(API_URL + '/users/testShareSMTP', {
+				to_email: shareSMTPTestRecipient,
+				host: shareSMTPHost,
+				port: Number(shareSMTPPort),
+				username: shareSMTPUsername,
+				password: shareSMTPPassword,
+				from: shareSMTPFrom
+			})
+			.then(() => {
+				showShareSMTPTestSuccess = true;
+				setTimeout(() => {
+					showShareSMTPTestSuccess = false;
+				}, 3000);
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareSMTPTestError = true;
+			})
+			.finally(() => {
+				isTestingShareSMTP = false;
 			});
 	}
 
@@ -1082,6 +1270,7 @@
 					hasShareToken = true;
 					shareLink = window.location.origin + resolve('/share/' + response.data.token);
 					linkCopiedSuccess = false;
+					loadShareAccessLogs();
 				} else {
 					showShareTokenError = true;
 				}
@@ -1107,6 +1296,7 @@
 					hasShareToken = false;
 					shareLink = '';
 					linkCopiedSuccess = false;
+					loadShareAccessLogs();
 				} else {
 					showShareTokenError = true;
 				}
@@ -1842,6 +2032,32 @@
 										{generateShareToken}
 										{revokeShareToken}
 										{copyShareLink}
+										bind:shareVerificationEmailsText
+										{isLoadingShareVerificationSettings}
+										{isSavingShareVerificationSettings}
+										{showShareVerificationSettingsError}
+										{showShareVerificationSettingsSuccess}
+										{shareVerificationSMTPConfigured}
+										{saveShareVerificationSettings}
+										{shareAccessLogs}
+										{isLoadingShareAccessLogs}
+										{loadShareAccessLogs}
+										{clearShareAccessLogs}
+										{isClearingShareAccessLogs}
+										bind:shareSMTPHost
+										bind:shareSMTPPort
+										bind:shareSMTPUsername
+										bind:shareSMTPPassword
+										bind:shareSMTPFrom
+										bind:shareSMTPTestRecipient
+										{saveShareSMTPSettings}
+										{isSavingShareSMTPSettings}
+										{showShareSMTPSettingsError}
+										{showShareSMTPSettingsSuccess}
+										{testShareSMTP}
+										{isTestingShareSMTP}
+										{showShareSMTPTestError}
+										{showShareSMTPTestSuccess}
 									/>
 								</div>
 
