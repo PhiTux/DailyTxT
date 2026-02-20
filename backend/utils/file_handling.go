@@ -497,6 +497,139 @@ func SaveBackupCodes(userID int, codes []map[string]any) error {
 }
 
 
+// SaveShareToken saves a share token hash and encrypted derived key for a user
+func SaveShareToken(userID int, tokenHash, encDerivedKey string) error {
+	UsersFileMutex.Lock()
+	defer UsersFileMutex.Unlock()
+
+	users, err := GetUsers()
+	if err != nil {
+		return fmt.Errorf("error getting users: %v", err)
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return fmt.Errorf("invalid users format")
+	}
+
+	var foundUser map[string]any
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			foundUser = uMap
+			break
+		}
+	}
+
+	if foundUser == nil {
+		return fmt.Errorf("user with ID %d does not exist", userID)
+	}
+
+	foundUser["share_token_hash"] = tokenHash
+	foundUser["share_enc_derived_key"] = encDerivedKey
+
+	return WriteUsers(users)
+}
+
+// DeleteShareToken removes the share token data for a user
+func DeleteShareToken(userID int) error {
+	UsersFileMutex.Lock()
+	defer UsersFileMutex.Unlock()
+
+	users, err := GetUsers()
+	if err != nil {
+		return fmt.Errorf("error getting users: %v", err)
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return fmt.Errorf("invalid users format")
+	}
+
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			delete(uMap, "share_token_hash")
+			delete(uMap, "share_enc_derived_key")
+			break
+		}
+	}
+
+	return WriteUsers(users)
+}
+
+// GetUserByShareTokenHash finds a user by their share token hash.
+// Returns (userID, encDerivedKey, error).
+func GetUserByShareTokenHash(tokenHash string) (int, string, error) {
+	UsersFileMutex.RLock()
+	defer UsersFileMutex.RUnlock()
+
+	users, err := GetUsers()
+	if err != nil {
+		return 0, "", fmt.Errorf("error getting users: %v", err)
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return 0, "", fmt.Errorf("invalid users format")
+	}
+
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		hash, ok := uMap["share_token_hash"].(string)
+		if !ok || hash != tokenHash {
+			continue
+		}
+		encDerivedKey, ok := uMap["share_enc_derived_key"].(string)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok {
+			return int(id), encDerivedKey, nil
+		}
+	}
+
+	return 0, "", fmt.Errorf("share token not found")
+}
+
+// HasShareToken returns whether a user currently has a share token configured
+func HasShareToken(userID int) bool {
+	UsersFileMutex.RLock()
+	defer UsersFileMutex.RUnlock()
+
+	users, err := GetUsers()
+	if err != nil {
+		return false
+	}
+
+	usersList, ok := users["users"].([]any)
+	if !ok {
+		return false
+	}
+
+	for _, u := range usersList {
+		uMap, ok := u.(map[string]any)
+		if !ok {
+			continue
+		}
+		if id, ok := uMap["user_id"].(float64); ok && int(id) == userID {
+			_, hasToken := uMap["share_token_hash"]
+			return hasToken
+		}
+	}
+
+	return false
+}
+
 func GetChangelog() (map[string]any, error) {
 	// Try to open the changelog.json file
 	filePath := "changelog.json"

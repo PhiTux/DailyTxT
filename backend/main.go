@@ -21,10 +21,11 @@ var AppVersion string
 // longTimeoutEndpoints defines endpoints that need extended/none timeouts
 // Paths are checked against the request URL path as seen by the top-level handler.
 var longTimeoutEndpoints = map[string]bool{
-	"/api/logs/uploadFile":   true,
-	"/api/logs/downloadFile": true,
-	"/api/logs/exportData":   true,
-	"/api/users/login":       true,
+	"/api/logs/uploadFile":        true,
+	"/api/logs/downloadFile":      true,
+	"/api/share/downloadFile":     true,
+	"/api/logs/exportData":        true,
+	"/api/users/login":            true,
 }
 
 // timeoutMiddleware applies different timeouts based on the endpoint
@@ -91,6 +92,9 @@ func main() {
 	api.HandleFunc("POST /users/validatePassword", middleware.RequireAuth(handlers.ValidatePassword))
 	api.HandleFunc("GET /users/statistics", middleware.RequireAuth(handlers.GetStatistics))
 	api.HandleFunc("GET /users/checkChangelog", middleware.RequireAuth(handlers.CheckChangelog))
+	api.HandleFunc("POST /users/generateShareToken", middleware.RequireAuth(handlers.GenerateShareToken))
+	api.HandleFunc("GET /users/revokeShareToken", middleware.RequireAuth(handlers.RevokeShareToken))
+	api.HandleFunc("GET /users/getShareTokenInfo", middleware.RequireAuth(handlers.GetShareTokenInfo))
 
 	// Logs
 	api.HandleFunc("POST /logs/saveLog", middleware.RequireAuth(handlers.SaveLog))
@@ -120,6 +124,11 @@ func main() {
 	api.HandleFunc("POST /logs/importData", middleware.RequireAuth(handlers.ImportData))
 	api.HandleFunc("POST /logs/backup", middleware.RequireAuth(handlers.Backup))
 	api.HandleFunc("POST /logs/backupUser", handlers.BackupUser)
+
+	// Share routes (public, validated by share token query parameter)
+	api.HandleFunc("GET /share/getMarkedDays", handlers.SharedGetMarkedDays)
+	api.HandleFunc("GET /share/loadMonthForReading", handlers.SharedLoadMonthForReading)
+	api.HandleFunc("GET /share/downloadFile", handlers.SharedDownloadFile)
 
 	// Admin routes
 	api.HandleFunc("POST /admin/validate-password", middleware.RequireAuth(handlers.ValidateAdminPassword))

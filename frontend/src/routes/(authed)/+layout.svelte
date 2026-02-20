@@ -43,6 +43,7 @@
 	import Templates from '$lib/settings/Templates.svelte';
 	import Data from '$lib/settings/Data.svelte';
 	import Security from '$lib/settings/Security.svelte';
+	import Sharing from '$lib/settings/Sharing.svelte';
 	import About from '$lib/settings/About.svelte';
 	import Account from '$lib/settings/Account.svelte';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
@@ -207,6 +208,7 @@
 		getTemplates();
 		getVersionInfo();
 		loadTags();
+		loadShareTokenInfo();
 
 		if (page.url.pathname.endsWith('/read')) {
 			$readingMode = true;
@@ -311,6 +313,7 @@
 		{ id: 'templates', labelKey: 'settings.templates' },
 		{ id: 'data', labelKey: 'settings.data' },
 		{ id: 'security', labelKey: 'settings.security' },
+		{ id: 'sharing', labelKey: 'settings.sharing' },
 		{ id: 'account', labelKey: 'settings.account' },
 		{ id: 'about', labelKey: 'settings.about' }
 	];
@@ -1048,6 +1051,90 @@
 	let codesCopiedSuccess = $state(false);
 	let showBackupCodesError = $state(false);
 
+	// Share token state
+	let hasShareToken = $state(false);
+	let shareLink = $state('');
+	let isGeneratingShareToken = $state(false);
+	let isRevokingShareToken = $state(false);
+	let linkCopiedSuccess = $state(false);
+	let showShareTokenError = $state(false);
+
+	function loadShareTokenInfo() {
+		axios
+			.get(API_URL + '/users/getShareTokenInfo')
+			.then((response) => {
+				hasShareToken = response.data.has_token;
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	}
+
+	function generateShareToken() {
+		if (isGeneratingShareToken) return;
+		isGeneratingShareToken = true;
+		showShareTokenError = false;
+
+		axios
+			.post(API_URL + '/users/generateShareToken')
+			.then((response) => {
+				if (response.data.success) {
+					hasShareToken = true;
+					shareLink = window.location.origin + resolve('/share/' + response.data.token);
+					linkCopiedSuccess = false;
+				} else {
+					showShareTokenError = true;
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareTokenError = true;
+			})
+			.finally(() => {
+				isGeneratingShareToken = false;
+			});
+	}
+
+	function revokeShareToken() {
+		if (isRevokingShareToken) return;
+		isRevokingShareToken = true;
+		showShareTokenError = false;
+
+		axios
+			.get(API_URL + '/users/revokeShareToken')
+			.then((response) => {
+				if (response.data.success) {
+					hasShareToken = false;
+					shareLink = '';
+					linkCopiedSuccess = false;
+				} else {
+					showShareTokenError = true;
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+				showShareTokenError = true;
+			})
+			.finally(() => {
+				isRevokingShareToken = false;
+			});
+	}
+
+	function copyShareLink() {
+		if (!shareLink) return;
+		navigator.clipboard.writeText(shareLink).then(
+			() => {
+				linkCopiedSuccess = true;
+				setTimeout(() => {
+					linkCopiedSuccess = false;
+				}, 3000);
+			},
+			(err) => {
+				console.error('Failed to copy share link: ', err);
+			}
+		);
+	}
+
 	function createBackupCodes() {
 		if (isGeneratingBackupCodes) return;
 		isGeneratingBackupCodes = true;
@@ -1594,6 +1681,13 @@
 									>
 									<button
 										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'sharing'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('sharing')}>🔗 {$t('settings.sharing')}</button
+									>
+									<button
+										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'account'
 											? 'active'
 											: ''}"
@@ -1734,6 +1828,20 @@
 										{showBackupCodesError}
 										{createBackupCodes}
 										{copyBackupCodes}
+									/>
+								</div>
+
+								<div id="sharing">
+									<Sharing
+										{hasShareToken}
+										{shareLink}
+										{isGeneratingShareToken}
+										{isRevokingShareToken}
+										{linkCopiedSuccess}
+										{showShareTokenError}
+										{generateShareToken}
+										{revokeShareToken}
+										{copyShareLink}
 									/>
 								</div>
 
