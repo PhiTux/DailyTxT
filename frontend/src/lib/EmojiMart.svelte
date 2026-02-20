@@ -1,4 +1,5 @@
 <script>
+	import data from '@emoji-mart/data';
 	import { Picker } from 'emoji-mart';
 	import { onDestroy } from 'svelte';
 	import { darkMode } from '$lib/settingsStore.js';
@@ -24,6 +25,7 @@
 
 	function createPicker() {
 		picker = new Picker({
+			data,
 			theme: $darkMode ? 'dark' : 'light',
 			autoFocus: true,
 			onEmojiSelect: (emoji) => {
