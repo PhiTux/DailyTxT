@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
 	import { page } from '$app/state';
+	import { untrack } from 'svelte';
 
 	marked.use({
 		breaks: true,
@@ -60,9 +61,12 @@
 		// track both reactive values
 		const _year = currentYear;
 		const _month = currentMonth;
-		if (token) {
-			loadMarkedDays(_year, _month);
-			loadMonthForReading(_year, _month);
+		const _token = token;
+		if (_token) {
+			untrack(() => {
+				loadMarkedDays(_year, _month);
+				loadMonthForReading(_year, _month);
+			});
 		}
 	});
 
