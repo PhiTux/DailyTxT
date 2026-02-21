@@ -166,6 +166,15 @@
 		}
 	};
 
+	const isToday = (day) => {
+		const now = new Date();
+		return (
+			day.day === now.getDate() &&
+			day.month === now.getMonth() + 1 &&
+			day.year === now.getFullYear()
+		);
+	};
+
 	// weekdays (reordered when first day of week is Sunday)
 	const weekDays = $derived.by(() => {
 		const base = [
@@ -256,6 +265,7 @@
 		</div>
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(1)}>&gt;</button>
 	</div>
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
 	<div
 		class="calendar-container"
 		ontouchstart={onTouchStart}
@@ -282,6 +292,7 @@
 								{$cal.daysWithLogs.includes(day.day) ? 'mark-background' : ''} 
 								{$cal.daysWithFiles.includes(day.day) ? 'mark-dot' : ''} 
 								{$cal.daysBookmarked.includes(day.day) ? 'mark-circle' : ''}
+								{isToday(day) ? 'today-indicator' : ''}
 								{(!$readingMode && sameDate($selectedDate, day)) || ($readingMode && sameDate($readingDate, day))
 								? 'selected'
 								: ''}"
@@ -443,6 +454,11 @@
 
 	.day.mark-circle {
 		border: 3px solid #f57c00;
+	}
+
+	.day.today-indicator {
+		outline: 2px dashed #f57c00;
+		outline-offset: 1px;
 	}
 
 	.day.mark-dot::after {
