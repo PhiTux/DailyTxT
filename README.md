@@ -168,9 +168,10 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ---
 #### Changes to next version (NOT YET RELEASED)
 ```
-- Updated dependencies for security reasons
-- Integrated emojis into the frontend instead of loading them from a CDN.
 - The current day is now always highlighted in the calendar with an orange dotted border
+- Integrated emojis into the frontend instead of loading them from a CDN.
+- Markdown-Links are now always opening in a separate tab
+- Updated dependencies for security reasons
 ```
 ---
 

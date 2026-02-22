@@ -46,6 +46,17 @@
 		return config;
 	});
 
+	const renderer = {
+		link(href, title, text) {
+			const link = marked.Renderer.prototype.link.call(this, href, title, text);
+			return link.replace('<a', "<a target='_blank' rel='noreferrer' ");
+		}
+	};
+
+	marked.use({
+		renderer
+	});
+
 	let cancelDownload = new AbortController();
 
 	let tinyMDE;
@@ -1461,6 +1472,7 @@
 				</div>
 			{/if}
 			<div class="glass-shadow input-area">
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
 					class="d-flex flex-row textAreaHeader glass"
 					ontouchstart={onHeaderTouchStart}
