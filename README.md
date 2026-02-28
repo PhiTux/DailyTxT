@@ -166,14 +166,15 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
-#### Changes to next version (NOT YET RELEASED)
+
+### 2.4.3 (2026-02-28)
 ```
 - The current day is now always highlighted in the calendar with an orange dotted border
 - Integrated emojis into the frontend instead of loading them from a CDN.
 - Markdown-Links are now always opening in a separate tab
+- CSS fixes for Markdown-Code-Snippets
 - Updated dependencies for security reasons
 ```
----
 
 ### 2.4.2 (2026-02-14)
 ```

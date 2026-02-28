@@ -1,4 +1,14 @@
 {
+  "2.4.3": {
+    "date": "2026-02-28",
+    "changes": [
+      "✨ The current day is now always highlighted in the calendar with an orange dotted border",
+      "✨ Integrated emojis into the frontend instead of loading them from a CDN.",
+      "✨ Markdown-Links are now always opening in a separate tab",
+      "🐞 CSS fixes for Markdown-Code-Snippets",
+      "⚙️ Updated dependencies for security reasons"
+    ]
+  },
   "2.4.2": {
     "date": "2026-02-14",
     "changes": ["🐞 Bugfix for file upload from clipboard (duplicate files)"]
