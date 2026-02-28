@@ -2159,6 +2159,18 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='dark'] .TMFencedCodeBacktick) {
+		background-color: #4e4e4e;
+	}
+	:global(.TMCodeFenceBacktickOpen, .TMCodeFenceBacktickClose) {
+		border: none !important;
+	}
+
+	:global([data-bs-theme='dark'] .TMCode) {
+		background-color: #444;
+		border-color: #575757;
+	}
+
 	@media (min-width: 840px) {
 		#demoAccordion {
 			display: none;

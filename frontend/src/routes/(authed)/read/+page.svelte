@@ -551,6 +551,19 @@
 </div>
 
 <style>
+	:global(pre:has(code)) {
+		padding: 0.3rem;
+		border-radius: 5px;
+	}
+
+	:global(body[data-bs-theme='light'] pre:has(code)) {
+		background-color: #b6b6b6;
+	}
+
+	:global(body[data-bs-theme='dark'] pre:has(code)) {
+		background-color: #4e4e4e;
+	}
+
 	:global(body[data-bs-theme='light'] .loadImageBtn, body[data-bs-theme='light'] .fileBtn) {
 		color: #000000;
 	}
