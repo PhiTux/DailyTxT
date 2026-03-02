@@ -166,6 +166,12 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
+#### unpublished changes 
+- Bugfix for switching month in reading-mode
+- CSS-Bugfix for quoted content in reading-mode
+```
+---
+
 
 ### 2.4.3 (2026-02-28)
 ```

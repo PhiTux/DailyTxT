@@ -468,8 +468,8 @@
 
 	<!-- Center -->
 	<div class="d-flex flex-column my-4 flex-fill overflow-y-auto" id="scrollArea">
-		{#if logs.length > 0}
-			{#each logs as log (log.day)}
+		{#key logs}
+			{#each logs as log, i}
 				<!-- Log-Area -->
 				{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
 					<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
@@ -533,24 +533,40 @@
 						</div>
 					</div>
 				{/if}
-			{/each}
-		{:else}
-			<div class="d-flex align-items-center justify-content-center h-100">
-				<div class="glass p-5 rounded-5 no-entries">
-					{#if isLoadingMonthForReading}
-						<div class="spinner-border spinner-border-lg" role="status">
-							<span class="visually-hidden">Loading...</span>
-						</div>
-					{:else}
-						<span id="no-entries">{$t('read.no_entries')}</span>
-					{/if}
+			{:else}
+				<div class="d-flex align-items-center justify-content-center h-100">
+					<div class="glass p-5 rounded-5 no-entries">
+						{#if isLoadingMonthForReading}
+							<div class="spinner-border spinner-border-lg" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{:else}
+							<span id="no-entries">{$t('read.no_entries')}</span>
+						{/if}
+					</div>
 				</div>
-			</div>
-		{/if}
+			{/each}
+		{/key}
 	</div>
 </div>
 
 <style>
+	:global(body[data-bs-theme='light'] blockquote) {
+		border-left: 4px solid #696969;
+		color: #3f3f3f;
+	}
+
+	:global(body[data-bs-theme='dark'] blockquote) {
+		border-left: 4px solid #696969;
+		color: #b8b8b8;
+	}
+
+	:global(blockquote) {
+		padding-left: 15px;
+		margin: 15px 0;
+		font-style: italic;
+	}
+
 	:global(pre:has(code)) {
 		padding: 0.3rem;
 		border-radius: 5px;
