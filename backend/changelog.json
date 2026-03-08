@@ -1,4 +1,14 @@
 {
+  "2.4.4": {
+    "date": "2026-03-08",
+    "changes": [
+      "🌐 Updated simplified chinese translation",
+      "✨ Added small delete-button for search-input",
+      "🐞 Bugfix for switching month in reading-mode",
+      "🐞 Bugfix for calendar-behavior when using 'today' button",
+      "🐞 CSS-Bugfix for quoted content in reading-mode"
+    ]
+  },
   "2.4.3": {
     "date": "2026-02-28",
     "changes": [

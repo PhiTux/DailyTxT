@@ -165,15 +165,19 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
+
+
 ---
-#### unpublished changes 
+
+### 2.4.4 (2026-03-08)
+```
+- Updated simplified chinese translation [1]
+- Added small delete-button for search-input
 - Bugfix for switching month in reading-mode
 - CSS-Bugfix for quoted content in reading-mode
 - Bugfix for calendar-behavior when using 'today' button
-- Added small delete-button for search-input
 ```
----
-
+[1]: Thanks to [@yii](https://github.com/Yii6724XT)
 
 ### 2.4.3 (2026-02-28)
 ```
