@@ -169,6 +169,8 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### unpublished changes 
 - Bugfix for switching month in reading-mode
 - CSS-Bugfix for quoted content in reading-mode
+- Bugfix for calendar-behavior when using 'today' button
+- Added small delete-button for search-input
 ```
 ---
 
