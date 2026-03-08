@@ -166,6 +166,23 @@
 		}
 	};
 
+	function todayBtnClicked() {
+		if (!isToday($selectedDate)) {
+			$selectedDate = {
+				day: new Date().getDate(),
+				month: new Date().getMonth() + 1,
+				year: new Date().getFullYear()
+			};
+			closeOffcanvas();
+		} else if (
+			$selectedDate.month - 1 !== $cal.currentMonth ||
+			$selectedDate.year !== $cal.currentYear
+		) {
+			$cal.currentMonth = new Date().getMonth();
+			$cal.currentYear = new Date().getFullYear();
+		}
+	}
+
 	const isToday = (day) => {
 		const now = new Date();
 		return (
@@ -314,12 +331,7 @@
 			<button
 				class="btn btn-primary"
 				onclick={() => {
-					$selectedDate = {
-						day: new Date().getDate(),
-						month: new Date().getMonth() + 1,
-						year: new Date().getFullYear()
-					};
-					closeOffcanvas();
+					todayBtnClicked();
 				}}>{$t('calendar.button_today')}</button
 			>
 		</div>
