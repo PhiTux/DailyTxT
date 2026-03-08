@@ -3,7 +3,7 @@
 	import { searchString, searchTag, searchResults, isSearching } from '$lib/searchStore.js';
 	import { selectedDate } from '$lib/calendarStore.js';
 	import { tags } from '$lib/tagStore.js';
-	import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
+	import { faCircleXmark, faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import { onMount } from 'svelte';
 	import * as bootstrap from 'bootstrap';
@@ -297,27 +297,43 @@
 					</div>
 				{/if}
 			{:else}
-				<input
-					bind:value={$searchString}
-					bind:this={searchInput}
-					id="search-input"
-					type="text"
-					class="form-control"
-					placeholder={$t('search.search')}
-					aria-label={$t('search.search')}
-					aria-describedby="search-button"
-					onkeydown={handleKeyDown}
-					autocomplete="off"
-					onfocus={() => {
-						selectedTagIndex = 0;
-						if ($searchString.startsWith('#')) {
-							showTagDropdown = true;
-						}
-					}}
-					onfocusout={() => {
-						setTimeout(() => (showTagDropdown = false), 150);
-					}}
-				/>
+				<div class="search-input-wrapper">
+					<input
+						bind:value={$searchString}
+						bind:this={searchInput}
+						id="search-input"
+						type="text"
+						class="form-control"
+						placeholder={$t('search.search')}
+						aria-label={$t('search.search')}
+						aria-describedby="search-button"
+						onkeydown={handleKeyDown}
+						autocomplete="off"
+						onfocus={() => {
+							selectedTagIndex = 0;
+							if ($searchString.startsWith('#')) {
+								showTagDropdown = true;
+							}
+						}}
+						onfocusout={() => {
+							setTimeout(() => (showTagDropdown = false), 150);
+						}}
+					/>
+
+					{#if $searchString}
+						<!-- svelte-ignore a11y_missing_attribute -->
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<!-- svelte-ignore a11y_no_static_element_interactions -->
+						<a
+							id="clear-search"
+							onclick={() => {
+								$searchString = '';
+							}}
+						>
+							<Fa class="search-clear-icon" icon={faCircleXmark} /></a
+						>
+					{/if}
+				</div>
 				<button class="btn btn-outline-secondary glass" type="submit" id="search-button">
 					{#if $isSearching}
 						<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -448,6 +464,41 @@
 </div>
 
 <style>
+	:global(body[data-bs-theme='dark']) #clear-search {
+		color: #777;
+		transition: color 0.25s ease;
+	}
+	:global(body[data-bs-theme='light']) #clear-search {
+		color: #aaa;
+		transition: color 0.25s ease;
+	}
+	:global(body[data-bs-theme='dark']) #clear-search:hover {
+		color: #aaa;
+	}
+	:global(body[data-bs-theme='light']) #clear-search:hover {
+		color: #777;
+	}
+
+	.search-input-wrapper {
+		position: relative;
+		flex: 1 1 auto;
+		margin-left: 0 !important;
+		z-index: 5;
+	}
+
+	.search-input-wrapper #search-input {
+		padding-right: 2rem;
+		border-radius: 0;
+	}
+
+	:global(.search-clear-icon) {
+		position: absolute;
+		right: 0.6rem;
+		top: 50%;
+		transform: translateY(-50%);
+		cursor: pointer;
+	}
+
 	.list-group-item-action {
 		color: inherit !important;
 	}
