@@ -169,6 +169,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### Unpublished changes 
 ```
 - Improved word counting, including support for CJK languages [1]
+- Updated dependencies for security reasons
 ```
 [1]: Thanks to [@yii](https://github.com/Yii6724XT)
 
