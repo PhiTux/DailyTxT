@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/phitux/dailytxt/backend/utils"
 )
@@ -87,9 +88,7 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 				wordCount := 0
 				if encText, ok := dayMap["text"].(string); ok && encText != "" {
 					if decrypted, err := utils.DecryptText(encText, encKey); err == nil {
-						// Count words using Fields (splits on any whitespace)
-						words := strings.Fields(decrypted)
-						wordCount = len(words)
+						wordCount = CountWords(decrypted)
 					}
 				}
 
@@ -154,4 +153,80 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(dayStats)
+}
+
+func CountWords(text string) int {
+	count := 0
+	i := 0
+	textLength := len(text)
+
+	for i < textLength {
+		r, size := utf8.DecodeRuneInString(text[i:])
+		if r == utf8.RuneError {
+			i++
+			continue
+		}
+
+		// Count CJK characters individually
+		if IsCJK(r) {
+			count++
+			i += size
+			continue
+		}
+
+		// Count other sequences as words
+		if unicode.IsLetter(r) || unicode.IsNumber(r) {
+			// Start of a new word
+			count++
+			i += size
+
+			// Attempt to consume the rest of the same word
+			for i < textLength {
+				nextR, nextSize := utf8.DecodeRuneInString(text[i:])
+
+				// Stop merging immediately if a CJK character is encountered
+				if IsCJK(nextR) {
+					break
+				}
+
+				// Merge if the next character is a standard letter or number
+				if unicode.IsLetter(nextR) || unicode.IsNumber(nextR) {
+					i += nextSize
+					continue
+				}
+
+				// Handle hyphens (-) and apostrophes (')
+				if nextR == '-' || nextR == '\'' {
+					lookAheadIdx := i + nextSize
+					if lookAheadIdx < textLength {
+						followR, _ := utf8.DecodeRuneInString(text[lookAheadIdx:])
+						// Merge if the character following the punctuation is valid
+						// (e.g., "state-of-the-art", "don't").
+						if unicode.IsLetter(followR) || unicode.IsNumber(followR) {
+							i += nextSize
+							continue
+						}
+					}
+				}
+
+				// End of the word for any other character
+				break
+			}
+			continue
+		}
+
+		// Skip all other characters (spaces, punctuation, emojis, etc.)
+		i += size
+	}
+
+	return count
+}
+
+func IsCJK(r rune) bool {
+	return (r >= 0x4E00 && r <= 0x9FFF) || // CJK Unified Ideographs
+		(r >= 0x3400 && r <= 0x4DBF) || // CJK Extension A
+		(r >= 0xF900 && r <= 0xFAFF) || // CJK Compatibility
+		(r >= 0x3040 && r <= 0x309F) || // Hiragana
+		(r >= 0x30A0 && r <= 0x30FF) || // Katakana
+		(r >= 0xAC00 && r <= 0xD7A3) // Hangul Syllables
 }
