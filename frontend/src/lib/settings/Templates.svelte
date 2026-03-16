@@ -39,7 +39,7 @@
 			<option value="-1" selected={selectedTemplate === '-1'}>
 				{$t('settings.templates.create_new')}
 			</option>
-			{#each $templates as template, index}
+			{#each $templates as template, index (template.name)}
 				<option value={index} selected={index === selectedTemplate}>
 					{template.name}
 				</option>
