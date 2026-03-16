@@ -22,6 +22,9 @@ type LogRequest struct {
 
 // SaveLog handles saving a log entry
 func SaveLog(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -393,6 +396,9 @@ func GetMarkedDays(w http.ResponseWriter, r *http.Request) {
 
 // BookmarkDay handles bookmarking a day
 func BookmarkDay(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -879,8 +885,8 @@ func GetHistory(w http.ResponseWriter, r *http.Request) {
 // DeleteDay deletes all data of the specified day
 // Also delete files, that might be uploaded
 func DeleteDay(w http.ResponseWriter, r *http.Request) {
-	utils.UsersFileMutex.Lock()
-	defer utils.UsersFileMutex.Unlock()
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
 
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)

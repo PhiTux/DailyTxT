@@ -13,6 +13,9 @@ import (
 
 // UploadFile handles uploading a file
 func UploadFile(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -254,6 +257,9 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 // DeleteFile handles deleting a file
 func DeleteFile(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -395,6 +401,9 @@ type RenameFileRequest struct {
 
 // RenameFile handles renaming a file
 func RenameFile(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -511,7 +520,7 @@ func RenameFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.Logger.Printf("File renamed successfully for user %d: %s -> %s", userID, req.UUID, req.NewFilename)
+	utils.Logger.Printf("File renamed successfully for user %d: %s", userID, req.UUID)
 	utils.JSONResponse(w, http.StatusOK, map[string]bool{"success": true})
 }
 
@@ -525,6 +534,9 @@ type ReorderFilesRequest struct {
 
 // ReorderFiles handles reordering files within a day
 func ReorderFiles(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {

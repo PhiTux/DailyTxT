@@ -17,6 +17,9 @@ import (
 
 // ImportData handles the import of user data
 func ImportData(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// 1. Auth check
 	val := r.Context().Value(utils.UserIDKey)
 	if val == nil {

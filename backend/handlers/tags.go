@@ -19,6 +19,9 @@ type EditTagRequest struct {
 
 // EditTag handles editing a tag
 func EditTag(w http.ResponseWriter, r *http.Request) {
+	utils.TagsMutex.Lock()
+	defer utils.TagsMutex.Unlock()
+
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -116,6 +119,11 @@ func EditTag(w http.ResponseWriter, r *http.Request) {
 
 // DeleteTag handles deleting a tag
 func DeleteTag(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+	utils.TagsMutex.Lock()
+	defer utils.TagsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -257,6 +265,9 @@ type TagLogRequest struct {
 
 // AddTagToLog handles adding a tag to a log
 func AddTagToLog(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -346,6 +357,9 @@ func AddTagToLog(w http.ResponseWriter, r *http.Request) {
 
 // RemoveTagFromLog handles removing a tag from a log
 func RemoveTagFromLog(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -521,6 +535,9 @@ type TagRequest struct {
 
 // SaveTags handles saving a new tag
 func SaveTags(w http.ResponseWriter, r *http.Request) {
+	utils.TagsMutex.Lock()
+	defer utils.TagsMutex.Unlock()
+
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {

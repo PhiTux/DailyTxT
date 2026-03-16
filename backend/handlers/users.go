@@ -339,13 +339,13 @@ func Register(username string, password string) (bool, error) {
 			"id_counter": 1,
 			"users": []map[string]any{
 				{
-					"user_id":          1,
-					"dailytxt_version": 2,
+					"user_id":           1,
+					"dailytxt_version":  2,
 					"last_seen_version": utils.AppVersion,
-					"username":         username,
-					"password":         hashedPassword,
-					"salt":             salt,
-					"enc_enc_key":      encEncKey,
+					"username":          username,
+					"password":          hashedPassword,
+					"salt":              salt,
+					"enc_enc_key":       encEncKey,
 				},
 			},
 		}
@@ -365,13 +365,13 @@ func Register(username string, password string) (bool, error) {
 		}
 
 		usersList = append(usersList, map[string]any{
-			"user_id":          int(idCounter),
-			"dailytxt_version": 2,
+			"user_id":           int(idCounter),
+			"dailytxt_version":  2,
 			"last_seen_version": utils.AppVersion,
-			"username":         username,
-			"password":         hashedPassword,
-			"salt":             salt,
-			"enc_enc_key":      encEncKey,
+			"username":          username,
+			"password":          hashedPassword,
+			"salt":              salt,
+			"enc_enc_key":       encEncKey,
 		})
 
 		users["users"] = usersList
@@ -486,6 +486,9 @@ type ChangePasswordRequest struct {
 
 // ChangePassword changes the user's password
 func ChangePassword(w http.ResponseWriter, r *http.Request) {
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
 	// Get user ID from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -532,9 +535,6 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
-
-	utils.UsersFileMutex.Lock()
-	defer utils.UsersFileMutex.Unlock()
 
 	// Get user data
 	users, err := utils.GetUsers()
@@ -874,6 +874,9 @@ func CreateBackupCodes(w http.ResponseWriter, r *http.Request) {
 
 // ChangeUsername handles changing a user's username
 func ChangeUsername(w http.ResponseWriter, r *http.Request) {
+	utils.UsersFileMutex.Lock()
+	defer utils.UsersFileMutex.Unlock()
+
 	// Get user info from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {
@@ -1093,7 +1096,6 @@ func CheckChangelog(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	
 	if show_changelog {
 		changelog, err = utils.GetChangelog()
 		if err != nil {

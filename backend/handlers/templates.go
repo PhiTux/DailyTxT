@@ -88,6 +88,9 @@ func GetTemplates(w http.ResponseWriter, r *http.Request) {
 
 // SaveTemplates handles saving templates
 func SaveTemplates(w http.ResponseWriter, r *http.Request) {
+	utils.TemplatesMutex.Lock()
+	defer utils.TemplatesMutex.Unlock()
+
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
 	if !ok {

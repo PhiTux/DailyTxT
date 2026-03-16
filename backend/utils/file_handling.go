@@ -14,7 +14,10 @@ import (
 // Mutexes for file operations
 var (
 	UsersFileMutex    sync.RWMutex // For users.json
-	userSettingsMutex sync.RWMutex // FFor user settings
+	UserSettingsMutex sync.RWMutex // For user settings
+	LogsMutex         sync.RWMutex // For log files
+	TagsMutex         sync.RWMutex // For tags.json
+	TemplatesMutex    sync.RWMutex // For templates.json
 )
 
 // GetUsers retrieves the users from the users.json file
@@ -203,9 +206,6 @@ func WriteTags(userID int, content map[string]any) error {
 
 // GetUserSettings retrieves the settings for a specific user
 func GetUserSettings(userID int) (string, error) {
-	userSettingsMutex.RLock()
-	defer userSettingsMutex.RUnlock()
-
 	// Try to open the settings.encrypted file
 	filePath := filepath.Join(Settings.DataPath, fmt.Sprintf("%d/settings.encrypted", userID))
 	file, err := os.Open(filePath)
@@ -230,8 +230,8 @@ func GetUserSettings(userID int) (string, error) {
 
 // WriteUserSettings writes the settings for a specific user
 func WriteUserSettings(userID int, content string) error {
-	userSettingsMutex.Lock()
-	defer userSettingsMutex.Unlock()
+	UserSettingsMutex.Lock()
+	defer UserSettingsMutex.Unlock()
 
 	// Create the directory if it doesn't exist
 	dirPath := filepath.Join(Settings.DataPath, fmt.Sprintf("%d", userID))
@@ -496,7 +496,6 @@ func SaveBackupCodes(userID int, codes []map[string]any) error {
 	return nil
 }
 
-
 func GetChangelog() (map[string]any, error) {
 	// Try to open the changelog.json file
 	filePath := "changelog.json"
@@ -517,6 +516,6 @@ func GetChangelog() (map[string]any, error) {
 		Logger.Printf("Error decoding %s: %v", filePath, err)
 		return nil, fmt.Errorf("internal server error when trying to decode changelog.json")
 	}
-	
+
 	return content, nil
 }
