@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Contingut de la plantilla",
       "name_of_template": "Nom de la plantilla",
-      "save_template": "Desa plantilla"
+      "save_template": "Desa plantilla",
+      "set_as_default": "Utilitzar com a plantilla predeterminada per a noves entrades"
     },
     "templates": "Plantilles",
-    "templates.create_new": "Crea nova plantilla...",
     "templates.delete_confirmation": "Vols eliminar realment la plantilla <b>{template}</b>?",
+    "templates.new": "Nova plantilla",
+    "templates.no_templates": "Encara no hi ha plantilles. Crea'n una per començar.",
+    "templates.select_placeholder": "Selecciona una plantilla per editar...",
     "timezone": "Zona horària",
     "timezone.auto_detect": "Detecta zona horària automàticament segons navegador.<br/>Actualment: ",
     "timezone.description": "Estableix la zona horària per al timestamp (\"{written_on}\").",

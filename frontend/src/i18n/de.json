@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Inhalt der Vorlage",
       "name_of_template": "Name der Vorlage",
-      "save_template": "Vorlage speichern"
+      "save_template": "Vorlage speichern",
+      "set_as_default": "Als Standard für neue Einträge verwenden"
     },
     "templates": "Vorlagen",
-    "templates.create_new": "Neue Vorlage erstellen...",
     "templates.delete_confirmation": "Vorlage <b>{template}</b> wirklich löschen?",
+    "templates.new": "Neue Vorlage",
+    "templates.no_templates": "Noch keine Vorlagen. Erstelle eine, um loszulegen.",
+    "templates.select_placeholder": "Vorlage zum Bearbeiten auswählen...",
     "timezone": "Zeitzone",
     "timezone.auto_detect": "Zeitzone automatisch anhand des Browsers ermitteln.<br/>Aktuell: ",
     "timezone.description": "Stelle die Zeitzone ein, die für den Timestamp (\"{written_on}\") genutzt werden soll.",

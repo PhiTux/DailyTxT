@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Contenuto del modello",
       "name_of_template": "Nome del modello",
-      "save_template": "Salva modello"
+      "save_template": "Salva modello",
+      "set_as_default": "Usa come predefinito per le nuove voci"
     },
     "templates": "Modelli",
-    "templates.create_new": "Crea nuovo modello...",
     "templates.delete_confirmation": "Eliminare veramente il modello <b>{template}</b>?",
+    "templates.new": "Nuovo modello",
+    "templates.no_templates": "Nessun modello disponibile. Creane uno per iniziare.",
+    "templates.select_placeholder": "Seleziona un modello da modificare...",
     "timezone": "Fuso orario",
     "timezone.auto_detect": "Determina automaticamente il fuso orario in base al browser.<br/>Attualmente:",
     "timezone.description": "Imposta il fuso orario da utilizzare per il timestamp (\"{written_on}\").",

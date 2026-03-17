@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Inhoud van het sjabloon",
       "name_of_template": "Naam van het sjabloon",
-      "save_template": "Sjabloon opslaan"
+      "save_template": "Sjabloon opslaan",
+      "set_as_default": "Gebruiken als standaard voor nieuwe notities"
     },
     "templates": "Sjablonen",
-    "templates.create_new": "Nieuw sjabloon maken...",
     "templates.delete_confirmation": "Sjabloon <b>{template}</b> echt verwijderen?",
+    "templates.new": "Nieuw sjabloon",
+    "templates.no_templates": "Nog geen sjablonen. Maak er een aan om te beginnen.",
+    "templates.select_placeholder": "Selecteer een sjabloon om te bewerken...",
     "timezone": "Tijdzone",
     "timezone.auto_detect": "Tijdzone automatisch bepalen op basis van de browser.<br/>Momenteel: ",
     "timezone.description": "Stel de tijdzone in die moet worden gebruikt voor de tijdstempel (\"{written_on}\").",

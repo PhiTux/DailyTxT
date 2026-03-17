@@ -13,6 +13,7 @@ type TemplatesRequest struct {
 	Templates []struct {
 		Name string `json:"name"`
 		Text string `json:"text"`
+		IsDefault bool `json:"is_default"`
 	} `json:"templates"`
 }
 
@@ -140,7 +141,23 @@ func SaveTemplates(w http.ResponseWriter, r *http.Request) {
 		templates = append(templates, map[string]any{
 			"name": encName,
 			"text": encText,
+			"is_default": template.IsDefault,
 		})
+	}
+
+	// Enforce single default: only the last template marked as default keeps it
+	lastDefault := -1
+	for i, t := range templates {
+		if m, ok := t.(map[string]any); ok && m["is_default"] == true {
+			lastDefault = i
+		}
+	}
+	if lastDefault >= 0 {
+		for i, t := range templates {
+			if m, ok := t.(map[string]any); ok && i != lastDefault {
+				m["is_default"] = false
+			}
+		}
 	}
 
 	content["templates"] = templates
