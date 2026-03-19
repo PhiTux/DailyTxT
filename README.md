@@ -166,6 +166,11 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
+#### Unpublished changes
+```
+- Possible fix for timeout when downloading backup
+```
+---
 
 ### 2.4.5 (2026-03-19)
 ```
