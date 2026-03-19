@@ -1,4 +1,12 @@
 {
+  "2.4.5": {
+    "date": "2026-03-19",
+    "changes": [
+      "✨ Improved word counting, including support for CJK languages",
+      "🐞 ❗Fixed several dangerous race-conditions in the backend!",
+      "⚙️ Updated dependencies for security reasons"
+    ]
+  },
   "2.4.4": {
     "date": "2026-03-08",
     "changes": [

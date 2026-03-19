@@ -166,14 +166,15 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 ---
-#### Unpublished changes 
+
+### 2.4.5 (2026-03-19)
 ```
+- Fixed several dangerous race-conditions in the backend!
 - Improved word counting, including support for CJK languages [1]
 - Updated dependencies for security reasons
 ```
 [1]: Thanks to [@yii](https://github.com/Yii6724XT)
 
----
 
 ### 2.4.4 (2026-03-08)
 ```
