@@ -36,25 +36,15 @@
 	});
 
 	let searchInput = $state(null);
-	let ctrlPressed = false;
-	function on_key_down(event) {
-		if (event.key === 'Control') {
-			event.preventDefault();
-			ctrlPressed = true;
-		}
-		if (event.key === 'f' && ctrlPressed) {
+	function handleKeydown(event) {
+		const isCtrl = event.ctrlKey || event.metaKey; // Support Cmd key on Mac
+
+		if (isCtrl && event.key === 'f') {
 			event.preventDefault();
 			$searchTag = {};
 			setTimeout(() => {
 				searchInput.focus();
 			}, 100);
-		}
-	}
-
-	function on_key_up(event) {
-		if (event.key === 'Control') {
-			event.preventDefault();
-			ctrlPressed = false;
 		}
 	}
 
@@ -141,7 +131,7 @@
 		}
 	});
 
-	function handleKeyDown(event) {
+	function handleKeyDownSearch(event) {
 		if (!showTagDropdown && event.key === 'Enter') {
 			searchForString();
 			return;
@@ -267,7 +257,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={on_key_down} onkeyup={on_key_up} />
+<svelte:window onkeydown={handleKeydown} />
 
 <div class="d-flex flex-column h-100">
 	<Datepicker {bookmarkDay} />
@@ -307,7 +297,7 @@
 						placeholder={$t('search.search')}
 						aria-label={$t('search.search')}
 						aria-describedby="search-button"
-						onkeydown={handleKeyDown}
+						onkeydown={handleKeyDownSearch}
 						autocomplete="off"
 						onfocus={() => {
 							selectedTagIndex = 0;

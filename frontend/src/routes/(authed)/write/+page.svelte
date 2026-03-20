@@ -143,67 +143,25 @@
 		loading = false;
 	});
 
-	let altPressed = false;
-	let ctrlPressed = false;
-	let macAltPressed = $state(false);
-	let MacCtrlPressed = $state(false);
-	const isMac = navigator.platform.toUpperCase().includes('MAC');
-	function on_key_down(event) {
-		if (!isMac && event.key === 'Alt') {
-			event.preventDefault();
-			altPressed = true;
-		}
-		if (isMac && event.key === 'Alt') {
-			event.preventDefault();
-			macAltPressed = true;
-		}
-		if (isMac && event.key === 'Control') {
-			event.preventDefault();
-			MacCtrlPressed = true;
-		}
-		if (event.key === 'ArrowRight' && altPressed) {
-			event.preventDefault();
-			changeDay(+1);
-		} else if (event.key === 'ArrowLeft' && altPressed) {
-			event.preventDefault();
-			changeDay(-1);
-		}
-		if (!isMac && event.key === 'Control') {
-			event.preventDefault();
-			ctrlPressed = true;
-		}
-		if (event.key === 'g' && (ctrlPressed || MacCtrlPressed)) {
+	function handleKeydown(event) {
+		const isCtrl = event.ctrlKey || event.metaKey; // Support Cmd key on Mac
+		const isAlt = event.altKey;
+
+		// Ctrl/Cmd + Arrow for day navigation
+
+		if (isCtrl && event.key === 'g') {
 			event.preventDefault();
 			document.getElementById('tag-input').focus();
+			return;
 		}
-	}
-
-	$effect(() => {
-		if (isMac) {
-			if (macAltPressed && MacCtrlPressed) {
-				altPressed = true;
-			} else {
-				altPressed = false;
-			}
-		}
-	});
-
-	function on_key_up(event) {
-		if (!isMac && event.key === 'Alt') {
+		if (isAlt && event.key === 'ArrowRight') {
 			event.preventDefault();
-			altPressed = false;
-		}
-		if (isMac && event.key === 'Alt') {
+			changeDay(+1);
+			return;
+		} else if (isAlt && event.key === 'ArrowLeft') {
 			event.preventDefault();
-			macAltPressed = false;
-		}
-		if (isMac && event.key === 'Control') {
-			event.preventDefault();
-			MacCtrlPressed = false;
-		}
-		if (!isMac && event.key === 'Control') {
-			event.preventDefault();
-			ctrlPressed = false;
+			changeDay(-1);
+			return;
 		}
 	}
 
@@ -1389,8 +1347,7 @@
 
 <DatepickerLogic />
 <svelte:window
-	onkeydown={on_key_down}
-	onkeyup={on_key_up}
+	onkeydown={handleKeydown}
 	onpaste={handlePaste}
 	ondragenter={handleDragEnter}
 	ondragleave={handleDragLeave}
