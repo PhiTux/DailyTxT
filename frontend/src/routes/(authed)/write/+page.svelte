@@ -32,7 +32,7 @@
 	import { formatBytes, alwaysShowSidenav, sameDate } from '$lib/helpers.js';
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import TemplateDropdown from '$lib/TemplateDropdown.svelte';
-	import { insertTemplate } from '$lib/templateStore';
+	import { insertTemplate, defaultTemplateText } from '$lib/templateStore';
 	import ALookBack from '$lib/ALookBack.svelte';
 	import { marked } from 'marked';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
@@ -99,16 +99,34 @@
 
 	$effect(() => {
 		if ($insertTemplate) {
-			currentLog = currentLog + $insertTemplate;
+			if (defaultPrefilled) {
+				// Default template was pre-filled and user hasn't touched it: replace
+				currentLog = $insertTemplate;
+			} else {
+				// User has edited or entry was loaded from server: append
+				currentLog = currentLog + $insertTemplate;
+			}
+			defaultPrefilled = false;
 			tinyMDE.setContent(currentLog);
-
 			$insertTemplate = '';
+		}
+	});
+
+	// Pre-fill empty entries with the default template (one-shot per getLog() call)
+	$effect(() => {
+		if (logEmpty && $defaultTemplateText && !defaultPrefilled) {
+			currentLog = $defaultTemplateText;
+			savedLog = currentLog;   // Not marked as unsaved, so navigating away won't save
+			defaultPrefilled = true;
+			logEmpty = false;        // Prevents re-firing until next getLog()
+			tinyMDE.setContent(currentLog);
 		}
 	});
 
 	$effect(() => {
 		if (currentLog !== savedLog) {
 			document.getElementsByClassName('TinyMDE')[0].classList.add('notSaved');
+			defaultPrefilled = false;
 		} else {
 			document.getElementsByClassName('TinyMDE')[0].classList.remove('notSaved');
 		}
@@ -215,6 +233,8 @@
 
 	let currentLog = $state('');
 	let savedLog = $state('');
+	let defaultPrefilled = $state(false);
+	let logEmpty = $state(false);
 
 	let logDateWritten = $state('');
 
@@ -233,6 +253,8 @@
 
 	let historyAvailable = $state(false);
 	async function getLog() {
+		// reset logEmpty so the default-template effect cannot fire during the async fetch
+		logEmpty = false;
 		if (savedLog !== currentLog) {
 			const success = await saveLog();
 			if (!success) {
@@ -253,6 +275,9 @@
 			filesOfDay = response.data.files;
 			selectedTags = response.data.tags;
 			historyAvailable = response.data.history_available;
+
+			logEmpty = (currentLog === '');
+			defaultPrefilled = false;
 
 			savedLog = currentLog;
 

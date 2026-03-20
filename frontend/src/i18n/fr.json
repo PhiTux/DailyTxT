@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Contenu du modèle",
       "name_of_template": "Nom du modèle",
-      "save_template": "Enregistrer le modèle"
+      "save_template": "Enregistrer le modèle",
+      "set_as_default": "Utiliser par défaut pour les nouvelles entrées"
     },
     "templates": "Modèles",
-    "templates.create_new": "Créer un nouveau modèle…",
     "templates.delete_confirmation": "Voulez-vous vraiment supprimer le modèle <b>{template}</b> ?",
+    "templates.new": "Nouveau modèle",
+    "templates.no_templates": "Aucun modèle pour l'instant. Créez-en un pour commencer.",
+    "templates.select_placeholder": "Sélectionnez un modèle à modifier…",
     "timezone": "Fuseau horaire",
     "timezone.auto_detect": "Déterminer automatiquement selon le navigateur.<br/>Actuellement : ",
     "timezone.description": "Définir le fuseau horaire utilisé pour l’horodatage (« {written_on} »).",

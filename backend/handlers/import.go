@@ -626,9 +626,13 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if !dup {
+					isDefault := false
+					if v, ok := t["is_default"].(bool); ok {
+						isDefault = v
+					}
 					eName, _ := utils.EncryptText(name, currentEncKey)
 					eText, _ := utils.EncryptText(text, currentEncKey)
-					cItems = append(cItems, map[string]any{"name": eName, "text": eText})
+					cItems = append(cItems, map[string]any{"name": eName, "text": eText, "is_default": isDefault})
 				}
 			}
 			currTmplData["templates"] = cItems

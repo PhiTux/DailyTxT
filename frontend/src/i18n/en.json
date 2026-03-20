@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Content of the template",
       "name_of_template": "Name of the template",
-      "save_template": "Save template"
+      "save_template": "Save template",
+      "set_as_default": "Use as default for new entries"
     },
     "templates": "Templates",
-    "templates.create_new": "Create new template...",
     "templates.delete_confirmation": "Really delete template <b>{template}</b>?",
+    "templates.new": "New template",
+    "templates.no_templates": "No templates yet. Create one to get started.",
+    "templates.select_placeholder": "Select a template to edit...",
     "timezone": "Timezone",
     "timezone.auto_detect": "Automatically determine timezone based on the browser.<br/>Currently: ",
     "timezone.description": "Set the timezone to be used for the timestamp (\"{written_on}\").",

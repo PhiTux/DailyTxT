@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Obsah šablony",
       "name_of_template": "Název šablony",
-      "save_template": "Uložit šablonu"
+      "save_template": "Uložit šablonu",
+      "set_as_default": "Použít jako výchozí pro nové záznamy"
     },
     "templates": "Šablony",
-    "templates.create_new": "Vytvořit novou šablonu...",
     "templates.delete_confirmation": "Opravu smazat šablonu <b>{template}</b>?",
+    "templates.new": "Nová šablona",
+    "templates.no_templates": "Zatím žádné šablony. Vytvořte jednu pro začátek.",
+    "templates.select_placeholder": "Vyberte šablonu k úpravě...",
     "timezone": "Časové pásmo",
     "timezone.auto_detect": "Automaticky určit časové pásmo na základě prohlížeče.<br/>Aktuálně: ",
     "timezone.description": "Nastav časové pásmo, které má být použito pro časové razítko (\"{written_on}\").",

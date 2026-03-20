@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "Malinnhold",
       "name_of_template": "Navn på mal",
-      "save_template": "Lagre mal"
+      "save_template": "Lagre mal",
+      "set_as_default": "Bruk som standard for nye oppføringer"
     },
     "templates": "Maler",
-    "templates.create_new": "Opprett ny mal...",
     "templates.delete_confirmation": "Vil du virkelig slette malen <b>{template}</b>?",
+    "templates.new": "Ny mal",
+    "templates.no_templates": "Ingen maler ennå. Opprett en for å komme i gang.",
+    "templates.select_placeholder": "Velg en mal å redigere...",
     "timezone": "Tidssone",
     "timezone.auto_detect": "Oppdag tidssone automatisk basert på nettleseren.<br/>Nåværende: ",
     "timezone.description": "Velg tidssonen som skal brukes for tidsstempelet («{written_on}»).",

@@ -453,6 +453,8 @@
 		modalEl.addEventListener('shown.bs.modal', onShown);
 		modalEl.addEventListener('hidden.bs.modal', () => {
 			destroySettingsScrollSpy();
+			// Clear the template selection so re-opening the dialog doesn't show the old selection
+			selectedTemplate = null;
 		});
 	}
 
@@ -672,22 +674,34 @@
 	let selectedTemplate = $state(null);
 	let templateName = $state('');
 	let templateText = $state('');
+	let templateIsDefault = $state(false);
 	let oldTemplateName = $state('');
 	let oldTemplateText = $state('');
+	let oldTemplateIsDefault = $state(false);
 	let confirmDeleteTemplate = $state(false);
 
-	function getTemplates() {
+	function getTemplates(autoSelectName = null) {
 		axios
 			.get(API_URL + '/logs/getTemplates')
 			.then((response) => {
 				$templates = response.data;
 
-				selectedTemplate = null;
+				if (autoSelectName) {
+					const idx = $templates.findIndex(t => t.name === autoSelectName);
+					selectedTemplate = idx >= 0 ? idx : null;
+				} else {
+					selectedTemplate = null;
+				}
 				updateSelectedTemplate();
 			})
 			.catch((error) => {
 				console.error(error);
 			});
+	}
+
+	function startCreatingTemplate() {
+		selectedTemplate = 'new';
+		updateSelectedTemplate();
 	}
 
 	let isSavingTemplate = $state(false);
@@ -715,13 +729,23 @@
 		if (isSavingTemplate) return;
 		isSavingTemplate = true;
 
-		if (selectedTemplate === '-1') {
+		// enforce single-default: clear is_default on all others if setting a new default
+		if (templateIsDefault) {
+			for (let i = 0; i < $templates.length; i++) {
+				$templates[i].is_default = false;
+			}
+		}
+
+		const nameToSelect = templateName;
+
+		if (selectedTemplate === 'new') {
 			// add new template
-			$templates.push({ name: templateName, text: templateText });
+			$templates.push({ name: templateName, text: templateText, is_default: templateIsDefault });
 		} else {
 			// update existing template
 			$templates[selectedTemplate].name = templateName;
 			$templates[selectedTemplate].text = templateText;
+			$templates[selectedTemplate].is_default = templateIsDefault;
 		}
 
 		axios
@@ -730,7 +754,7 @@
 			})
 			.then((response) => {
 				if (response.data.success) {
-					getTemplates();
+					getTemplates(nameToSelect);
 
 					// show toast
 					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveTemplate'));
@@ -751,13 +775,18 @@
 
 	let isDeletingTemplate = $state(false);
 	function deleteTemplate() {
-		if (selectedTemplate === null || selectedTemplate === '-1') return;
+		if (selectedTemplate === null || selectedTemplate === 'new') return;
 
 		if (isDeletingTemplate) return;
 		isDeletingTemplate = true;
 
 		// remove template from list
 		$templates.splice(selectedTemplate, 1);
+
+		// reset UI state immediately so the view transitions cleanly
+		confirmDeleteTemplate = false;
+		selectedTemplate = null;
+		updateSelectedTemplate();
 
 		axios
 			.post(API_URL + '/logs/saveTemplates', {
@@ -782,22 +811,24 @@
 			})
 			.finally(() => {
 				isDeletingTemplate = false;
-				confirmDeleteTemplate = false;
 			});
 	}
 
 	function updateSelectedTemplate() {
-		if (selectedTemplate === '-1' || selectedTemplate === null || $templates.length === 0) {
+		if (selectedTemplate === 'new' || selectedTemplate === null || $templates.length === 0) {
 			// new template
 			templateName = '';
 			templateText = '';
+			templateIsDefault = false;
 		} else {
 			// existing template
 			templateName = $templates[selectedTemplate].name;
 			templateText = $templates[selectedTemplate].text;
+			templateIsDefault = $templates[selectedTemplate].is_default || false;
 		}
 		oldTemplateName = templateName;
 		oldTemplateText = templateText;
+		oldTemplateIsDefault = templateIsDefault;
 
 		confirmDeleteTemplate = false;
 	}
@@ -1667,15 +1698,18 @@
 										{unsavedChanges}
 										bind:selectedTemplate
 										{updateSelectedTemplate}
-										{confirmDeleteTemplate}
+										bind:confirmDeleteTemplate
 										bind:templateName
 										bind:templateText
 										{deleteTemplate}
 										{oldTemplateName}
 										{oldTemplateText}
+										bind:templateIsDefault
+										{oldTemplateIsDefault}
 										{isSavingTemplate}
 										{isDeletingTemplate}
 										{saveTemplate}
+										{startCreatingTemplate}
 									/>
 								</div>
 

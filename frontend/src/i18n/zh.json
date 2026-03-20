@@ -392,11 +392,14 @@
     "template": {
       "content_of_template": "模板内容",
       "name_of_template": "模板名称",
-      "save_template": "保存模板"
+      "save_template": "保存模板",
+      "set_as_default": "设为新条目的默认模板"
     },
     "templates": "模板",
-    "templates.create_new": "创建新模板...",
     "templates.delete_confirmation": "确定删除模板 <b>{template}</b> 吗？",
+    "templates.new": "新建模板",
+    "templates.no_templates": "暂无模板。创建一个开始使用。",
+    "templates.select_placeholder": "选择要编辑的模板...",
     "timezone": "时区",
     "timezone.auto_detect": "根据浏览器自动检测时区。<br/>当前：",
     "timezone.description": "设置用于时间戳记（“{written_on}”）的时区",
