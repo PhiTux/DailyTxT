@@ -396,6 +396,7 @@
       "set_as_default": "Als Standard für neue Einträge verwenden"
     },
     "templates": "Vorlagen",
+    "templates.create_new": "Neue Vorlage erstellen...",
     "templates.delete_confirmation": "Vorlage <b>{template}</b> wirklich löschen?",
     "templates.new": "Neue Vorlage",
     "templates.no_templates": "Noch keine Vorlagen. Erstelle eine, um loszulegen.",

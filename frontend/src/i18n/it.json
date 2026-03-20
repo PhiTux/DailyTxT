@@ -396,6 +396,7 @@
       "set_as_default": "Usa come predefinito per le nuove voci"
     },
     "templates": "Modelli",
+    "templates.create_new": "Crea nuovo modello...",
     "templates.delete_confirmation": "Eliminare veramente il modello <b>{template}</b>?",
     "templates.new": "Nuovo modello",
     "templates.no_templates": "Nessun modello disponibile. Creane uno per iniziare.",

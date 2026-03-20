@@ -396,6 +396,7 @@
       "set_as_default": "設為新條目的預設範本"
     },
     "templates": "範本",
+    "templates.create_new": "建立新範本...",
     "templates.delete_confirmation": "確定刪除範本 <b>{template}</b> 嗎？",
     "templates.new": "新建範本",
     "templates.no_templates": "尚無範本。建立一個開始使用。",

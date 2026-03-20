@@ -396,6 +396,7 @@
       "set_as_default": "Use as default for new entries"
     },
     "templates": "Templates",
+    "templates.create_new": "Create new template...",
     "templates.delete_confirmation": "Really delete template <b>{template}</b>?",
     "templates.new": "New template",
     "templates.no_templates": "No templates yet. Create one to get started.",

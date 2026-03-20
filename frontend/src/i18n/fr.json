@@ -396,6 +396,7 @@
       "set_as_default": "Utiliser par défaut pour les nouvelles entrées"
     },
     "templates": "Modèles",
+    "templates.create_new": "Créer un nouveau modèle…",
     "templates.delete_confirmation": "Voulez-vous vraiment supprimer le modèle <b>{template}</b> ?",
     "templates.new": "Nouveau modèle",
     "templates.no_templates": "Aucun modèle pour l'instant. Créez-en un pour commencer.",

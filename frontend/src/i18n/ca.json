@@ -396,6 +396,7 @@
       "set_as_default": "Utilitzar com a plantilla predeterminada per a noves entrades"
     },
     "templates": "Plantilles",
+    "templates.create_new": "Crea nova plantilla...",
     "templates.delete_confirmation": "Vols eliminar realment la plantilla <b>{template}</b>?",
     "templates.new": "Nova plantilla",
     "templates.no_templates": "Encara no hi ha plantilles. Crea'n una per començar.",

@@ -396,6 +396,7 @@
       "set_as_default": "Bruk som standard for nye oppføringer"
     },
     "templates": "Maler",
+    "templates.create_new": "Opprett ny mal...",
     "templates.delete_confirmation": "Vil du virkelig slette malen <b>{template}</b>?",
     "templates.new": "Ny mal",
     "templates.no_templates": "Ingen maler ennå. Opprett en for å komme i gang.",

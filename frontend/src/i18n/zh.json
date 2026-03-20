@@ -396,6 +396,7 @@
       "set_as_default": "设为新条目的默认模板"
     },
     "templates": "模板",
+    "templates.create_new": "创建新模板...",
     "templates.delete_confirmation": "确定删除模板 <b>{template}</b> 吗？",
     "templates.new": "新建模板",
     "templates.no_templates": "暂无模板。创建一个开始使用。",

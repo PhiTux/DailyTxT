@@ -396,6 +396,7 @@
       "set_as_default": "Použít jako výchozí pro nové záznamy"
     },
     "templates": "Šablony",
+    "templates.create_new": "Vytvořit novou šablonu...",
     "templates.delete_confirmation": "Opravu smazat šablonu <b>{template}</b>?",
     "templates.new": "Nová šablona",
     "templates.no_templates": "Zatím žádné šablony. Vytvořte jednu pro začátek.",
