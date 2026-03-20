@@ -168,6 +168,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ---
 #### Unpublished changes
 ```
+- Added default template support & updated template settings UI
 - Possible fix for timeout when downloading backup
 - Updated capturing of keyboard-shortcuts
 - Minor CSS-Fix for search-input

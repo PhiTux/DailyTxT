@@ -59,7 +59,11 @@
 						</option>
 					{/each}
 				</select>
-				<button type="button" class="btn btn-outline-secondary ms-2 text-nowrap" onclick={startCreatingTemplate}>
+				<button
+					type="button"
+					class="btn btn-outline-secondary ms-2 text-nowrap"
+					onclick={startCreatingTemplate}
+				>
 					<Fa icon={faSquarePlus} fw />
 					{$t('settings.templates.new')}
 				</button>
@@ -67,12 +71,15 @@
 		{/if}
 
 		{#if selectedTemplate !== null}
-			<hr />
+			{#if $templates.length > 0}
+				<hr />
+			{/if}
 
 			{#if confirmDeleteTemplate}
 				<div transition:slide>
 					<div class="d-flex flex-row align-items-center pb-2">
 						<span>
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 							{@html $t('settings.templates.delete_confirmation', {
 								template: $templates[selectedTemplate]?.name
 							})}
@@ -123,14 +130,23 @@
 			>
 			</textarea>
 			<div class="form-check mt-2">
-				<input class="form-check-input" type="checkbox" bind:checked={templateIsDefault} id="defaultTemplateCheck" />
+				<input
+					class="form-check-input"
+					type="checkbox"
+					bind:checked={templateIsDefault}
+					id="defaultTemplateCheck"
+				/>
 				<label class="form-check-label" for="defaultTemplateCheck">
 					{$t('settings.template.set_as_default')}
 				</label>
 			</div>
 			<div class="d-flex justify-content-start">
 				<button
-					disabled={(oldTemplateName === templateName && oldTemplateText === templateText && oldTemplateIsDefault === templateIsDefault) ||
+					disabled={(oldTemplateName === templateName &&
+						oldTemplateText === templateText &&
+						oldTemplateIsDefault === templateIsDefault) ||
+						templateName == '' ||
+						templateText == '' ||
 						isSavingTemplate}
 					type="button"
 					class="btn btn-primary mt-2"
@@ -138,7 +154,8 @@
 				>
 					{$t('settings.template.save_template')}
 					{#if isSavingTemplate}
-						<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+						<span class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"
+						></span>
 					{/if}
 				</button>
 			</div>
