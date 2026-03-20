@@ -264,7 +264,7 @@
 	<br />
 
 	<div class="search d-flex flex-column glass-shadow mb-2">
-		<form onsubmit={searchForString} class="input-group">
+		<form onsubmit={searchForString} class="input-group search-input-group">
 			<button
 				class="btnSearchPopover btn btn-outline-secondary glass"
 				type="button"
@@ -454,6 +454,10 @@
 </div>
 
 <style>
+	.search-input-group {
+		flex-wrap: nowrap !important;
+	}
+
 	:global(body[data-bs-theme='dark']) #clear-search {
 		color: #777;
 		transition: color 0.25s ease;

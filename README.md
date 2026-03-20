@@ -170,6 +170,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 ```
 - Possible fix for timeout when downloading backup
 - Updated capturing of keyboard-shortcuts
+- Minor CSS-Fix for search-input
 ```
 ---
 
