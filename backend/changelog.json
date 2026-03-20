@@ -1,4 +1,13 @@
 {
+  "2.4.6": {
+    "date": "2026-03-21",
+    "changes": [
+      "✨ Added default template support & updated template settings UI",
+      "✨ Updated capturing of keyboard-shortcuts",
+      "🐞 Bugfix for timeout when downloading backup",
+      "🐞 Minor CSS-Fix for search-input"
+    ]
+  },
   "2.4.5": {
     "date": "2026-03-19",
     "changes": [

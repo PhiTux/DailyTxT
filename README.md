@@ -165,15 +165,19 @@ Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-s
 
 The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
+
 ---
-#### Unpublished changes
+
+
+### 2.4.6 (2026-03-21)
 ```
-- Added default template support & updated template settings UI
-- Possible fix for timeout when downloading backup
+- Added default template support & updated template settings UI [1]
 - Updated capturing of keyboard-shortcuts
-- Minor CSS-Fix for search-input
+- Bugfix for timeout when downloading backup
+- Minor CSS-fix for search-input
 ```
----
+[1]: Thanks to [@Thijs van As](https://github.com/tvanas)
+
 
 ### 2.4.5 (2026-03-19)
 ```
