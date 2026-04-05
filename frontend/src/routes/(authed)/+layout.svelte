@@ -687,7 +687,7 @@
 				$templates = response.data;
 
 				if (autoSelectName) {
-					const idx = $templates.findIndex(t => t.name === autoSelectName);
+					const idx = $templates.findIndex((t) => t.name === autoSelectName);
 					selectedTemplate = idx >= 0 ? idx : null;
 				} else {
 					selectedTemplate = null;
@@ -1445,6 +1445,7 @@
 					<div class="dropdown-menu dropdown-menu-end glass-shadow p-4 greet-menu">
 						<div class="d-flex flex-row justify-content-center mb-3">
 							<h3 class="greeting">
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 								{@html $t('navbar.greeting', {
 									user: `<span class="username">${currentUser}</span>`
 								})}
@@ -1664,6 +1665,7 @@
 										bind:value={activeSettingsSection}
 										onchange={() => scrollToSection(activeSettingsSection)}
 									>
+										<!-- eslint-disable-next-line svelte/require-each-key -->
 										{#each settingsSectionsMeta as sec}
 											<option value={sec.id}>{$t(sec.labelKey)}</option>
 										{/each}

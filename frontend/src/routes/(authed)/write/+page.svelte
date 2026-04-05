@@ -62,8 +62,15 @@
 	let tinyMDE;
 	let isMobile = false;
 	onMount(() => {
-		// If we come from read mode, keep the last visible day as the active selected day
-		if ($readingDate) {
+		// If we come from read mode, either keep the last visible day or jump to today based on settings.
+		if ($settings.selectTodayWhenSwitchingToWriteMode) {
+			const today = new Date();
+			$selectedDate = {
+				year: today.getFullYear(),
+				month: today.getMonth() + 1,
+				day: today.getDate()
+			};
+		} else if ($readingDate) {
 			$selectedDate = $readingDate; // promote readingDate to selectedDate when switching to write mode
 		}
 		$readingDate = null; // no reading-highlighting when in write mode
@@ -116,9 +123,9 @@
 	$effect(() => {
 		if (logEmpty && $defaultTemplateText && !defaultPrefilled) {
 			currentLog = $defaultTemplateText;
-			savedLog = currentLog;   // Not marked as unsaved, so navigating away won't save
+			savedLog = currentLog; // Not marked as unsaved, so navigating away won't save
 			defaultPrefilled = true;
-			logEmpty = false;        // Prevents re-firing until next getLog()
+			logEmpty = false; // Prevents re-firing until next getLog()
 			tinyMDE.setContent(currentLog);
 		}
 	});
@@ -276,7 +283,7 @@
 			selectedTags = response.data.tags;
 			historyAvailable = response.data.history_available;
 
-			logEmpty = (currentLog === '');
+			logEmpty = currentLog === '';
 			defaultPrefilled = false;
 
 			savedLog = currentLog;

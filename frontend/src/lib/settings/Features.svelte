@@ -24,6 +24,7 @@
 	{/if}
 
 	<h5>{$t('settings.images_title')}</h5>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 	{@html $t('settings.images_description')}
 
 	<div class="form-check form-switch">
@@ -49,6 +50,7 @@
 			disabled={!$tempSettings.setAutoloadImagesPerDevice}
 		/>
 		<label class="form-check-label" for="loadImagesThisDeviceSwitch">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html $t('settings.images_loading_this_device')}
 		</label>
 	</div>
@@ -97,6 +99,7 @@
 				class="alert alert-danger"
 				role="alert"
 			>
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 				{@html $t('settings.language_not_available', {
 					browserLanguage: window.navigator.language,
 					defaultLanguage: $tolgee.getInitialOptions().defaultLanguage
@@ -157,6 +160,7 @@
 			bind:group={$tempSettings.useBrowserTimezone}
 		/>
 		<label class="form-check-label" for="timezone1">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html $t('settings.timezone.auto_detect')}
 			<code>{new Intl.DateTimeFormat().resolvedOptions().timeZone}</code>
 		</label>
@@ -185,6 +189,7 @@
 	</div>
 
 	<div class="form-text mt-3">
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html $t('settings.timezone.help_text')}
 	</div>
 </div>
@@ -234,6 +239,25 @@
 	>
 </div>
 
+<div id="switchWriteModeDateSelection">
+	{#if $tempSettings.selectTodayWhenSwitchingToWriteMode !== $settings.selectTodayWhenSwitchingToWriteMode}
+		{@render unsavedChanges()}
+	{/if}
+	<h5>{$t('settings.switch_write_mode_date_selection')}</h5>
+	<div class="form-check form-switch">
+		<input
+			class="form-check-input"
+			bind:checked={$tempSettings.selectTodayWhenSwitchingToWriteMode}
+			type="checkbox"
+			role="switch"
+			id="switchWriteModeDateSelectionSwitch"
+		/>
+		<label class="form-check-label" for="switchWriteModeDateSelectionSwitch">
+			{$t('settings.switch_write_mode_date_selection.description')}
+		</label>
+	</div>
+</div>
+
 <div id="aLookBack">
 	{#if $tempSettings.useALookBack !== $settings.useALookBack || JSON.stringify(aLookBackYears
 				.trim()
@@ -244,6 +268,7 @@
 
 	<h5>{$t('settings.aLookBack')}</h5>
 	<ul>
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html $t('settings.aLookBack.description')}
 	</ul>
 	<div class="form-check form-switch">
@@ -276,6 +301,7 @@
 			</div>
 		{/if}
 		<div id="useALookBackHelpBlock" class="form-text">
+			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html $t('settings.ALookBack.help_text')}
 		</div>
 	</div>
