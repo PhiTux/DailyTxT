@@ -167,6 +167,12 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 
 ---
+#### Unpublished changes 
+```
+- Added option to default to TODAY when switching to write-mode
+```
+
+---
 
 
 ### 2.4.6 (2026-03-21)
