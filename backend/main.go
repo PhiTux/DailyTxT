@@ -27,6 +27,7 @@ var longTimeoutEndpoints = map[string]bool{
 	"/api/logs/backup":       true,
 	"/api/logs/backupUser":   true,
 	"/api/users/login":       true,
+	"/api/users/statistics":  true,
 }
 
 // timeoutMiddleware applies different timeouts based on the endpoint
