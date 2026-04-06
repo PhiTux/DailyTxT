@@ -40,6 +40,7 @@
 	import { marked } from 'marked';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import DemoModeText from '$lib/DemoModeText.svelte';
+	import Map from '$lib/Map.svelte';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -64,6 +65,7 @@
 
 	let tinyMDE;
 	let isMobile = false;
+
 	onMount(() => {
 		// If we come from read mode, either keep the last visible day or jump to today based on settings.
 		if ($settings.selectTodayWhenSwitchingToWriteMode) {
@@ -1678,6 +1680,8 @@
 					{/if}
 				</div>
 			</div>
+
+			<Map />
 
 			<div class="files d-flex flex-column glass glass-shadow">
 				<button
