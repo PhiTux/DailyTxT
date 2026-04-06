@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, other {<b>{wordCount}</b> 個詞} }",
       "words": "詞彙"
     },
+    "switch_write_mode_date_selection": "切换到写入模式时的日期选择",
+    "switch_write_mode_date_selection.description": "从读取模式切换到写入模式时，始终选择今天的日期（而不是保留上次读取的日期）。",
     "tags": "標籤",
     "tags.delete_confirmation": "<b>永久刪除標籤？</b><br/>這可能需要一些時間，因為必須搜尋每個日誌以查找潛在的連結。更改可能僅在重新載入頁面後可見。",
     "tags.description": "您可以在此編輯或從 DailyTxT 中完全刪除標籤。",

@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> parola} other {<b>{wordCount}</b> parole}}",
       "words": "Parole"
     },
+    "switch_write_mode_date_selection": "Selezione della data quando si passa alla modalità di scrittura",
+    "switch_write_mode_date_selection.description": "Quando si passa dalla modalità di lettura a quella di scrittura, selezionare sempre la data odierna (invece di conservare l'ultima data letta).",
     "tags": "Tag",
     "tags.delete_confirmation": "<b>Eliminare il tag in modo permanente?</b><br/>Potrebbe richiedere un momento perché ogni voce deve essere cercata per potenziali collegamenti. Le modifiche potrebbero diventare visibili solo dopo un ricaricamento della pagina.",
     "tags.description": "Qui puoi modificare i tag o eliminarli completamente da DailyTxT.",

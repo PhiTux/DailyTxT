@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, other {<b>{wordCount}</b> ord} }",
       "words": "Ord"
     },
+    "switch_write_mode_date_selection": "Valg av dato når du bytter til skrivemodus",
+    "switch_write_mode_date_selection.description": "Når du bytter fra lese- til skrivemodus, må du alltid velge dagens dato (i stedet for å beholde den sist leste datoen).",
     "tags": "Tagger",
     "tags.delete_confirmation": "<b>Slette tag permanent?</b><br/>Dette kan ta litt tid fordi alle oppføringer må sjekkes. Endringer vises kanskje først etter en sideoppdatering.",
     "tags.description": "Her kan du redigere eller slette tagger helt fra DailyTxT.",

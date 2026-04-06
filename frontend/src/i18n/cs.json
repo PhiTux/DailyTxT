@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> slovo} few {{wordCount} slova} other {<b>{wordCount}</b> slov}}",
       "words": "Slov"
     },
+    "switch_write_mode_date_selection": "Výběr dat při přepnutí do režimu psaní",
+    "switch_write_mode_date_selection.description": "Při přepnutí z režimu čtení do režimu psaní vždy vybrat dnešní datum (místo zachování naposledy čteného data).",
     "tags": "Tagy",
     "tags.delete_confirmation": "<b>Trvale smazat tag?</b><br/>To může chvíli trvat, protože každá položka musí být prohledána kvůli potenciálním odkazům. Změny mohou být viditelné až po obnovení stránky.",
     "tags.description": "Zde můžeš upravit tagy nebo je úplně smazat z DailyTxT.",

@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> mot} other {<b>{wordCount}</b> mots}}",
       "words": "Mots"
     },
+    "switch_write_mode_date_selection": "Sélection de la date lors du passage en mode écriture",
+    "switch_write_mode_date_selection.description": "Lors du passage du mode lecture au mode écriture, toujours sélectionner la date du jour (au lieu de conserver la dernière date lue).",
     "tags": "Étiquettes",
     "tags.delete_confirmation": "<b>Supprimer l’étiquette définitivement ?</b><br/>Cette opération peut prendre du temps, chaque entrée étant analysée. Les changements peuvent nécessiter un rechargement.",
     "tags.description": "Ici, vous pouvez modifier ou supprimer des étiquettes existantes.",

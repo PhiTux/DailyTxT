@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, other {<b>{wordCount}</b> 个字}}",
       "words": "字数"
     },
+    "switch_write_mode_date_selection": "切换到写入模式时的日期选择",
+    "switch_write_mode_date_selection.description": "切换 从阅读模式 到 编辑模式 时 始终 选择 今天的日期 (而不是 保留 最近 使用的 日期)。",
     "tags": "标签",
     "tags.delete_confirmation": "<b>永久删除标签？</b><br/>这可能需要一些时间，因为必须搜寻每篇日记以查找潜在的链接。更改可能仅在重新加载页面后可见",
     "tags.description": "您可以在此编辑或从 DailyTxT 中完全删除标签",

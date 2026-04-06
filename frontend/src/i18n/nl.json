@@ -385,6 +385,8 @@
       "wordCountTotal": "{wordCount, plural, one {<b>{wordCount}</b> woord} other {<b>{wordCount}</b> woorden}}",
       "words": "Woorden"
     },
+    "switch_write_mode_date_selection": "Datumselectie bij overschakelen naar schrijfmodus",
+    "switch_write_mode_date_selection.description": "Bij het overschakelen van lees- naar schrijfmodes altijd de huidige datum selecteren (in plaats van de laatst gelezen datum te behouden).",
     "tags": "Tags",
     "tags.delete_confirmation": "<b>Tag permanent verwijderen?</b><br/>Dit kan even duren omdat elke notitie moet worden doorzocht op mogelijke koppelingen. Wijzigingen worden mogelijk pas zichtbaar na het herladen van de pagina.",
     "tags.description": "Hier kunt u tags bewerken of volledig uit DailyTxT verwijderen.",
