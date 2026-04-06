@@ -1,4 +1,7 @@
 <script>
+	/* eslint-disable svelte/prefer-svelte-reactivity */
+	/* eslint-disable @typescript-eslint/no-unused-vars */
+
 	import '../../../scss/styles.scss';
 	import * as bootstrap from 'bootstrap';
 	import Sidenav from '$lib/Sidenav.svelte';
@@ -310,9 +313,13 @@
 					requestAnimationFrame(() => {
 						try {
 							tinyMDE.setSelection({ row: lastRow, col: lastCol });
-						} catch {}
+						} catch {
+							/* empty */
+						}
 					});
-				} catch {}
+				} catch {
+					/* empty */
+				}
 			}
 
 			logDateWritten = response.data.date_written;
@@ -1377,6 +1384,8 @@
 	});
 </script>
 
+<!-- eslint-disable svelte/no-at-html-tags -->
+
 <DatepickerLogic />
 <svelte:window
 	onkeydown={handleKeydown}
@@ -1554,7 +1563,7 @@
 
 			{#if $settings.useALookBack && aLookBack.length > 0}
 				<div class="mt-3 d-flex gap-3 overflow-x-auto mb-2 a-look-back">
-					{#each aLookBack as log}
+					{#each aLookBack as log (log.year + '-' + log.month + '-' + log.day)}
 						<ALookBack {log} />
 					{/each}
 				</div>
@@ -1622,7 +1631,6 @@
 						{:else}
 							{#each filteredTags as tag, index (tag.id)}
 								<!-- svelte-ignore a11y_click_events_have_key_events -->
-								<!-- svelte-ignore a11y_no_static_element_interactions -->
 								<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 								<div
 									role="button"
@@ -1715,7 +1723,7 @@
 					/>
 				</div>
 
-				{#each uploadingFiles as file}
+				{#each uploadingFiles as file (file.uuid)}
 					<div>
 						{file.name}
 						<div

@@ -41,7 +41,8 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_consider_explicit_label -->
+<!-- eslint-disable svelte/no-at-html-tags -->
+
 <button onclick={openModal} id="zoomButton" class="btn glass-shadow" style="height:100px;">
 	<div class="d-flex flex-row h-100" style="width: 200px;">
 		<div class="left d-flex flex-column justify-content-evenly px-1">
