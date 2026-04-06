@@ -17,7 +17,7 @@ set -euo pipefail
 #   ./build.sh phitux/dailytxt:2.x.x-testing.2
 
 if [[ $# -lt 1 ]]; then
-	echo "Usage: ./build.sh <PRIMARY_TAG> [SECONDARY_TAG] [--push]"
+	echo "Usage: ./build.sh <PRIMARY_TAG> [latest] [--push]"
 	exit 1
 fi
 PRIMARY_TAG="$1"
@@ -45,6 +45,13 @@ fi
 # Disallow 'latest' as PRIMARY_TAG; only allowed as SECONDARY_TAG
 if [[ "$PRIMARY_TAG" == "latest" ]]; then
 	echo "Error: PRIMARY_TAG must not be 'latest'. Use a specific version (e.g., '2.3.1') and optionally set SECONDARY_TAG to 'latest'."
+	exit 1
+fi
+
+# Disallow promoting testing images to latest in one call
+if [[ "$PRIMARY_TAG" == *testing* && "$SECONDARY_TAG" == "latest" ]]; then
+	echo "Warning: PRIMARY_TAG contains 'testing' and SECONDARY_TAG is 'latest'."
+	echo "Refusing to continue to avoid tagging a testing build as latest."
 	exit 1
 fi
 
