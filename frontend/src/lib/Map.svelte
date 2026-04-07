@@ -35,13 +35,12 @@
 	let isAddingPin = $state(false);
 	let addPinMarker = null;
 
-	$effect(() => {
-		if (pins) {
-			drawAllPins();
-		}
-	});
+	export function externalDrawAllPins() {
+		drawAllPins(true);
+	}
 
-	function drawAllPins() {
+	function drawAllPins(adjustView) {
+		console.log(isAddingPin);
 		if (!map || !customPinIcon) return;
 
 		// remove existing pins (except search and click markers)
@@ -51,12 +50,25 @@
 			}
 		});
 
+		const pinLatLngs = [];
+
 		pins.forEach((pin) => {
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
+			pinLatLngs.push([pin.lat, pin.lon]);
 			if (pin.text) {
 				marker.bindPopup(pin.text);
 			}
 		});
+
+		if (adjustView) {
+			// adjust map view to fit all pins
+			if (pinLatLngs.length > 0) {
+				map.fitBounds(pinLatLngs, {
+					padding: [30, 30],
+					maxZoom: 15
+				});
+			}
+		}
 	}
 
 	function clearAddPin() {
@@ -100,6 +112,8 @@
 	}
 
 	function addNewPinMarker(text) {
+		console.log('api', isAddingPin);
+
 		// save the new pin (API call)
 		axios
 			.post(`${API_URL}/logs/addPin`, {
@@ -114,17 +128,22 @@
 				if (response.data.success) {
 					// add the new pin to the local state
 					pins = [...pins, response.data.pin];
+					drawAllPins(false);
 				} else {
 					console.error('Failed to add pin:', response.data.message);
 				}
 			})
 			.catch((error) => {
 				console.error('Error adding pin:', error);
-			});
+			})
+			.finally(() => {
+				// at the end:
+				clearAddPin();
 
-		// at the end:
-		clearAddPin();
-		isAddingPin = false;
+				setTimeout(() => {
+					isAddingPin = false;
+				}, 100); // effect will be triggered, but drawAllPins shall not
+			});
 	}
 
 	function handleMapBackgroundClick(event) {

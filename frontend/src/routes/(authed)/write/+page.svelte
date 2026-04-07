@@ -265,6 +265,7 @@
 	}
 
 	let historyAvailable = $state(false);
+	let mapInstance = $state();
 	async function getLog() {
 		// reset logEmpty so the default-template effect cannot fire during the async fetch
 		logEmpty = false;
@@ -289,6 +290,9 @@
 			selectedTags = response.data.tags;
 			historyAvailable = response.data.history_available;
 			pins = response.data.pins;
+			if (mapInstance) {
+				mapInstance.externalDrawAllPins(true);
+			}
 
 			logEmpty = currentLog === '';
 			defaultPrefilled = false;
@@ -1683,7 +1687,7 @@
 				</div>
 			</div>
 
-			<Map {pins} />
+			<Map bind:this={mapInstance} {pins} />
 
 			<div class="files d-flex flex-column glass glass-shadow">
 				<button
