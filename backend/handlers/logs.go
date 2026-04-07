@@ -20,6 +20,162 @@ type LogRequest struct {
 	DateWritten string `json:"date_written"`
 }
 
+type AddPinRequest struct {
+	Lat   float64 `json:"lat"`
+	Lon   float64 `json:"lon"`
+	Text  string  `json:"text"`
+	Day   int     `json:"day"`
+	Month int     `json:"month"`
+	Year  int     `json:"year"`
+}
+
+// AddPin saves a pin for a specific day.
+// Stored encrypted: lat, lon, text. Stored plain: id.
+func AddPin(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var req AddPinRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	day := req.Day
+	month := req.Month
+	year := req.Year
+
+	if day <= 0 || month <= 0 || year <= 0 {
+		http.Error(w, "Missing or invalid date", http.StatusBadRequest)
+		return
+	}
+
+	content, err := utils.GetMonth(userID, year, month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	latStr := strconv.FormatFloat(req.Lat, 'f', -1, 64)
+	lonStr := strconv.FormatFloat(req.Lon, 'f', -1, 64)
+	encLat, err := utils.EncryptText(latStr, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting latitude: %v", err), http.StatusInternalServerError)
+		return
+	}
+	encLon, err := utils.EncryptText(lonStr, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting longitude: %v", err), http.StatusInternalServerError)
+		return
+	}
+	encText, err := utils.EncryptText(req.Text, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting pin text: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	days, ok := content["days"].([]any)
+	if !ok {
+		days = []any{}
+	}
+
+	dayIndex := -1
+	for i, dayInterface := range days {
+		dayObj, ok := dayInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+		dayNum, ok := dayObj["day"].(float64)
+		if ok && int(dayNum) == day {
+			dayIndex = i
+			break
+		}
+	}
+
+	if dayIndex == -1 {
+		days = append(days, map[string]any{"day": day})
+		dayIndex = len(days) - 1
+	}
+
+	dayObj, ok := days[dayIndex].(map[string]any)
+	if !ok {
+		http.Error(w, "Invalid day object", http.StatusInternalServerError)
+		return
+	}
+
+	pinsAny, ok := dayObj["pins"].([]any)
+	if !ok {
+		pinsAny = []any{}
+	}
+
+	maxID := 0
+	for _, pinInterface := range pinsAny {
+		pinObj, ok := pinInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		switch idVal := pinObj["id"].(type) {
+		case float64:
+			if int(idVal) > maxID {
+				maxID = int(idVal)
+			}
+		case int:
+			if idVal > maxID {
+				maxID = idVal
+			}
+		case string:
+			if parsed, err := strconv.Atoi(idVal); err == nil && parsed > maxID {
+				maxID = parsed
+			}
+		}
+	}
+
+	newID := maxID + 1
+	pinsAny = append(pinsAny, map[string]any{
+		"id":   newID,
+		"lat":  encLat,
+		"lon":  encLon,
+		"text": encText,
+	})
+
+	dayObj["pins"] = pinsAny
+	days[dayIndex] = dayObj
+	content["days"] = days
+
+	if err := utils.WriteMonth(userID, year, month, content); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success": true,
+		"pin": map[string]any{
+			"id":   newID,
+			"lat":  req.Lat,
+			"lon":  req.Lon,
+			"text": req.Text,
+		},
+	})
+}
+
 // SaveLog handles saving a log entry
 func SaveLog(w http.ResponseWriter, r *http.Request) {
 	utils.LogsMutex.Lock()
@@ -222,6 +378,7 @@ func GetLog(w http.ResponseWriter, r *http.Request) {
 		"date_written": "",
 		"files":        []any{},
 		"tags":         []any{},
+		"pins":         []any{},
 	}
 
 	// Check if days exist
@@ -309,12 +466,84 @@ func GetLog(w http.ResponseWriter, r *http.Request) {
 			tags = tagsList
 		}
 
+		decryptedPins := []any{}
+		if pinsList, ok := day["pins"].([]any); ok {
+			for _, pinInterface := range pinsList {
+				pinObj, ok := pinInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				id := 0
+				switch idVal := pinObj["id"].(type) {
+				case float64:
+					id = int(idVal)
+				case int:
+					id = idVal
+				case string:
+					parsed, err := strconv.Atoi(idVal)
+					if err != nil {
+						continue
+					}
+					id = parsed
+				default:
+					continue
+				}
+
+				encLat, ok := pinObj["lat"].(string)
+				if !ok || encLat == "" {
+					continue
+				}
+				encLon, ok := pinObj["lon"].(string)
+				if !ok || encLon == "" {
+					continue
+				}
+				encText, ok := pinObj["text"].(string)
+				if !ok {
+					continue
+				}
+
+				latStr, err := utils.DecryptText(encLat, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin latitude: %v", err), http.StatusInternalServerError)
+					return
+				}
+				lonStr, err := utils.DecryptText(encLon, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin longitude: %v", err), http.StatusInternalServerError)
+					return
+				}
+				textVal, err := utils.DecryptText(encText, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin text: %v", err), http.StatusInternalServerError)
+					return
+				}
+
+				lat, err := strconv.ParseFloat(latStr, 64)
+				if err != nil {
+					continue
+				}
+				lon, err := strconv.ParseFloat(lonStr, 64)
+				if err != nil {
+					continue
+				}
+
+				decryptedPins = append(decryptedPins, map[string]any{
+					"id":   id,
+					"lat":  lat,
+					"lon":  lon,
+					"text": textVal,
+				})
+			}
+		}
+
 		// Return log data
 		utils.JSONResponse(w, http.StatusOK, map[string]any{
 			"text":              text,
 			"date_written":      dateWritten,
 			"files":             files,
 			"tags":              tags,
+			"pins":              decryptedPins,
 			"history_available": historyAvailable,
 		})
 		return

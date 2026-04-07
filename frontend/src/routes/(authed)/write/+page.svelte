@@ -245,6 +245,7 @@
 
 	let currentLog = $state('');
 	let savedLog = $state('');
+	let pins = $state([]);
 	let defaultPrefilled = $state(false);
 	let logEmpty = $state(false);
 
@@ -287,6 +288,7 @@
 			filesOfDay = response.data.files;
 			selectedTags = response.data.tags;
 			historyAvailable = response.data.history_available;
+			pins = response.data.pins;
 
 			logEmpty = currentLog === '';
 			defaultPrefilled = false;
@@ -1681,7 +1683,7 @@
 				</div>
 			</div>
 
-			<Map />
+			<Map {pins} />
 
 			<div class="files d-flex flex-column glass glass-shadow">
 				<button

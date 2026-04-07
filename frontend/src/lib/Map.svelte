@@ -6,8 +6,18 @@
 	import { faSearch } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import lockedHeartPinUrl from '$lib/assets/locked_heart_with_keyhole.svg';
+	import axios from 'axios';
+	import { API_URL } from '$lib/APIurl.js';
+	import { selectedDate } from '$lib/calendarStore.js';
+
+	axios.interceptors.request.use((config) => {
+		config.withCredentials = true;
+		return config;
+	});
 
 	const tolgee = getTolgee(['language']);
+
+	let { pins } = $props();
 
 	let mapElement;
 
@@ -22,6 +32,61 @@
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
 	let customPinIcon = null;
+	let isAddingPin = $state(false);
+	let addPinMarker = null;
+
+	$effect(() => {
+		if (pins) {
+			drawAllPins();
+		}
+	});
+
+	function drawAllPins() {
+		if (!map || !customPinIcon) return;
+
+		// remove existing pins (except search and click markers)
+		map.eachLayer((layer) => {
+			if (layer instanceof L.Marker && layer !== mapSearchMarker) {
+				layer.remove();
+			}
+		});
+
+		pins.forEach((pin) => {
+			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
+			if (pin.text) {
+				marker.bindPopup(pin.text);
+			}
+		});
+	}
+
+	function clearAddPin() {
+		if (addPinMarker) {
+			addPinMarker.remove();
+			addPinMarker = null;
+		}
+	}
+
+	function updateAddPin(event) {
+		if (!isAddingPin || !map || !customPinIcon) return;
+
+		if (!addPinMarker) {
+			addPinMarker = L.marker(event.latlng, {
+				icon: customPinIcon,
+				interactive: false,
+				keyboard: false,
+				opacity: 0.5
+			}).addTo(map);
+		} else {
+			addPinMarker.setLatLng(event.latlng);
+		}
+	}
+
+	function toggleAddPinMode() {
+		isAddingPin = !isAddingPin;
+		if (!isAddingPin) {
+			clearAddPin();
+		}
+	}
 
 	function closeMapSearch() {
 		mapSearchOpen = false;
@@ -34,17 +99,55 @@
 		}
 	}
 
+	function addNewPinMarker(text) {
+		// save the new pin (API call)
+		axios
+			.post(`${API_URL}/logs/addPin`, {
+				lat: addPinMarker.getLatLng().lat,
+				lon: addPinMarker.getLatLng().lng,
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year,
+				text: text
+			})
+			.then((response) => {
+				if (response.data.success) {
+					// add the new pin to the local state
+					pins = [...pins, response.data.pin];
+				} else {
+					console.error('Failed to add pin:', response.data.message);
+				}
+			})
+			.catch((error) => {
+				console.error('Error adding pin:', error);
+			});
+
+		// at the end:
+		clearAddPin();
+		isAddingPin = false;
+	}
+
 	function handleMapBackgroundClick(event) {
 		const canPlacePin = mapSearchResults.length === 0;
 
 		if (mapSearchOpen) {
 			closeMapSearch();
+			return;
 		}
 
 		if (!canPlacePin || !map || !customPinIcon) return;
 
+		if (addPinMarker) {
+			addNewPinMarker();
+			return;
+		}
+
 		if (!mapClickPinMarker) {
-			mapClickPinMarker = L.marker(event.latlng, { icon: customPinIcon }).addTo(map);
+			mapClickPinMarker = L.marker(event.latlng, { icon: customPinIcon })
+				.on('click', (e) => {
+					console.log(e);
+				})
+				.addTo(map);
 		} else {
 			mapClickPinMarker.setLatLng(event.latlng);
 		}
@@ -67,11 +170,14 @@
 		}).addTo(map);
 
 		map.on('click', handleMapBackgroundClick);
+		map.on('mousemove', updateAddPin);
 
 		return () => {
 			if (map) {
 				map.off('click', handleMapBackgroundClick);
+				map.off('mousemove', updateAddPin);
 			}
+			clearAddPin();
 			if (mapSearchAbortController) {
 				mapSearchAbortController.abort();
 			}
@@ -213,6 +319,15 @@
 	<div class="map" bind:this={mapElement}></div>
 
 	<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
+		<button
+			type="button"
+			class="map-ghost-pin-toggle {isAddingPin ? 'active' : ''}"
+			onclick={toggleAddPinMode}
+			aria-label="Ghost Pin umschalten"
+		>
+			+
+		</button>
+
 		<div class="map-search-group">
 			<button
 				type="button"
@@ -257,6 +372,10 @@
 </div>
 
 <style>
+	:global(.leaflet-marker-icon) {
+		filter: drop-shadow(rgba(0, 0, 0, 0.8) 3px -2px 4px);
+	}
+
 	.map-wrapper {
 		position: relative;
 	}
@@ -273,8 +392,39 @@
 		bottom: 12px;
 		z-index: 1200;
 		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.45rem;
+	}
+
+	.map-ghost-pin-toggle {
+		width: 40px;
+		height: 40px;
+		display: inline-flex;
 		align-items: center;
-		gap: 0;
+		justify-content: center;
+		padding: 0;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		border-radius: 10px;
+		background: rgba(255, 255, 255, 0.96);
+		color: #1f1f1f;
+		font-size: 1.35rem;
+		line-height: 1;
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+	}
+
+	.map-ghost-pin-toggle.active {
+		background: rgba(0, 0, 0, 0.08);
+	}
+
+	:global(body[data-bs-theme='dark']) .map-ghost-pin-toggle {
+		background: rgba(45, 45, 45, 0.96);
+		border-color: rgba(255, 255, 255, 0.22);
+		color: #f0f0f0;
+	}
+
+	:global(body[data-bs-theme='dark']) .map-ghost-pin-toggle.active {
+		background: rgba(255, 255, 255, 0.14);
 	}
 
 	.map-search-group {
