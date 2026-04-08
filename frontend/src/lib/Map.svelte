@@ -32,15 +32,14 @@
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
 	let customPinIcon = null;
-	let isAddingPin = $state(false);
 	let addPinMarker = null;
+	let mapClickPinName = $state('');
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
 	}
 
 	function drawAllPins(adjustView) {
-		console.log(isAddingPin);
 		if (!map || !customPinIcon) return;
 
 		// remove existing pins (except search and click markers)
@@ -71,33 +70,39 @@
 		}
 	}
 
-	function clearAddPin() {
-		if (addPinMarker) {
-			addPinMarker.remove();
-			addPinMarker = null;
-		}
-	}
+	function createMapClickPopupContent() {
+		const container = document.createElement('div');
+		container.className = 'map-pin-popup';
 
-	function updateAddPin(event) {
-		if (!isAddingPin || !map || !customPinIcon) return;
+		const input = document.createElement('input');
+		input.type = 'text';
+		input.className = 'form-control';
+		input.placeholder = 'Name';
+		input.value = mapClickPinName;
+		input.addEventListener('input', (event) => {
+			mapClickPinName = event.target.value;
+		});
+		input.addEventListener('keydown', (event) => {
+			if (event.key === 'Enter') {
+				event.preventDefault();
+				addNewPinMarker(mapClickPinName);
+			}
+		});
 
-		if (!addPinMarker) {
-			addPinMarker = L.marker(event.latlng, {
-				icon: customPinIcon,
-				interactive: false,
-				keyboard: false,
-				opacity: 0.5
-			}).addTo(map);
-		} else {
-			addPinMarker.setLatLng(event.latlng);
-		}
-	}
+		const saveButton = document.createElement('button');
+		saveButton.type = 'button';
+		saveButton.className = 'btn btn-success';
+		saveButton.textContent = 'Speichern';
+		saveButton.addEventListener('click', (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			addNewPinMarker(mapClickPinName);
+		});
 
-	function toggleAddPinMode() {
-		isAddingPin = !isAddingPin;
-		if (!isAddingPin) {
-			clearAddPin();
-		}
+		container.appendChild(input);
+		container.appendChild(saveButton);
+
+		return container;
 	}
 
 	function closeMapSearch() {
@@ -111,14 +116,18 @@
 		}
 	}
 
+	/**
+	 * Saves the new pin via API and updates the local state
+	 * @param text the text of the new pin, can be empty
+	 */
 	function addNewPinMarker(text) {
-		console.log('api', isAddingPin);
+		console.log('api', text);
 
 		// save the new pin (API call)
 		axios
 			.post(`${API_URL}/logs/addPin`, {
-				lat: addPinMarker.getLatLng().lat,
-				lon: addPinMarker.getLatLng().lng,
+				lat: mapClickPinMarker.getLatLng().lat,
+				lon: mapClickPinMarker.getLatLng().lng,
 				day: $selectedDate.day,
 				month: $selectedDate.month,
 				year: $selectedDate.year,
@@ -138,11 +147,7 @@
 			})
 			.finally(() => {
 				// at the end:
-				clearAddPin();
-
-				setTimeout(() => {
-					isAddingPin = false;
-				}, 100); // effect will be triggered, but drawAllPins shall not
+				removeMapClickPin();
 			});
 	}
 
@@ -162,14 +167,28 @@
 		}
 
 		if (!mapClickPinMarker) {
-			mapClickPinMarker = L.marker(event.latlng, { icon: customPinIcon })
-				.on('click', (e) => {
-					console.log(e);
-				})
-				.addTo(map);
+			mapClickPinMarker = L.marker(event.latlng, { icon: customPinIcon, opacity: 0.7 }).addTo(map);
+			mapClickPinMarker.bindPopup(createMapClickPopupContent(), {
+				offset: [0, 0]
+			});
+			mapClickPinMarker.openPopup();
+			document
+				.getElementsByClassName('leaflet-popup-close-button')[0]
+				?.addEventListener('click', () => {
+					removeMapClickPin();
+				});
 		} else {
-			mapClickPinMarker.setLatLng(event.latlng);
+			removeMapClickPin();
 		}
+	}
+
+	function removeMapClickPin() {
+		if (!mapClickPinMarker) return;
+
+		const markerToRemove = mapClickPinMarker;
+		mapClickPinMarker = null;
+		mapClickPinName = '';
+		markerToRemove.remove();
 	}
 
 	onMount(() => {
@@ -189,14 +208,8 @@
 		}).addTo(map);
 
 		map.on('click', handleMapBackgroundClick);
-		map.on('mousemove', updateAddPin);
 
 		return () => {
-			if (map) {
-				map.off('click', handleMapBackgroundClick);
-				map.off('mousemove', updateAddPin);
-			}
-			clearAddPin();
 			if (mapSearchAbortController) {
 				mapSearchAbortController.abort();
 			}
@@ -338,15 +351,6 @@
 	<div class="map" bind:this={mapElement}></div>
 
 	<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
-		<button
-			type="button"
-			class="map-ghost-pin-toggle {isAddingPin ? 'active' : ''}"
-			onclick={toggleAddPinMode}
-			aria-label="Ghost Pin umschalten"
-		>
-			+
-		</button>
-
 		<div class="map-search-group">
 			<button
 				type="button"
@@ -414,36 +418,6 @@
 		flex-direction: column;
 		align-items: flex-start;
 		gap: 0.45rem;
-	}
-
-	.map-ghost-pin-toggle {
-		width: 40px;
-		height: 40px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0;
-		border: 1px solid rgba(0, 0, 0, 0.18);
-		border-radius: 10px;
-		background: rgba(255, 255, 255, 0.96);
-		color: #1f1f1f;
-		font-size: 1.35rem;
-		line-height: 1;
-		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-	}
-
-	.map-ghost-pin-toggle.active {
-		background: rgba(0, 0, 0, 0.08);
-	}
-
-	:global(body[data-bs-theme='dark']) .map-ghost-pin-toggle {
-		background: rgba(45, 45, 45, 0.96);
-		border-color: rgba(255, 255, 255, 0.22);
-		color: #f0f0f0;
-	}
-
-	:global(body[data-bs-theme='dark']) .map-ghost-pin-toggle.active {
-		background: rgba(255, 255, 255, 0.14);
 	}
 
 	.map-search-group {
@@ -583,5 +557,12 @@
 
 	:global(body[data-bs-theme='dark']) .map-search-result:hover {
 		background: rgba(255, 255, 255, 0.09);
+	}
+
+	:global(.leaflet-popup-content .map-pin-popup) {
+		display: flex;
+		flex-direction: column;
+		gap: 0.45rem;
+		min-width: 170px;
 	}
 </style>
