@@ -54,9 +54,12 @@
 		pins.forEach((pin) => {
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
 			pinLatLngs.push([pin.lat, pin.lon]);
-			if (pin.text) {
-				marker.bindPopup(pin.text);
-			}
+			marker.bindPopup(pin.text);
+			marker.on('click', () => {
+				if (mapClickPinMarker) {
+					removeMapClickPin();
+				}
+			});
 		});
 
 		if (adjustView) {
@@ -72,7 +75,7 @@
 
 	function createMapClickPopupContent() {
 		const container = document.createElement('div');
-		container.className = 'map-pin-popup';
+		container.className = 'new-pin-popup';
 
 		const input = document.createElement('input');
 		input.type = 'text';
@@ -153,6 +156,15 @@
 
 	function handleMapBackgroundClick(event) {
 		const canPlacePin = mapSearchResults.length === 0;
+
+		// check if any popup is open and close it
+		const hasOpenPopup = Boolean(map?.getContainer()?.querySelector('.leaflet-popup'));
+		if (hasOpenPopup) {
+			if (!map?.getContainer()?.querySelector('.leaflet-popup > div > div > .new-pin-popup')) {
+				map?.getContainer()?.querySelector('.leaflet-popup')?.remove();
+				return;
+			}
+		}
 
 		if (mapSearchOpen) {
 			closeMapSearch();
@@ -559,7 +571,7 @@
 		background: rgba(255, 255, 255, 0.09);
 	}
 
-	:global(.leaflet-popup-content .map-pin-popup) {
+	:global(.leaflet-popup-content .new-pin-popup) {
 		display: flex;
 		flex-direction: column;
 		gap: 0.45rem;
