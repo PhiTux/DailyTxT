@@ -30,7 +30,6 @@
 	let mapSearchLoading = $state(false);
 	let mapSearchError = $state('');
 	let mapSearchDebounce;
-	let mapSearchMarker = null;
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
 	let customPinIcon = null;
@@ -50,9 +49,9 @@
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
 
-		// remove existing pins (except search and click markers)
+		// remove existing pins (except the temporary new-pin marker)
 		map.eachLayer((layer) => {
-			if (layer instanceof L.Marker && layer !== mapSearchMarker) {
+			if (layer instanceof L.Marker && layer !== mapClickPinMarker) {
 				layer.remove();
 			}
 		});
@@ -229,6 +228,7 @@
 				initialValue: mapClickPinName,
 				onChange: (value) => {
 					mapClickPinName = value;
+					console.log(mapClickPinName);
 				},
 				onSave: (value) => {
 					addNewPinMarker(value);
@@ -283,7 +283,29 @@
 			});
 	}
 
+	function openNewPinPopupAt(latlng, suggestedName = '') {
+		if (!map || !customPinIcon) return;
+
+		if (mapClickPinMarker) {
+			removeMapClickPin();
+		}
+
+		mapClickPinName = suggestedName || '';
+		mapClickPinMarker = L.marker(latlng, { icon: customPinIcon, opacity: 0.7 }).addTo(map);
+		mapClickPinMarker.bindPopup(createMapClickPopupContent(), {
+			offset: [0, 0]
+		});
+		mapClickPinMarker.openPopup();
+
+		document
+			.getElementsByClassName('leaflet-popup-close-button')[0]
+			?.addEventListener('click', () => {
+				removeMapClickPin();
+			});
+	}
+
 	function handleMapBackgroundClick(event) {
+		// moving a pin right now?
 		if (movingPinID !== null && movingPinMarker) {
 			const { lat, lng } = event.latlng;
 			const pinID = movingPinID;
@@ -299,7 +321,10 @@
 			return;
 		}
 
-		const canPlacePin = mapSearchResults.length === 0;
+		if (mapSearchOpen) {
+			closeMapSearch();
+			return;
+		}
 
 		// check if any popup is open and close it
 		const hasOpenPopup = Boolean(map?.getContainer()?.querySelector('.leaflet-popup'));
@@ -312,11 +337,7 @@
 			}
 		}
 
-		if (mapSearchOpen) {
-			closeMapSearch();
-			return;
-		}
-
+		const canPlacePin = mapSearchResults.length === 0;
 		if (!canPlacePin || !map || !customPinIcon) return;
 
 		if (addPinMarker) {
@@ -325,16 +346,7 @@
 		}
 
 		if (!mapClickPinMarker) {
-			mapClickPinMarker = L.marker(event.latlng, { icon: customPinIcon, opacity: 0.7 }).addTo(map);
-			mapClickPinMarker.bindPopup(createMapClickPopupContent(), {
-				offset: [0, 0]
-			});
-			mapClickPinMarker.openPopup();
-			document
-				.getElementsByClassName('leaflet-popup-close-button')[0]
-				?.addEventListener('click', () => {
-					removeMapClickPin();
-				});
+			openNewPinPopupAt(event.latlng);
 		} else {
 			removeMapClickPin();
 		}
@@ -490,18 +502,10 @@
 
 		map.setView([result.lat, result.lon], 14);
 
-		if (!mapSearchMarker) {
-			mapSearchMarker = L.marker([result.lat, result.lon]).addTo(map);
-		} else {
-			mapSearchMarker.setLatLng([result.lat, result.lon]);
-		}
-
-		if (result.label) {
-			mapSearchMarker.bindPopup(result.label).openPopup();
-		}
+		closeMapSearch();
+		openNewPinPopupAt([result.lat, result.lon], result.label || '');
 
 		mapSearchQuery = result.label || mapSearchQuery;
-		mapSearchResults = [];
 	}
 
 	function handleMapSearchKeydown(event) {
@@ -751,5 +755,9 @@
 		backdrop-filter: blur(7px) saturate(130%);
 		background-color: rgba(56, 56, 56, 0.38);
 		border: 1px solid #1565c0;
+	}
+
+	:global(.leaflet-fade-anim .leaflet-popup) {
+		transition: opacity 0.1s linear !important;
 	}
 </style>

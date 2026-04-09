@@ -149,17 +149,17 @@
 				<ul class="dropdown-menu dropdown-menu-end">
 					<li>
 						<button class="dropdown-item btn btn-primary" onclick={startEditing}>
-							<Fa icon={faPencil} />
+							<Fa icon={faPencil} fw />
 						</button>
 					</li>
 					<li>
 						<button class="dropdown-item btn btn-danger" onclick={movePin}
-							><Fa icon={faLocationCrosshairs} /></button
+							><Fa icon={faLocationCrosshairs} fw /></button
 						>
 					</li>
 					<li>
 						<button class="dropdown-item btn btn-danger" onclick={confirmDeletePin}
-							><Fa icon={faTrash} /></button
+							><Fa icon={faTrash} fw /></button
 						>
 					</li>
 				</ul>

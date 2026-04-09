@@ -31,7 +31,7 @@
 		type="text"
 		class="form-control"
 		placeholder="Name"
-		{initialValue}
+		bind:value={initialValue}
 		oninput={handleInput}
 		onkeydown={handleKeydown}
 	/>
