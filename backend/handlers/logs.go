@@ -440,6 +440,154 @@ func DeletePin(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+type MovePinRequest struct {
+	PinID int     `json:"pinId"`
+	Lat   float64 `json:"lat"`
+	Lon   float64 `json:"lon"`
+	Day   int     `json:"day"`
+	Month int     `json:"month"`
+	Year  int     `json:"year"`
+}
+
+// MovePin updates the position of an existing pin.
+func MovePin(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.Lock()
+	defer utils.LogsMutex.Unlock()
+
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	var req MovePinRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.PinID <= 0 || req.Day <= 0 || req.Month <= 0 || req.Year <= 0 {
+		http.Error(w, "Missing or invalid pin/date data", http.StatusBadRequest)
+		return
+	}
+
+	content, err := utils.GetMonth(userID, req.Year, req.Month)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	latStr := strconv.FormatFloat(req.Lat, 'f', -1, 64)
+	lonStr := strconv.FormatFloat(req.Lon, 'f', -1, 64)
+	encLat, err := utils.EncryptText(latStr, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting latitude: %v", err), http.StatusInternalServerError)
+		return
+	}
+	encLon, err := utils.EncryptText(lonStr, encKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error encrypting longitude: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	days, ok := content["days"].([]any)
+	if !ok {
+		http.Error(w, "Day not found", http.StatusNotFound)
+		return
+	}
+
+	dayIndex := -1
+	for i, dayInterface := range days {
+		dayObj, ok := dayInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+		dayNum, ok := dayObj["day"].(float64)
+		if ok && int(dayNum) == req.Day {
+			dayIndex = i
+			break
+		}
+	}
+
+	if dayIndex == -1 {
+		http.Error(w, "Day not found", http.StatusNotFound)
+		return
+	}
+
+	dayObj, ok := days[dayIndex].(map[string]any)
+	if !ok {
+		http.Error(w, "Invalid day object", http.StatusInternalServerError)
+		return
+	}
+
+	pinsAny, ok := dayObj["pins"].([]any)
+	if !ok {
+		http.Error(w, "Pin not found", http.StatusNotFound)
+		return
+	}
+
+	pinMoved := false
+	for i, pinInterface := range pinsAny {
+		pinObj, ok := pinInterface.(map[string]any)
+		if !ok {
+			continue
+		}
+
+		id := 0
+		switch idVal := pinObj["id"].(type) {
+		case float64:
+			id = int(idVal)
+		case int:
+			id = idVal
+		case string:
+			parsed, err := strconv.Atoi(idVal)
+			if err != nil {
+				continue
+			}
+			id = parsed
+		default:
+			continue
+		}
+
+		if id == req.PinID {
+			pinObj["lat"] = encLat
+			pinObj["lon"] = encLon
+			pinsAny[i] = pinObj
+			pinMoved = true
+			break
+		}
+	}
+
+	if !pinMoved {
+		http.Error(w, "Pin not found", http.StatusNotFound)
+		return
+	}
+
+	dayObj["pins"] = pinsAny
+	days[dayIndex] = dayObj
+	content["days"] = days
+
+	if err := utils.WriteMonth(userID, req.Year, req.Month, content); err != nil {
+		http.Error(w, fmt.Sprintf("Error writing month data: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	utils.JSONResponse(w, http.StatusOK, map[string]any{
+		"success": true,
+	})
+}
+
 // SaveLog handles saving a log entry
 func SaveLog(w http.ResponseWriter, r *http.Request) {
 	utils.LogsMutex.Lock()

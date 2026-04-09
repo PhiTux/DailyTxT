@@ -37,6 +37,10 @@
 	let addPinMarker = null;
 	let mapClickPinName = $state('');
 	let mapClickPinPopupApp = null;
+	let markerByPinID = {};
+	let movingPinID = null;
+	let movingPinMarker = null;
+	let movePinMouseMoveHandler = null;
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
@@ -53,9 +57,11 @@
 		});
 
 		const pinLatLngs = [];
+		markerByPinID = {};
 
 		pins.forEach((pin) => {
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
+			markerByPinID[pin.id] = marker;
 			pinLatLngs.push([pin.lat, pin.lon]);
 
 			const popupTarget = document.createElement('div');
@@ -66,6 +72,10 @@
 					id: pin.id,
 					deletePin: () => {
 						deletePin(pin.id);
+						//marker.remove();
+					},
+					movePin: () => {
+						movePin(pin.id);
 						//marker.remove();
 					}
 				}
@@ -96,6 +106,62 @@
 				});
 			}
 		}
+	}
+
+	function movePin(id) {
+		const marker = markerByPinID[id];
+		if (!marker) return;
+
+		if (movePinMouseMoveHandler) {
+			map.off('mousemove', movePinMouseMoveHandler);
+			movePinMouseMoveHandler = null;
+		}
+
+		movingPinID = id;
+		movingPinMarker = marker;
+		marker.closePopup();
+		marker.setOpacity(0.5);
+		map.getContainer().style.cursor = 'crosshair';
+
+		movePinMouseMoveHandler = (event) => {
+			if (!movingPinMarker) return;
+			movingPinMarker.setLatLng(event.latlng);
+		};
+
+		map.on('mousemove', movePinMouseMoveHandler);
+	}
+
+	/**
+	 * Saves a moved pin position. Backend call intentionally left empty for now.
+	 */
+	function updatePinPosition(pinID, lat, lon) {
+		axios
+			.post(`${API_URL}/logs/movePin`, {
+				pinId: pinID,
+				lat: lat,
+				lon: lon,
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year
+			})
+			.then((response) => {
+				if (!response.data.success) {
+					console.error('Failed to move pin:', response.data.message);
+				} else {
+					pins = pins.map((pin) => (pin.id === pinID ? { ...pin, lat: lat, lon: lon } : pin));
+				}
+			})
+			.catch((error) => {
+				console.error('Error moving pin:', error);
+			})
+			.finally(() => {
+				drawAllPins(false);
+
+				movingPinMarker.setOpacity(1);
+				map.getContainer().style.cursor = '';
+				movingPinID = null;
+				movingPinMarker = null;
+			});
 	}
 
 	/**
@@ -189,6 +255,21 @@
 	}
 
 	function handleMapBackgroundClick(event) {
+		if (movingPinID !== null && movingPinMarker) {
+			const { lat, lng } = event.latlng;
+			const pinID = movingPinID;
+
+			movingPinMarker.setLatLng(event.latlng);
+
+			if (movePinMouseMoveHandler) {
+				map.off('mousemove', movePinMouseMoveHandler);
+				movePinMouseMoveHandler = null;
+			}
+
+			updatePinPosition(pinID, lat, lng);
+			return;
+		}
+
 		const canPlacePin = mapSearchResults.length === 0;
 
 		// check if any popup is open and close it

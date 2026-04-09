@@ -1,12 +1,17 @@
 <script>
-	import { faPencil, faBars, faTrash } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faPencil,
+		faBars,
+		faTrash,
+		faLocationCrosshairs
+	} from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
 	import { API_URL } from '$lib/APIurl.js';
 	import { selectedDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
 
-	let { text = '', id = null, deletePin = () => {} } = $props();
+	let { text = '', id = null, deletePin = () => {}, movePin = () => {} } = $props();
 	let isEditing = $state(false);
 
 	let editedText = $state('');
@@ -119,7 +124,7 @@
 		<div class="d-flex flex-column align-items-center gap-2">
 			<div>Möchtest du diesen Pin wirklich löschen?</div>
 			<div>
-				<button class="btn btn-danger btn-sm me-2" onclick={deletePin(id)}>Ja</button>
+				<button class="btn btn-danger btn-sm me-2" onclick={deletePin}>Ja</button>
 				<button class="btn btn-secondary btn-sm" onclick={confirmDeletePinAbort}>Nein</button>
 			</div>
 		</div>
@@ -146,6 +151,11 @@
 						<button class="dropdown-item btn btn-primary" onclick={startEditing}>
 							<Fa icon={faPencil} />
 						</button>
+					</li>
+					<li>
+						<button class="dropdown-item btn btn-danger" onclick={movePin}
+							><Fa icon={faLocationCrosshairs} /></button
+						>
 					</li>
 					<li>
 						<button class="dropdown-item btn btn-danger" onclick={confirmDeletePin}
