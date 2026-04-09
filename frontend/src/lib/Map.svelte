@@ -40,6 +40,7 @@
 	let markerByPinID = {};
 	let movingPinID = null;
 	let movingPinMarker = null;
+	let movingPinOriginalLatLng = null;
 	let movePinMouseMoveHandler = null;
 
 	export function externalDrawAllPins() {
@@ -119,6 +120,7 @@
 
 		movingPinID = id;
 		movingPinMarker = marker;
+		movingPinOriginalLatLng = marker.getLatLng();
 		marker.closePopup();
 		marker.setOpacity(0.5);
 		map.getContainer().style.cursor = 'crosshair';
@@ -129,6 +131,32 @@
 		};
 
 		map.on('mousemove', movePinMouseMoveHandler);
+	}
+
+	function cancelMovePin() {
+		if (!movingPinMarker) return;
+
+		if (movePinMouseMoveHandler) {
+			map.off('mousemove', movePinMouseMoveHandler);
+			movePinMouseMoveHandler = null;
+		}
+
+		if (movingPinOriginalLatLng) {
+			movingPinMarker.setLatLng(movingPinOriginalLatLng);
+		}
+
+		movingPinMarker.setOpacity(1);
+		map.getContainer().style.cursor = '';
+		movingPinID = null;
+		movingPinMarker = null;
+		movingPinOriginalLatLng = null;
+	}
+
+	function handleGlobalKeydown(event) {
+		if (event.key === 'Escape' && movingPinID !== null) {
+			event.preventDefault();
+			cancelMovePin();
+		}
 	}
 
 	/**
@@ -161,6 +189,7 @@
 				map.getContainer().style.cursor = '';
 				movingPinID = null;
 				movingPinMarker = null;
+				movingPinOriginalLatLng = null;
 			});
 	}
 
@@ -324,6 +353,13 @@
 		markerToRemove.remove();
 	}
 
+	function handleMapPopupOpen() {
+		map
+			?.getContainer()
+			?.querySelectorAll('.leaflet-popup-content-wrapper')
+			.forEach((popupWrapper) => popupWrapper.classList.add('popup-blur'));
+	}
+
 	onMount(() => {
 		customPinIcon = L.icon({
 			iconUrl: lockedHeartPinUrl,
@@ -341,8 +377,12 @@
 		}).addTo(map);
 
 		map.on('click', handleMapBackgroundClick);
+		map.on('popupopen', handleMapPopupOpen);
+		window.addEventListener('keydown', handleGlobalKeydown);
 
 		return () => {
+			map?.off('popupopen', handleMapPopupOpen);
+			window.removeEventListener('keydown', handleGlobalKeydown);
 			if (mapSearchAbortController) {
 				mapSearchAbortController.abort();
 			}
@@ -697,5 +737,19 @@
 		flex-direction: column;
 		gap: 0.45rem;
 		min-width: 170px;
+	}
+
+	:global(.popup-blur) {
+		backdrop-filter: blur(7px) saturate(130%);
+		background-color: rgba(56, 56, 56, 0.38);
+		color: white !important;
+		font-size: 1.2em;
+		border-bottom: 1px solid #1565c0;
+	}
+
+	:global(.leaflet-popup-tip) {
+		backdrop-filter: blur(7px) saturate(130%);
+		background-color: rgba(56, 56, 56, 0.38);
+		border: 1px solid #1565c0;
 	}
 </style>

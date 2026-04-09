@@ -134,7 +134,7 @@
 				{#if text !== ''}
 					{text}
 				{:else}
-					<em>Keine Beschreibung</em>
+					<em class="no-description">Keine Beschreibung</em>
 				{/if}
 			</div>
 			<div class="dropdown">
@@ -169,6 +169,10 @@
 </div>
 
 <style>
+	.no-description {
+		font-size: 0.9em;
+	}
+
 	.dropdown-menu {
 		min-width: 0 !important;
 	}
