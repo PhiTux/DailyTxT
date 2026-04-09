@@ -10,6 +10,7 @@
 	import { API_URL } from '$lib/APIurl.js';
 	import { selectedDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
+	import { Tooltip } from 'bootstrap';
 
 	let { text = '', id = null, deletePin = () => {}, movePin = () => {} } = $props();
 	let isEditing = $state(false);
@@ -29,6 +30,8 @@
 
 	onMount(() => {
 		resetEditing();
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		[...tooltipTriggerList].map((tooltipTriggerEl) => new Tooltip(tooltipTriggerEl));
 	});
 
 	function startEditing(event) {
@@ -148,19 +151,40 @@
 				</button>
 				<ul class="dropdown-menu dropdown-menu-end">
 					<li>
-						<button class="dropdown-item btn btn-primary" onclick={startEditing}>
+						<button
+							class="dropdown-item btn btn-primary"
+							onclick={startEditing}
+							data-bs-toggle="tooltip"
+							data-bs-placement="left"
+							data-bs-delay="500"
+							title="Text bearbeiten"
+						>
 							<Fa icon={faPencil} fw />
 						</button>
 					</li>
 					<li>
-						<button class="dropdown-item btn btn-danger" onclick={movePin}
-							><Fa icon={faLocationCrosshairs} fw /></button
+						<button
+							class="dropdown-item btn btn-primary"
+							onclick={movePin}
+							data-bs-toggle="tooltip"
+							data-bs-placement="left"
+							data-bs-delay="500"
+							title="Verschieben"
 						>
+							<Fa icon={faLocationCrosshairs} fw />
+						</button>
 					</li>
 					<li>
-						<button class="dropdown-item btn btn-danger" onclick={confirmDeletePin}
-							><Fa icon={faTrash} fw /></button
+						<button
+							class="dropdown-item btn btn-danger"
+							onclick={confirmDeletePin}
+							data-bs-toggle="tooltip"
+							data-bs-placement="left"
+							data-bs-delay="500"
+							title="Pin löschen"
 						>
+							<Fa icon={faTrash} fw />
+						</button>
 					</li>
 				</ul>
 			</div>
