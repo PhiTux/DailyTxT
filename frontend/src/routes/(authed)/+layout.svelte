@@ -371,12 +371,14 @@
 		window.addEventListener('resize', onResize);
 		const originalRemove = removeScrollListener;
 		removeScrollListener = () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			originalRemove && originalRemove();
 			window.removeEventListener('resize', onResize);
 		};
 	}
 
 	function destroySettingsScrollSpy() {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		removeScrollListener && removeScrollListener();
 		removeScrollListener = null;
 		settingsSections = [];
@@ -2032,6 +2034,7 @@
 	}
 
 	.navbar {
+		position: relative;
 		border-top: 0 !important;
 		border-left: 0 !important;
 		border-right: 0 !important;

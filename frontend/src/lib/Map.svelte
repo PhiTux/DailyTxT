@@ -587,6 +587,7 @@
 	.map,
 	:global(.map-wrapper) {
 		border-radius: 10px;
+		z-index: 5;
 	}
 
 	.map-search-dock {
@@ -594,7 +595,7 @@
 		position: absolute;
 		left: 12px;
 		bottom: 12px;
-		z-index: 1200;
+		z-index: 500;
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
@@ -678,7 +679,7 @@
 		top: -8px;
 		left: 0;
 		transform: translateY(-100%);
-		z-index: 1201;
+		z-index: 501;
 		width: calc(40px + var(--inline-width));
 		max-height: 0;
 		overflow: hidden;
