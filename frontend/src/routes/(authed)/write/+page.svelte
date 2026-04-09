@@ -107,6 +107,8 @@
 			(popoverTriggerEl) =>
 				new bootstrap.Popover(popoverTriggerEl, { trigger: 'focus', html: true })
 		);
+
+		document.querySelector('.map-wrapper')?.classList.add('glass-shadow');
 	});
 
 	$effect(() => {

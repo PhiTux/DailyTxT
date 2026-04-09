@@ -46,6 +46,40 @@
 		drawAllPins(true);
 	}
 
+	onMount(() => {
+		customPinIcon = L.icon({
+			iconUrl: lockedHeartPinUrl,
+			iconSize: [34, 34],
+			iconAnchor: [17, 34],
+			popupAnchor: [0, -34]
+		});
+
+		// init map
+		map = L.map(mapElement).setView([51.505, -0.09], 13);
+
+		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+		}).addTo(map);
+
+		map.on('click', handleMapBackgroundClick);
+		map.on('popupopen', handleMapPopupOpen);
+		window.addEventListener('keydown', handleGlobalKeydown);
+
+		return () => {
+			map?.off('popupopen', handleMapPopupOpen);
+			window.removeEventListener('keydown', handleGlobalKeydown);
+			if (mapSearchAbortController) {
+				mapSearchAbortController.abort();
+			}
+			clearTimeout(mapSearchDebounce);
+			if (map) {
+				map.remove();
+				map = null;
+			}
+		};
+	});
+
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
 
@@ -372,40 +406,6 @@
 			.forEach((popupWrapper) => popupWrapper.classList.add('popup-blur'));
 	}
 
-	onMount(() => {
-		customPinIcon = L.icon({
-			iconUrl: lockedHeartPinUrl,
-			iconSize: [34, 34],
-			iconAnchor: [17, 34],
-			popupAnchor: [0, -34]
-		});
-
-		// init map
-		map = L.map(mapElement).setView([51.505, -0.09], 13);
-
-		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		}).addTo(map);
-
-		map.on('click', handleMapBackgroundClick);
-		map.on('popupopen', handleMapPopupOpen);
-		window.addEventListener('keydown', handleGlobalKeydown);
-
-		return () => {
-			map?.off('popupopen', handleMapPopupOpen);
-			window.removeEventListener('keydown', handleGlobalKeydown);
-			if (mapSearchAbortController) {
-				mapSearchAbortController.abort();
-			}
-			clearTimeout(mapSearchDebounce);
-			if (map) {
-				map.remove();
-				map = null;
-			}
-		};
-	});
-
 	function toggleMapSearch() {
 		if (mapSearchOpen) {
 			closeMapSearch();
@@ -582,6 +582,10 @@
 
 	.map {
 		height: 260px;
+	}
+
+	.map,
+	:global(.map-wrapper) {
 		border-radius: 10px;
 	}
 
