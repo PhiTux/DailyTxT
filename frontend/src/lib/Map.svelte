@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, mount, unmount } from 'svelte';
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
 	import { getTolgee } from '@tolgee/svelte';
@@ -9,6 +9,8 @@
 	import axios from 'axios';
 	import { API_URL } from '$lib/APIurl.js';
 	import { selectedDate } from '$lib/calendarStore.js';
+	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
+	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -34,6 +36,7 @@
 	let customPinIcon = null;
 	let addPinMarker = null;
 	let mapClickPinName = $state('');
+	let mapClickPinPopupApp = null;
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
@@ -54,7 +57,29 @@
 		pins.forEach((pin) => {
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
 			pinLatLngs.push([pin.lat, pin.lon]);
-			marker.bindPopup(pin.text);
+
+			const popupTarget = document.createElement('div');
+			const popupApp = mount(SavedPinPopup, {
+				target: popupTarget,
+				props: {
+					text: pin.text || '',
+					id: pin.id,
+					deletePin: () => {
+						deletePin(pin.id);
+						//marker.remove();
+					}
+				}
+			});
+
+			marker.bindPopup(popupTarget);
+			marker.on('remove', () => {
+				unmount(popupApp);
+			});
+
+			marker.on('popupopen', () => {
+				popupApp.resetEditing?.();
+			});
+
 			marker.on('click', () => {
 				if (mapClickPinMarker) {
 					removeMapClickPin();
@@ -73,37 +98,48 @@
 		}
 	}
 
+	/**
+	 * Makes an API call to delete a pin and updates the local state accordingly
+	 */
+	function deletePin(id) {
+		axios
+			.post(`${API_URL}/logs/deletePin`, {
+				pinId: id,
+				day: $selectedDate.day,
+				month: $selectedDate.month,
+				year: $selectedDate.year
+			})
+			.then((response) => {
+				if (response.data.success) {
+					// remove the pin from the local state
+					pins = pins.filter((pin) => pin.id !== id);
+				} else {
+					console.error('Failed to delete pin:', response.data.message);
+				}
+			})
+			.catch((error) => {
+				console.error('Error deleting pin:', error);
+			})
+			.finally(() => {
+				drawAllPins(false);
+			});
+	}
+
 	function createMapClickPopupContent() {
 		const container = document.createElement('div');
-		container.className = 'new-pin-popup';
 
-		const input = document.createElement('input');
-		input.type = 'text';
-		input.className = 'form-control';
-		input.placeholder = 'Name';
-		input.value = mapClickPinName;
-		input.addEventListener('input', (event) => {
-			mapClickPinName = event.target.value;
-		});
-		input.addEventListener('keydown', (event) => {
-			if (event.key === 'Enter') {
-				event.preventDefault();
-				addNewPinMarker(mapClickPinName);
+		mapClickPinPopupApp = mount(NewPinPopup, {
+			target: container,
+			props: {
+				initialValue: mapClickPinName,
+				onChange: (value) => {
+					mapClickPinName = value;
+				},
+				onSave: (value) => {
+					addNewPinMarker(value);
+				}
 			}
 		});
-
-		const saveButton = document.createElement('button');
-		saveButton.type = 'button';
-		saveButton.className = 'btn btn-success';
-		saveButton.textContent = 'Speichern';
-		saveButton.addEventListener('click', (event) => {
-			event.preventDefault();
-			event.stopPropagation();
-			addNewPinMarker(mapClickPinName);
-		});
-
-		container.appendChild(input);
-		container.appendChild(saveButton);
 
 		return container;
 	}
@@ -124,8 +160,6 @@
 	 * @param text the text of the new pin, can be empty
 	 */
 	function addNewPinMarker(text) {
-		console.log('api', text);
-
 		// save the new pin (API call)
 		axios
 			.post(`${API_URL}/logs/addPin`, {
@@ -160,7 +194,9 @@
 		// check if any popup is open and close it
 		const hasOpenPopup = Boolean(map?.getContainer()?.querySelector('.leaflet-popup'));
 		if (hasOpenPopup) {
-			if (!map?.getContainer()?.querySelector('.leaflet-popup > div > div > .new-pin-popup')) {
+			if (
+				!map?.getContainer()?.querySelector('.leaflet-popup > div > div > div > .new-pin-popup')
+			) {
 				map?.getContainer()?.querySelector('.leaflet-popup')?.remove();
 				return;
 			}
@@ -200,6 +236,10 @@
 		const markerToRemove = mapClickPinMarker;
 		mapClickPinMarker = null;
 		mapClickPinName = '';
+		if (mapClickPinPopupApp) {
+			unmount(mapClickPinPopupApp);
+			mapClickPinPopupApp = null;
+		}
 		markerToRemove.remove();
 	}
 
