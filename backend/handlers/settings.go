@@ -31,6 +31,8 @@ func GetDefaultSettings() map[string]any {
 		"showChangelogOnUpdate":               true,
 		"writeDateFormat":                     "2-digit",
 		"selectTodayWhenSwitchingToWriteMode": false,
+		"useMap":                              true,
+		"defaultMap":                          "osm",
 	}
 }
 

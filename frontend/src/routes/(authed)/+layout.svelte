@@ -49,6 +49,7 @@
 	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
 	import { selectedDate } from '$lib/calendarStore';
 	import DemoModeText from '$lib/DemoModeText.svelte';
+	import Map from '$lib/settings/Map.svelte';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -423,6 +424,7 @@
 		destroySettingsScrollSpy();
 	}
 
+	let defaultMap = $state();
 	function openSettingsModal() {
 		activeSettingsView = 'settings';
 		$tempSettings = JSON.parse(JSON.stringify($settings));
@@ -451,6 +453,11 @@
 					indicatorNeedsUpdate++;
 				}, 50);
 			}
+
+			requestAnimationFrame(() => {
+				console.log(defaultMap);
+				defaultMap?.externalInvalidateSize?.(true);
+			});
 		};
 		modalEl.addEventListener('shown.bs.modal', onShown);
 		modalEl.addEventListener('hidden.bs.modal', () => {
@@ -611,7 +618,8 @@
 					if (
 						$settings.language !== $tempSettings.language ||
 						$settings.useBrowserLanguage !== $tempSettings.useBrowserLanguage ||
-						$settings.firstDayOfWeek !== $tempSettings.firstDayOfWeek
+						$settings.firstDayOfWeek !== $tempSettings.firstDayOfWeek ||
+						$settings.defaultMap !== $tempSettings.defaultMap
 					) {
 						reloadRequired = true;
 					}
@@ -1606,6 +1614,13 @@
 									>
 									<button
 										type="button"
+										class="nav-link mb-1 text-start {activeSettingsSection === 'map'
+											? 'active'
+											: ''}"
+										onclick={() => scrollToSection('map')}>🗺️ {$t('settings.map')}</button
+									>
+									<button
+										type="button"
 										class="nav-link mb-1 text-start {activeSettingsSection === 'templates'
 											? 'active'
 											: ''}"
@@ -1695,6 +1710,10 @@
 										{isDeletingTag}
 										{deleteTag}
 									/>
+								</div>
+
+								<div id="map">
+									<Map bind:this={defaultMap} {unsavedChanges} />
 								</div>
 
 								<div id="templates">

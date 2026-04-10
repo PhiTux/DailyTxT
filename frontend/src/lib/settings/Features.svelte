@@ -125,7 +125,7 @@
 						bind:value={$tempSettings.language}
 						disabled={$tempSettings.useBrowserLanguage}
 					>
-						{#each $tolgee.getInitialOptions().availableLanguages as lang}
+						{#each $tolgee.getInitialOptions().availableLanguages as lang (lang)}
 							{#if lang !== 'no'}
 								<option value={lang}>{loadFlagEmoji(lang)} {lang}</option>
 							{/if}

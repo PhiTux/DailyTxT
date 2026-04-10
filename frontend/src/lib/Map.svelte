@@ -3,7 +3,11 @@
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
 	import { getTolgee } from '@tolgee/svelte';
-	import { faSearch, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faSearch,
+		faUpRightAndDownLeftFromCenter,
+		faMap
+	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import lockedHeartPinUrl from '$lib/assets/locked_heart_with_keyhole.svg';
 	import axios from 'axios';
@@ -11,6 +15,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
+	import { tempSettings } from './settingsStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -19,17 +24,26 @@
 
 	const tolgee = getTolgee(['language']);
 
-	let { pins = $bindable([]), openMapModal, isSidebarMap = false } = $props();
+	let {
+		pins = $bindable([]),
+		openMapModal,
+		showZoomButton = false,
+		showMapSelection = true,
+		showSearch = true,
+		allowMouseZoom = true,
+		selectDefaultMap
+	} = $props();
 
 	let mapElement;
 
 	let map = null;
+	let baseMapProvider = $state('osm');
 	let mapSearchOpen = $state(false);
 	let mapSearchQuery = $state('');
 	let mapSearchResults = $state([]);
 	let mapSearchLoading = $state(false);
 	let mapSearchError = $state('');
-	let mapSearchInputElement;
+	let mapSearchInputElement = $state(null);
 	let mapSearchDebounce;
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
@@ -43,6 +57,13 @@
 	let movingPinOriginalLatLng = null;
 	let movePinMouseMoveHandler = null;
 	let movingPinIconElement = null;
+	let osmTileLayer = null;
+	let esriTileLayer = null;
+	let stadiaTileLayer = null;
+
+	function normalizeBaseMapProvider(provider) {
+		return provider === 'osm' || provider === 'esri' || provider === 'stadia' ? provider : 'osm';
+	}
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
@@ -58,8 +79,13 @@
 
 	$effect(() => {
 		if (pins) {
-			console.log(isSidebarMap, 'Pins updated, redrawing map');
 			drawAllPins(false);
+		}
+	});
+
+	$effect(() => {
+		if (selectDefaultMap) {
+			setBaseMap(normalizeBaseMapProvider(selectDefaultMap));
 		}
 	});
 
@@ -72,12 +98,38 @@
 		});
 
 		// init map
-		map = L.map(mapElement).setView([51.505, -0.09], 13);
+		map = L.map(mapElement, { zoomControl: false, scrollWheelZoom: allowMouseZoom }).setView(
+			[51.505, -0.09],
+			13
+		);
 
-		L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		osmTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
-			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-		}).addTo(map);
+			attribution:
+				'&copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+		});
+
+		esriTileLayer = L.tileLayer(
+			'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+			{
+				maxZoom: 19,
+				attribution:
+					'Powered by <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Sources: Esri, DigitalGlobe, GeoEye, i-cubed, USDA FSA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
+			}
+		);
+
+		stadiaTileLayer = L.tileLayer(
+			'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg',
+			{
+				maxZoom: 19,
+
+				attribution:
+					'&copy; CNES, Distribution Airbus DS, &copy; Airbus DS, &copy; PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+			}
+		);
+
+		baseMapProvider = normalizeBaseMapProvider($tempSettings.defaultMap);
+		getActiveBaseLayer().addTo(map);
 
 		map.on('click', handleMapBackgroundClick);
 		map.on('popupopen', handleMapPopupOpen);
@@ -94,8 +146,39 @@
 				map.remove();
 				map = null;
 			}
+			osmTileLayer = null;
+			esriTileLayer = null;
+			stadiaTileLayer = null;
 		};
 	});
+
+	function getActiveBaseLayer() {
+		if (baseMapProvider === 'osm') {
+			return osmTileLayer;
+		} else if (baseMapProvider === 'esri') {
+			return esriTileLayer;
+		} else {
+			return stadiaTileLayer;
+		}
+	}
+
+	function setBaseMap(provider) {
+		if (!map || !osmTileLayer || !esriTileLayer || !stadiaTileLayer) return;
+		if (provider !== 'osm' && provider !== 'esri' && provider !== 'stadia') return;
+		if (baseMapProvider === provider) return;
+
+		const allBaseLayers = [osmTileLayer, esriTileLayer, stadiaTileLayer];
+		allBaseLayers.forEach((layer) => {
+			if (layer && map.hasLayer(layer)) {
+				map.removeLayer(layer);
+			}
+		});
+
+		baseMapProvider = provider;
+		const nextLayer = getActiveBaseLayer();
+
+		nextLayer.addTo(map);
+	}
 
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
@@ -302,7 +385,6 @@
 				initialValue: mapClickPinName,
 				onChange: (value) => {
 					mapClickPinName = value;
-					console.log(mapClickPinName);
 				},
 				onSave: (value) => {
 					addNewPinMarker(value);
@@ -406,8 +488,9 @@
 			if (
 				!map?.getContainer()?.querySelector('.leaflet-popup > div > div > div > .new-pin-popup')
 			) {
-				// Close existing popup and continue, so the same click can place a new pin.
 				map?.closePopup();
+				// Close existing saved-pin popup first; require a second click to place a new pin.
+				return;
 			}
 		}
 
@@ -564,10 +647,48 @@
 	);
 </script>
 
-<div class="map-wrapper mb-3">
+<div class="map-wrapper">
 	<div class="map" bind:this={mapElement}></div>
 
-	{#if isSidebarMap}
+	{#if showMapSelection}
+		<div class="map-basemap-menu" aria-label="Kartenansicht wechseln">
+			<button type="button" class="map-basemap-trigger" title="Kartenansicht wechseln">
+				<Fa icon={faMap} />
+			</button>
+
+			<div class="map-basemap-options" role="menu">
+				<button
+					type="button"
+					role="menuitemradio"
+					aria-checked={baseMapProvider === 'osm'}
+					class:active={baseMapProvider === 'osm'}
+					onclick={() => setBaseMap('osm')}
+				>
+					OSM
+				</button>
+				<button
+					type="button"
+					role="menuitemradio"
+					aria-checked={baseMapProvider === 'esri'}
+					class:active={baseMapProvider === 'esri'}
+					onclick={() => setBaseMap('esri')}
+				>
+					Satellite (Esri)
+				</button>
+				<button
+					type="button"
+					role="menuitemradio"
+					aria-checked={baseMapProvider === 'stadia'}
+					class:active={baseMapProvider === 'stadia'}
+					onclick={() => setBaseMap('stadia')}
+				>
+					Satellite and Metadata (Stadia)
+				</button>
+			</div>
+		</div>
+	{/if}
+
+	{#if showZoomButton}
 		<button
 			type="button"
 			class="map-top-right-action"
@@ -579,48 +700,54 @@
 		</button>
 	{/if}
 
-	<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
-		<div class="map-search-group">
-			<button
-				type="button"
-				class="map-search-toggle"
-				onclick={toggleMapSearch}
-				aria-label="Karte durchsuchen"
-			>
-				<Fa icon={faSearch} />
-			</button>
+	{#if showSearch}
+		<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
+			<div class="map-search-group">
+				<button
+					type="button"
+					class="map-search-toggle"
+					onclick={toggleMapSearch}
+					aria-label="Karte durchsuchen"
+				>
+					<Fa icon={faSearch} />
+				</button>
 
-			<div class="map-search-inline">
-				<input
-					type="text"
-					class="map-search-input"
-					placeholder="Ort suchen..."
-					bind:this={mapSearchInputElement}
-					value={mapSearchQuery}
-					oninput={handleMapSearchInput}
-					onkeydown={handleMapSearchKeydown}
-				/>
+				<div class="map-search-inline">
+					<input
+						type="text"
+						class="map-search-input"
+						placeholder="Ort suchen..."
+						bind:this={mapSearchInputElement}
+						value={mapSearchQuery}
+						oninput={handleMapSearchInput}
+						onkeydown={handleMapSearchKeydown}
+					/>
+				</div>
+			</div>
+
+			<div class="map-search-feedback {hasSearchFeedback ? 'open' : ''}">
+				{#if mapSearchLoading}
+					<div class="map-search-status">Suche...</div>
+				{:else if mapSearchError}
+					<div class="map-search-status text-danger">{mapSearchError}</div>
+				{:else if mapSearchResults.length > 0}
+					<div class="map-search-results">
+						{#each mapSearchResults as result, index (result.lat + '-' + result.lon + '-' + index)}
+							<button
+								type="button"
+								class="map-search-result"
+								onclick={() => focusMapResult(result)}
+							>
+								{result.label || `${result.lat.toFixed(5)}, ${result.lon.toFixed(5)}`}
+							</button>
+						{/each}
+					</div>
+				{:else if mapSearchQuery.trim().length >= 2}
+					<div class="map-search-status">Keine Treffer</div>
+				{/if}
 			</div>
 		</div>
-
-		<div class="map-search-feedback {hasSearchFeedback ? 'open' : ''}">
-			{#if mapSearchLoading}
-				<div class="map-search-status">Suche...</div>
-			{:else if mapSearchError}
-				<div class="map-search-status text-danger">{mapSearchError}</div>
-			{:else if mapSearchResults.length > 0}
-				<div class="map-search-results">
-					{#each mapSearchResults as result, index (result.lat + '-' + result.lon + '-' + index)}
-						<button type="button" class="map-search-result" onclick={() => focusMapResult(result)}>
-							{result.label || `${result.lat.toFixed(5)}, ${result.lon.toFixed(5)}`}
-						</button>
-					{/each}
-				</div>
-			{:else if mapSearchQuery.trim().length >= 2}
-				<div class="map-search-status">Keine Treffer</div>
-			{/if}
-		</div>
-	</div>
+	{/if}
 </div>
 
 <style>
@@ -630,14 +757,17 @@
 
 	.map-wrapper {
 		position: relative;
+		height: 100%;
 	}
 
 	.map {
-		height: 260px;
+		/* height: 260px; */
+		height: 100%;
 	}
 
 	:global(.modal-body .map) {
-		height: 65vh;
+		/* height: 65vh; */
+		height: 100%;
 	}
 
 	.map,
@@ -663,9 +793,89 @@
 		color: inherit;
 	}
 
+	.map-basemap-menu {
+		position: absolute;
+		left: 12px;
+		top: 12px;
+		z-index: 500;
+	}
+
+	.map-basemap-trigger {
+		height: 40px;
+		width: 40px;
+		padding: 0 0.6rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 10px;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+		color: inherit;
+		font-size: 0.78rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.map-basemap-options {
+		position: absolute;
+		top: 0;
+		left: 100%;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding-left: 6px;
+		opacity: 0;
+		pointer-events: none;
+		transform: translateX(-6px);
+		transition:
+			opacity 120ms ease,
+			transform 120ms ease;
+	}
+
+	.map-basemap-menu:hover .map-basemap-options {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateX(0);
+	}
+
+	.map-basemap-options button {
+		height: 36px;
+		min-width: 150px;
+		padding: 0 0.55rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 9px;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+		color: inherit;
+		font-size: 0.76rem;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+	}
+
+	.map-basemap-options button.active {
+		background: rgba(20, 122, 230, 0.75);
+		color: white;
+		border-color: rgba(20, 120, 230, 0.45);
+	}
+
 	:global(body[data-bs-theme='dark']) .map-top-right-action {
 		background: rgba(45, 45, 45, 0.96);
 		border-color: rgba(255, 255, 255, 0.22);
+	}
+
+	:global(body[data-bs-theme='dark']) .map-basemap-trigger,
+	:global(body[data-bs-theme='dark']) .map-basemap-options button {
+		background: rgba(45, 45, 45, 0.96);
+		border-color: rgba(255, 255, 255, 0.22);
+	}
+
+	:global(body[data-bs-theme='dark']) .map-basemap-options button.active {
+		background: rgba(74, 162, 255, 0.75);
+		border-color: rgba(74, 162, 255, 0.5);
 	}
 
 	.map-search-dock {
@@ -842,6 +1052,20 @@
 
 	:global(.leaflet-fade-anim .leaflet-popup) {
 		transition: opacity 0.1s linear !important;
+	}
+
+	:global(.leaflet-control-attribution) {
+		max-width: 180px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	:global(.leaflet-control-attribution:hover),
+	:global(.leaflet-control-attribution:focus-within) {
+		max-width: min(78vw, 560px);
+		overflow: visible;
+		white-space: normal;
 	}
 
 	:global(.leaflet-container.pin-moving),

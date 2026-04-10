@@ -1716,7 +1716,11 @@
 				</div>
 			</div>
 
-			<Map bind:this={mapInstance} bind:pins {openMapModal} isSidebarMap />
+			{#if $settings.useMap}
+				<div class="map-container mb-3">
+					<Map bind:this={mapInstance} bind:pins {openMapModal} showZoomButton />
+				</div>
+			{/if}
 
 			<div class="files d-flex flex-column glass glass-shadow">
 				<button
@@ -2123,23 +2127,25 @@
 		</div>
 	</div>
 
-	<div class="modal fade" id="modalMap" tabindex="-1">
-		<div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Karte</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
-					></button>
+	{#if $settings.useMap}
+		<div class="modal fade" id="modalMap" tabindex="-1">
+			<div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title">Karte</h5>
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+						></button>
+					</div>
+					<div class="modal-body modal-body-map">
+						{#if isMapModalOpen}
+							<Map bind:this={modalMapInstance} bind:pins {openMapModal} />
+						{/if}
+					</div>
+					<div class="modal-footer"></div>
 				</div>
-				<div class="modal-body">
-					{#if isMapModalOpen}
-						<Map bind:this={modalMapInstance} bind:pins {openMapModal} />
-					{/if}
-				</div>
-				<div class="modal-footer"></div>
 			</div>
 		</div>
-	</div>
+	{/if}
 
 	<div class="modal fade" id="modalDeleteDay" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered">
@@ -2213,6 +2219,14 @@
 </div>
 
 <style>
+	.map-container {
+		height: 260px;
+	}
+
+	.modal-body-map {
+		height: 65vh;
+	}
+
 	:global(body[data-bs-theme='dark'] .TMFencedCodeBacktick) {
 		background-color: #4e4e4e;
 	}
