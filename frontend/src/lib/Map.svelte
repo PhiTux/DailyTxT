@@ -15,7 +15,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
-	import { tempSettings } from './settingsStore';
+	import { settings } from './settingsStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -32,6 +32,7 @@
 		showSearch = true,
 		allowMouseZoom = true,
 		selectDefaultMap
+		//selectDefaultView = $bindable([])
 	} = $props();
 
 	let mapElement;
@@ -60,6 +61,22 @@
 	let osmTileLayer = null;
 	let esriTileLayer = null;
 	let stadiaTileLayer = null;
+	let hasAppliedInitialDefaultMapView = false;
+
+	function getValidDefaultMapView() {
+		const view = $settings?.defaultMapView;
+		if (!Array.isArray(view) || view.length < 3) return null;
+
+		const lat = Number(view[0]);
+		const lon = Number(view[1]);
+		const zoom = Number(view[2]);
+
+		if (!Number.isFinite(lat) || !Number.isFinite(lon) || !Number.isFinite(zoom)) {
+			return null;
+		}
+
+		return [lat, lon, zoom];
+	}
 
 	function normalizeBaseMapProvider(provider) {
 		return provider === 'osm' || provider === 'esri' || provider === 'stadia' ? provider : 'osm';
@@ -89,6 +106,22 @@
 		}
 	});
 
+	$effect(() => {
+		const defaultMapView = getValidDefaultMapView();
+		if (!map || hasAppliedInitialDefaultMapView || !defaultMapView) return;
+
+		map.setView([defaultMapView[0], defaultMapView[1]], defaultMapView[2]);
+		console.log(defaultMapView);
+		hasAppliedInitialDefaultMapView = true;
+	});
+
+	$effect(() => {
+		if ($selectedDate && map) {
+			const defaultView = getValidDefaultMapView();
+			map.setView([defaultView[0], defaultView[1]], defaultView[2]);
+		}
+	});
+
 	onMount(() => {
 		customPinIcon = L.icon({
 			iconUrl: lockedHeartPinUrl,
@@ -97,11 +130,14 @@
 			popupAnchor: [0, -34]
 		});
 
+		const initialMapView = getValidDefaultMapView() || [51.505, -0.09, 13];
+
 		// init map
 		map = L.map(mapElement, { zoomControl: false, scrollWheelZoom: allowMouseZoom }).setView(
-			[51.505, -0.09],
-			13
+			[initialMapView[0], initialMapView[1]],
+			initialMapView[2]
 		);
+		hasAppliedInitialDefaultMapView = getValidDefaultMapView() !== null;
 
 		osmTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
@@ -128,7 +164,7 @@
 			}
 		);
 
-		baseMapProvider = normalizeBaseMapProvider($tempSettings.defaultMap);
+		baseMapProvider = normalizeBaseMapProvider($settings.defaultMap);
 		getActiveBaseLayer().addTo(map);
 
 		map.on('click', handleMapBackgroundClick);

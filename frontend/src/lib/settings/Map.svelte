@@ -61,6 +61,7 @@
 				showMapSelection={false}
 				showSearch={false}
 				selectDefaultMap={$tempSettings.defaultMap}
+				//bind:selectDefaultView={$tempSettings.defaultView}
 				allowMouseZoom={false}
 			/>
 		</div>

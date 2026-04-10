@@ -33,6 +33,7 @@ func GetDefaultSettings() map[string]any {
 		"selectTodayWhenSwitchingToWriteMode": false,
 		"useMap":                              true,
 		"defaultMap":                          "osm",
+		"defaultMapView":                      []float64{10, 20, 3},
 	}
 }
 
