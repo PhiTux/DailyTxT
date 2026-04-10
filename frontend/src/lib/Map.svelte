@@ -3,7 +3,7 @@
 	import L from 'leaflet';
 	import 'leaflet/dist/leaflet.css';
 	import { getTolgee } from '@tolgee/svelte';
-	import { faSearch } from '@fortawesome/free-solid-svg-icons';
+	import { faSearch, faUpRightAndDownLeftFromCenter } from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import lockedHeartPinUrl from '$lib/assets/locked_heart_with_keyhole.svg';
 	import axios from 'axios';
@@ -19,7 +19,7 @@
 
 	const tolgee = getTolgee(['language']);
 
-	let { pins } = $props();
+	let { pins = $bindable([]), openMapModal, isSidebarMap = false } = $props();
 
 	let mapElement;
 
@@ -29,6 +29,7 @@
 	let mapSearchResults = $state([]);
 	let mapSearchLoading = $state(false);
 	let mapSearchError = $state('');
+	let mapSearchInputElement;
 	let mapSearchDebounce;
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
@@ -41,10 +42,26 @@
 	let movingPinMarker = null;
 	let movingPinOriginalLatLng = null;
 	let movePinMouseMoveHandler = null;
+	let movingPinIconElement = null;
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
 	}
+
+	export function externalInvalidateSize(adjustView = true) {
+		if (!map) return;
+		map.invalidateSize();
+		if (adjustView) {
+			drawAllPins(true);
+		}
+	}
+
+	$effect(() => {
+		if (pins) {
+			console.log(isSidebarMap, 'Pins updated, redrawing map');
+			drawAllPins(false);
+		}
+	});
 
 	onMount(() => {
 		customPinIcon = L.icon({
@@ -102,15 +119,20 @@
 			const popupApp = mount(SavedPinPopup, {
 				target: popupTarget,
 				props: {
-					text: pin.text || '',
+					get text() {
+						return pin.text || '';
+					},
+					set text(value) {
+						pins = pins.map((currentPin) =>
+							currentPin.id === pin.id ? { ...currentPin, text: value } : currentPin
+						);
+					},
 					id: pin.id,
 					deletePin: () => {
 						deletePin(pin.id);
-						//marker.remove();
 					},
 					movePin: () => {
 						movePin(pin.id);
-						//marker.remove();
 					}
 				}
 			});
@@ -156,7 +178,15 @@
 		movingPinOriginalLatLng = marker.getLatLng();
 		marker.closePopup();
 		marker.setOpacity(0.5);
-		map.getContainer().style.cursor = 'crosshair';
+
+		const mapContainer = map.getContainer();
+		mapContainer.classList.add('pin-moving');
+
+		movingPinIconElement = marker.getElement();
+		if (movingPinIconElement) {
+			// Keep mouse events on the map while dragging so the cursor does not flicker.
+			movingPinIconElement.style.pointerEvents = 'none';
+		}
 
 		movePinMouseMoveHandler = (event) => {
 			if (!movingPinMarker) return;
@@ -178,8 +208,13 @@
 			movingPinMarker.setLatLng(movingPinOriginalLatLng);
 		}
 
+		if (movingPinIconElement) {
+			movingPinIconElement.style.pointerEvents = '';
+			movingPinIconElement = null;
+		}
+
 		movingPinMarker.setOpacity(1);
-		map.getContainer().style.cursor = '';
+		map.getContainer().classList.remove('pin-moving');
 		movingPinID = null;
 		movingPinMarker = null;
 		movingPinOriginalLatLng = null;
@@ -218,8 +253,13 @@
 			.finally(() => {
 				drawAllPins(false);
 
+				if (movingPinIconElement) {
+					movingPinIconElement.style.pointerEvents = '';
+					movingPinIconElement = null;
+				}
+
 				movingPinMarker.setOpacity(1);
-				map.getContainer().style.cursor = '';
+				map.getContainer().classList.remove('pin-moving');
 				movingPinID = null;
 				movingPinMarker = null;
 				movingPinOriginalLatLng = null;
@@ -366,8 +406,8 @@
 			if (
 				!map?.getContainer()?.querySelector('.leaflet-popup > div > div > div > .new-pin-popup')
 			) {
-				map?.getContainer()?.querySelector('.leaflet-popup')?.remove();
-				return;
+				// Close existing popup and continue, so the same click can place a new pin.
+				map?.closePopup();
 			}
 		}
 
@@ -415,7 +455,7 @@
 		mapSearchOpen = true;
 
 		requestAnimationFrame(() => {
-			document.getElementById('map-search-input')?.focus();
+			mapSearchInputElement?.focus();
 		});
 	}
 
@@ -527,6 +567,18 @@
 <div class="map-wrapper mb-3">
 	<div class="map" bind:this={mapElement}></div>
 
+	{#if isSidebarMap}
+		<button
+			type="button"
+			class="map-top-right-action"
+			aria-label="Zusatzaktion auf der Karte"
+			title="Zusatzaktion"
+			onclick={openMapModal}
+		>
+			<Fa icon={faUpRightAndDownLeftFromCenter} />
+		</button>
+	{/if}
+
 	<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
 		<div class="map-search-group">
 			<button
@@ -540,10 +592,10 @@
 
 			<div class="map-search-inline">
 				<input
-					id="map-search-input"
 					type="text"
 					class="map-search-input"
 					placeholder="Ort suchen..."
+					bind:this={mapSearchInputElement}
 					value={mapSearchQuery}
 					oninput={handleMapSearchInput}
 					onkeydown={handleMapSearchKeydown}
@@ -584,10 +636,36 @@
 		height: 260px;
 	}
 
+	:global(.modal-body .map) {
+		height: 65vh;
+	}
+
 	.map,
 	:global(.map-wrapper) {
 		border-radius: 10px;
 		z-index: 5;
+	}
+
+	.map-top-right-action {
+		position: absolute;
+		right: 12px;
+		top: 12px;
+		z-index: 500;
+		width: 40px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 10px;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+		color: inherit;
+	}
+
+	:global(body[data-bs-theme='dark']) .map-top-right-action {
+		background: rgba(45, 45, 45, 0.96);
+		border-color: rgba(255, 255, 255, 0.22);
 	}
 
 	.map-search-dock {
@@ -764,5 +842,10 @@
 
 	:global(.leaflet-fade-anim .leaflet-popup) {
 		transition: opacity 0.1s linear !important;
+	}
+
+	:global(.leaflet-container.pin-moving),
+	:global(.leaflet-container.pin-moving *) {
+		cursor: crosshair !important;
 	}
 </style>

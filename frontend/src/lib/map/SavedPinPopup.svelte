@@ -12,7 +12,7 @@
 	import axios from 'axios';
 	import { Tooltip } from 'bootstrap';
 
-	let { text = '', id = null, deletePin = () => {}, movePin = () => {} } = $props();
+	let { text = $bindable(''), id = null, deletePin = () => {}, movePin = () => {} } = $props();
 	let isEditing = $state(false);
 
 	let editedText = $state('');

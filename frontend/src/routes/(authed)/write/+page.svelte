@@ -268,6 +268,9 @@
 
 	let historyAvailable = $state(false);
 	let mapInstance = $state();
+	let modalMapInstance = $state();
+	let mapModal = null;
+	let isMapModalOpen = $state(false);
 	async function getLog() {
 		// reset logEmpty so the default-template effect cannot fire during the async fetch
 		logEmpty = false;
@@ -294,6 +297,9 @@
 			pins = response.data.pins;
 			if (mapInstance) {
 				mapInstance.externalDrawAllPins(true);
+			}
+			if (modalMapInstance) {
+				modalMapInstance.externalDrawAllPins(true);
 			}
 
 			logEmpty = currentLog === '';
@@ -1392,6 +1398,27 @@
 		}
 		return weekday;
 	});
+
+	function openMapModal() {
+		const modalEl = document.getElementById('modalMap');
+		if (!modalEl) return;
+
+		if (!mapModal) {
+			mapModal = new bootstrap.Modal(modalEl);
+			modalEl.addEventListener('shown.bs.modal', () => {
+				requestAnimationFrame(() => {
+					modalMapInstance?.externalInvalidateSize?.(true);
+				});
+			});
+			modalEl.addEventListener('hidden.bs.modal', () => {
+				isMapModalOpen = false;
+				modalMapInstance = null;
+			});
+		}
+
+		isMapModalOpen = true;
+		mapModal.show();
+	}
 </script>
 
 <!-- eslint-disable svelte/no-at-html-tags -->
@@ -1689,7 +1716,7 @@
 				</div>
 			</div>
 
-			<Map bind:this={mapInstance} {pins} />
+			<Map bind:this={mapInstance} bind:pins {openMapModal} isSidebarMap />
 
 			<div class="files d-flex flex-column glass glass-shadow">
 				<button
@@ -2092,6 +2119,24 @@
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalMap" tabindex="-1">
+		<div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Karte</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					{#if isMapModalOpen}
+						<Map bind:this={modalMapInstance} bind:pins {openMapModal} />
+					{/if}
+				</div>
+				<div class="modal-footer"></div>
 			</div>
 		</div>
 	</div>
