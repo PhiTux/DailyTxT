@@ -54,8 +54,9 @@
 	let customPinIcon = null;
 	let mapClickPinName = $state('');
 	let mapClickPinPopupApp = null;
-	let markerByPinID = {};
+	let markerByPinKey = {};
 	let movingPinID = null;
+	let movingPinKey = null;
 	let movingPinMarker = null;
 	let movingPinOriginalLatLng = null;
 	let movePinMouseMoveHandler = null;
@@ -68,6 +69,7 @@
 	let viewSetForDate = $state();
 	let lastPinsSignature = '';
 	let movingPinDate = $state();
+	let fullScreenInitialPinsDrawDone = false;
 
 	function getValidDefaultMapView() {
 		const view = $settings?.defaultMapView;
@@ -152,9 +154,17 @@
 		);
 	}
 
+	function getPinKey(id, day, month, year) {
+		return `${id ?? ''}-${day ?? ''}-${month ?? ''}-${year ?? ''}`;
+	}
+
 	function onPinsChanged() {
 		if (fullScreen) {
-			drawAllPins(true);
+			const shouldAdjustView = !fullScreenInitialPinsDrawDone && pins.length > 0;
+			drawAllPins(shouldAdjustView);
+			if (shouldAdjustView) {
+				fullScreenInitialPinsDrawDone = true;
+			}
 			return;
 		}
 
@@ -321,9 +331,10 @@
 		});
 
 		const pinLatLngs = [];
-		markerByPinID = {};
+		markerByPinKey = {};
 
 		pins.forEach((pin) => {
+			const pinKey = getPinKey(pin.id, pin.day, pin.month, pin.year);
 			const samePin = (candidate) => {
 				if (candidate.id !== pin.id) return false;
 
@@ -340,7 +351,7 @@
 			};
 
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
-			markerByPinID[pin.id] = marker;
+			markerByPinKey[pinKey] = marker;
 			pinLatLngs.push([pin.lat, pin.lon]);
 
 			const popupTarget = document.createElement('div');
@@ -402,7 +413,7 @@
 	}
 
 	function movePin(id, day, month, year) {
-		const marker = markerByPinID[id];
+		const marker = markerByPinKey[getPinKey(id, day, month, year)];
 		if (!marker) return;
 
 		if (movePinMouseMoveHandler) {
@@ -411,6 +422,7 @@
 		}
 
 		movingPinID = id;
+		movingPinKey = getPinKey(id, day, month, year);
 		movingPinDate = { day, month, year };
 		movingPinMarker = marker;
 		movingPinOriginalLatLng = marker.getLatLng();
@@ -454,6 +466,7 @@
 		movingPinMarker.setOpacity(1);
 		map.getContainer().classList.remove('pin-moving');
 		movingPinID = null;
+		movingPinKey = null;
 		movingPinDate = null;
 		movingPinMarker = null;
 		movingPinOriginalLatLng = null;
@@ -470,6 +483,7 @@
 	 * Saves a moved pin position. Backend call intentionally left empty for now.
 	 */
 	function updatePinPosition(pinID, lat, lon) {
+		const targetPinKey = movingPinKey || getPinKey(pinID, movingPinDate?.day, movingPinDate?.month, movingPinDate?.year);
 		axios
 			.post(`${API_URL}/logs/movePin`, {
 				pinId: pinID,
@@ -483,7 +497,11 @@
 				if (!response.data.success) {
 					console.error('Failed to move pin:', response.data.message);
 				} else {
-					pins = pins.map((pin) => (pin.id === pinID ? { ...pin, lat: lat, lon: lon } : pin));
+					pins = pins.map((pin) =>
+						getPinKey(pin.id, pin.day, pin.month, pin.year) === targetPinKey
+							? { ...pin, lat: lat, lon: lon }
+							: pin
+					);
 				}
 			})
 			.catch((error) => {
@@ -500,6 +518,7 @@
 				movingPinMarker.setOpacity(1);
 				map.getContainer().classList.remove('pin-moving');
 				movingPinID = null;
+				movingPinKey = null;
 				movingPinMarker = null;
 				movingPinOriginalLatLng = null;
 			});
