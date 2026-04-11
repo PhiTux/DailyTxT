@@ -102,6 +102,7 @@ func main() {
 	api.HandleFunc("POST /logs/movePin", middleware.RequireAuth(handlers.MovePin))
 	api.HandleFunc("POST /logs/deletePin", middleware.RequireAuth(handlers.DeletePin))
 	api.HandleFunc("GET /logs/getLog", middleware.RequireAuth(handlers.GetLog))
+	api.HandleFunc("GET /logs/allPins", middleware.RequireAuth(handlers.GetAllPins))
 	api.HandleFunc("GET /logs/getMarkedDays", middleware.RequireAuth(handlers.GetMarkedDays))
 	api.HandleFunc("GET /logs/getTags", middleware.RequireAuth(handlers.GetTags))
 	api.HandleFunc("POST /logs/saveNewTag", middleware.RequireAuth(handlers.SaveTags))

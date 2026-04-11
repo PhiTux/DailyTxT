@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 
-	let { initialValue = '', onSave = () => {}, onChange = () => {} } = $props();
+	let { initialValue = '', onSave = () => {}, onChange = () => {}, fullScreen = false } = $props();
 
 	onMount(() => {
 		document.querySelector('#newPinTextInput')?.focus();
@@ -26,14 +26,18 @@
 </script>
 
 <div class="new-pin-popup">
-	<input
-		id="newPinTextInput"
-		type="text"
-		class="form-control"
-		placeholder="Name"
-		bind:value={initialValue}
-		oninput={handleInput}
-		onkeydown={handleKeydown}
-	/>
-	<button type="button" class="btn btn-success" onclick={handleSave}>Speichern</button>
+	{#if fullScreen}
+		{initialValue}
+	{:else}
+		<input
+			id="newPinTextInput"
+			type="text"
+			class="form-control"
+			placeholder="Name"
+			bind:value={initialValue}
+			oninput={handleInput}
+			onkeydown={handleKeydown}
+		/>
+		<button type="button" class="btn btn-success" onclick={handleSave}>Speichern</button>
+	{/if}
 </div>

@@ -33,7 +33,8 @@
 		allowMouseZoom = true,
 		selectDefaultMap,
 		mapDisabled = false,
-		currentView = $bindable()
+		currentView = $bindable(),
+		fullScreen = false
 	} = $props();
 
 	let mapElement;
@@ -50,7 +51,6 @@
 	let mapClickPinMarker = null;
 	let mapSearchAbortController = null;
 	let customPinIcon = null;
-	let addPinMarker = null;
 	let mapClickPinName = $state('');
 	let mapClickPinPopupApp = null;
 	let markerByPinID = {};
@@ -66,6 +66,7 @@
 	let pinsSetForDate = $state();
 	let viewSetForDate = $state();
 	let lastPinsSignature = '';
+	let movingPinDate = $state();
 
 	function getValidDefaultMapView() {
 		const view = $settings?.defaultMapView;
@@ -151,6 +152,11 @@
 	}
 
 	function onPinsChanged() {
+		if (fullScreen) {
+			drawAllPins(true);
+			return;
+		}
+
 		if (!sameDate(pinsSetForDate, $selectedDate)) {
 			pinsSetForDate = $selectedDate;
 			drawAllPins(true);
@@ -315,6 +321,21 @@
 		markerByPinID = {};
 
 		pins.forEach((pin) => {
+			const samePin = (candidate) => {
+				if (candidate.id !== pin.id) return false;
+
+				// In fullscreen map mode, pin IDs are only unique per date.
+				if (pin.day && pin.month && pin.year) {
+					return (
+						candidate.day === pin.day &&
+						candidate.month === pin.month &&
+						candidate.year === pin.year
+					);
+				}
+
+				return true;
+			};
+
 			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
 			markerByPinID[pin.id] = marker;
 			pinLatLngs.push([pin.lat, pin.lon]);
@@ -324,20 +345,25 @@
 				target: popupTarget,
 				props: {
 					get text() {
-						return pin.text || '';
+						const currentPin = pins.find((candidate) => samePin(candidate));
+						return currentPin?.text || '';
 					},
 					set text(value) {
 						pins = pins.map((currentPin) =>
-							currentPin.id === pin.id ? { ...currentPin, text: value } : currentPin
+							samePin(currentPin) ? { ...currentPin, text: value } : currentPin
 						);
 					},
 					id: pin.id,
 					deletePin: () => {
-						deletePin(pin.id);
+						deletePin(pin.id, pin.day, pin.month, pin.year);
 					},
 					movePin: () => {
-						movePin(pin.id);
-					}
+						movePin(pin.id, pin.day, pin.month, pin.year);
+					},
+					day: pin.day || null,
+					month: pin.month || null,
+					year: pin.year || null,
+					language: $tolgee.getLanguage()
 				}
 			});
 
@@ -369,7 +395,7 @@
 		}
 	}
 
-	function movePin(id) {
+	function movePin(id, day, month, year) {
 		const marker = markerByPinID[id];
 		if (!marker) return;
 
@@ -379,6 +405,7 @@
 		}
 
 		movingPinID = id;
+		movingPinDate = { day, month, year };
 		movingPinMarker = marker;
 		movingPinOriginalLatLng = marker.getLatLng();
 		marker.closePopup();
@@ -421,6 +448,7 @@
 		movingPinMarker.setOpacity(1);
 		map.getContainer().classList.remove('pin-moving');
 		movingPinID = null;
+		movingPinDate = null;
 		movingPinMarker = null;
 		movingPinOriginalLatLng = null;
 	}
@@ -441,9 +469,9 @@
 				pinId: pinID,
 				lat: lat,
 				lon: lon,
-				day: $selectedDate.day,
-				month: $selectedDate.month,
-				year: $selectedDate.year
+				day: movingPinDate?.day || $selectedDate.day,
+				month: movingPinDate?.month || $selectedDate.month,
+				year: movingPinDate?.year || $selectedDate.year
 			})
 			.then((response) => {
 				if (!response.data.success) {
@@ -474,13 +502,13 @@
 	/**
 	 * Makes an API call to delete a pin and updates the local state accordingly
 	 */
-	function deletePin(id) {
+	function deletePin(id, day, month, year) {
 		axios
 			.post(`${API_URL}/logs/deletePin`, {
 				pinId: id,
-				day: $selectedDate.day,
-				month: $selectedDate.month,
-				year: $selectedDate.year
+				day: day || $selectedDate.day,
+				month: month || $selectedDate.month,
+				year: year || $selectedDate.year
 			})
 			.then((response) => {
 				if (response.data.success) {
@@ -510,7 +538,8 @@
 				},
 				onSave: (value) => {
 					addNewPinMarker(value);
-				}
+				},
+				fullScreen
 			}
 		});
 
@@ -621,12 +650,7 @@
 		const canPlacePin = mapSearchResults.length === 0;
 		if (!canPlacePin || !map || !customPinIcon) return;
 
-		if (addPinMarker) {
-			addNewPinMarker();
-			return;
-		}
-
-		if (!mapClickPinMarker) {
+		if (!mapClickPinMarker && !fullScreen) {
 			openNewPinPopupAt(event.latlng);
 		} else {
 			removeMapClickPin();

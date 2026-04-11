@@ -11,8 +11,21 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
 	import { Tooltip } from 'bootstrap';
+	//import { getTolgee } from '@tolgee/svelte';
 
-	let { text = $bindable(''), id = null, deletePin = () => {}, movePin = () => {} } = $props();
+	//const { t } = getTranslate();
+	//const tolgee = getTolgee(['language']);
+
+	let {
+		text = $bindable(''),
+		id = null,
+		deletePin = () => {},
+		movePin = () => {},
+		day = null,
+		month = null,
+		year = null,
+		language
+	} = $props();
 	let isEditing = $state(false);
 
 	let editedText = $state('');
@@ -75,9 +88,9 @@
 			.post(`${API_URL}/logs/updatePinText`, {
 				pinId: id,
 				text: editedText,
-				day: $selectedDate.day,
-				month: $selectedDate.month,
-				year: $selectedDate.year
+				day: day ? day : $selectedDate.day,
+				month: month ? month : $selectedDate.month,
+				year: year ? year : $selectedDate.year
 			})
 			.then((response) => {
 				if (response.data.success) {
@@ -132,13 +145,24 @@
 			</div>
 		</div>
 	{:else}
-		<div class="saved-pin-view">
-			<div class="saved-pin-text">
-				{#if text !== ''}
-					{text}
-				{:else}
-					<em class="no-description">Keine Beschreibung</em>
+		<div class="saved-pin-view d-flex flex-row">
+			<div class="d-flex flex-column">
+				{#if day && month && year}
+					<div class="saved-pin-date">
+						{new Date(year, month - 1, day).toLocaleDateString(language, {
+							year: 'numeric',
+							month: '2-digit',
+							day: '2-digit'
+						})}
+					</div>
 				{/if}
+				<div class="saved-pin-text">
+					{#if text !== ''}
+						{text}
+					{:else}
+						<em class="no-description">Keine Beschreibung</em>
+					{/if}
+				</div>
 			</div>
 			<div class="dropdown">
 				<button
@@ -193,6 +217,11 @@
 </div>
 
 <style>
+	.saved-pin-date {
+		text-decoration: underline;
+		text-decoration-color: #1565c0;
+	}
+
 	.no-description {
 		font-size: 0.9em;
 	}

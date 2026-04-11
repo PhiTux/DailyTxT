@@ -344,7 +344,7 @@
 
 			return true;
 		} catch (error) {
-			console.error(error.response);
+			console.error(error);
 			// toast
 			const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingLog'));
 			toast.show();

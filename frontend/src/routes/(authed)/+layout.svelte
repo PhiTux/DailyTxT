@@ -27,6 +27,7 @@
 		faPersonRunning,
 		faGlasses,
 		faPencil,
+		faMap,
 		faSliders,
 		faCircleUp,
 		faBars,
@@ -174,13 +175,26 @@
 		checkForUpdates();
 	});
 
-	$effect(() => {
+	/*$effect(() => {
 		if ($readingMode === true && !page.url.pathname.endsWith('/read')) {
 			goto(resolve('/read'));
 		} else if ($readingMode === false) {
 			goto(resolve('/write'));
 		}
-	});
+	});*/
+
+	function goToPage(pageName) {
+		if (pageName === 'write') {
+			$readingMode = false;
+			goto(resolve('/write'));
+		} else if (pageName === 'read') {
+			$readingMode = true;
+			goto(resolve('/read'));
+		} else if (pageName === 'map') {
+			$readingMode = true;
+			goto(resolve('/map'));
+		}
+	}
 
 	onDestroy(() => {
 		$isAuthenticated = false;
@@ -1394,7 +1408,7 @@
 					>
 				{/if}
 
-				<div class="selectMode form-check form-switch d-flex flex-row align-items-center">
+				<!-- <div class="selectMode form-check form-switch d-flex flex-row align-items-center">
 					<label class="me-3 modeSliderIcon" for="selectMode"
 						><Fa icon={faPencil} size="1.5x" /></label
 					>
@@ -1411,7 +1425,28 @@
 					<label class="ms-2 modeSliderIcon" for="selectMode"
 						><Fa icon={faGlasses} size="1.5x" /></label
 					>
-				</div>
+				</div> -->
+				<ul class="nav nav-pills ms-3">
+					<li class="nav-item">
+						<button
+							class="nav-link {page.url.pathname.endsWith('/write') ? 'active' : ''}"
+							aria-current="page"
+							onclick={() => goToPage('write')}><Fa icon={faPencil} /></button
+						>
+					</li>
+					<li class="nav-item">
+						<button
+							class="nav-link {page.url.pathname.endsWith('/read') ? 'active' : ''}"
+							onclick={() => goToPage('read')}><Fa icon={faGlasses} /></button
+						>
+					</li>
+					<li class="nav-item">
+						<button
+							class="nav-link {page.url.pathname.endsWith('/map') ? 'active' : ''}"
+							onclick={() => goToPage('map')}><Fa icon={faMap} /></button
+						>
+					</li>
+				</ul>
 			</div>
 
 			<div class="col-lg-4 col-sm-2 col d-flex flex-row justify-content-center align-items-center">

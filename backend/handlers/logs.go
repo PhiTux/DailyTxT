@@ -965,6 +965,184 @@ func GetLog(w http.ResponseWriter, r *http.Request) {
 	utils.JSONResponse(w, http.StatusOK, dummy)
 }
 
+// GetAllPins handles retrieving all pins across all available days.
+// Response format (array):
+//
+//	[{
+//	  "year": 2026,
+//	  "month": 4,
+//	  "day": 11,
+//	  "pins": [
+//	    {"id": 1, "lat": 51.5, "lon": -0.09, "text": "..."}
+//	  ]
+//	}]
+func GetAllPins(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.RLock()
+	defer utils.LogsMutex.RUnlock()
+
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	years, err := utils.GetYears(userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving years: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	allPins := make([]any, 0)
+
+	for _, yearStr := range years {
+		year, err := strconv.Atoi(yearStr)
+		if err != nil {
+			continue
+		}
+
+		months, err := utils.GetMonths(userID, yearStr)
+		if err != nil {
+			continue
+		}
+
+		for _, monthStr := range months {
+			month, err := strconv.Atoi(monthStr)
+			if err != nil {
+				continue
+			}
+
+			content, err := utils.GetMonth(userID, year, month)
+			if err != nil {
+				continue
+			}
+
+			days, ok := content["days"].([]any)
+			if !ok {
+				continue
+			}
+
+			for _, dayInterface := range days {
+				dayObj, ok := dayInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				day := 0
+				switch dayVal := dayObj["day"].(type) {
+				case float64:
+					day = int(dayVal)
+				case int:
+					day = dayVal
+				case string:
+					parsed, err := strconv.Atoi(dayVal)
+					if err != nil {
+						continue
+					}
+					day = parsed
+				default:
+					continue
+				}
+
+				pinsList, ok := dayObj["pins"].([]any)
+				if !ok || len(pinsList) == 0 {
+					continue
+				}
+
+				decryptedPins := make([]any, 0, len(pinsList))
+				for _, pinInterface := range pinsList {
+					pinObj, ok := pinInterface.(map[string]any)
+					if !ok {
+						continue
+					}
+
+					id := 0
+					switch idVal := pinObj["id"].(type) {
+					case float64:
+						id = int(idVal)
+					case int:
+						id = idVal
+					case string:
+						parsed, err := strconv.Atoi(idVal)
+						if err != nil {
+							continue
+						}
+						id = parsed
+					default:
+						continue
+					}
+
+					encLat, ok := pinObj["lat"].(string)
+					if !ok || encLat == "" {
+						continue
+					}
+					encLon, ok := pinObj["lon"].(string)
+					if !ok || encLon == "" {
+						continue
+					}
+					encText, ok := pinObj["text"].(string)
+					if !ok {
+						continue
+					}
+
+					latStr, err := utils.DecryptText(encLat, encKey)
+					if err != nil {
+						continue
+					}
+					lonStr, err := utils.DecryptText(encLon, encKey)
+					if err != nil {
+						continue
+					}
+					textVal, err := utils.DecryptText(encText, encKey)
+					if err != nil {
+						continue
+					}
+
+					lat, err := strconv.ParseFloat(latStr, 64)
+					if err != nil {
+						continue
+					}
+					lon, err := strconv.ParseFloat(lonStr, 64)
+					if err != nil {
+						continue
+					}
+
+					decryptedPins = append(decryptedPins, map[string]any{
+						"id":   id,
+						"lat":  lat,
+						"lon":  lon,
+						"text": textVal,
+					})
+				}
+
+				if len(decryptedPins) == 0 {
+					continue
+				}
+
+				allPins = append(allPins, map[string]any{
+					"year":  year,
+					"month": month,
+					"day":   day,
+					"pins":  decryptedPins,
+				})
+			}
+		}
+	}
+
+	utils.JSONResponse(w, http.StatusOK, allPins)
+}
+
 // GetMarkedDays handles retrieving a month's logs
 func GetMarkedDays(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and derived key from context

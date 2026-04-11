@@ -56,12 +56,10 @@
 	}
 
 	function handleTouchMove(event) {
-		console.log('move');
 		touchEndX = event.touches[0].clientX; // update the touch position
 	}
 
 	function handleTouchEnd(event) {
-		console.log(event.target.classList);
 		if (
 			event.target.classList.contains('fullscreen-scroll') ||
 			event.target.classList.contains('image')
