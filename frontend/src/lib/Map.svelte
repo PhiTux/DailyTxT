@@ -161,6 +161,8 @@
 		if (!sameDate(pinsSetForDate, $selectedDate)) {
 			pinsSetForDate = $selectedDate;
 			drawAllPins(true);
+		} else {
+			drawAllPins(false);
 		}
 	}
 
