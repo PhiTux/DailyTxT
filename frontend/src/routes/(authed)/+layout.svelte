@@ -618,7 +618,9 @@
 						$settings.language !== $tempSettings.language ||
 						$settings.useBrowserLanguage !== $tempSettings.useBrowserLanguage ||
 						$settings.firstDayOfWeek !== $tempSettings.firstDayOfWeek ||
-						$settings.defaultMap !== $tempSettings.defaultMap
+						$settings.defaultMap !== $tempSettings.defaultMap ||
+						JSON.stringify($settings.defaultMapView) !==
+							JSON.stringify($tempSettings.defaultMapView)
 					) {
 						reloadRequired = true;
 					}
