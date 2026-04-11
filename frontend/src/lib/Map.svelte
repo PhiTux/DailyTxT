@@ -32,6 +32,7 @@
 		showSearch = true,
 		allowMouseZoom = true,
 		selectDefaultMap,
+		openPreview = () => {},
 		mapDisabled = false,
 		currentView = $bindable(),
 		fullScreen = false
@@ -359,6 +360,9 @@
 					},
 					movePin: () => {
 						movePin(pin.id, pin.day, pin.month, pin.year);
+					},
+					openPreview: (day, month, year) => {
+						openPreview(day, month, year);
 					},
 					day: pin.day || null,
 					month: pin.month || null,

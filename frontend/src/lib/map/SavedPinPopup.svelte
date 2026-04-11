@@ -21,6 +21,7 @@
 		id = null,
 		deletePin = () => {},
 		movePin = () => {},
+		openPreview = () => {},
 		day = null,
 		month = null,
 		year = null,
@@ -146,7 +147,7 @@
 		</div>
 	{:else}
 		<div class="saved-pin-view d-flex flex-row">
-			<div class="d-flex flex-column">
+			<div class="d-flex flex-column align-items-center flex-grow-1 border-end border-secondary">
 				{#if day && month && year}
 					<div class="saved-pin-date">
 						{new Date(year, month - 1, day).toLocaleDateString(language, {
@@ -163,6 +164,14 @@
 						<em class="no-description">Keine Beschreibung</em>
 					{/if}
 				</div>
+				{#if day && month && year}
+					<button
+						class="btn btn-sm btn-primary p-1 mt-1"
+						onclick={() => openPreview(day, month, year)}
+					>
+						Vorschau öffnen
+					</button>
+				{/if}
 			</div>
 			<div class="dropdown">
 				<button

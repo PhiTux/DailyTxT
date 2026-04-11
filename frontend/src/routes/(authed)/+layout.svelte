@@ -48,7 +48,7 @@
 	import Account from '$lib/settings/Account.svelte';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import dailytxt from '$lib/assets/locked_heart_with_keyhole.svg';
-	import { selectedDate } from '$lib/calendarStore';
+	import { selectedDate, readingDate } from '$lib/calendarStore';
 	import DemoModeText from '$lib/DemoModeText.svelte';
 	import Map from '$lib/settings/Map.svelte';
 
@@ -185,6 +185,9 @@
 
 	function goToPage(pageName) {
 		if (pageName === 'write') {
+			if (page.url.pathname.endsWith('/read') && $readingDate) {
+				$selectedDate = $readingDate;
+			}
 			$readingMode = false;
 			goto(resolve('/write'));
 		} else if (pageName === 'read') {

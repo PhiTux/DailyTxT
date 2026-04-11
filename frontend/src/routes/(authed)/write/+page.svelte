@@ -27,7 +27,7 @@
 	import Fa from 'svelte-fa';
 	import { v7 as uuidv7 } from 'uuid';
 	import { slide, fade } from 'svelte/transition';
-	import { settings, autoLoadImagesThisDevice } from '$lib/settingsStore';
+	import { settings, autoLoadImagesThisDevice, readingMode } from '$lib/settingsStore';
 	import { tags, tagsLoaded } from '$lib/tagStore';
 	import Tag from '$lib/Tag.svelte';
 	import TagModal from '$lib/TagModal.svelte';
@@ -67,16 +67,21 @@
 	let isMobile = false;
 
 	onMount(() => {
+		const cameFromReadMode = $readingMode === true;
+		$readingMode = false;
+
 		// If we come from read mode, either keep the last visible day or jump to today based on settings.
-		if ($settings.selectTodayWhenSwitchingToWriteMode) {
-			const today = new Date();
-			$selectedDate = {
-				year: today.getFullYear(),
-				month: today.getMonth() + 1,
-				day: today.getDate()
-			};
-		} else if ($readingDate) {
-			$selectedDate = $readingDate; // promote readingDate to selectedDate when switching to write mode
+		if (cameFromReadMode) {
+			if ($settings.selectTodayWhenSwitchingToWriteMode) {
+				const today = new Date();
+				$selectedDate = {
+					year: today.getFullYear(),
+					month: today.getMonth() + 1,
+					day: today.getDate()
+				};
+			} else if ($readingDate) {
+				$selectedDate = $readingDate; // promote readingDate to selectedDate when switching to write mode
+			}
 		}
 		$readingDate = null; // no reading-highlighting when in write mode
 

@@ -1,15 +1,21 @@
 <script>
 	import Map from '$lib/Map.svelte';
+	import DayPreviewModal from '$lib/map/DayPreviewModal.svelte';
 	import { onMount } from 'svelte';
 	import axios from 'axios';
 	import { API_URL } from '$lib/APIurl.js';
 	import { slide } from 'svelte/transition';
-	import { getTranslate } from '@tolgee/svelte';
+	import { getTolgee, getTranslate } from '@tolgee/svelte';
 	const { t } = getTranslate();
+	const tolgee = getTolgee(['language']);
 
 	let allPins = $state([]);
 	let pinStartDate = $state('');
 	let pinEndDate = $state('');
+	let showPreviewModal = $state(false);
+	let previewDay = $state(null);
+	let previewMonth = $state(null);
+	let previewYear = $state(null);
 
 	onMount(() => {
 		loadAllPins();
@@ -29,6 +35,13 @@
 			.catch((error) => {
 				console.error('Error fetching pins:', error);
 			});
+	}
+
+	function openPreview(day, month, year) {
+		previewDay = day;
+		previewMonth = month;
+		previewYear = year;
+		showPreviewModal = true;
 	}
 
 	function parseDateInput(dateString) {
@@ -124,7 +137,15 @@
 	{/if}
 </div>
 
-<Map fullScreen pins={selectedPins} />
+<Map fullScreen pins={selectedPins} {openPreview} />
+
+<DayPreviewModal
+	bind:open={showPreviewModal}
+	day={previewDay}
+	month={previewMonth}
+	year={previewYear}
+	language={$tolgee.getLanguage()}
+/>
 
 <style>
 	.date-picker {

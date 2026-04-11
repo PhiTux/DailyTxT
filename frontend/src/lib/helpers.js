@@ -1,4 +1,4 @@
-import {writable} from 'svelte/store';
+import { writable } from 'svelte/store';
 import json from '../i18n/flags.json';
 
 function formatBytes(bytes) {
@@ -13,12 +13,9 @@ function formatBytes(bytes) {
 }
 
 function sameDate(date1, date2) {
+	//console.log(date1, date2);
 	if (!date1 || !date2) return false;
-	return (
-		date1.day === date2.day &&
-		date1.month === date2.month &&
-		date1.year === date2.year
-	);
+	return date1.day === date2.day && date1.month === date2.month && date1.year === date2.year;
 }
 
 export const isAuthenticated = writable(false);
@@ -27,13 +24,13 @@ export const isAuthenticated = writable(false);
 function needsReauthentication() {
 	isAuthenticated.subscribe((value) => {
 		if (value) return false;
-	})
+	});
 
 	if (typeof window === 'undefined') return false;
 
 	// Check localStorage for re-auth requirement
 	const requireReauth = localStorage.getItem('requirePasswordOnPageLoad');
-	
+
 	if (requireReauth !== 'true') {
 		isAuthenticated.set(true);
 	}
@@ -42,11 +39,33 @@ function needsReauthentication() {
 }
 
 function generateNeonMesh(dark) {
-	const baseColors = ["#ff00ff", "#00ffff", "#ffea00", "#ff0080", "#00ff80", "#ff4500",
-    "#ff1493", "#00ffcc", "#ff3333", "#66ff66", "#3399ff", "#ffcc00",
-    "#ff6666", "#00ccff", "#cc33ff", "#33ffcc", "#ffff99", "#ff99ff",
-    "#99ff99", "#66ccff", "#ff9900", "#ff0066", "#66ffcc", "#ff33cc",
-    "#99ccff"]
+	const baseColors = [
+		'#ff00ff',
+		'#00ffff',
+		'#ffea00',
+		'#ff0080',
+		'#00ff80',
+		'#ff4500',
+		'#ff1493',
+		'#00ffcc',
+		'#ff3333',
+		'#66ff66',
+		'#3399ff',
+		'#ffcc00',
+		'#ff6666',
+		'#00ccff',
+		'#cc33ff',
+		'#33ffcc',
+		'#ffff99',
+		'#ff99ff',
+		'#99ff99',
+		'#66ccff',
+		'#ff9900',
+		'#ff0066',
+		'#66ffcc',
+		'#ff33cc',
+		'#99ccff'
+	];
 	const numGradients = Math.floor(Math.random() * 3) + 3; // 3–5 Radial Gradients
 	let gradients = [];
 
@@ -67,7 +86,9 @@ function generateNeonMesh(dark) {
 		gradients.push(`radial-gradient(circle at ${x}% ${y}%, ${color}, transparent ${size}%)`);
 	}
 
-	document.querySelector('.background').style.background = dark ? gradients.join(', ') + ', #111' : gradients;
+	document.querySelector('.background').style.background = dark
+		? gradients.join(', ') + ', #111'
+		: gradients;
 	document.querySelector('.background').style.backgroundBlendMode = 'screen';
 }
 

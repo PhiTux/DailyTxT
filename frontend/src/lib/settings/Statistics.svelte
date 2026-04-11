@@ -241,7 +241,7 @@
 			day: parseInt(day)
 		};
 
-		// Close the settings modal (assuming it's a Bootstrap modal)
+		// Close the settings modal
 		const settingsModal = document.querySelector('#settingsModal');
 		if (settingsModal) {
 			const modalInstance = bootstrap.Modal.getInstance(settingsModal);
