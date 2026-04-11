@@ -455,7 +455,6 @@
 			}
 
 			requestAnimationFrame(() => {
-				console.log(defaultMap);
 				defaultMap?.externalInvalidateSize?.(true);
 			});
 		};

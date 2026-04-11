@@ -18,7 +18,6 @@
 		mapIsMovable = true;
 		defaultMapPreview?.externalEnableMap?.();
 		if (!$mapViewBeforeMove || $mapViewBeforeMove.length === 0) {
-			console.log('set');
 			$mapViewBeforeMove = defaultMapPreview?.externalGetView?.();
 		}
 	}

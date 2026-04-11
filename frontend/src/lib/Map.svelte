@@ -15,7 +15,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
-	import { settings, tempSettings } from './settingsStore';
+	import { settings } from './settingsStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -34,7 +34,6 @@
 		selectDefaultMap,
 		mapDisabled = false,
 		currentView = $bindable()
-		//selectDefaultView = $bindable()
 	} = $props();
 
 	let mapElement;
@@ -64,6 +63,9 @@
 	let esriTileLayer = null;
 	let stadiaTileLayer = null;
 	let hasAppliedInitialDefaultMapView = false;
+	let pinsSetForDate = $state();
+	let viewSetForDate = $state();
+	let lastPinsSignature = '';
 
 	function getValidDefaultMapView() {
 		const view = $settings?.defaultMapView;
@@ -104,15 +106,19 @@
 	}
 
 	export function externalSetView(lat, lon, zoom) {
+		if (!map) return;
+		map.setView([lat, lon], zoom);
+	}
+
+	function setView(lat, lon, zoom) {
 		if (
 			!map ||
-			(pinsSetForDate &&
-				$selectedDate.day === pinsSetForDate.day &&
-				$selectedDate.month === pinsSetForDate.month &&
-				$selectedDate.year === pinsSetForDate.year)
+			sameDate(viewSetForDate, $selectedDate) ||
+			!sameDate(pinsSetForDate, $selectedDate) ||
+			(sameDate(pinsSetForDate, $selectedDate) && pins.length > 0)
 		)
 			return;
-		console.log('setView', $selectedDate);
+		viewSetForDate = $selectedDate;
 		map.setView([lat, lon], zoom);
 	}
 
@@ -134,10 +140,28 @@
 		map.getContainer().style.cursor = 'not-allowed';
 	}
 
+	function sameDate(date1, date2) {
+		return (
+			date1 &&
+			date2 &&
+			date1.day === date2.day &&
+			date1.month === date2.month &&
+			date1.year === date2.year
+		);
+	}
+
+	function onPinsChanged() {
+		if (!sameDate(pinsSetForDate, $selectedDate)) {
+			pinsSetForDate = $selectedDate;
+			drawAllPins(true);
+		}
+	}
+
 	$effect(() => {
-		if (pins) {
-			//pinsSetForDate = $selectedDate;
-			drawAllPins(false);
+		const pinsSignature = JSON.stringify(pins ?? []);
+		if (pinsSignature !== lastPinsSignature) {
+			lastPinsSignature = pinsSignature;
+			onPinsChanged();
 		}
 	});
 
@@ -152,16 +176,13 @@
 		if (!map || hasAppliedInitialDefaultMapView || !defaultMapView) return;
 
 		map.setView([defaultMapView[0], defaultMapView[1]], defaultMapView[2]);
-		console.log(defaultMapView);
 		hasAppliedInitialDefaultMapView = true;
 	});
 
 	$effect(() => {
-		if ($selectedDate && map) {
-			console.log('selectedDate changed', $selectedDate);
+		if ($selectedDate && map && $settings?.defaultMapView) {
 			const defaultView = getValidDefaultMapView();
-			externalSetView(defaultView[0], defaultView[1], defaultView[2]);
-			//map.setView([defaultView[0], defaultView[1]], defaultView[2]);
+			setView(defaultView[0], defaultView[1], defaultView[2]);
 		}
 	});
 
@@ -182,7 +203,6 @@
 		});
 
 		const initialMapView = getValidDefaultMapView() || [51.505, -0.09, 13];
-		console.log(selectDefaultMap);
 
 		// init map
 		map = L.map(mapElement, {
@@ -281,7 +301,6 @@
 		nextLayer.addTo(map);
 	}
 
-	let pinsSetForDate = $state();
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
 
@@ -341,12 +360,11 @@
 		if (adjustView) {
 			// adjust map view to fit all pins
 			if (pinLatLngs.length > 0) {
+				viewSetForDate = $selectedDate;
 				map.fitBounds(pinLatLngs, {
 					padding: [30, 30],
 					maxZoom: 15
 				});
-				pinsSetForDate = $selectedDate;
-				console.log('setPins view', $selectedDate);
 			}
 		}
 	}
