@@ -15,7 +15,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
-	import { settings } from './settingsStore';
+	import { settings, tempSettings } from './settingsStore';
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -31,8 +31,10 @@
 		showMapSelection = true,
 		showSearch = true,
 		allowMouseZoom = true,
-		selectDefaultMap
-		//selectDefaultView = $bindable([])
+		selectDefaultMap,
+		mapDisabled = false,
+		currentView = $bindable()
+		//selectDefaultView = $bindable()
 	} = $props();
 
 	let mapElement;
@@ -94,8 +96,47 @@
 		}
 	}
 
+	export function externalGetView() {
+		if (!map) return null;
+		const center = map.getCenter();
+		const zoom = map.getZoom();
+		return [center.lat, center.lng, zoom];
+	}
+
+	export function externalSetView(lat, lon, zoom) {
+		if (
+			!map ||
+			(pinsSetForDate &&
+				$selectedDate.day === pinsSetForDate.day &&
+				$selectedDate.month === pinsSetForDate.month &&
+				$selectedDate.year === pinsSetForDate.year)
+		)
+			return;
+		console.log('setView', $selectedDate);
+		map.setView([lat, lon], zoom);
+	}
+
+	export function externalEnableMap() {
+		if (!map) return;
+		map.dragging.enable();
+		map.doubleClickZoom.enable();
+		map.scrollWheelZoom.enable();
+		// set mouse enabled
+		map.getContainer().style.cursor = '';
+	}
+
+	export function externalDisableMap() {
+		if (!map) return;
+		map.dragging.disable();
+		map.doubleClickZoom.disable();
+		map.scrollWheelZoom.disable();
+		// set mouse disabled
+		map.getContainer().style.cursor = 'not-allowed';
+	}
+
 	$effect(() => {
 		if (pins) {
+			//pinsSetForDate = $selectedDate;
 			drawAllPins(false);
 		}
 	});
@@ -117,10 +158,20 @@
 
 	$effect(() => {
 		if ($selectedDate && map) {
+			console.log('selectedDate changed', $selectedDate);
 			const defaultView = getValidDefaultMapView();
-			map.setView([defaultView[0], defaultView[1]], defaultView[2]);
+			externalSetView(defaultView[0], defaultView[1], defaultView[2]);
+			//map.setView([defaultView[0], defaultView[1]], defaultView[2]);
 		}
 	});
+
+	function updateMapView() {
+		if (!map || !selectDefaultMap) return;
+		const center = map.getCenter();
+		const zoom = map.getZoom();
+		const newView = [center.lat, center.lng, zoom];
+		currentView = newView;
+	}
 
 	onMount(() => {
 		customPinIcon = L.icon({
@@ -131,13 +182,25 @@
 		});
 
 		const initialMapView = getValidDefaultMapView() || [51.505, -0.09, 13];
+		console.log(selectDefaultMap);
 
 		// init map
-		map = L.map(mapElement, { zoomControl: false, scrollWheelZoom: allowMouseZoom }).setView(
-			[initialMapView[0], initialMapView[1]],
-			initialMapView[2]
-		);
+		map = L.map(mapElement, {
+			zoomControl: false,
+			scrollWheelZoom: allowMouseZoom,
+			dragging: !mapDisabled,
+			doubleClickZoom: !mapDisabled
+		}).setView([initialMapView[0], initialMapView[1]], initialMapView[2]);
 		hasAppliedInitialDefaultMapView = getValidDefaultMapView() !== null;
+
+		if (mapDisabled) {
+			map.getContainer().style.cursor = 'not-allowed';
+		}
+
+		// set view-position after 100ms to ensure the map is properly displayed when inside a tab or modal
+		setTimeout(() => {
+			updateMapView(true);
+		}, 100);
 
 		osmTileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19,
@@ -169,10 +232,12 @@
 
 		map.on('click', handleMapBackgroundClick);
 		map.on('popupopen', handleMapPopupOpen);
+		map.on('moveend', () => updateMapView(false));
 		window.addEventListener('keydown', handleGlobalKeydown);
 
 		return () => {
 			map?.off('popupopen', handleMapPopupOpen);
+			map?.on('moveend', () => updateMapView(false));
 			window.removeEventListener('keydown', handleGlobalKeydown);
 			if (mapSearchAbortController) {
 				mapSearchAbortController.abort();
@@ -216,6 +281,7 @@
 		nextLayer.addTo(map);
 	}
 
+	let pinsSetForDate = $state();
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
 
@@ -279,6 +345,8 @@
 					padding: [30, 30],
 					maxZoom: 15
 				});
+				pinsSetForDate = $selectedDate;
+				console.log('setPins view', $selectedDate);
 			}
 		}
 	}
@@ -497,6 +565,8 @@
 	}
 
 	function handleMapBackgroundClick(event) {
+		if (mapDisabled) return;
+
 		// moving a pin right now?
 		if (movingPinID !== null && movingPinMarker) {
 			const { lat, lng } = event.latlng;
