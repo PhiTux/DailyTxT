@@ -13,6 +13,7 @@
 "includeFiles":true,
 "includeTemplates":true,
 "includeTags":true,
+"includePins":true,
 "startDate":"",
 "endDate":""
 }' 
@@ -37,6 +38,7 @@ https://dailytxt.mydomain.tld/api/logs/backupUser
 		backupIncludeFiles = $bindable(),
 		backupIncludeTemplates = $bindable(),
 		backupIncludeTags = $bindable(),
+		backupIncludePins = $bindable(),
 		backupIncludeBookmarks = $bindable(),
 		backupPassword = $bindable(),
 		isBackingUp,
@@ -354,6 +356,18 @@ https://dailytxt.mydomain.tld/api/logs/backupUser
 		/>
 		<label class="form-check-label" for="backupIncludeTags">
 			{$t('settings.backup.include_tags_description')}
+		</label>
+	</div>
+
+	<div class="form-check">
+		<input
+			class="form-check-input"
+			type="checkbox"
+			id="backupIncludePins"
+			bind:checked={backupIncludePins}
+		/>
+		<label class="form-check-label" for="backupIncludePins">
+			{$t('settings.backup.include_pins_description')}
 		</label>
 	</div>
 

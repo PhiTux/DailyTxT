@@ -23,6 +23,7 @@ type BackupRequest struct {
 	IncludeFiles     bool   `json:"includeFiles"`
 	IncludeTemplates bool   `json:"includeTemplates"`
 	IncludeTags      bool   `json:"includeTags"`
+	IncludePins      bool   `json:"includePins"`
 	IncludeBookmarks bool   `json:"includeBookmarks"`
 }
 
@@ -121,6 +122,7 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 	includeFiles := req.IncludeFiles
 	includeTemplates := req.IncludeTemplates
 	includeTags := req.IncludeTags
+	includePins := req.IncludePins
 	includeBookmarks := req.IncludeBookmarks
 
 	// Get encryption key if needed (for decryption or file ops)
@@ -349,6 +351,10 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 						}
 					}
 
+					if !includePins {
+						delete(day, "pins")
+					}
+
 					// Decrypt keys if requested
 					if !req.Encrypted {
 						if encryptedText, ok := day["text"].(string); ok && encryptedText != "" {
@@ -424,6 +430,62 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 							}
 						} else {
 							delete(day, "files")
+						}
+
+						if includePins {
+							if pins, ok := day["pins"].([]any); ok {
+								newPins := make([]any, 0, len(pins))
+								for _, p := range pins {
+									pinMap, ok := p.(map[string]any)
+									if !ok {
+										continue
+									}
+
+									newPin := map[string]any{}
+									if idVal, ok := pinMap["id"]; ok {
+										newPin["id"] = idVal
+									}
+
+									if encText, ok := pinMap["text"].(string); ok && encText != "" {
+										if decryptedText, err := utils.DecryptText(encText, encKey); err == nil {
+											newPin["text"] = decryptedText
+										}
+									}
+
+									if latVal, ok := pinMap["lat"]; ok {
+										switch latRaw := latVal.(type) {
+										case string:
+											if decLat, err := utils.DecryptText(latRaw, encKey); err == nil {
+												if latFloat, err := strconv.ParseFloat(decLat, 64); err == nil {
+													newPin["lat"] = latFloat
+												}
+											}
+										case float64:
+											newPin["lat"] = latRaw
+										}
+									}
+
+									if lonVal, ok := pinMap["lon"]; ok {
+										switch lonRaw := lonVal.(type) {
+										case string:
+											if decLon, err := utils.DecryptText(lonRaw, encKey); err == nil {
+												if lonFloat, err := strconv.ParseFloat(decLon, 64); err == nil {
+													newPin["lon"] = lonFloat
+												}
+											}
+										case float64:
+											newPin["lon"] = lonRaw
+										}
+									}
+
+									if len(newPin) > 0 {
+										newPins = append(newPins, newPin)
+									}
+								}
+								day["pins"] = newPins
+							}
+						} else {
+							delete(day, "pins")
 						}
 					}
 

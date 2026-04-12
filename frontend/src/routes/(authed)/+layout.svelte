@@ -1219,6 +1219,7 @@
 	let backupIncludeFiles = $state(true);
 	let backupIncludeTemplates = $state(true);
 	let backupIncludeTags = $state(true);
+	let backupIncludePins = $state(true);
 	let backupIncludeBookmarks = $state(true);
 	let isBackingUp = $state(false);
 	let showBackupError = $state(false);
@@ -1240,6 +1241,7 @@
 					includeFiles: backupIncludeFiles,
 					includeTemplates: backupIncludeTemplates,
 					includeTags: backupIncludeTags,
+					includePins: backupIncludePins,
 					includeBookmarks: backupIncludeBookmarks
 				},
 				{
@@ -1798,6 +1800,7 @@
 										bind:backupIncludeFiles
 										bind:backupIncludeTemplates
 										bind:backupIncludeTags
+										bind:backupIncludePins
 										bind:backupIncludeBookmarks
 										{isBackingUp}
 										{showBackupError}

@@ -3,11 +3,14 @@ package handlers
 import (
 	"archive/zip"
 	"bytes"
+	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -79,6 +82,31 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 			return v
 		}
 		return 0
+	}
+	coordKey := func(lat, lon float64) string {
+		return fmt.Sprintf("%.10f,%.10f", lat, lon)
+	}
+	parseStoredPinCoord := func(raw any, key string) (float64, bool) {
+		switch v := raw.(type) {
+		case float64:
+			return v, true
+		case string:
+			coordStr := v
+			if key != "" {
+				decrypted, err := utils.DecryptText(v, key)
+				if err != nil {
+					return 0, false
+				}
+				coordStr = decrypted
+			}
+			coord, err := strconv.ParseFloat(coordStr, 64)
+			if err != nil {
+				return 0, false
+			}
+			return coord, true
+		default:
+			return 0, false
+		}
 	}
 
 	// 3. Open Zip
@@ -338,6 +366,32 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 		Size    int64
 	}
 	fileMap := make(map[string]importedFile)
+	contentHashToUUID := make(map[string]string)
+
+	// Prime hash map with already existing user files so identical imported content
+	// can reuse current files instead of creating duplicates.
+	existingFilesDir := filepath.Join(utils.Settings.DataPath, strconv.Itoa(userID), "files")
+	if existingFileEntries, err := os.ReadDir(existingFilesDir); err == nil {
+		for _, existing := range existingFileEntries {
+			if existing.IsDir() {
+				continue
+			}
+			uuid := existing.Name()
+			raw, err := utils.ReadFile(userID, uuid)
+			if err != nil {
+				continue
+			}
+			decrypted, err := utils.DecryptFile(raw, currentEncKey)
+			if err != nil {
+				continue
+			}
+			sum := sha256.Sum256(decrypted)
+			hash := hex.EncodeToString(sum[:])
+			if _, exists := contentHashToUUID[hash]; !exists {
+				contentHashToUUID[hash] = uuid
+			}
+		}
+	}
 
 	for _, f := range zipReader.File {
 		if strings.HasPrefix(f.Name, "files/") && !f.FileInfo().IsDir() {
@@ -346,9 +400,6 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 			if strings.HasPrefix(fname, ".") {
 				continue
 			}
-
-			// Generate new UUID
-			newUUID, _ := utils.GenerateUUID()
 
 			// Read content
 			rc, err := f.Open()
@@ -376,12 +427,22 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 					continue
 				}
 				finalContent = dec
-				fileMap[fname] = importedFile{NewUUID: newUUID, Size: int64(len(finalContent))} // fname is UUID
+				// fname is UUID in encrypted imports
 			} else {
 				// Decrypted import: content is plain.
 				finalContent = content
-				fileMap[fname] = importedFile{NewUUID: newUUID, Size: int64(len(finalContent))} // fname is Filename
+				// fname is filename in decrypted imports
 			}
+
+			sum := sha256.Sum256(finalContent)
+			hash := hex.EncodeToString(sum[:])
+			if existingUUID, exists := contentHashToUUID[hash]; exists {
+				fileMap[fname] = importedFile{NewUUID: existingUUID, Size: int64(len(finalContent))}
+				continue
+			}
+
+			// Generate new UUID only for genuinely new file content.
+			newUUID, _ := utils.GenerateUUID()
 
 			// Write
 			encContent, err := utils.EncryptFile(finalContent, currentEncKey)
@@ -394,6 +455,9 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 				utils.Logger.Printf("Error writing file %s: %v", newUUID, err)
 				continue
 			}
+
+			fileMap[fname] = importedFile{NewUUID: newUUID, Size: int64(len(finalContent))}
+			contentHashToUUID[hash] = newUUID
 		}
 	}
 
@@ -442,8 +506,11 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 						plainDate = getString(importDay, "date_written")
 					}
 
-					// Handle Files
+					// Handle Files:
+					// We map imported file references to newly generated UUIDs of files
+					// that were already written in step 6.
 					var newFiles []any
+					seenFileUUIDs := make(map[string]bool)
 					if files, ok := importDay["files"].([]any); ok {
 						for _, fi := range files {
 							fMap := fi.(map[string]any)
@@ -465,6 +532,10 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 
 							if fileInfo, exists := fileMap[key]; exists {
 								// Match found
+								if seenFileUUIDs[fileInfo.NewUUID] {
+									continue
+								}
+								seenFileUUIDs[fileInfo.NewUUID] = true
 								newEncName, _ := utils.EncryptText(originalFilename, currentEncKey)
 
 								newFiles = append(newFiles, map[string]any{
@@ -482,7 +553,8 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 						delete(importDay, "files")
 					}
 
-					// Handle Tags
+					// Handle Tags:
+					// Imported tag IDs are remapped to current user tag IDs via tagIDMap.
 					var newTagIDs []any
 					if tags, ok := importDay["tags"].([]any); ok {
 						for _, tid := range tags {
@@ -497,6 +569,114 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 						importDay["tags"] = newTagIDs
 					} else {
 						delete(importDay, "tags")
+					}
+
+					// Handle Pins:
+					// 1) Normalize input (encrypted/decrypted backup)
+					// 2) Re-encrypt with currentEncKey
+					// 3) Reassign sequential IDs per day
+					var newPins []any
+					seenPinCoords := make(map[string]bool)
+					if pins, ok := importDay["pins"].([]any); ok {
+						newPins = make([]any, 0, len(pins))
+						for _, pinInterface := range pins {
+							pinMap, ok := pinInterface.(map[string]any)
+							if !ok {
+								continue
+							}
+
+							plainPinText := getString(pinMap, "text")
+							if isEncrypted {
+								plainPinText, _ = utils.DecryptText(plainPinText, importEncKey)
+							}
+							if plainPinText == "" {
+								continue
+							}
+
+							// Coordinates in backups can be either plaintext float64 or strings
+							// (encrypted backups store encrypted strings).
+							parseCoordinate := func(raw any) (float64, bool) {
+								switch v := raw.(type) {
+								case float64:
+									return v, true
+								case string:
+									coordStr := v
+									if isEncrypted {
+										decrypted, err := utils.DecryptText(v, importEncKey)
+										if err != nil {
+											return 0, false
+										}
+										coordStr = decrypted
+									}
+									coord, err := strconv.ParseFloat(coordStr, 64)
+									if err != nil {
+										return 0, false
+									}
+									return coord, true
+								default:
+									return 0, false
+								}
+							}
+
+							lat, okLat := parseCoordinate(pinMap["lat"])
+							lon, okLon := parseCoordinate(pinMap["lon"])
+							if !okLat || !okLon {
+								continue
+							}
+							key := coordKey(lat, lon)
+							if seenPinCoords[key] {
+								continue
+							}
+							seenPinCoords[key] = true
+
+							encPinText, err := utils.EncryptText(plainPinText, currentEncKey)
+							if err != nil {
+								continue
+							}
+							encLat, err := utils.EncryptText(strconv.FormatFloat(lat, 'f', -1, 64), currentEncKey)
+							if err != nil {
+								continue
+							}
+							encLon, err := utils.EncryptText(strconv.FormatFloat(lon, 'f', -1, 64), currentEncKey)
+							if err != nil {
+								continue
+							}
+
+							// Persist pin in the internal encrypted storage format used by logs.
+							newPin := map[string]any{
+								"text": encPinText,
+								"lat":  encLat,
+								"lon":  encLon,
+							}
+
+							if idVal, ok := pinMap["id"]; ok {
+								switch id := idVal.(type) {
+								case float64:
+									newPin["id"] = id
+								case int:
+									newPin["id"] = float64(id)
+								case string:
+									if parsed, err := strconv.Atoi(id); err == nil {
+										newPin["id"] = float64(parsed)
+									}
+								}
+							}
+
+							newPins = append(newPins, newPin)
+						}
+					}
+
+					// Normalize IDs to avoid collisions after merges/imports from different sources.
+					if len(newPins) > 0 {
+						for idx, p := range newPins {
+							if pMap, ok := p.(map[string]any); ok {
+								pMap["id"] = float64(idx + 1)
+								newPins[idx] = pMap
+							}
+						}
+						importDay["pins"] = newPins
+					} else {
+						delete(importDay, "pins")
 					}
 
 					// Re-Encrypt Text/Date
@@ -514,8 +694,8 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 						delete(importDay, "date_written")
 					}
 
-					// Merge into cDays
-					// Check if day exists
+					// Merge into existing month data:
+					// if day already exists, imported data becomes current main day content.
 					foundDay := false
 					for i, cd := range cDays {
 						cDay := cd.(map[string]any)
@@ -557,15 +737,91 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 								}
 							}
 
-							// merge existing files to importDay["files"]
+							// Keep existing files by appending them to imported files,
+							// but avoid duplicate UUID references.
 							if cFiles, ok := cDay["files"].([]any); ok {
 								var impFiles []any
 								if f, ok := importDay["files"].([]any); ok {
 									impFiles = f
 								}
 
-								impFiles = append(impFiles, cFiles...)
+								seenFileUUIDsMerge := make(map[string]bool)
+								for _, f := range impFiles {
+									if fMap, ok := f.(map[string]any); ok {
+										uuid := getString(fMap, "uuid_filename")
+										if uuid == "" {
+											uuid = getString(fMap, "uuid")
+										}
+										if uuid != "" {
+											seenFileUUIDsMerge[uuid] = true
+										}
+									}
+								}
+
+								for _, cf := range cFiles {
+									cFileMap, ok := cf.(map[string]any)
+									if !ok {
+										continue
+									}
+									uuid := getString(cFileMap, "uuid_filename")
+									if uuid == "" {
+										uuid = getString(cFileMap, "uuid")
+									}
+									if uuid != "" && seenFileUUIDsMerge[uuid] {
+										continue
+									}
+									if uuid != "" {
+										seenFileUUIDsMerge[uuid] = true
+									}
+									impFiles = append(impFiles, cFileMap)
+								}
 								importDay["files"] = impFiles
+							}
+
+							// Keep existing pins by appending them to imported pins,
+							// then normalize IDs again to keep deterministic ordering.
+							if cPins, ok := cDay["pins"].([]any); ok {
+								var impPins []any
+								if p, ok := importDay["pins"].([]any); ok {
+									impPins = p
+								}
+
+								seenMergedCoords := make(map[string]bool)
+								for _, p := range impPins {
+									if pMap, ok := p.(map[string]any); ok {
+										lat, okLat := parseStoredPinCoord(pMap["lat"], currentEncKey)
+										lon, okLon := parseStoredPinCoord(pMap["lon"], currentEncKey)
+										if okLat && okLon {
+											seenMergedCoords[coordKey(lat, lon)] = true
+										}
+									}
+								}
+
+								for _, cp := range cPins {
+									cPinMap, ok := cp.(map[string]any)
+									if !ok {
+										continue
+									}
+									lat, okLat := parseStoredPinCoord(cPinMap["lat"], currentEncKey)
+									lon, okLon := parseStoredPinCoord(cPinMap["lon"], currentEncKey)
+									if !okLat || !okLon {
+										continue
+									}
+									key := coordKey(lat, lon)
+									if seenMergedCoords[key] {
+										continue
+									}
+									seenMergedCoords[key] = true
+									impPins = append(impPins, cPinMap)
+								}
+
+								for idx, p := range impPins {
+									if pMap, ok := p.(map[string]any); ok {
+										pMap["id"] = float64(idx + 1)
+										impPins[idx] = pMap
+									}
+								}
+								importDay["pins"] = impPins
 							}
 
 							cDays[i] = importDay
@@ -573,6 +829,7 @@ func ImportData(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 
+					// If day does not exist yet, append as a new day record.
 					if !foundDay {
 						cDays = append(cDays, importDay)
 					}
