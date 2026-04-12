@@ -15,6 +15,7 @@ import (
 // - each logged day with amount of words for each day
 // - amount of files for each day
 // - tags for each day
+// - amount of pins for each day
 func GetStatistics(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and derived key from context
 	userID, ok := r.Context().Value(utils.UserIDKey).(int)
@@ -43,6 +44,7 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 		WordCount     int   `json:"wordCount"`
 		FileCount     int   `json:"fileCount"`
 		FileSizeBytes int64 `json:"fileSizeBytes"`
+		PinCount      int   `json:"pinCount"`
 		Tags          []int `json:"tags"`
 		IsBookmarked  bool  `json:"isBookmarked"`
 	}
@@ -115,6 +117,12 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
+				// Pin count
+				pinCount := 0
+				if pinsAny, ok := dayMap["pins"].([]any); ok {
+					pinCount = len(pinsAny)
+				}
+
 				// Tags (IDs are numeric)
 				var tagIDs []int
 				if tagsAny, ok := dayMap["tags"].([]any); ok {
@@ -142,6 +150,7 @@ func GetStatistics(w http.ResponseWriter, r *http.Request) {
 					WordCount:     wordCount,
 					FileCount:     fileCount,
 					FileSizeBytes: totalFileSize,
+					PinCount:      pinCount,
 					Tags:          tagIDs,
 					IsBookmarked:  isBookmarked,
 				})

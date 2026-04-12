@@ -12,6 +12,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import { formatBytes } from '$lib/helpers';
 	import { resolve } from '$app/paths';
+	import { SvelteDate, SvelteMap } from 'svelte/reactivity';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -31,14 +32,14 @@
 	let legendRanges = $state([]);
 
 	let heatmapEl = $state(null);
-	let dayMap = new Map(); // key -> day data
+	let dayMap = new SvelteMap(); // key -> day data
 
 	const buildYearData = () => {
 		if (!years.includes(selectedYear)) return;
 
 		// Filter stats for selected year
 		const yearDays = dayStats.filter((d) => d.year === selectedYear);
-		const mapByKey = new Map();
+		const mapByKey = new SvelteMap();
 		let localMax = 0;
 		let localMin = Infinity;
 		for (const d of yearDays) {
@@ -59,10 +60,10 @@
 		// Pre-fill leading empty cells
 		// If week complete, push and start a new one
 		// Push trailing week if it contains any filled cells
-		const thresholds = [0.15, 0.35, 0.65]; // thresholds between intensity levels
+		//const thresholds = [0.15, 0.35, 0.65]; // thresholds between intensity levels
 		// Map ratio ranges to integer word ranges
 		const weekdayIndex = (d) => (d.getDay() + 6) % 7;
-		let current = new Date(first);
+		let current = new SvelteDate(first);
 		weeks = [];
 		let currentWeek = new Array(7).fill(null);
 		// Pre-fill leading empty cells
@@ -75,12 +76,14 @@
 			const stat = mapByKey.get(key);
 			const wordCount = stat ? stat.wordCount : 0;
 			const isBookmarked = stat ? stat.isBookmarked : false;
+			const pinCount = stat ? Number(stat.pinCount) || 0 : 0;
 			currentWeek[idx] = {
 				date: new Date(current),
 				wordCount,
 				isBookmarked,
 				tags: stat ? stat.tags : [],
-				fileCount: stat ? stat.fileCount : 0
+				fileCount: stat ? stat.fileCount : 0,
+				pinCount
 			};
 			// If week complete, push and start new
 			if (idx === 6) {
@@ -200,6 +203,7 @@
 				wordCount: d.wordCount ?? d.WordCount ?? 0,
 				fileCount: d.fileCount ?? d.FileCount ?? 0,
 				fileSizeBytes: d.fileSizeBytes ?? d.FileSizeBytes ?? 0,
+				pinCount: d.pinCount ?? d.PinCount ?? 0,
 				tags: d.tags ?? d.Tags ?? [],
 				isBookmarked: d.isBookmarked ?? d.IsBookmarked ?? false
 			}));
@@ -221,6 +225,7 @@
 				<div class="tt-head"><b>${fmtDate(day.date)}</b></div>
 				<div class="tt-line">${$t('settings.statistics.wordCount', { wordCount: day.wordCount })}</div>
 				${day.fileCount ? `<div class='tt-line'>${$t('settings.statistics.fileCount', { fileCount: day.fileCount })}</div>` : ''}
+				${day.pinCount ? `<div class='tt-line'>${$t('settings.statistics.pinsTotal', { pins: day.pinCount })}</div>` : ''}
 				${day.isBookmarked ? `<div class='tt-line'>★ ${$t('settings.statistics.bookmarked')}</div>` : ''}
 				<div class="tt-tags"></div>
 				<div class="tt-footer">
@@ -269,7 +274,7 @@
 
 		// Initialize day cell popovers
 		const cells = heatmapEl?.querySelectorAll('.day-cell[data-day-key]') || [];
-		cells.forEach((el, index) => {
+		cells.forEach((el) => {
 			const key = el.getAttribute('data-day-key');
 			const day = dayMap.get(key);
 			if (!day) return;
@@ -278,7 +283,7 @@
 			el.setAttribute('data-bs-content', htmlContent);
 			el.setAttribute('data-bs-toggle', 'popover');
 
-			const popover = new bootstrap.Popover(el, {
+			new bootstrap.Popover(el, {
 				html: true,
 				placement: 'top',
 				trigger: 'click',
@@ -380,6 +385,8 @@
 	}
 </script>
 
+<!-- eslint-disable svelte/no-at-html-tags -->
+
 <div class="settings-stats">
 	<h2 class=" mb-3">{$t('settings.statistics.title')}</h2>
 
@@ -409,7 +416,7 @@
 				bind:value={selectedYear}
 				onchange={(e) => selectYear(+e.target.value)}
 			>
-				{#each years as y}
+				{#each years as y (y)}
 					<option value={y}>{y}</option>
 				{/each}
 			</select>
@@ -422,7 +429,7 @@
 			<div class="legend ms-auto d-flex align-items-center gap-1">
 				<span class="legend-label small">{$t('settings.statistics.legend')}</span>
 				<div class="legend-colors d-flex align-items-center gap-1">
-					{#each legendRanges as seg}
+					{#each legendRanges as seg, i (i)}
 						<span
 							class="legend-cell level-{seg.level}"
 							data-bs-toggle="tooltip"
@@ -435,9 +442,9 @@
 
 		<div class="heatmap" aria-label="Year-Heatmap" bind:this={heatmapEl}>
 			<div class="weeks d-flex">
-				{#each weeks as week, wi}
+				{#each weeks as week, wi (wi)}
 					<div class="week-column d-flex flex-column">
-						{#each week as day, di}
+						{#each week as day, di (di)}
 							{#if day === null || day.empty}
 								<div class="day-cell empty" aria-hidden="true"></div>
 							{:else}
@@ -479,6 +486,13 @@
 						.reduce((sum, d) => sum + d.fileCount, 0)
 						.toLocaleString($tolgee.getLanguage()),
 					diskUsage: formatBytes(dayStats.reduce((sum, d) => sum + d.fileSizeBytes, 0))
+				})}
+			</li>
+			<li>
+				{@html $t('settings.statistics.pinsTotal', {
+					pins: dayStats
+						.reduce((sum, d) => sum + (Number(d.pinCount) || 0), 0)
+						.toLocaleString($tolgee.getLanguage())
 				})}
 			</li>
 			<li>
