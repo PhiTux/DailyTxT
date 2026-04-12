@@ -336,7 +336,6 @@
 			>
 		</div>
 		<div class="col-4 d-flex justify-content-end">
-			<!-- svelte-ignore a11y_consider_explicit_label -->
 			<button class="btn btn-secondary me-2" onclick={bookmarkDay}>
 				<svg
 					id="bookmark-icon"

@@ -1,7 +1,17 @@
 <script>
 	import { onMount } from 'svelte';
 
-	let { initialValue = '', onSave = () => {}, onChange = () => {}, fullScreen = false } = $props();
+	let {
+		initialValue = '',
+		onSave = () => {},
+		onChange = () => {},
+		fullScreen = false,
+		translate = (key) => key
+	} = $props();
+
+	function tr(key) {
+		return typeof translate === 'function' ? translate(key) : key;
+	}
 
 	onMount(() => {
 		document.querySelector('#newPinTextInput')?.focus();
@@ -33,11 +43,12 @@
 			id="newPinTextInput"
 			type="text"
 			class="form-control"
-			placeholder="Name"
+			placeholder={tr('modal.tag.name')}
 			bind:value={initialValue}
 			oninput={handleInput}
 			onkeydown={handleKeydown}
 		/>
-		<button type="button" class="btn btn-success" onclick={handleSave}>Speichern</button>
+		<button type="button" class="btn btn-success" onclick={handleSave}>{tr('settings.save')}</button
+		>
 	{/if}
 </div>

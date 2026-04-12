@@ -35,7 +35,6 @@
 	} = $props();
 
 	let loading = $state(false);
-	let errorMessage = $state('');
 	let modalElement;
 	let modalInstance = null;
 	let dayLog = $state({
@@ -94,7 +93,6 @@
 	$effect(() => {
 		if (!open) return;
 		if (!day || !month || !year) {
-			errorMessage = 'Ungueltiges Datum';
 			return;
 		}
 		loadDayLog();
@@ -106,7 +104,6 @@
 
 	function loadDayLog() {
 		loading = true;
-		errorMessage = '';
 
 		axios
 			.get(`${API_URL}/logs/getLog`, {
@@ -123,7 +120,10 @@
 			})
 			.catch((error) => {
 				console.error('Error loading day preview:', error);
-				errorMessage = 'Tagesinhalt konnte nicht geladen werden';
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorLoadingDayPreview'));
+				toast.show();
 			})
 			.finally(() => {
 				loading = false;
@@ -149,23 +149,19 @@
 				{#if loading}
 					<div class="d-flex align-items-center gap-2">
 						<div class="spinner-border spinner-border-sm" role="status"></div>
-						<span>{$t('settings.loading') || 'Lade...'}</span>
 					</div>
-				{:else if errorMessage !== ''}
-					<div class="alert alert-danger mb-0" role="alert">{errorMessage}</div>
 				{:else}
 					<div class="preview-text">
 						{#if dayLog.text}
 							<!-- eslint-disable-next-line svelte/no-at-html-tags-->
 							{@html marked.parse(dayLog.text)}
 						{:else}
-							<em>{$t('map.no_entry') || 'Kein Eintrag vorhanden'}</em>
+							<em>{$t('log.no_entry')}</em>
 						{/if}
 					</div>
 
 					{#if dayLog.tags.length > 0}
 						<div class="mt-3">
-							<!-- <h6 class="mb-2">Tags</h6> -->
 							<div class="d-flex flex-wrap gap-1">
 								{#each dayLog.tags as tag, i (tag + '-' + i)}
 									<Tag tag={$tags.filter((t) => t.id === tag)[0]} />
@@ -176,20 +172,38 @@
 					<div class="border-top mt-2 pt-2 gap-2 d-flex flex-wrap">
 						{#if dayLog.files.length > 0}
 							<div class="badge rounded-pill text-bg-light">
-								{dayLog.files.length} Dateien
+								{$t('settings.statistics.fileCount', { fileCount: dayLog.files.length })}
 							</div>
 						{/if}
 						{#if dayLog.pins?.length > 0}
 							<div class="badge rounded-pill text-bg-light">
-								{dayLog.pins?.length} Pins
+								{$t('settings.statistics.pinCount', { pinCount: dayLog.pins?.length })}
 							</div>
 						{/if}
 					</div>
 				{/if}
 				<div class="d-flex flex-row justify-content-center">
-					<button class="btn btn-primary" onclick={openDayLog}>Bearbeiten</button>
+					<button class="btn btn-primary" onclick={openDayLog}>{$t('aLookBack.open')}</button>
 				</div>
 			</div>
+		</div>
+	</div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorLoadingDayPreview"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_loading_day_preview')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
 		</div>
 	</div>
 </div>

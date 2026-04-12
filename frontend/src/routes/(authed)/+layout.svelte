@@ -175,14 +175,6 @@
 		checkForUpdates();
 	});
 
-	/*$effect(() => {
-		if ($readingMode === true && !page.url.pathname.endsWith('/read')) {
-			goto(resolve('/read'));
-		} else if ($readingMode === false) {
-			goto(resolve('/write'));
-		}
-	});*/
-
 	function goToPage(pageName) {
 		if (pageName === 'write') {
 			if (page.url.pathname.endsWith('/read') && $readingDate) {

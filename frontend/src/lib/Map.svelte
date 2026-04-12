@@ -16,6 +16,10 @@
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
 	import { settings } from './settingsStore';
+	import * as bootstrap from 'bootstrap';
+	import { getTranslate } from '@tolgee/svelte';
+
+	const { t } = getTranslate();
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -380,7 +384,8 @@
 					day: pin.day || null,
 					month: pin.month || null,
 					year: pin.year || null,
-					language: $tolgee.getLanguage()
+					language: $tolgee.getLanguage(),
+					translate: $t
 				}
 			});
 
@@ -483,7 +488,9 @@
 	 * Saves a moved pin position. Backend call intentionally left empty for now.
 	 */
 	function updatePinPosition(pinID, lat, lon) {
-		const targetPinKey = movingPinKey || getPinKey(pinID, movingPinDate?.day, movingPinDate?.month, movingPinDate?.year);
+		const targetPinKey =
+			movingPinKey ||
+			getPinKey(pinID, movingPinDate?.day, movingPinDate?.month, movingPinDate?.year);
 		axios
 			.post(`${API_URL}/logs/movePin`, {
 				pinId: pinID,
@@ -496,6 +503,9 @@
 			.then((response) => {
 				if (!response.data.success) {
 					console.error('Failed to move pin:', response.data.message);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorUpdatePinPosition'));
+					toast.show();
 				} else {
 					pins = pins.map((pin) =>
 						getPinKey(pin.id, pin.day, pin.month, pin.year) === targetPinKey
@@ -506,6 +516,9 @@
 			})
 			.catch((error) => {
 				console.error('Error moving pin:', error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorUpdatePinPosition'));
+				toast.show();
 			})
 			.finally(() => {
 				drawAllPins(false);
@@ -541,10 +554,16 @@
 					pins = pins.filter((pin) => pin.id !== id);
 				} else {
 					console.error('Failed to delete pin:', response.data.message);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletePin'));
+					toast.show();
 				}
 			})
 			.catch((error) => {
 				console.error('Error deleting pin:', error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorDeletePin'));
+				toast.show();
 			})
 			.finally(() => {
 				drawAllPins(false);
@@ -564,7 +583,8 @@
 				onSave: (value) => {
 					addNewPinMarker(value);
 				},
-				fullScreen
+				fullScreen,
+				translate: $t
 			}
 		});
 
@@ -604,10 +624,16 @@
 					drawAllPins(false);
 				} else {
 					console.error('Failed to add pin:', response.data.message);
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorAddPin'));
+					toast.show();
 				}
 			})
 			.catch((error) => {
 				console.error('Error adding pin:', error);
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorAddPin'));
+				toast.show();
 			})
 			.finally(() => {
 				// at the end:
@@ -758,6 +784,10 @@
 			);
 
 			if (!response.ok) {
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorPhotonSearch'));
+				toast.show();
+
 				throw new Error('Photon request failed');
 			}
 
@@ -786,8 +816,12 @@
 		} catch (error) {
 			if (error.name === 'AbortError') return;
 			console.error(error);
-			mapSearchError = 'Suche fehlgeschlagen';
+			mapSearchError = $t('map.toast.error_photon_search');
 			mapSearchResults = [];
+
+			// toast
+			const toast = new bootstrap.Toast(document.getElementById('toastErrorPhotonSearch'));
+			toast.show();
 		} finally {
 			mapSearchLoading = false;
 		}
@@ -824,8 +858,8 @@
 	<div class="map" bind:this={mapElement}></div>
 
 	{#if showMapSelection}
-		<div class="map-basemap-menu" aria-label="Kartenansicht wechseln">
-			<button type="button" class="map-basemap-trigger" title="Kartenansicht wechseln">
+		<div class="map-basemap-menu" aria-label={$t('map.switch_map')}>
+			<button type="button" class="map-basemap-trigger" title={$t('map.switch_map')}>
 				<Fa icon={faMap} />
 			</button>
 
@@ -837,7 +871,7 @@
 					class:active={baseMapProvider === 'osm'}
 					onclick={() => setBaseMap('osm')}
 				>
-					OSM
+					{$t('map.osm')}
 				</button>
 				<button
 					type="button"
@@ -846,7 +880,7 @@
 					class:active={baseMapProvider === 'esri'}
 					onclick={() => setBaseMap('esri')}
 				>
-					Satellite (Esri)
+					{$t('map.satellite')}
 				</button>
 				<button
 					type="button"
@@ -855,7 +889,7 @@
 					class:active={baseMapProvider === 'stadia'}
 					onclick={() => setBaseMap('stadia')}
 				>
-					Satellite and Metadata (Stadia)
+					{$t('map.satellite_and_meta')}
 				</button>
 			</div>
 		</div>
@@ -865,8 +899,8 @@
 		<button
 			type="button"
 			class="map-top-right-action"
-			aria-label="Zusatzaktion auf der Karte"
-			title="Zusatzaktion"
+			aria-label={$t('map.open_modal')}
+			title={$t('map.open_modal')}
 			onclick={openMapModal}
 		>
 			<Fa icon={faUpRightAndDownLeftFromCenter} />
@@ -880,7 +914,7 @@
 					type="button"
 					class="map-search-toggle"
 					onclick={toggleMapSearch}
-					aria-label="Karte durchsuchen"
+					aria-label={$t('map.search_place')}
 				>
 					<Fa icon={faSearch} />
 				</button>
@@ -889,7 +923,7 @@
 					<input
 						type="text"
 						class="map-search-input"
-						placeholder="Ort suchen..."
+						placeholder={$t('map.search_place')}
 						bind:this={mapSearchInputElement}
 						value={mapSearchQuery}
 						oninput={handleMapSearchInput}
@@ -900,7 +934,7 @@
 
 			<div class="map-search-feedback {hasSearchFeedback ? 'open' : ''}">
 				{#if mapSearchLoading}
-					<div class="map-search-status">Suche...</div>
+					<div class="map-search-status">{$t('search.searching')}</div>
 				{:else if mapSearchError}
 					<div class="map-search-status text-danger">{mapSearchError}</div>
 				{:else if mapSearchResults.length > 0}
@@ -916,11 +950,77 @@
 						{/each}
 					</div>
 				{:else if mapSearchQuery.trim().length >= 2}
-					<div class="map-search-status">Keine Treffer</div>
+					<div class="map-search-status">{$t('search.no_results')}</div>
 				{/if}
 			</div>
 		</div>
 	{/if}
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorUpdatePinPosition"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_update_pin_position')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
+
+	<div
+		id="toastErrorDeletePin"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_delete_pin')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
+
+	<div
+		id="toastErrorAddPin"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_add_pin')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
+
+	<div
+		id="toastErrorPhotonSearch"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_photon_search')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -934,12 +1034,10 @@
 	}
 
 	.map {
-		/* height: 260px; */
 		height: 100%;
 	}
 
 	:global(.modal-body .map) {
-		/* height: 65vh; */
 		height: 100%;
 	}
 
@@ -1014,7 +1112,7 @@
 
 	.map-basemap-options button {
 		height: 36px;
-		min-width: 150px;
+		min-width: 165px;
 		padding: 0 0.55rem;
 		display: inline-flex;
 		align-items: center;

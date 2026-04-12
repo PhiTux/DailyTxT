@@ -11,10 +11,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import axios from 'axios';
 	import { Tooltip } from 'bootstrap';
-	//import { getTolgee } from '@tolgee/svelte';
-
-	//const { t } = getTranslate();
-	//const tolgee = getTolgee(['language']);
+	import * as bootstrap from 'bootstrap';
 
 	let {
 		text = $bindable(''),
@@ -25,8 +22,14 @@
 		day = null,
 		month = null,
 		year = null,
-		language
+		language,
+		translate = (key) => key
 	} = $props();
+
+	function tr(key) {
+		return typeof translate === 'function' ? translate(key) : key;
+	}
+
 	let isEditing = $state(false);
 
 	let editedText = $state('');
@@ -98,10 +101,18 @@
 					text = editedText;
 				} else {
 					console.error('Failed to update pin:', response.data.message);
+
+					// toast
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorUpdatePinText'));
+					toast.show();
 				}
 			})
 			.catch((error) => {
 				console.error('Error updating pin:', error);
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorUpdatePinText'));
+				toast.show();
 			})
 			.finally(() => {
 				isEditing = false;
@@ -139,10 +150,14 @@
 		</div>
 	{:else if confirmDelete}
 		<div class="d-flex flex-column align-items-center gap-2">
-			<div>Möchtest du diesen Pin wirklich löschen?</div>
+			<div>{tr('map.confirm_delete_pin')}</div>
 			<div>
-				<button class="btn btn-danger btn-sm me-2" onclick={deletePin}>Ja</button>
-				<button class="btn btn-secondary btn-sm" onclick={confirmDeletePinAbort}>Nein</button>
+				<button class="btn btn-danger btn-sm me-2" onclick={deletePin}
+					>{tr('settings.delete')}</button
+				>
+				<button class="btn btn-secondary btn-sm" onclick={confirmDeletePinAbort}
+					>{tr('settings.abort')}</button
+				>
 			</div>
 		</div>
 	{:else}
@@ -161,7 +176,7 @@
 					{#if text !== ''}
 						{text}
 					{:else}
-						<em class="no-description">Keine Beschreibung</em>
+						<em class="no-description">{tr('map.pin.no_description')}</em>
 					{/if}
 				</div>
 				{#if day && month && year}
@@ -169,7 +184,7 @@
 						class="btn btn-sm btn-primary p-1 mt-1"
 						onclick={() => openPreview(day, month, year)}
 					>
-						Vorschau öffnen
+						{tr('map.pin.open_preview')}
 					</button>
 				{/if}
 			</div>
@@ -190,7 +205,7 @@
 							data-bs-toggle="tooltip"
 							data-bs-placement="left"
 							data-bs-delay="500"
-							title="Text bearbeiten"
+							title={tr('map.pin.edit')}
 						>
 							<Fa icon={faPencil} fw />
 						</button>
@@ -202,7 +217,7 @@
 							data-bs-toggle="tooltip"
 							data-bs-placement="left"
 							data-bs-delay="500"
-							title="Verschieben"
+							title={tr('map.pin.move')}
 						>
 							<Fa icon={faLocationCrosshairs} fw />
 						</button>
@@ -214,7 +229,7 @@
 							data-bs-toggle="tooltip"
 							data-bs-placement="left"
 							data-bs-delay="500"
-							title="Pin löschen"
+							title={tr('map.pin.delete')}
 						>
 							<Fa icon={faTrash} fw />
 						</button>
@@ -223,6 +238,24 @@
 			</div>
 		</div>
 	{/if}
+</div>
+
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorUpdatePinText"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{tr('map.toast.error_updating_pin_text')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
 </div>
 
 <style>

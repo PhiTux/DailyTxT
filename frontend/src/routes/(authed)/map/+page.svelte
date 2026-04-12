@@ -8,6 +8,7 @@
 	import { getTolgee, getTranslate } from '@tolgee/svelte';
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
+	import * as bootstrap from 'bootstrap';
 
 	let allPins = $state([]);
 	let pinStartDate = $state('');
@@ -34,6 +35,10 @@
 			})
 			.catch((error) => {
 				console.error('Error fetching pins:', error);
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorFetchPins'));
+				toast.show();
 			});
 	}
 
@@ -88,6 +93,7 @@
 
 <div class="date-picker glass-shadow position-absolute top-0 end-0 m-3 p-3">
 	<div class="d-flex flex-column">
+		<h6 class="align-self-center">{$t('settings.export.period')}</h6>
 		<div>
 			<label for="pinStartDate">{$t('settings.export.start_date')}</label>
 			<div class="date-input-row">
@@ -96,7 +102,7 @@
 					<button
 						type="button"
 						class="btn-close clear-date-btn"
-						aria-label="Startdatum löschen"
+						aria-label="Delete start date"
 						onclick={() => (pinStartDate = '')}
 					></button>
 				{/if}
@@ -110,7 +116,7 @@
 					<button
 						type="button"
 						class="btn-close clear-date-btn"
-						aria-label="Enddatum löschen"
+						aria-label="Delete end date"
 						onclick={() => (pinEndDate = '')}
 					></button>
 				{/if}
@@ -125,16 +131,6 @@
 			</div>
 		{/if}
 	</div>
-
-	{#if pinStartDate === '' && pinEndDate === ''}
-		Zeige alle Pins
-	{:else if pinStartDate === ''}
-		Zeige alle Pins bis {pinEndDate}
-	{:else if pinEndDate === ''}
-		Zeige alle Pins ab {pinStartDate}
-	{:else}
-		Zeige alle Pins von {pinStartDate} bis {pinEndDate}
-	{/if}
 </div>
 
 <Map fullScreen pins={selectedPins} {openPreview} />
@@ -147,7 +143,31 @@
 	language={$tolgee.getLanguage()}
 />
 
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorFetchPins"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_fetching_pins')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
+</div>
+
 <style>
+	h6 {
+		font-size: 1.1rem;
+		text-decoration: underline;
+		text-decoration-color: #1565c0;
+	}
+
 	.date-picker {
 		width: 220px;
 		z-index: 10;
