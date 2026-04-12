@@ -1276,6 +1276,7 @@
 	let exportImagesInHTML = $state(true);
 	let exportSplit = $state('aio');
 	let exportTagsInHTML = $state(true);
+	let exportPinsInHTML = $state(true);
 	let exportExtendedFormatting = $state(false);
 	let isExporting = $state(false);
 
@@ -1319,6 +1320,7 @@
 		exportTranslations.uiElements.images = translations.export.images;
 		exportTranslations.uiElements.files = translations.export.files;
 		exportTranslations.uiElements.tags = translations.export.tags;
+		exportTranslations.uiElements.pins = translations.export.pins;
 
 		if (isExporting) return;
 		isExporting = true;
@@ -1332,6 +1334,7 @@
 					imagesInHTML: exportImagesInHTML,
 					split: exportSplit,
 					tagsInHTML: exportTagsInHTML,
+					pinsInHTML: exportPinsInHTML,
 					translations: JSON.stringify(exportTranslations),
 					extendedFormatting: exportExtendedFormatting
 				},
@@ -1805,6 +1808,7 @@
 										bind:exportImagesInHTML
 										bind:exportSplit
 										bind:exportTagsInHTML
+										bind:exportPinsInHTML
 										bind:exportExtendedFormatting
 										{isExporting}
 										{exportData}

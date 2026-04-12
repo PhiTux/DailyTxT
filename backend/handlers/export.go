@@ -29,6 +29,13 @@ type LogEntry struct {
 	DateWritten string
 	Files       []string
 	Tags        []int
+	Pins        []ExportPin
+}
+
+type ExportPin struct {
+	Name string
+	Lat  float64
+	Lon  float64
 }
 
 type TranslationData struct {
@@ -43,6 +50,7 @@ type TranslationData struct {
 		EntriesCount     string `json:"entriesCount"`
 		Images           string `json:"images"`
 		Files            string `json:"files"`
+		Pins             string `json:"pins"`
 		Tags             string `json:"tags"`
 	} `json:"uiElements"`
 }
@@ -118,6 +126,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tagsInHTML := r.URL.Query().Get("tagsInHTML") == "true"
+	pinsInHTML := r.URL.Query().Get("pinsInHTML") == "true"
 
 	translationsStr := r.URL.Query().Get("translations")
 	if translationsStr == "" {
@@ -331,9 +340,69 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 						}
 					}
 				}
+				// Add pins (name + coordinates)
+				if pinsInHTML {
+					if pins, ok := day["pins"].([]any); ok && len(pins) > 0 {
+						for _, pinInterface := range pins {
+							pinObj, ok := pinInterface.(map[string]any)
+							if !ok {
+								continue
+							}
+
+							encName, ok := pinObj["text"].(string)
+							if !ok || encName == "" {
+								continue
+							}
+							name, err := utils.DecryptText(encName, encKey)
+							if err != nil {
+								continue
+							}
+
+							var lat float64
+							switch latRaw := pinObj["lat"].(type) {
+							case string:
+								latStr, err := utils.DecryptText(latRaw, encKey)
+								if err != nil {
+									continue
+								}
+								lat, err = strconv.ParseFloat(latStr, 64)
+								if err != nil {
+									continue
+								}
+							case float64:
+								lat = latRaw
+							default:
+								continue
+							}
+
+							var lon float64
+							switch lonRaw := pinObj["lon"].(type) {
+							case string:
+								lonStr, err := utils.DecryptText(lonRaw, encKey)
+								if err != nil {
+									continue
+								}
+								lon, err = strconv.ParseFloat(lonStr, 64)
+								if err != nil {
+									continue
+								}
+							case float64:
+								lon = lonRaw
+							default:
+								continue
+							}
+
+							entry.Pins = append(entry.Pins, ExportPin{
+								Name: name,
+								Lat:  lat,
+								Lon:  lon,
+							})
+						}
+					}
+				}
 
 				// Add entry if it has content
-				if entry.Text != "" || len(entry.Files) > 0 || len(entry.Tags) > 0 {
+				if entry.Text != "" || len(entry.Files) > 0 || len(entry.Tags) > 0 || (pinsInHTML && len(entry.Pins) > 0) {
 					allEntries = append(allEntries, entry)
 
 					// Add to yearly collections
@@ -353,7 +422,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per month
 		for monthKey, entries := range monthlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, pinsInHTML, translations, extendedFormatting)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for month %s: %v", monthKey, err)
 				} else {
@@ -375,7 +444,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 		// Create one HTML per year
 		for year, entries := range yearlyEntries {
 			if len(entries) > 0 {
-				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
+				htmlBytes, err := generateHTML(entries, userID, derivedKey, tagsInHTML, imagesInHTML, pinsInHTML, translations, extendedFormatting)
 				if err != nil {
 					utils.Logger.Printf("Error generating HTML for year %d: %v", year, err)
 				} else {
@@ -396,7 +465,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 	case "aio":
 		// Create one single HTML with all entries
 		if len(allEntries) > 0 {
-			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML, translations, extendedFormatting)
+			htmlBytes, err := generateHTML(allEntries, userID, derivedKey, tagsInHTML, imagesInHTML, pinsInHTML, translations, extendedFormatting)
 			if err != nil {
 				utils.Logger.Printf("Error generating HTML: %v", err)
 			} else {
@@ -416,7 +485,7 @@ func ExportData(w http.ResponseWriter, r *http.Request) {
 }
 
 // generateHTML creates an HTML document with all diary entries
-func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool, translations TranslationData, extendedFormatting bool) ([]byte, error) {
+func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags bool, includeImages bool, includePins bool, translations TranslationData, extendedFormatting bool) ([]byte, error) {
 	// Load and decrypt tags if needed
 	var tagMap map[int]Tag
 	if includeTags {
@@ -499,12 +568,12 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
             font-size: 1.1em;
             line-height: 1.5;
         }
-        .entry-files, .entry-tags, .entry-images {
+		.entry-files, .entry-tags, .entry-images, .entry-pins {
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid #eee;
         }
-        .entry-files h4, .entry-tags h4, .entry-images h4 {
+		.entry-files h4, .entry-tags h4, .entry-images h4, .entry-pins h4 {
             margin: 0 0 10px 0;
             color: #666;
             font-size: 0.9em;
@@ -900,6 +969,26 @@ func generateHTML(entries []LogEntry, userID int, derivedKey string, includeTags
 				filePath := fmt.Sprintf("files/%d-%02d-%02d/%s", entry.Year, entry.Month, entry.Day, file)
 				html.WriteString(fmt.Sprintf(`                    <li><a href="%s" target="_blank">%s</a></li>
 `, htmlpkg.EscapeString(filePath), htmlpkg.EscapeString(file)))
+			}
+			html.WriteString(`                </ul>
+            </div>
+`)
+		}
+
+		// Pins
+		if includePins && len(entry.Pins) > 0 {
+			pinsLabel := translations.UiElements.Pins
+			if pinsLabel == "" {
+				pinsLabel = "Pins"
+			}
+			html.WriteString(fmt.Sprintf(`            <div class="entry-pins">
+                <h4>%s</h4>
+                <ul class="file-list">
+`, htmlpkg.EscapeString(pinsLabel)))
+			for _, pin := range entry.Pins {
+				mapURL := fmt.Sprintf("https://www.google.com/maps/place/%.6f,%.6f", pin.Lat, pin.Lon)
+				html.WriteString(fmt.Sprintf(`                    <li>%s (%.6f, %.6f) <a href="%s" target="_blank" rel="noopener noreferrer">Google Maps</a></li>
+`, htmlpkg.EscapeString(pin.Name), pin.Lat, pin.Lon, htmlpkg.EscapeString(mapURL)))
 			}
 			html.WriteString(`                </ul>
             </div>

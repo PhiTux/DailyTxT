@@ -26,6 +26,7 @@ https://dailytxt.mydomain.tld/api/logs/backupUser
 		exportSplit = $bindable(),
 		exportImagesInHTML = $bindable(),
 		exportTagsInHTML = $bindable(),
+		exportPinsInHTML = $bindable(),
 		exportExtendedFormatting = $bindable(),
 		isExporting,
 		exportData,
@@ -171,6 +172,19 @@ https://dailytxt.mydomain.tld/api/logs/backupUser
 		/>
 		<label class="form-check-label" for="exportTagsInHTML">
 			{$t('settings.export.show_tags_description')}
+		</label>
+	</div>
+
+	<h6>{$t('settings.export.show_pins')}</h6>
+	<div class="form-check">
+		<input
+			class="form-check-input"
+			type="checkbox"
+			id="exportPinsInHTML"
+			bind:checked={exportPinsInHTML}
+		/>
+		<label class="form-check-label" for="exportPinsInHTML">
+			{$t('settings.export.show_pins_description')}
 		</label>
 	</div>
 
