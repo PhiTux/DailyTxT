@@ -2197,6 +2197,7 @@
 							$cal.daysBookmarked.includes($selectedDate.day),
 							$t('modal.deleteDay.bookmark')
 						)}
+						{@render deleteDayCount(pins, $t('modal.deleteDay.mapPins', { pins: pins.length }))}
 					</ul>
 				</div>
 				<div class="modal-footer">
