@@ -1416,25 +1416,62 @@
 					>
 				{/if}
 
-				<!-- <div class="selectMode form-check form-switch d-flex flex-row align-items-center">
-					<label class="me-3 modeSliderIcon" for="selectMode"
-						><Fa icon={faPencil} size="1.5x" /></label
+				<div class="dropdown d-md-none ms-2">
+					<button
+						class="btn btn-primary dropdown-toggle"
+						id="modeDropdownButton"
+						type="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+						aria-label="Navigation"
 					>
-					<div class="form-check form-switch">
-						<input
-							class="form-check-input"
-							bind:checked={$readingMode}
-							type="checkbox"
-							role="switch"
-							id="selectMode"
-							style="transform: scale(1.3);"
+						<Fa
+							icon={page.url.pathname.endsWith('/read')
+								? faGlasses
+								: page.url.pathname.endsWith('/map')
+									? faMap
+									: faPencil}
+							fw
 						/>
+					</button>
+					<div class="dropdown-menu" id="modeDropdown">
+						<button
+							type="button"
+							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
+								'/write'
+							)
+								? 'active'
+								: ''}"
+							onclick={() => goToPage('write')}
+						>
+							<Fa icon={faPencil} fw />
+						</button>
+						<button
+							type="button"
+							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
+								'/read'
+							)
+								? 'active'
+								: ''}"
+							onclick={() => goToPage('read')}
+						>
+							<Fa icon={faGlasses} fw />
+						</button>
+						<button
+							type="button"
+							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
+								'/map'
+							)
+								? 'active'
+								: ''}"
+							onclick={() => goToPage('map')}
+						>
+							<Fa icon={faMap} fw />
+						</button>
 					</div>
-					<label class="ms-2 modeSliderIcon" for="selectMode"
-						><Fa icon={faGlasses} size="1.5x" /></label
-					>
-				</div> -->
-				<ul class="nav nav-pills ms-3">
+				</div>
+
+				<ul class="nav nav-pills ms-3 d-none d-md-flex">
 					<li class="nav-item">
 						<button
 							class="nav-link {page.url.pathname.endsWith('/write') ? 'active' : ''}"
@@ -2087,6 +2124,18 @@
 </div>
 
 <style>
+	:global(.nav-link.active > svg) {
+		color: #f57c00;
+	}
+
+	#modeDropdown {
+		min-width: 0;
+	}
+
+	:global(#modeDropdownButton > svg) {
+		color: #f57c00;
+	}
+
 	#demoModeDropdown {
 		width: min(500px, 90vw);
 		padding: 1rem;
@@ -2154,20 +2203,6 @@
 
 	:global(body[data-bs-theme='light']) #settingsTabGroup {
 		background-color: #b8b8b8;
-	}
-
-	@media (max-width: 450px) {
-		.modeSliderIcon {
-			font-size: 0.8rem !important;
-			margin: 0 !important;
-		}
-		#selectMode {
-			transform: scale(1) !important;
-			margin-left: -2.25rem !important;
-		}
-		.selectMode {
-			padding-left: 1rem !important;
-		}
 	}
 
 	@media (max-width: 600px) {
@@ -2269,25 +2304,6 @@
 
 	:global(.tagColumn > span) {
 		width: min-content;
-	}
-
-	.selectMode > label {
-		cursor: pointer;
-	}
-
-	.selectMode > .form-check,
-	.selectMode {
-		margin-bottom: 0 !important;
-	}
-
-	#selectMode:checked {
-		border-color: #f57c00;
-		background-color: #f57c00;
-	}
-
-	#selectMode:not(:checked) {
-		background-color: #2196f3;
-		background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='rgba(255, 255, 255, 1)'/></svg>");
 	}
 
 	.settings-content > div {
