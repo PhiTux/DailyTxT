@@ -283,6 +283,16 @@ func Search(w http.ResponseWriter, r *http.Request) {
 					continue
 				}
 				day := int(dayNum)
+				foundInDay := false
+				addResult := func(context string) {
+					results = append(results, map[string]any{
+						"year":  year,
+						"month": month,
+						"day":   day,
+						"text":  context,
+					})
+					foundInDay = true
+				}
 
 				// Check text
 				if text, ok := dayLog["text"].(string); ok {
@@ -297,12 +307,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 						searchTerm := searchString[1 : len(searchString)-1]
 						if strings.Contains(decryptedText, searchTerm) {
 							context := getContext(decryptedText, searchTerm, true)
-							results = append(results, map[string]any{
-								"year":  year,
-								"month": month,
-								"day":   day,
-								"text":  context,
-							})
+							addResult(context)
 						}
 					} else if strings.Contains(searchString, "|") {
 						// OR search
@@ -311,12 +316,7 @@ func Search(w http.ResponseWriter, r *http.Request) {
 							wordTrimmed := strings.TrimSpace(word)
 							if strings.Contains(strings.ToLower(decryptedText), strings.ToLower(wordTrimmed)) {
 								context := getContext(decryptedText, wordTrimmed, false)
-								results = append(results, map[string]any{
-									"year":  year,
-									"month": month,
-									"day":   day,
-									"text":  context,
-								})
+								addResult(context)
 								break
 							}
 						}
@@ -333,25 +333,19 @@ func Search(w http.ResponseWriter, r *http.Request) {
 						}
 						if allWordsMatch {
 							context := getContext(decryptedText, strings.TrimSpace(words[0]), false)
-							results = append(results, map[string]any{
-								"year":  year,
-								"month": month,
-								"day":   day,
-								"text":  context,
-							})
+							addResult(context)
 						}
 					} else {
 						// Simple search
 						if strings.Contains(strings.ToLower(decryptedText), strings.ToLower(searchString)) {
 							context := getContext(decryptedText, searchString, false)
-							results = append(results, map[string]any{
-								"year":  year,
-								"month": month,
-								"day":   day,
-								"text":  context,
-							})
+							addResult(context)
 						}
 					}
+				}
+
+				if foundInDay {
+					continue
 				}
 
 				// Check filenames
@@ -370,12 +364,34 @@ func Search(w http.ResponseWriter, r *http.Request) {
 
 							if strings.Contains(strings.ToLower(decryptedFilename), strings.ToLower(searchString)) {
 								context := "📎 " + decryptedFilename
-								results = append(results, map[string]any{
-									"year":  year,
-									"month": month,
-									"day":   day,
-									"text":  context,
-								})
+								addResult(context)
+								break
+							}
+						}
+					}
+				}
+
+				if foundInDay {
+					continue
+				}
+
+				// Check pins
+				if pins, ok := dayLog["pins"].([]any); ok {
+					for _, pinInterface := range pins {
+						pin, ok := pinInterface.(map[string]any)
+						if !ok {
+							continue
+						}
+
+						if encPinText, ok := pin["text"].(string); ok {
+							decryptedPinText, err := utils.DecryptText(encPinText, encKey)
+							if err != nil {
+								continue
+							}
+
+							if strings.Contains(strings.ToLower(decryptedPinText), strings.ToLower(searchString)) {
+								context := "📍 " + decryptedPinText
+								addResult(context)
 								break
 							}
 						}
