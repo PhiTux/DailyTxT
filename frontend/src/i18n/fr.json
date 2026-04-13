@@ -208,6 +208,7 @@
     "about.update_available": "Mise à jour disponible",
     "about.update_notification": "Notification de mise à jour",
     "about.version_info": "Remarque : cette détection automatique de version peut être incorrecte.",
+    "accept": "Appliquer",
     "account": "Compte utilisateur",
     "admin": {
       "authorized": "Accès administrateur autorisé",
@@ -369,6 +370,8 @@
     "map.default_map": "Vue de carte par défaut",
     "map.default_map_description": "Définissez la manière dont la carte doit être affichée par défaut :<ol><li>Choisissez la couche cartographique</li><li>Déplacez la carte et choisissez un niveau de zoom</li></ol>",
     "map.default_map_view": "Zone de carte par défaut",
+    "map.use_geolocation": "Géolocalisation",
+    "map.use_geolocation_this_device": "Utiliser la géolocalisation (p. ex. GPS) sur cet appareil pour choisir la zone de la carte.",
     "map.use_map": "Utiliser la carte",
     "map.use_map_description": "La carte permet d'ajouter des épingles à une entrée. \n<ul>\n<li>Les données cartographiques proviennent de : \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, voir leur <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">politique d'utilisation</a> et les sous-pages associées.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Les résultats de recherche proviennent de <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, voir leur <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">politique de confidentialité</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Demander le mot de passe à chaque chargement",
       "title": "Mot de passe au chargement"
     },
+    "reset": "Réinitialiser",
     "save": "Enregistrer",
     "security": "Sécurité",
     "security.change_password": "Changer le mot de passe",

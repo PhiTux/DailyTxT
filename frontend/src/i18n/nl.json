@@ -208,6 +208,7 @@
     "about.update_available": "Update beschikbaar",
     "about.update_notification": "Updatemelding",
     "about.version_info": "Let op: Deze automatische versiedetectie is mogelijk niet altijd correct.",
+    "accept": "Toepassen",
     "account": "Gebruikersaccount",
     "admin": {
       "authorized": "Beheerderstoegang geautoriseerd",
@@ -369,6 +370,8 @@
     "map.default_map": "Standaard kaartweergave",
     "map.default_map_description": "Stel in hoe de kaart standaard getoond moet worden:<ol><li>Kies de kaartlaag</li><li>Verplaats de kaart en kies een zoomniveau</li></ol>",
     "map.default_map_view": "Standaard kaartuitsnede",
+    "map.use_geolocation": "Geolocatie",
+    "map.use_geolocation_this_device": "Gebruik geolocatie (bijv. GPS) op dit apparaat om het kaartgebied te kiezen.",
     "map.use_map": "Kaart gebruiken",
     "map.use_map_description": "Met behulp van de kaart kun je pins aan een invoer toevoegen. \n<ul>\n<li>De kaartgegevens zijn afkomstig van: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, zie hun <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">gebruiksbeleid</a> en bijbehorende subpagina's.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>De zoekresultaten zijn afkomstig van <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, zie hun <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacybeleid</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Wachtwoord vragen bij elke pagina-lading",
       "title": "Wachtwoord bij pagina-lading"
     },
+    "reset": "Resetten",
     "save": "Opslaan",
     "security": "Beveiliging",
     "security.change_password": "Wachtwoord wijzigen",

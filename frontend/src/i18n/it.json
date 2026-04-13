@@ -208,6 +208,7 @@
     "about.update_available": "Aggiornamento disponibile",
     "about.update_notification": "Notifica di aggiornamento",
     "about.version_info": "Nota: questo rilevamento automatico della versione potrebbe non essere sempre corretto.",
+    "accept": "Applica",
     "account": "Account utente",
     "admin": {
       "authorized": "Accesso amministratore autorizzato",
@@ -369,6 +370,8 @@
     "map.default_map": "Vista mappa predefinita",
     "map.default_map_description": "Imposta come visualizzare la mappa per impostazione predefinita:<ol><li>Seleziona il livello della mappa</li><li>Sposta la mappa e scegli un livello di zoom</li></ol>",
     "map.default_map_view": "Area mappa predefinita",
+    "map.use_geolocation": "Geolocalizzazione",
+    "map.use_geolocation_this_device": "Usa la geolocalizzazione (ad es. GPS) su questo dispositivo per scegliere l'area della mappa.",
     "map.use_map": "Carta d'uso",
     "map.use_map_description": "Con la mappa puoi aggiungere pin a una voce. \n<ul>\n<li>I dati della mappa provengono da: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, consulta la loro <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">policy di utilizzo</a> e le relative sottopagine.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>I risultati di ricerca provengono da <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, consulta la loro <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">informativa sulla privacy</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Richiedi password ad ogni caricamento della pagina",
       "title": "Password al caricamento della pagina"
     },
+    "reset": "Reimposta",
     "save": "Salva",
     "security": "Sicurezza",
     "security.change_password": "Cambia password",

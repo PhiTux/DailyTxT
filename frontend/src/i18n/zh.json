@@ -208,6 +208,7 @@
     "about.update_available": "有可用的更新",
     "about.update_notification": "更新通知",
     "about.version_info": "注意：自动更新检测不一定总是可靠",
+    "accept": "套用",
     "account": "账号",
     "admin": {
       "authorized": "管理员身份已认证",
@@ -369,6 +370,8 @@
     "map.default_map": "默认地图视图",
     "map.default_map_description": "设置地图默认显示方式：<ol><li>选择地图图层</li><li>移动地图并选择缩放级别</li></ol>",
     "map.default_map_view": "默认地图范围",
+    "map.use_geolocation": "地理定位",
+    "map.use_geolocation_this_device": "在此设备上使用地理定位（例如 GPS）来选择地图显示范围。",
     "map.use_map": "使用卡",
     "map.use_map_description": "你可以使用地图为条目添加图钉。 \n<ul>\n<li>地图数据来源于： \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>，参见其<a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">使用政策</a>及相关子页面。</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>搜索结果来自 <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>，参见其<a href=\"https://www.komoot.de/privacy\" target=\"_blank\">隐私政策</a>。</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "每次加载页面时要求输入密码",
       "title": "重新认证"
     },
+    "reset": "重置",
     "save": "保存",
     "security": "安全",
     "security.change_password": "更改密码",

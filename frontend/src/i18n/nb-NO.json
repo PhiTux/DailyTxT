@@ -208,6 +208,7 @@
     "about.update_available": "Oppdatering tilgjengelig",
     "about.update_notification": "Varsel om oppdateringer",
     "about.version_info": "Merk: Automatisk versjonsdeteksjon kan være unøyaktig.",
+    "accept": "Bruk",
     "account": "Brukerkonto",
     "admin": {
       "authorized": "Admin-tilgang bekreftet",
@@ -369,6 +370,8 @@
     "map.default_map": "Standard kartvisning",
     "map.default_map_description": "Angi hvordan kartet skal vises som standard:<ol><li>Velg kartlag</li><li>Flytt kartet og velg zoomnivå</li></ol>",
     "map.default_map_view": "Standard kartutsnitt",
+    "map.use_geolocation": "Geolokalisering",
+    "map.use_geolocation_this_device": "Bruk geolokalisering (f.eks. GPS) på denne enheten for å velge kartutsnitt.",
     "map.use_map": "Bruk kort",
     "map.use_map_description": "Ved hjelp av kartet kan du legge til pins i en oppføring. \n<ul>\n<li>Kartdataene kommer fra: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, se deres <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">retningslinjer for bruk</a> og tilhørende undersider.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Søkeresultatene kommer fra <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, se deres <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">personvern</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Be om passord ved hver sidelasting",
       "title": "Passord ved sidelasting"
     },
+    "reset": "Tilbakestill",
     "save": "Lagre",
     "security": "Sikkerhet",
     "security.change_password": "Endre passord",

@@ -208,6 +208,7 @@
     "about.update_available": "Hi ha actualització",
     "about.update_notification": "Notificació d'actualització",
     "about.version_info": "Nota: La detecció automàtica de versió pot no ser sempre correcta.",
+    "accept": "Aplica",
     "account": "Compte d'usuari",
     "admin": {
       "authorized": "Accés d'admin autoritzat",
@@ -369,6 +370,8 @@
     "map.default_map": "Vista del mapa per defecte",
     "map.default_map_description": "Configura com s'ha de mostrar el mapa per defecte:<ol><li>Tria la capa del mapa</li><li>Mou el mapa i selecciona un nivell de zoom</li></ol>",
     "map.default_map_view": "Retall del mapa per defecte",
+    "map.use_geolocation": "Geolocalització",
+    "map.use_geolocation_this_device": "Fes servir la geolocalització (p. ex., GPS) en aquest dispositiu per triar l'àrea del mapa.",
     "map.use_map": "Utilitza el mapa",
     "map.use_map_description": "Amb l'ajuda del mapa, es poden afegir pins a una entrada. \n<ul>\n<li>Les dades del mapa provenen de: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, consulta la seva <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">política d'ús</a> i les subpàgines corresponents.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Els resultats de cerca provenen de <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, consulta la seva <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">política de privacitat</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Demana contrasenya en cada càrrega",
       "title": "Contrasenya en càrrega de pàgina"
     },
+    "reset": "Restableix",
     "save": "Desa",
     "security": "Seguretat",
     "security.change_password": "Canvia contrasenya",

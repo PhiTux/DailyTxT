@@ -208,6 +208,7 @@
     "about.update_available": "Aktualizace je dostupná",
     "about.update_notification": "Oznámení o aktualizaci",
     "about.version_info": "Poznámka: Automatická detekce verze nemusí vždy fungovat.",
+    "accept": "Použít",
     "account": "Tvůj účet",
     "admin": {
       "authorized": "Administrátorký přístup povolen",
@@ -369,6 +370,8 @@
     "map.default_map": "Výchozí zobrazení mapy",
     "map.default_map_description": "Nastavte, jak se má mapa ve výchozím stavu zobrazovat:<ol><li>Vyberte mapovou vrstvu</li><li>Posuňte mapu a zvolte úroveň přiblížení</li></ol>",
     "map.default_map_view": "Výchozí výřez mapy",
+    "map.use_geolocation": "Geolokace",
+    "map.use_geolocation_this_device": "Používat geolokaci (např. GPS) na tomto zařízení pro výběr výřezu mapy.",
     "map.use_map": "Používat mapu",
     "map.use_map_description": "Pomocí mapy lze k záznamu přidávat piny. \n<ul>\n<li>Mapová data pochází z: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, viz jejich <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">podmínky použití</a> a navazující stránky.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Výsledky vyhledávání pochází z <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, viz jejich <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">zásady ochrany osobních údajů</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Požadovat heslo při každém načtení stránky",
       "title": "Heslo při načtení stránky"
     },
+    "reset": "Obnovit",
     "save": "Uložit",
     "security": "Bezpečnost",
     "security.change_password": "Změnit heslo",

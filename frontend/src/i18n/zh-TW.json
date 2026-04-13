@@ -208,6 +208,7 @@
     "about.update_available": "有可用的更新",
     "about.update_notification": "更新通知",
     "about.version_info": "注意：這個自動版本檢測可能並不總是正確。",
+    "accept": "套用",
     "account": "使用者帳號",
     "admin": {
       "authorized": "已授權管理員存取",
@@ -369,6 +370,8 @@
     "map.default_map": "預設地圖檢視",
     "map.default_map_description": "設定地圖的預設顯示方式：<ol><li>選擇地圖圖層</li><li>移動地圖並選擇縮放等級</li></ol>",
     "map.default_map_view": "預設地圖範圍",
+    "map.use_geolocation": "地理定位",
+    "map.use_geolocation_this_device": "在此裝置上使用地理定位（例如 GPS）來選擇地圖顯示範圍。",
     "map.use_map": "使用卡",
     "map.use_map_description": "你可以使用地圖為條目新增圖釘。 \n<ul>\n<li>地圖資料來源： \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>，請參閱其<a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">使用政策</a>與相關子頁面。</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>搜尋結果來自 <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>，請參閱其<a href=\"https://www.komoot.de/privacy\" target=\"_blank\">隱私權政策</a>。</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "每次載入頁面時要求輸入密碼",
       "title": "頁面載入時的密碼"
     },
+    "reset": "重設",
     "save": "儲存",
     "security": "安全",
     "security.change_password": "更改密碼",

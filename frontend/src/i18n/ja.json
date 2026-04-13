@@ -208,6 +208,7 @@
     "about.update_available": "アップデートあり",
     "about.update_notification": "アップデート通知",
     "about.version_info": "注意：この自動バージョン検出は常に正確とは限りません。",
+    "accept": "適用",
     "account": "ユーザーアカウント",
     "admin": {
       "authorized": "管理者アクセスが許可されました",
@@ -369,6 +370,8 @@
     "map.default_map": "デフォルトの地図表示",
     "map.default_map_description": "地図のデフォルト表示を設定します：<ol><li>地図レイヤーを選択</li><li>地図を移動してズームレベルを選択</li></ol>",
     "map.default_map_view": "デフォルトの地図範囲",
+    "map.use_geolocation": "位置情報",
+    "map.use_geolocation_this_device": "この端末で地図の表示範囲を選ぶために位置情報（例：GPS）を使用する。",
     "map.use_map": "カード利用",
     "map.use_map_description": "地図を使ってエントリにピンを追加できます。 \n<ul>\n<li>地図データの提供元： \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>（<a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">利用ポリシー</a>および関連ページを参照）。</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>検索結果は <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a> から提供されます（<a href=\"https://www.komoot.de/privacy\" target=\"_blank\">プライバシーポリシー</a>を参照）。</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "ページ読み込み時にパスワードを要求する",
       "title": "ページ読み込み時のパスワード"
     },
+    "reset": "リセット",
     "save": "保存",
     "security": "セキュリティ",
     "security.change_password": "パスワードを変更",
