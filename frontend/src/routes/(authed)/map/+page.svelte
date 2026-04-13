@@ -9,6 +9,9 @@
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
 	import * as bootstrap from 'bootstrap';
+	import { settings } from '$lib/settingsStore';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 
 	let allPins = $state([]);
 	let pinStartDate = $state('');
@@ -19,6 +22,11 @@
 	let previewYear = $state(null);
 
 	onMount(() => {
+		if (!$settings.useMap) {
+			goto(resolve('/write'));
+			return;
+		}
+
 		loadAllPins();
 	});
 
@@ -91,49 +99,51 @@
 	});
 </script>
 
-<div class="date-picker glass-shadow position-absolute top-0 end-0 m-3 p-3">
-	<div class="d-flex flex-column">
-		<h6 class="align-self-center">{$t('settings.export.period')}</h6>
-		<div>
-			<label for="pinStartDate">{$t('settings.export.start_date')}</label>
-			<div class="date-input-row">
-				<input type="date" class="form-control" id="pinStartDate" bind:value={pinStartDate} />
-				{#if pinStartDate !== ''}
-					<button
-						type="button"
-						class="btn-close clear-date-btn"
-						aria-label="Delete start date"
-						onclick={() => (pinStartDate = '')}
-					></button>
-				{/if}
-			</div>
-		</div>
-		<div>
-			<label for="pinEndDate">{$t('settings.export.end_date')}</label>
-			<div class="date-input-row">
-				<input type="date" class="form-control" id="pinEndDate" bind:value={pinEndDate} />
-				{#if pinEndDate !== ''}
-					<button
-						type="button"
-						class="btn-close clear-date-btn"
-						aria-label="Delete end date"
-						onclick={() => (pinEndDate = '')}
-					></button>
-				{/if}
-			</div>
-		</div>
-		{#if pinStartDate !== '' && pinEndDate !== '' && pinStartDate > pinEndDate}
-			<div transition:slide>
-				<div class="pt-2"></div>
-				<div class="alert alert-danger mb-0" role="alert">
-					{$t('settings.export.period_invalid')}
+{#if $settings.useMap}
+	<div class="date-picker glass-shadow position-absolute top-0 end-0 m-3 p-3">
+		<div class="d-flex flex-column">
+			<h6 class="align-self-center">{$t('settings.export.period')}</h6>
+			<div>
+				<label for="pinStartDate">{$t('settings.export.start_date')}</label>
+				<div class="date-input-row">
+					<input type="date" class="form-control" id="pinStartDate" bind:value={pinStartDate} />
+					{#if pinStartDate !== ''}
+						<button
+							type="button"
+							class="btn-close clear-date-btn"
+							aria-label="Delete start date"
+							onclick={() => (pinStartDate = '')}
+						></button>
+					{/if}
 				</div>
 			</div>
-		{/if}
+			<div>
+				<label for="pinEndDate">{$t('settings.export.end_date')}</label>
+				<div class="date-input-row">
+					<input type="date" class="form-control" id="pinEndDate" bind:value={pinEndDate} />
+					{#if pinEndDate !== ''}
+						<button
+							type="button"
+							class="btn-close clear-date-btn"
+							aria-label="Delete end date"
+							onclick={() => (pinEndDate = '')}
+						></button>
+					{/if}
+				</div>
+			</div>
+			{#if pinStartDate !== '' && pinEndDate !== '' && pinStartDate > pinEndDate}
+				<div transition:slide>
+					<div class="pt-2"></div>
+					<div class="alert alert-danger mb-0" role="alert">
+						{$t('settings.export.period_invalid')}
+					</div>
+				</div>
+			{/if}
+		</div>
 	</div>
-</div>
 
-<Map fullScreen pins={selectedPins} {openPreview} />
+	<Map fullScreen pins={selectedPins} {openPreview} />
+{/if}
 
 <DayPreviewModal
 	bind:open={showPreviewModal}

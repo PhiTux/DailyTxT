@@ -1449,17 +1449,19 @@
 						>
 							<Fa icon={faGlasses} fw />
 						</button>
-						<button
-							type="button"
-							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
-								'/map'
-							)
-								? 'active'
-								: ''}"
-							onclick={() => goToPage('map')}
-						>
-							<Fa icon={faMap} fw />
-						</button>
+						{#if $settings.useMap}
+							<button
+								type="button"
+								class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
+									'/map'
+								)
+									? 'active'
+									: ''}"
+								onclick={() => goToPage('map')}
+							>
+								<Fa icon={faMap} fw />
+							</button>
+						{/if}
 					</div>
 				</div>
 
@@ -1477,12 +1479,14 @@
 							onclick={() => goToPage('read')}><Fa icon={faGlasses} /></button
 						>
 					</li>
-					<li class="nav-item">
-						<button
-							class="nav-link {page.url.pathname.endsWith('/map') ? 'active' : ''}"
-							onclick={() => goToPage('map')}><Fa icon={faMap} /></button
-						>
-					</li>
+					{#if $settings.useMap}
+						<li class="nav-item">
+							<button
+								class="nav-link {page.url.pathname.endsWith('/map') ? 'active' : ''}"
+								onclick={() => goToPage('map')}><Fa icon={faMap} /></button
+							>
+						</li>
+					{/if}
 				</ul>
 			</div>
 
