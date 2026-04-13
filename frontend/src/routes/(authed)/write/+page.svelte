@@ -1613,7 +1613,7 @@
 		</div>
 
 		<div id="right" class="d-flex flex-column">
-			<div class="tags glass glass-shadow">
+			<div class="tags glass glass-shadow mb-3">
 				<div class="d-flex flex-row justify-content-between">
 					<div class="d-flex flex-row">
 						<h3>{$t('tags.tags')}</h3>
@@ -2447,7 +2447,6 @@
 	.tags {
 		z-index: 10;
 		padding: 0.5rem;
-		margin-bottom: 2rem;
 		border-radius: 10px;
 	}
 

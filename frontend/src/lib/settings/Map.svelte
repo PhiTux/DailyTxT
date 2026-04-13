@@ -1,5 +1,10 @@
 <script>
-	import { settings, tempSettings, mapViewBeforeMove } from '$lib/settingsStore.js';
+	import {
+		settings,
+		tempSettings,
+		mapViewBeforeMove,
+		useGeolocationOnThisDevice
+	} from '$lib/settingsStore.js';
 	import Map from '$lib/Map.svelte';
 	import { slide } from 'svelte/transition';
 
@@ -79,9 +84,9 @@
 
 		<div class="d-flex flex-column align-items-start gap-3">
 			<select class="form-select w-auto" bind:value={$tempSettings.defaultMap}>
-				<option value="osm">OpenStreetMap (OSM)</option>
-				<option value="esri">Satellite (Esri)</option>
-				<option value="stadia">Satellite with Labels (Stadia)</option>
+				<option value="osm">{$t('map.osm')}</option>
+				<option value="esri">{$t('map.satellite')}</option>
+				<option value="stadia">{$t('map.satellite_and_meta')}</option>
 			</select>
 
 			<div class="map-layer disabled">
@@ -98,13 +103,13 @@
 
 			<div class="d-flex flex-row justify-content-between w-100">
 				<button class="btn btn-primary" disabled={mapIsMovable} onclick={enableMap}
-					>Verschieben</button
+					>{$t('map.pin.move')}</button
 				>
 
 				<div class="d-flex flex-row gap-2">
 					{#if mapIsMovable}
 						<button class="btn btn-primary" disabled={!mapIsMovable} onclick={disableMap}
-							>Übernehmen</button
+							>{$t('settings.accept')}</button
 						>
 					{/if}
 					{#if mapIsMovable || $tempSettings.defaultMapView?.some((value, index) => value !== $settings.defaultMapView[index])}
@@ -112,11 +117,29 @@
 							class="btn btn-outline-danger"
 							onclick={() => {
 								resetMap();
-							}}>Zurücksetzen</button
+							}}>{$t('settings.reset')}</button
 						>
 					{/if}
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div id="useGeolocation" transition:slide>
+		<h5>{$t('settings.map.use_geolocation')}</h5>
+
+		<div class="form-check form-switch">
+			<input
+				class="form-check-input"
+				bind:checked={$useGeolocationOnThisDevice}
+				type="checkbox"
+				role="switch"
+				id="useGeolocationOnThisDeviceSwitch"
+			/>
+			<label class="form-check-label" for="useGeolocationOnThisDeviceSwitch">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+				{@html $t('settings.map.use_geolocation_this_device')}
+			</label>
 		</div>
 	</div>
 {/if}

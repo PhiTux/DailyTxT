@@ -34,6 +34,7 @@ func GetDefaultSettings() map[string]any {
 		"useMap":                              true,
 		"defaultMap":                          "osm",
 		"defaultMapView":                      []float64{10, 20, 3},
+		"useGeolocationOnThisDevice":          true,
 	}
 }
 

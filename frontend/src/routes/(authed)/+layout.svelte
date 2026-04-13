@@ -10,7 +10,8 @@
 		tempSettings,
 		autoLoadImagesThisDevice,
 		darkMode,
-		languageLoaded
+		languageLoaded,
+		useGeolocationOnThisDevice
 	} from '$lib/settingsStore.js';
 	import { API_URL } from '$lib/APIurl.js';
 	import { tags, tagsLoaded } from '$lib/tagStore.js';
@@ -484,6 +485,7 @@
 
 	let aLookBackYears = $state('');
 	let isGettingUserSettings = $state(false);
+	let hasInitializedDeviceLocalSettings = $state(false);
 	function getUserSettings() {
 		if (isGettingUserSettings) return;
 		isGettingUserSettings = true;
@@ -513,9 +515,20 @@
 				console.error(error);
 			})
 			.finally(() => {
-				if ($autoLoadImagesThisDevice === null || $autoLoadImagesThisDevice === undefined) {
+				const hasAutoLoadImagesLocalOverride =
+					localStorage.getItem('autoLoadImagesThisDevice') !== null;
+				const hasGeolocationLocalOverride =
+					localStorage.getItem('useGeolocationOnThisDevice') !== null;
+
+				if (!hasAutoLoadImagesLocalOverride) {
 					$autoLoadImagesThisDevice = $settings.autoloadImagesByDefault;
 				}
+
+				if (!hasGeolocationLocalOverride) {
+					$useGeolocationOnThisDevice = $settings.useGeolocationOnThisDevice;
+				}
+
+				hasInitializedDeviceLocalSettings = true;
 				isGettingUserSettings = false;
 			});
 	}
@@ -921,11 +934,27 @@
 	}
 
 	$effect(() => {
+		if (!hasInitializedDeviceLocalSettings) {
+			return;
+		}
+
 		if ($autoLoadImagesThisDevice === null || $autoLoadImagesThisDevice === undefined) {
 			return;
 		}
 
 		localStorage.setItem('autoLoadImagesThisDevice', $autoLoadImagesThisDevice);
+	});
+
+	$effect(() => {
+		if (!hasInitializedDeviceLocalSettings) {
+			return;
+		}
+
+		if ($useGeolocationOnThisDevice === null || $useGeolocationOnThisDevice === undefined) {
+			return;
+		}
+
+		localStorage.setItem('useGeolocationOnThisDevice', $useGeolocationOnThisDevice);
 	});
 
 	let currentPassword = $state('');

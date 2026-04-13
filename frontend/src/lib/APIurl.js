@@ -7,7 +7,7 @@ import { resolve } from '$app/paths';
 const apiPath = resolve('/api');
 
 export const API_URL = browser
-  ? (dev
-      ? `${window.location.protocol}//${window.location.hostname}:8000/api`
-      : apiPath)
-  : apiPath;
+	? dev
+		? `${window.location.protocol}//${window.location.hostname}:8000/api`
+		: apiPath
+	: apiPath;

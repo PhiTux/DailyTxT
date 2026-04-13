@@ -208,6 +208,7 @@
     "about.update_available": "Update verfügbar",
     "about.update_notification": "Update-Benachrichtigung",
     "about.version_info": "Hinweis: Diese automatische Versionsermittlung ist womöglich nicht immer korrekt.",
+    "accept": "Übernehmen",
     "account": "Benutzerkonto",
     "admin": {
       "authorized": "Admin-Zugang autorisiert",
@@ -369,6 +370,8 @@
     "map.default_map": "Standard Kartenansicht",
     "map.default_map_description": "Stelle ein, wie die Karte standardmäßig angezeigt werden soll:\n<ol>\n<li>Wähle die Kartenebene</li>\n<li>Verschiebe die Karte und wähle eine Zoomstufe</li>\n</ol>",
     "map.default_map_view": "Standard Kartenausschnitt",
+    "map.use_geolocation": "Geolokalisierung",
+    "map.use_geolocation_this_device": "Auf diesem Gerät die Geolokalisierung (z. B. GPS) verwenden, um den Kartenausschnitt zu wählen.",
     "map.use_map": "Karte verwenden",
     "map.use_map_description": "Mithilfe der Karte können Pins zu einem Eintrag hinzugefügt werden. \n<ul>\n<li>Die Kartendaten stammen von: \n<ul>\n<li> <a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, siehe deren <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">Nutzungsrichtlinie</a> und dortige Unterseiten.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Die Suchergebnisse stammen von <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, siehe deren <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">Datenschutz</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Passwort bei jedem Seitenladen abfragen",
       "title": "Passwort bei Seitenladen"
     },
+    "reset": "Zurücksetzen",
     "save": "Speichern",
     "security": "Sicherheit",
     "security.change_password": "Passwort ändern",

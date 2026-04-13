@@ -208,6 +208,7 @@
     "about.update_available": "Update available",
     "about.update_notification": "Update notification",
     "about.version_info": "Note: This automatic version detection may not always be correct.",
+    "accept": "Accept",
     "account": "User account",
     "admin": {
       "authorized": "Admin access authorized",
@@ -369,6 +370,8 @@
     "map.default_map": "Default map view",
     "map.default_map_description": "Set how the map should be displayed by default:<ol><li>Select the map layer</li><li>Move the map and choose a zoom level</li></ol>",
     "map.default_map_view": "Default map viewport",
+    "map.use_geolocation": "Geolocalisation",
+    "map.use_geolocation_this_device": "Use geolocation (e.g., GPS) on this device to select the map area.",
     "map.use_map": "Use map",
     "map.use_map_description": "You can add pins to an entry using the map. \n<ul>\n<li>Map data comes from: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>; see their <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">usage policy</a> and related subpages.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Search results come from <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>; see their <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacy policy</a>.</li>\n</ul>",
     "password": {
@@ -388,6 +391,7 @@
       "label": "Request password on each page load",
       "title": "Password on page load"
     },
+    "reset": "Reset",
     "save": "Save",
     "security": "Security",
     "security.change_password": "Change password",

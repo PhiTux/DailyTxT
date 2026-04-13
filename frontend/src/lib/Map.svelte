@@ -6,7 +6,8 @@
 	import {
 		faSearch,
 		faUpRightAndDownLeftFromCenter,
-		faMap
+		faMap,
+		faLocationCrosshairs
 	} from '@fortawesome/free-solid-svg-icons';
 	import Fa from 'svelte-fa';
 	import lockedHeartPinUrl from '$lib/assets/locked_heart_with_keyhole.svg';
@@ -15,7 +16,7 @@
 	import { selectedDate } from '$lib/calendarStore.js';
 	import SavedPinPopup from '$lib/map/SavedPinPopup.svelte';
 	import NewPinPopup from '$lib/map/NewPinPopup.svelte';
-	import { settings } from './settingsStore';
+	import { settings, useGeolocationOnThisDevice } from './settingsStore';
 	import * as bootstrap from 'bootstrap';
 	import { getTranslate } from '@tolgee/svelte';
 
@@ -74,6 +75,10 @@
 	let lastPinsSignature = '';
 	let movingPinDate = $state();
 	let fullScreenInitialPinsDrawDone = false;
+	let liveLocationSetForDate = $state();
+	let liveLocationRequestToken = 0;
+	let showLiveLocationButton = $state(false);
+	let geolocationPermissionStatus = null;
 
 	function getValidDefaultMapView() {
 		const view = $settings?.defaultMapView;
@@ -128,6 +133,67 @@
 			return;
 		viewSetForDate = $selectedDate;
 		map.setView([lat, lon], zoom);
+	}
+
+	function requestLiveLocationForCurrentDate() {
+		if (!map || !navigator?.geolocation || !$selectedDate) return;
+		if (sameDate(liveLocationSetForDate, $selectedDate)) return;
+
+		const targetDate = {
+			day: $selectedDate.day,
+			month: $selectedDate.month,
+			year: $selectedDate.year
+		};
+		const requestToken = ++liveLocationRequestToken;
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				if (requestToken !== liveLocationRequestToken) return;
+				if (!sameDate($selectedDate, targetDate)) return;
+				if (pins.length > 0) return;
+
+				const { latitude, longitude } = position.coords;
+				viewSetForDate = $selectedDate;
+				liveLocationSetForDate = $selectedDate;
+				map.setView([latitude, longitude], 13);
+			},
+			() => {
+				// Keep default view when location access fails or is denied.
+				refreshLiveLocationButtonVisibility();
+			},
+			{
+				enableHighAccuracy: false,
+				timeout: 12000,
+				maximumAge: 120000
+			}
+		);
+	}
+
+	async function refreshLiveLocationButtonVisibility() {
+		if (!navigator?.geolocation) {
+			showLiveLocationButton = false;
+			return;
+		}
+
+		if (!navigator.permissions?.query) {
+			showLiveLocationButton = true;
+			return;
+		}
+
+		try {
+			if (!geolocationPermissionStatus) {
+				geolocationPermissionStatus = await navigator.permissions.query({
+					name: 'geolocation'
+				});
+				geolocationPermissionStatus.onchange = () => {
+					showLiveLocationButton = geolocationPermissionStatus.state !== 'denied';
+				};
+			}
+
+			showLiveLocationButton = geolocationPermissionStatus.state !== 'denied';
+		} catch {
+			showLiveLocationButton = true;
+		}
 	}
 
 	export function externalEnableMap() {
@@ -218,6 +284,8 @@
 	}
 
 	onMount(() => {
+		refreshLiveLocationButtonVisibility();
+
 		customPinIcon = L.icon({
 			iconUrl: lockedHeartPinUrl,
 			iconSize: [34, 34],
@@ -279,6 +347,11 @@
 		window.addEventListener('keydown', handleGlobalKeydown);
 
 		return () => {
+			if (geolocationPermissionStatus) {
+				geolocationPermissionStatus.onchange = null;
+				geolocationPermissionStatus = null;
+			}
+
 			map?.off('popupopen', handleMapPopupOpen);
 			map?.on('moveend', () => updateMapView(false));
 			window.removeEventListener('keydown', handleGlobalKeydown);
@@ -909,49 +982,63 @@
 
 	{#if showSearch}
 		<div class="map-search-dock {mapSearchOpen ? 'open' : ''}">
-			<div class="map-search-group">
+			{#if showLiveLocationButton && $useGeolocationOnThisDevice}
 				<button
 					type="button"
-					class="map-search-toggle"
-					onclick={toggleMapSearch}
-					aria-label={$t('map.search_place')}
+					class="map-live-location-button"
+					onclick={requestLiveLocationForCurrentDate}
+					aria-label="Aktuelle Position verwenden"
+					title="Aktuelle Position verwenden"
 				>
-					<Fa icon={faSearch} />
+					<Fa icon={faLocationCrosshairs} fw />
 				</button>
+			{/if}
 
-				<div class="map-search-inline">
-					<input
-						type="text"
-						class="map-search-input"
-						placeholder={$t('map.search_place')}
-						bind:this={mapSearchInputElement}
-						value={mapSearchQuery}
-						oninput={handleMapSearchInput}
-						onkeydown={handleMapSearchKeydown}
-					/>
-				</div>
-			</div>
+			<div class="map-search-stack">
+				<div class="map-search-group">
+					<button
+						type="button"
+						class="map-search-toggle"
+						onclick={toggleMapSearch}
+						aria-label={$t('map.search_place')}
+					>
+						<Fa icon={faSearch} />
+					</button>
 
-			<div class="map-search-feedback {hasSearchFeedback ? 'open' : ''}">
-				{#if mapSearchLoading}
-					<div class="map-search-status">{$t('search.searching')}</div>
-				{:else if mapSearchError}
-					<div class="map-search-status text-danger">{mapSearchError}</div>
-				{:else if mapSearchResults.length > 0}
-					<div class="map-search-results">
-						{#each mapSearchResults as result, index (result.lat + '-' + result.lon + '-' + index)}
-							<button
-								type="button"
-								class="map-search-result"
-								onclick={() => focusMapResult(result)}
-							>
-								{result.label || `${result.lat.toFixed(5)}, ${result.lon.toFixed(5)}`}
-							</button>
-						{/each}
+					<div class="map-search-inline">
+						<input
+							type="text"
+							class="map-search-input"
+							placeholder={$t('map.search_place')}
+							bind:this={mapSearchInputElement}
+							value={mapSearchQuery}
+							oninput={handleMapSearchInput}
+							onkeydown={handleMapSearchKeydown}
+						/>
 					</div>
-				{:else if mapSearchQuery.trim().length >= 2}
-					<div class="map-search-status">{$t('search.no_results')}</div>
-				{/if}
+				</div>
+
+				<div class="map-search-feedback {hasSearchFeedback ? 'open' : ''}">
+					{#if mapSearchLoading}
+						<div class="map-search-status">{$t('search.searching')}</div>
+					{:else if mapSearchError}
+						<div class="map-search-status text-danger">{mapSearchError}</div>
+					{:else if mapSearchResults.length > 0}
+						<div class="map-search-results">
+							{#each mapSearchResults as result, index (result.lat + '-' + result.lon + '-' + index)}
+								<button
+									type="button"
+									class="map-search-result"
+									onclick={() => focusMapResult(result)}
+								>
+									{result.label || `${result.lat.toFixed(5)}, ${result.lon.toFixed(5)}`}
+								</button>
+							{/each}
+						</div>
+					{:else if mapSearchQuery.trim().length >= 2}
+						<div class="map-search-status">{$t('search.no_results')}</div>
+					{/if}
+				</div>
 			</div>
 		</div>
 	{/if}
@@ -1161,6 +1248,33 @@
 		gap: 0.45rem;
 	}
 
+	.map-live-location-button {
+		width: 40px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border-radius: 10px;
+		border: 1px solid rgba(0, 0, 0, 0.18);
+		background: rgba(255, 255, 255, 0.96);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+		color: inherit;
+	}
+
+	:global(body[data-bs-theme='dark']) .map-live-location-button {
+		background: rgba(45, 45, 45, 0.96);
+		border-color: rgba(255, 255, 255, 0.22);
+	}
+
+	.map-basemap-trigger,
+	.map-top-right-action,
+	.map-live-location-button,
+	.map-search-group {
+		backdrop-filter: blur(5px) saturate(130%) !important;
+		background-color: rgba(24, 24, 24, 0.658) !important;
+	}
+
 	.map-search-group {
 		display: flex;
 		align-items: center;
@@ -1170,6 +1284,10 @@
 		background: rgba(255, 255, 255, 0.96);
 		border: 1px solid rgba(0, 0, 0, 0.18);
 		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+	}
+
+	.map-search-stack {
+		position: relative;
 	}
 
 	:global(body[data-bs-theme='dark']) .map-search-group {

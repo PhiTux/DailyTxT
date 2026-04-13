@@ -15,6 +15,10 @@ export const autoLoadImagesThisDevice = writable(
 	JSON.parse(localStorage.getItem('autoLoadImagesThisDevice'))
 );
 
+export const useGeolocationOnThisDevice = writable(
+	JSON.parse(localStorage.getItem('useGeolocationOnThisDevice'))
+);
+
 // Global darkMode derived from settings - available to all components
 export const darkMode = derived(settings, ($settings) => {
 	if (typeof window === 'undefined') return false; // SSR fallback
