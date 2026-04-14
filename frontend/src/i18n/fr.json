@@ -119,7 +119,7 @@
       "open_preview": "Ouvrir l’aperçu"
     },
     "satellite": "Satellite (Esri)",
-    "satellite_and_meta": "Satellite et métadonnées (Stadia)",
+    "satellite_and_meta": "Satellite et métadonnées (Esri)",
     "search_place": "Rechercher un lieu...",
     "switch_map": "Changer la vue de la carte",
     "toast": {
@@ -373,7 +373,7 @@
     "map.use_geolocation": "Géolocalisation",
     "map.use_geolocation_this_device": "Utiliser la géolocalisation (p. ex. GPS) sur cet appareil pour choisir la zone de la carte.",
     "map.use_map": "Utiliser la carte",
-    "map.use_map_description": "La carte permet d'ajouter des épingles à une entrée. \n<ul>\n<li>Les données cartographiques proviennent de : \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, voir leur <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">politique d'utilisation</a> et les sous-pages associées.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Les résultats de recherche proviennent de <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, voir leur <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">politique de confidentialité</a>.</li>\n</ul>",
+    "map.use_map_description": "La carte permet d'ajouter des épingles à une entrée. \n<ul>\n<li>Les données cartographiques proviennent de : \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, voir leur <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">politique d'utilisation</a> et les sous-pages associées.</li>\n<li><a href=\"https://www.arcgis.com\" target=\"_blank\">Esri</a></li>\n</ul>\n<li>Les résultats de recherche proviennent de <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, voir leur <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">politique de confidentialité</a>.</li>\n</ul>",
     "password": {
       "change_error": "Erreur lors du changement de mot de passe !",
       "change_password_button": "Changer le mot de passe",

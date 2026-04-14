@@ -119,7 +119,7 @@
       "open_preview": "Åpne forhåndsvisning"
     },
     "satellite": "Satellitt (Esri)",
-    "satellite_and_meta": "Satellitt og metadata (Stadia)",
+    "satellite_and_meta": "Satellitt og metadata (Esri)",
     "search_place": "Søk etter sted...",
     "switch_map": "Bytt kartvisning",
     "toast": {
@@ -373,7 +373,7 @@
     "map.use_geolocation": "Geolokalisering",
     "map.use_geolocation_this_device": "Bruk geolokalisering (f.eks. GPS) på denne enheten for å velge kartutsnitt.",
     "map.use_map": "Bruk kort",
-    "map.use_map_description": "Ved hjelp av kartet kan du legge til pins i en oppføring. \n<ul>\n<li>Kartdataene kommer fra: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, se deres <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">retningslinjer for bruk</a> og tilhørende undersider.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Søkeresultatene kommer fra <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, se deres <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">personvern</a>.</li>\n</ul>",
+    "map.use_map_description": "Ved hjelp av kartet kan du legge til pins i en oppføring. \n<ul>\n<li>Kartdataene kommer fra: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, se deres <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">retningslinjer for bruk</a> og tilhørende undersider.</li>\n<li><a href=\"https://www.arcgis.com\" target=\"_blank\">Esri</a></li>\n</ul>\n<li>Søkeresultatene kommer fra <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, se deres <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">personvern</a>.</li>\n</ul>",
     "password": {
       "change_error": "Feil ved endring av passord!",
       "change_password_button": "Endre passord",

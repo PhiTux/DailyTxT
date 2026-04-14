@@ -119,7 +119,7 @@
       "open_preview": "Voorbeeld openen"
     },
     "satellite": "Satelliet (Esri)",
-    "satellite_and_meta": "Satelliet en metadata (Stadia)",
+    "satellite_and_meta": "Satelliet en metadata (Esri)",
     "search_place": "Plaats zoeken...",
     "switch_map": "Kaartweergave wisselen",
     "toast": {
@@ -373,7 +373,7 @@
     "map.use_geolocation": "Geolocatie",
     "map.use_geolocation_this_device": "Gebruik geolocatie (bijv. GPS) op dit apparaat om het kaartgebied te kiezen.",
     "map.use_map": "Kaart gebruiken",
-    "map.use_map_description": "Met behulp van de kaart kun je pins aan een invoer toevoegen. \n<ul>\n<li>De kaartgegevens zijn afkomstig van: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, zie hun <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">gebruiksbeleid</a> en bijbehorende subpagina's.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>De zoekresultaten zijn afkomstig van <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, zie hun <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacybeleid</a>.</li>\n</ul>",
+    "map.use_map_description": "Met behulp van de kaart kun je pins aan een invoer toevoegen. \n<ul>\n<li>De kaartgegevens zijn afkomstig van: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>, zie hun <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">gebruiksbeleid</a> en bijbehorende subpagina's.</li>\n<li><a href=\"https://www.arcgis.com\" target=\"_blank\">Esri</a></li>\n</ul>\n<li>De zoekresultaten zijn afkomstig van <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>, zie hun <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacybeleid</a>.</li>\n</ul>",
     "password": {
       "change_error": "Fout bij het wijzigen van het wachtwoord!",
       "change_password_button": "Wachtwoord wijzigen",

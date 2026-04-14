@@ -86,7 +86,7 @@
 			<select class="form-select w-auto" bind:value={$tempSettings.defaultMap}>
 				<option value="osm">{$t('map.osm')}</option>
 				<option value="esri">{$t('map.satellite')}</option>
-				<option value="stadia">{$t('map.satellite_and_meta')}</option>
+				<option value="esriAndMeta">{$t('map.satellite_and_meta')}</option>
 			</select>
 
 			<div class="map-layer disabled">

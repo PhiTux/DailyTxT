@@ -68,7 +68,10 @@
 	let movingPinIconElement = null;
 	let osmTileLayer = null;
 	let esriTileLayer = null;
-	let stadiaTileLayer = null;
+	let esriAndMetaTileLayer = null;
+	let esriTransportationOverlay = null;
+	let esriBoundariesOverlay = null;
+	let freeHybridTileLayer = null;
 	let hasAppliedInitialDefaultMapView = false;
 	let pinsSetForDate = $state();
 	let viewSetForDate = $state();
@@ -96,7 +99,9 @@
 	}
 
 	function normalizeBaseMapProvider(provider) {
-		return provider === 'osm' || provider === 'esri' || provider === 'stadia' ? provider : 'osm';
+		return provider === 'osm' || provider === 'esri' || provider === 'esriAndMeta'
+			? provider
+			: 'osm';
 	}
 
 	export function externalDrawAllPins() {
@@ -328,15 +333,36 @@
 			}
 		);
 
-		stadiaTileLayer = L.tileLayer(
-			'https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}.jpg',
+		esriTransportationOverlay = L.tileLayer(
+			'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
 			{
 				maxZoom: 19,
-
-				attribution:
-					'&copy; CNES, Distribution Airbus DS, &copy; Airbus DS, &copy; PlanetObserver (Contains Copernicus Data) | &copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+				attribution: '&copy; <a href="https://www.esri.com" target="_blank">Esri</a>'
 			}
 		);
+
+		esriBoundariesOverlay = L.tileLayer(
+			'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+			{
+				maxZoom: 19,
+				attribution: '&copy; <a href="https://www.esri.com" target="_blank">Esri</a>'
+			}
+		);
+
+		freeHybridTileLayer = L.layerGroup([
+			L.tileLayer(
+				'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 19,
+					attribution:
+						'Powered by <a href="https://www.esri.com" target="_blank">Esri</a> &mdash; Sources: Esri, DigitalGlobe, GeoEye, i-cubed, USDA FSA, USGS, AEX, Getmapping, Aerogrid, IGN, IGP, swisstopo, and the GIS User Community'
+				}
+			),
+			esriTransportationOverlay,
+			esriBoundariesOverlay
+		]);
+
+		esriAndMetaTileLayer = freeHybridTileLayer;
 
 		baseMapProvider = normalizeBaseMapProvider($settings.defaultMap);
 		getActiveBaseLayer().addTo(map);
@@ -365,7 +391,10 @@
 			}
 			osmTileLayer = null;
 			esriTileLayer = null;
-			stadiaTileLayer = null;
+			esriAndMetaTileLayer = null;
+			esriTransportationOverlay = null;
+			esriBoundariesOverlay = null;
+			freeHybridTileLayer = null;
 		};
 	});
 
@@ -375,16 +404,16 @@
 		} else if (baseMapProvider === 'esri') {
 			return esriTileLayer;
 		} else {
-			return stadiaTileLayer;
+			return esriAndMetaTileLayer;
 		}
 	}
 
 	function setBaseMap(provider) {
-		if (!map || !osmTileLayer || !esriTileLayer || !stadiaTileLayer) return;
-		if (provider !== 'osm' && provider !== 'esri' && provider !== 'stadia') return;
+		if (!map || !osmTileLayer || !esriTileLayer || !esriAndMetaTileLayer) return;
+		if (provider !== 'osm' && provider !== 'esri' && provider !== 'esriAndMeta') return;
 		if (baseMapProvider === provider) return;
 
-		const allBaseLayers = [osmTileLayer, esriTileLayer, stadiaTileLayer];
+		const allBaseLayers = [osmTileLayer, esriTileLayer, esriAndMetaTileLayer];
 		allBaseLayers.forEach((layer) => {
 			if (layer && map.hasLayer(layer)) {
 				map.removeLayer(layer);
@@ -958,9 +987,9 @@
 				<button
 					type="button"
 					role="menuitemradio"
-					aria-checked={baseMapProvider === 'stadia'}
-					class:active={baseMapProvider === 'stadia'}
-					onclick={() => setBaseMap('stadia')}
+					aria-checked={baseMapProvider === 'esriAndMeta'}
+					class:active={baseMapProvider === 'esriAndMeta'}
+					onclick={() => setBaseMap('esriAndMeta')}
 				>
 					{$t('map.satellite_and_meta')}
 				</button>

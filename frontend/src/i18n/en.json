@@ -119,7 +119,7 @@
       "open_preview": "Open preview"
     },
     "satellite": "Satellite (Esri)",
-    "satellite_and_meta": "Satellite and metadata (Stadia)",
+    "satellite_and_meta": "Satellite and metadata (Esri)",
     "search_place": "Search place...",
     "switch_map": "Switch map view",
     "toast": {
@@ -373,7 +373,7 @@
     "map.use_geolocation": "Geolocalisation",
     "map.use_geolocation_this_device": "Use geolocation (e.g., GPS) on this device to select the map area.",
     "map.use_map": "Use map",
-    "map.use_map_description": "You can add pins to an entry using the map. \n<ul>\n<li>Map data comes from: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>; see their <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">usage policy</a> and related subpages.</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>Search results come from <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>; see their <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacy policy</a>.</li>\n</ul>",
+    "map.use_map_description": "You can add pins to an entry using the map. \n<ul>\n<li>Map data comes from: \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>; see their <a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">usage policy</a> and related subpages.</li>\n<li><a href=\"https://www.arcgis.com\" target=\"_blank\">Esri</a></li>\n</ul>\n<li>Search results come from <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a>; see their <a href=\"https://www.komoot.de/privacy\" target=\"_blank\">privacy policy</a>.</li>\n</ul>",
     "password": {
       "change_error": "Error changing the password!",
       "change_password_button": "Change password",

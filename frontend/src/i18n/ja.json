@@ -119,7 +119,7 @@
       "open_preview": "プレビューを開く"
     },
     "satellite": "衛星 (Esri)",
-    "satellite_and_meta": "衛星とメタデータ (Stadia)",
+    "satellite_and_meta": "衛星とメタデータ (Esri)",
     "search_place": "場所を検索...",
     "switch_map": "地図表示を切り替え",
     "toast": {
@@ -373,7 +373,7 @@
     "map.use_geolocation": "位置情報",
     "map.use_geolocation_this_device": "この端末で地図の表示範囲を選ぶために位置情報（例：GPS）を使用する。",
     "map.use_map": "カード利用",
-    "map.use_map_description": "地図を使ってエントリにピンを追加できます。 \n<ul>\n<li>地図データの提供元： \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>（<a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">利用ポリシー</a>および関連ページを参照）。</li>\n<li><a href=\"https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9\" target=\"_blank\">Esri</a></li>\n<li><a href=\"https://stadiamaps.com/\" target=\"_blank\">Stadia</a></li>\n</ul>\n<li>検索結果は <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a> から提供されます（<a href=\"https://www.komoot.de/privacy\" target=\"_blank\">プライバシーポリシー</a>を参照）。</li>\n</ul>",
+    "map.use_map_description": "地図を使ってエントリにピンを追加できます。 \n<ul>\n<li>地図データの提供元： \n<ul>\n<li><a href=\"https://www.openstreetmap.org\" target=\"_blank\">OpenStreetMap.org</a>（<a href=\"https://operations.osmfoundation.org/policies/tiles/\" target=\"_blank\">利用ポリシー</a>および関連ページを参照）。</li>\n<li><a href=\"https://www.arcgis.com\" target=\"_blank\">Esri</a></li>\n</ul>\n<li>検索結果は <a href=\"https://photon.komoot.io/\" target=\"_blank\">photon.komoot.io</a> から提供されます（<a href=\"https://www.komoot.de/privacy\" target=\"_blank\">プライバシーポリシー</a>を参照）。</li>\n</ul>",
     "password": {
       "change_error": "パスワードの変更中にエラーが発生しました！",
       "change_password_button": "パスワードを変更",
