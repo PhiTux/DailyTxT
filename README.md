@@ -167,7 +167,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 
 ---
-#### 2.5.1-testing.1 (2026-04-06) 
+#### 2.5-testing.3 (2026-04-15) 
 ```
 - Added map to pin locations for each day
 - Added japanese translation [1]

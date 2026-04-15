@@ -319,6 +319,7 @@
 		{ id: 'appearance', labelKey: 'settings.appearance' },
 		{ id: 'features', labelKey: 'settings.features' },
 		{ id: 'tags', labelKey: 'settings.tags' },
+		{ id: 'map', labelKey: 'settings.map' },
 		{ id: 'templates', labelKey: 'settings.templates' },
 		{ id: 'data', labelKey: 'settings.data' },
 		{ id: 'security', labelKey: 'settings.security' },
