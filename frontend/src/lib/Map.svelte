@@ -19,6 +19,8 @@
 	import { settings, useGeolocationOnThisDevice } from './settingsStore';
 	import * as bootstrap from 'bootstrap';
 	import { getTranslate } from '@tolgee/svelte';
+	import 'leaflet.markercluster';
+	import 'leaflet.markercluster/dist/MarkerCluster.css';
 
 	const { t } = getTranslate();
 
@@ -82,6 +84,13 @@
 	let liveLocationRequestToken = 0;
 	let showLiveLocationButton = $state(false);
 	let geolocationPermissionStatus = null;
+	let pinClusterLayer = null;
+	let pinPopupCleanupFns = [];
+
+	function cleanupPinPopups() {
+		pinPopupCleanupFns.forEach((cleanup) => cleanup());
+		pinPopupCleanupFns = [];
+	}
 
 	function getValidDefaultMapView() {
 		const view = $settings?.defaultMapView;
@@ -366,6 +375,9 @@
 		baseMapProvider = normalizeBaseMapProvider($settings.defaultMap);
 		getActiveBaseLayer().addTo(map);
 
+		pinClusterLayer = getMarkerClusterGroup();
+		map.addLayer(pinClusterLayer);
+
 		map.on('click', handleMapBackgroundClick);
 		map.on('popupopen', handleMapPopupOpen);
 		map.on('moveend', () => updateMapView(false));
@@ -384,6 +396,11 @@
 				mapSearchAbortController.abort();
 			}
 			clearTimeout(mapSearchDebounce);
+			cleanupPinPopups();
+			if (pinClusterLayer && map) {
+				map.removeLayer(pinClusterLayer);
+				pinClusterLayer = null;
+			}
 			if (map) {
 				map.remove();
 				map = null;
@@ -425,15 +442,31 @@
 		nextLayer.addTo(map);
 	}
 
+	function getMarkerClusterGroup() {
+		return L.markerClusterGroup({
+			disableClusteringAtZoom: 15,
+			iconCreateFunction: function (cluster) {
+				const count = cluster.getChildCount();
+				return L.divIcon({
+					html: `<div class="cluster-heart-icon"><img src="${lockedHeartPinUrl}" alt="" /><span class="cluster-heart-count">${count}</span></div>`,
+					className: 'custom-cluster-icon',
+					iconSize: L.point(42, 42),
+					iconAnchor: L.point(21, 42)
+				});
+			}
+		});
+	}
+
 	function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
 
-		// remove existing pins (except the temporary new-pin marker)
-		map.eachLayer((layer) => {
-			if (layer instanceof L.Marker && layer !== mapClickPinMarker) {
-				layer.remove();
-			}
-		});
+		if (!pinClusterLayer) {
+			pinClusterLayer = getMarkerClusterGroup();
+			map.addLayer(pinClusterLayer);
+		}
+
+		cleanupPinPopups();
+		pinClusterLayer.clearLayers();
 
 		const pinLatLngs = [];
 		markerByPinKey = {};
@@ -455,7 +488,8 @@
 				return true;
 			};
 
-			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon }).addTo(map);
+			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon });
+			pinClusterLayer.addLayer(marker);
 			markerByPinKey[pinKey] = marker;
 			pinLatLngs.push([pin.lat, pin.lon]);
 
@@ -494,9 +528,7 @@
 			});
 
 			marker.bindPopup(popupTarget);
-			marker.on('remove', () => {
-				unmount(popupApp);
-			});
+			pinPopupCleanupFns.push(() => unmount(popupApp));
 
 			marker.on('popupopen', () => {
 				popupApp.resetEditing?.();
@@ -1144,6 +1176,40 @@
 <style>
 	:global(.leaflet-marker-icon) {
 		filter: drop-shadow(rgba(0, 0, 0, 0.8) 3px -2px 4px);
+	}
+
+	:global(.custom-cluster-icon) {
+		background: transparent;
+		border: 0;
+	}
+
+	:global(.custom-cluster-icon .cluster-heart-icon) {
+		position: relative;
+		width: 42px;
+		height: 42px;
+	}
+
+	:global(.custom-cluster-icon .cluster-heart-icon img) {
+		width: 42px;
+		height: 42px;
+		display: block;
+	}
+
+	:global(.custom-cluster-icon .cluster-heart-count) {
+		position: absolute;
+		top: -3px;
+		right: -4px;
+		min-width: 18px;
+		height: 18px;
+		padding: 0 4px;
+		border-radius: 999px;
+		background: #1565c0;
+		color: #fff;
+		font-size: 11px;
+		font-weight: 700;
+		line-height: 18px;
+		text-align: center;
+		box-shadow: 0 3px 4px rgba(71, 68, 255, 0.568);
 	}
 
 	.map-wrapper {

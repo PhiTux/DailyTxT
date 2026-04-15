@@ -45,6 +45,7 @@
 		"bootstrap": "^5.3.8",
 		"emoji-mart": "^5.6.0",
 		"leaflet": "^1.9.4",
+		"leaflet.markercluster": "^1.5.3",
 		"marked": "^16.3.0",
 		"svelte-multiselect": "^11.2.4",
 		"svelte-outside": "^0.0.4",
