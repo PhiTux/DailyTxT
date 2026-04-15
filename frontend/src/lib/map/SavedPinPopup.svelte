@@ -3,7 +3,8 @@
 		faPencil,
 		faBars,
 		faTrash,
-		faLocationCrosshairs
+		faLocationCrosshairs,
+		faLocationDot
 	} from '@fortawesome/free-solid-svg-icons';
 	import { onMount } from 'svelte';
 	import Fa from 'svelte-fa';
@@ -12,10 +13,13 @@
 	import axios from 'axios';
 	import { Tooltip } from 'bootstrap';
 	import * as bootstrap from 'bootstrap';
+	import { slide } from 'svelte/transition';
 
 	let {
 		text = $bindable(''),
 		id = null,
+		lat = null,
+		lon = null,
 		deletePin = () => {},
 		movePin = () => {},
 		openPreview = () => {},
@@ -121,6 +125,11 @@
 				isUpdatingText = false;
 			});
 	}
+
+	let showCoordinate = $state(false);
+	function toggleCoordinate() {
+		showCoordinate = !showCoordinate;
+	}
 </script>
 
 <div class="saved-pin-popup">
@@ -183,7 +192,7 @@
 				</div>
 				{#if day && month && year}
 					<button
-						class="btn btn-sm btn-primary p-1 mt-1"
+						class="btn btn-sm btn-primary p-1 mt-2"
 						onclick={() => openPreview(day, month, year)}
 					>
 						{tr('map.pin.open_preview')}
@@ -242,6 +251,18 @@
 			{/if}
 		</div>
 	{/if}
+	{#if showCoordinate}
+		<div transition:slide>
+			<div class="text-center mt-2 border-top border-secondary">
+				<small class="text-muted">
+					Lat: {lat.toFixed(5)}, Lon: {lon.toFixed(5)}
+				</small>
+			</div>
+		</div>
+	{/if}
+	<button type="button" class="coordinate-btn" onclick={toggleCoordinate} aria-label="Close popup">
+		<Fa icon={faLocationDot} />
+	</button>
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
@@ -266,6 +287,7 @@
 	.saved-pin-date {
 		text-decoration: underline;
 		text-decoration-color: #1565c0;
+		margin-bottom: 0.25rem;
 	}
 
 	.no-description {
@@ -285,7 +307,6 @@
 	.saved-pin-popup {
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
 		min-width: 190px;
 	}
 
@@ -295,5 +316,30 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 0.45rem;
+	}
+
+	.coordinate-btn {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		width: 24px;
+		height: 24px;
+		border: 0;
+		font-size: 0.8rem;
+		line-height: 1;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0);
+		color: #fff;
+		transition: background 0.2s ease;
+	}
+
+	.coordinate-btn:hover {
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	:global(.leaflet-popup .popup-corner-btn:hover) {
+		background: rgba(0, 0, 0, 0.7);
 	}
 </style>

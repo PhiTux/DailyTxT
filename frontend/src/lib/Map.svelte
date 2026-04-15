@@ -487,7 +487,9 @@
 					year: pin.year || null,
 					readingMode: readingMode,
 					language: $tolgee.getLanguage(),
-					translate: $t
+					translate: $t,
+					lat: pin.lat,
+					lon: pin.lon
 				}
 			});
 
