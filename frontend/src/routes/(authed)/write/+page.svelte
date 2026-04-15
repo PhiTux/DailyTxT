@@ -2143,7 +2143,7 @@
 					</div>
 					<div class="modal-body modal-body-map">
 						{#if isMapModalOpen}
-							<Map bind:this={modalMapInstance} bind:pins {openMapModal} />
+							<Map bind:this={modalMapInstance} bind:pins />
 						{/if}
 					</div>
 					<div class="modal-footer"></div>

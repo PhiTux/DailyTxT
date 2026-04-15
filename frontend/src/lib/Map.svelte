@@ -40,12 +40,13 @@
 		openPreview = () => {},
 		mapDisabled = false,
 		currentView = $bindable(),
-		fullScreen = false
+		fullScreen = false,
+		readingMode = false
 	} = $props();
 
 	let mapElement;
 
-	let map = null;
+	let map = $state(null);
 	let baseMapProvider = $state('osm');
 	let mapSearchOpen = $state(false);
 	let mapSearchQuery = $state('');
@@ -255,7 +256,9 @@
 		const pinsSignature = JSON.stringify(pins ?? []);
 		if (pinsSignature !== lastPinsSignature) {
 			lastPinsSignature = pinsSignature;
-			onPinsChanged();
+			// Break out of the $effect tracking context so that mount()
+			// calls inside drawAllPins create independent reactive scopes.
+			queueMicrotask(() => onPinsChanged());
 		}
 	});
 
@@ -486,6 +489,7 @@
 					day: pin.day || null,
 					month: pin.month || null,
 					year: pin.year || null,
+					readingMode: readingMode,
 					language: $tolgee.getLanguage(),
 					translate: $t
 				}
@@ -803,7 +807,7 @@
 		const canPlacePin = mapSearchResults.length === 0;
 		if (!canPlacePin || !map || !customPinIcon) return;
 
-		if (!mapClickPinMarker && !fullScreen) {
+		if (!mapClickPinMarker && !fullScreen && !readingMode) {
 			openNewPinPopupAt(event.latlng);
 		} else {
 			removeMapClickPin();

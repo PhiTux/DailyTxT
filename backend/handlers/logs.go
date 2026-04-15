@@ -1527,6 +1527,79 @@ func LoadMonthForReading(w http.ResponseWriter, r *http.Request) {
 			resultDay["tags"] = tags
 		}
 
+		// Get pins
+		if pins, ok := day["pins"].([]any); ok && len(pins) > 0 {
+			decryptedPins := []any{}
+			for _, pinInterface := range pins {
+				pinObj, ok := pinInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				id := 0
+				switch idVal := pinObj["id"].(type) {
+				case float64:
+					id = int(idVal)
+				case int:
+					id = idVal
+				case string:
+					parsed, err := strconv.Atoi(idVal)
+					if err != nil {
+						continue
+					}
+					id = parsed
+				default:
+					continue
+				}
+
+				encLat, ok := pinObj["lat"].(string)
+				if !ok || encLat == "" {
+					continue
+				}
+				encLon, ok := pinObj["lon"].(string)
+				if !ok || encLon == "" {
+					continue
+				}
+				encText, ok := pinObj["text"].(string)
+				if !ok {
+					continue
+				}
+
+				latStr, err := utils.DecryptText(encLat, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin latitude: %v", err), http.StatusInternalServerError)
+					return
+				}
+				lonStr, err := utils.DecryptText(encLon, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin longitude: %v", err), http.StatusInternalServerError)
+					return
+				}
+				textVal, err := utils.DecryptText(encText, encKey)
+				if err != nil {
+					http.Error(w, fmt.Sprintf("Error decrypting pin text: %v", err), http.StatusInternalServerError)
+					return
+				}
+
+				lat, err := strconv.ParseFloat(latStr, 64)
+				if err != nil {
+					continue
+				}
+				lon, err := strconv.ParseFloat(lonStr, 64)
+				if err != nil {
+					continue
+				}
+
+				decryptedPins = append(decryptedPins, map[string]any{
+					"id":   id,
+					"lat":  lat,
+					"lon":  lon,
+					"text": textVal,
+				})
+			}
+			resultDay["pins"] = decryptedPins
+		}
+
 		// Decrypt filenames if files exist
 		if filesList, ok := day["files"].([]any); ok && len(filesList) > 0 {
 			files := []any{}

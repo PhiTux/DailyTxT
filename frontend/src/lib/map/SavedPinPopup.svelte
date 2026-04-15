@@ -23,7 +23,8 @@
 		month = null,
 		year = null,
 		language,
-		translate = (key) => key
+		translate = (key) => key,
+		readingMode = false
 	} = $props();
 
 	function tr(key) {
@@ -56,6 +57,7 @@
 		event.stopPropagation();
 		isEditing = true;
 		editedText = text || '';
+		console.log(isEditing);
 
 		setTimeout(() => {
 			document.querySelector('#editTextInput')?.focus();
@@ -122,6 +124,7 @@
 </script>
 
 <div class="saved-pin-popup">
+	{isEditing}
 	{#if isEditing}
 		<div class="input-group">
 			<input
@@ -162,7 +165,7 @@
 		</div>
 	{:else}
 		<div class="saved-pin-view d-flex flex-row">
-			<div class="d-flex flex-column align-items-center flex-grow-1 border-end border-secondary">
+			<div class="d-flex flex-column align-items-center flex-grow-1">
 				{#if day && month && year}
 					<div class="saved-pin-date">
 						{new Date(year, month - 1, day).toLocaleDateString(language, {
@@ -188,54 +191,56 @@
 					</button>
 				{/if}
 			</div>
-			<div class="dropdown">
-				<button
-					class="btn btn-sm btn-secondary dropdown-toggle float-end"
-					type="button"
-					data-bs-toggle="dropdown"
-					aria-expanded="false"
-				>
-					<Fa icon={faBars} />
-				</button>
-				<ul class="dropdown-menu dropdown-menu-end">
-					<li>
-						<button
-							class="dropdown-item btn btn-primary"
-							onclick={startEditing}
-							data-bs-toggle="tooltip"
-							data-bs-placement="left"
-							data-bs-delay="500"
-							title={tr('map.pin.edit')}
-						>
-							<Fa icon={faPencil} fw />
-						</button>
-					</li>
-					<li>
-						<button
-							class="dropdown-item btn btn-primary"
-							onclick={movePin}
-							data-bs-toggle="tooltip"
-							data-bs-placement="left"
-							data-bs-delay="500"
-							title={tr('map.pin.move')}
-						>
-							<Fa icon={faLocationCrosshairs} fw />
-						</button>
-					</li>
-					<li>
-						<button
-							class="dropdown-item btn btn-danger"
-							onclick={confirmDeletePin}
-							data-bs-toggle="tooltip"
-							data-bs-placement="left"
-							data-bs-delay="500"
-							title={tr('map.pin.delete')}
-						>
-							<Fa icon={faTrash} fw />
-						</button>
-					</li>
-				</ul>
-			</div>
+			{#if !readingMode}
+				<div class="dropdown ps-2 border-start border-secondary">
+					<button
+						class="btn btn-sm btn-secondary dropdown-toggle float-end"
+						type="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false"
+					>
+						<Fa icon={faBars} />
+					</button>
+					<ul class="dropdown-menu dropdown-menu-end">
+						<li>
+							<button
+								class="dropdown-item btn btn-primary"
+								onclick={startEditing}
+								data-bs-toggle="tooltip"
+								data-bs-placement="left"
+								data-bs-delay="500"
+								title={tr('map.pin.edit')}
+							>
+								<Fa icon={faPencil} fw />
+							</button>
+						</li>
+						<li>
+							<button
+								class="dropdown-item btn btn-primary"
+								onclick={movePin}
+								data-bs-toggle="tooltip"
+								data-bs-placement="left"
+								data-bs-delay="500"
+								title={tr('map.pin.move')}
+							>
+								<Fa icon={faLocationCrosshairs} fw />
+							</button>
+						</li>
+						<li>
+							<button
+								class="dropdown-item btn btn-danger"
+								onclick={confirmDeletePin}
+								data-bs-toggle="tooltip"
+								data-bs-placement="left"
+								data-bs-delay="500"
+								title={tr('map.pin.delete')}
+							>
+								<Fa icon={faTrash} fw />
+							</button>
+						</li>
+					</ul>
+				</div>
+			{/if}
 		</div>
 	{/if}
 </div>

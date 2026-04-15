@@ -15,6 +15,8 @@
 	import ImageViewer from '$lib/ImageViewer.svelte';
 	import { alwaysShowSidenav, formatBytes } from '$lib/helpers.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
+	import Map from '$lib/Map.svelte';
+	import * as bootstrap from 'bootstrap';
 
 	const { t } = getTranslate();
 	const tolgee = getTolgee(['language']);
@@ -439,6 +441,32 @@
 			altPressed = false;
 		}
 	}
+
+	let mapModal = $state(null);
+	let modalMapInstance = $state(null);
+	let isMapModalOpen = $state(false);
+	let modalPins = $state([]);
+	function openMapModal(pins) {
+		modalPins = pins;
+		const modalEl = document.getElementById('modalMap');
+		if (!modalEl) return;
+
+		if (!mapModal) {
+			mapModal = new bootstrap.Modal(modalEl);
+			modalEl.addEventListener('shown.bs.modal', () => {
+				requestAnimationFrame(() => {
+					modalMapInstance?.externalInvalidateSize?.(true);
+				});
+			});
+			modalEl.addEventListener('hidden.bs.modal', () => {
+				isMapModalOpen = false;
+				modalMapInstance = null;
+			});
+		}
+
+		isMapModalOpen = true;
+		mapModal.show();
+	}
 </script>
 
 <DatepickerLogic />
@@ -469,7 +497,7 @@
 	<!-- Center -->
 	<div class="d-flex flex-column my-4 flex-fill overflow-y-auto" id="scrollArea">
 		{#key logs}
-			{#each logs as log, i}
+			{#each logs as log (log)}
 				<!-- Log-Area -->
 				{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
 					<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>
@@ -494,16 +522,17 @@
 								>
 							</p>
 						</div>
-						<div class="logContent flex-grow-1 d-flex flex-row">
+						<div class="logContent flex-grow-1 d-flex flex-column">
 							<div class="flex-grow-1 middle">
 								{#if log.text && log.text !== ''}
 									<div class="text">
+										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 										{@html marked.parse(log.text)}
 									</div>
 								{/if}
 								{#if log.tags?.length > 0}
 									<div class="tags d-flex flex-row flex-wrap">
-										{#each log.tags as t}
+										{#each log.tags as t (t)}
 											<Tag tag={$tags.find((tag) => tag.id === t)} />
 										{/each}
 									</div>
@@ -525,11 +554,27 @@
 								{/if}
 							</div>
 
-							{#if log.files && log.files.length > 0}
-								<div class="d-flex flex-column files">
-									<FileList files={log.files} {downloadFile} />
-								</div>
-							{/if}
+							<div class="d-flex flex-row justify-content-around flex-wrap">
+								{#if log.files && log.files.length > 0}
+									<div class="d-flex flex-column files">
+										<FileList files={log.files} {downloadFile} />
+									</div>
+								{/if}
+
+								{#if $settings.useMap && log.pins && log.pins.length > 0}
+									<div class="map-container mt-2">
+										<Map
+											readingMode
+											showZoomButton
+											showMapSelection
+											allowMouseZoom
+											showSearch={false}
+											pins={log.pins}
+											openMapModal={() => openMapModal(log.pins)}
+										/>
+									</div>
+								{/if}
+							</div>
 						</div>
 					</div>
 				{/if}
@@ -550,7 +595,36 @@
 	</div>
 </div>
 
+{#if $settings.useMap}
+	<div class="modal fade" id="modalMap" tabindex="-1">
+		<div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">{$t('settings.map')}</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body modal-body-map">
+					{#if isMapModalOpen}
+						<Map bind:this={modalMapInstance} showSearch={false} pins={modalPins} readingMode />
+					{/if}
+				</div>
+				<div class="modal-footer"></div>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
+	.modal-body-map {
+		height: 65vh;
+	}
+
+	.map-container {
+		width: min(100%, 350px);
+		height: 230px;
+	}
+
 	:global(body[data-bs-theme='light'] blockquote) {
 		border-left: 4px solid #696969;
 		color: #3f3f3f;
