@@ -20,15 +20,28 @@
 	let previewDay = $state(null);
 	let previewMonth = $state(null);
 	let previewYear = $state(null);
+	let showDateFilterMobile = $state(false);
+	let smallScreen = $state(false);
 
 	onMount(() => {
-		if (!$settings.useMap) {
-			goto(resolve('/write'));
-			return;
-		}
-
 		loadAllPins();
+
+		window.addEventListener('resize', () => {
+			checkSmallScreen();
+		});
+		checkSmallScreen();
 	});
+
+	$effect(() => {
+		if (Object.keys($settings).length > 0 && !$settings.useMap) {
+			console.log($settings);
+			goto(resolve('/write'));
+		}
+	});
+
+	function checkSmallScreen() {
+		smallScreen = window.innerWidth < 768;
+	}
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -99,44 +112,61 @@
 	});
 </script>
 
+<!-- aria-expanded={showDateFilterMobile} -->
 {#if $settings.useMap}
 	<div class="date-picker glass-shadow position-absolute top-0 end-0 m-3 p-3">
 		<div class="d-flex flex-column">
-			<h6 class="align-self-center">{$t('settings.export.period')}</h6>
-			<div>
-				<label for="pinStartDate">{$t('settings.export.start_date')}</label>
-				<div class="date-input-row">
-					<input type="date" class="form-control" id="pinStartDate" bind:value={pinStartDate} />
-					{#if pinStartDate !== ''}
-						<button
-							type="button"
-							class="btn-close clear-date-btn"
-							aria-label="Delete start date"
-							onclick={() => (pinStartDate = '')}
-						></button>
-					{/if}
-				</div>
-			</div>
-			<div>
-				<label for="pinEndDate">{$t('settings.export.end_date')}</label>
-				<div class="date-input-row">
-					<input type="date" class="form-control" id="pinEndDate" bind:value={pinEndDate} />
-					{#if pinEndDate !== ''}
-						<button
-							type="button"
-							class="btn-close clear-date-btn"
-							aria-label="Delete end date"
-							onclick={() => (pinEndDate = '')}
-						></button>
-					{/if}
-				</div>
-			</div>
-			{#if pinStartDate !== '' && pinEndDate !== '' && pinStartDate > pinEndDate}
-				<div transition:slide>
-					<div class="pt-2"></div>
-					<div class="alert alert-danger mb-0" role="alert">
-						{$t('settings.export.period_invalid')}
+			<button
+				type="button"
+				class="date-picker-toggle"
+				onclick={() => (showDateFilterMobile = !showDateFilterMobile)}
+			>
+				<h6 class="align-self-center my-1">{$t('settings.export.period')}</h6>
+				<span class="date-picker-chevron" aria-hidden="true">
+					{showDateFilterMobile ? '▲' : '▼'}
+				</span>
+			</button>
+			{#if showDateFilterMobile || !smallScreen}
+				<div
+					class="date-picker-content"
+					transition:slide /* class:mobile-open={showDateFilterMobile} */
+				>
+					<div>
+						<label for="pinStartDate">{$t('settings.export.start_date')}</label>
+						<div class="date-input-row">
+							<input type="date" class="form-control" id="pinStartDate" bind:value={pinStartDate} />
+							{#if pinStartDate !== ''}
+								<button
+									type="button"
+									class="btn-close clear-date-btn"
+									aria-label="Delete start date"
+									onclick={() => (pinStartDate = '')}
+								></button>
+							{/if}
+						</div>
 					</div>
+					<div>
+						<label for="pinEndDate">{$t('settings.export.end_date')}</label>
+						<div class="date-input-row">
+							<input type="date" class="form-control" id="pinEndDate" bind:value={pinEndDate} />
+							{#if pinEndDate !== ''}
+								<button
+									type="button"
+									class="btn-close clear-date-btn"
+									aria-label="Delete end date"
+									onclick={() => (pinEndDate = '')}
+								></button>
+							{/if}
+						</div>
+					</div>
+					{#if pinStartDate !== '' && pinEndDate !== '' && pinStartDate > pinEndDate}
+						<div transition:slide>
+							<div class="pt-2"></div>
+							<div class="alert alert-danger mb-0" role="alert">
+								{$t('settings.export.period_invalid')}
+							</div>
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
@@ -173,7 +203,7 @@
 
 <style>
 	h6 {
-		font-size: 1.1rem;
+		font-size: 1.2rem;
 		text-decoration: underline;
 		text-decoration-color: #1565c0;
 	}
@@ -185,6 +215,33 @@
 		border-style: none !important;
 		backdrop-filter: blur(7px) saturate(130%);
 		background-color: rgba(51, 51, 51, 0.38);
+	}
+
+	.date-picker-toggle {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		padding: 0;
+		background: transparent;
+		border: 0;
+		color: inherit;
+	}
+
+	.date-picker-chevron {
+		position: absolute;
+		right: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		display: none;
+		font-size: 0.8rem;
+		opacity: 0.8;
+	}
+
+	.date-picker-content {
+		display: flex;
+		flex-direction: column;
 	}
 
 	.date-input-row {
@@ -203,5 +260,19 @@
 	.clear-date-btn:hover,
 	.clear-date-btn:focus {
 		opacity: 0.75;
+	}
+
+	@media (max-width: 768px) {
+		.date-picker-toggle {
+			cursor: pointer;
+		}
+
+		.date-picker-chevron {
+			display: inline-block;
+		}
+
+		.date-picker-content {
+			margin-top: 0.5rem;
+		}
 	}
 </style>
