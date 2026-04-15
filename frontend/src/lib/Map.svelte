@@ -79,7 +79,6 @@
 	let lastPinsSignature = '';
 	let movingPinDate = $state();
 	let fullScreenInitialPinsDrawDone = false;
-	let liveLocationSetForDate = $state();
 	let liveLocationRequestToken = 0;
 	let showLiveLocationButton = $state(false);
 	let geolocationPermissionStatus = null;
@@ -143,7 +142,6 @@
 
 	function requestLiveLocationForCurrentDate() {
 		if (!map || !navigator?.geolocation || !$selectedDate) return;
-		if (sameDate(liveLocationSetForDate, $selectedDate)) return;
 
 		const targetDate = {
 			day: $selectedDate.day,
@@ -156,11 +154,9 @@
 			(position) => {
 				if (requestToken !== liveLocationRequestToken) return;
 				if (!sameDate($selectedDate, targetDate)) return;
-				if (pins.length > 0) return;
 
 				const { latitude, longitude } = position.coords;
 				viewSetForDate = $selectedDate;
-				liveLocationSetForDate = $selectedDate;
 				map.setView([latitude, longitude], 13);
 			},
 			() => {

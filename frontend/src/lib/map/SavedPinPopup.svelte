@@ -124,7 +124,6 @@
 </script>
 
 <div class="saved-pin-popup">
-	{isEditing}
 	{#if isEditing}
 		<div class="input-group">
 			<input
