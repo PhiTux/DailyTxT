@@ -561,7 +561,10 @@
 									</div>
 								{/if}
 
-								{#if $settings.useMap && log.pins && log.pins.length > 0}
+								{#if $settings.useMap && ((log.pins && log.pins.length > 0) || ($settings.showGPXFiles && log.files?.some((file) => file.filename
+														.split('.')
+														.pop()
+														.toLowerCase() === 'gpx')))}
 									<div class="map-container mt-2">
 										<Map
 											readingMode
@@ -571,6 +574,11 @@
 											showSearch={false}
 											pins={log.pins}
 											openMapModal={() => openMapModal(log.pins)}
+											gpxFiles={$settings.showGPXFiles
+												? log.files?.filter(
+														(file) => file.filename.split('.').pop().toLowerCase() === 'gpx'
+													)
+												: []}
 										/>
 									</div>
 								{/if}
