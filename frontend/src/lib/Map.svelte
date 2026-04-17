@@ -223,6 +223,9 @@
 		const year = Number(file?.year);
 		const hasValidDate =
 			Number.isFinite(day) && Number.isFinite(month) && Number.isFinite(year) && day > 0;
+		const filename = String(file?.filename || file?.name || 'GPX');
+		const isMapRoute =
+			typeof window !== 'undefined' && /\/map\/?$/.test(window.location?.pathname || '');
 
 		const container = document.createElement('div');
 		container.className = 'saved-pin-popup';
@@ -230,26 +233,33 @@
 		const view = document.createElement('div');
 		view.className = 'saved-pin-view d-flex flex-column align-items-center gap-2';
 
-		const dateEl = document.createElement('div');
-		dateEl.className = 'saved-pin-date';
-		dateEl.textContent = hasValidDate
-			? new Date(year, month - 1, day).toLocaleDateString($tolgee.getLanguage(), {
-					year: 'numeric',
-					month: '2-digit',
-					day: '2-digit'
-				})
-			: '-';
+		const filenameEl = document.createElement('div');
+		filenameEl.className = 'saved-pin-text text-center';
+		filenameEl.textContent = filename;
+		view.appendChild(filenameEl);
 
-		view.appendChild(dateEl);
+		if (isMapRoute) {
+			const dateEl = document.createElement('div');
+			dateEl.className = 'saved-gpx-date';
+			dateEl.textContent = hasValidDate
+				? new Date(year, month - 1, day).toLocaleDateString($tolgee.getLanguage(), {
+						year: 'numeric',
+						month: '2-digit',
+						day: '2-digit'
+					})
+				: '-';
 
-		if (hasValidDate) {
+			view.prepend(dateEl);
+
 			const previewButton = document.createElement('button');
 			previewButton.type = 'button';
 			previewButton.className = 'btn btn-sm btn-primary p-1 mt-1';
 			previewButton.textContent = $t('map.pin.open_preview');
+			previewButton.disabled = !hasValidDate;
 			previewButton.addEventListener('click', (event) => {
 				event.preventDefault();
 				event.stopPropagation();
+				if (!hasValidDate) return;
 				openPreview(day, month, year);
 			});
 			view.appendChild(previewButton);
@@ -1438,6 +1448,12 @@
 </div>
 
 <style>
+	:global(.saved-gpx-date) {
+		text-decoration: underline;
+		text-decoration-color: #1565c0;
+		margin-bottom: 0.25rem;
+	}
+
 	:global(.leaflet-marker-icon) {
 		filter: drop-shadow(rgba(0, 0, 0, 0.8) 3px -2px 4px);
 	}

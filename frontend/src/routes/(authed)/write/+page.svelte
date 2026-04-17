@@ -2155,7 +2155,7 @@
 					</div>
 					<div class="modal-body modal-body-map">
 						{#if isMapModalOpen}
-							<Map bind:this={modalMapInstance} bind:pins />
+							<Map bind:this={modalMapInstance} bind:pins {gpxFiles} />
 						{/if}
 					</div>
 					<div class="modal-footer"></div>
