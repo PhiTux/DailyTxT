@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Feil ved tillegg av pin",
       "error_delete_pin": "Feil ved sletting av pin",
+      "error_download_gpx": "Feil ved nedlasting av GPX-filen.",
       "error_fetching_pins": "Feil ved lasting av pins",
       "error_loading_day_preview": "Feil ved lasting av oppføring",
       "error_photon_search": "Søkefeil",
@@ -370,6 +371,9 @@
     "map.default_map": "Standard kartvisning",
     "map.default_map_description": "Angi hvordan kartet skal vises som standard:<ol><li>Velg kartlag</li><li>Flytt kartet og velg zoomnivå</li></ol>",
     "map.default_map_view": "Standard kartutsnitt",
+    "map.show_gpx_files": "Vis GPX",
+    "map.show_gpx_files_description": "Hvis GPX-filer er tilgjengelige, lastes de automatisk ned og vises på kartet.",
+    "map.show_pins": "Vis pinner",
     "map.use_geolocation": "Geolokalisering",
     "map.use_geolocation_this_device": "Bruk geolokalisering (f.eks. GPS) på denne enheten for å velge kartutsnitt.",
     "map.use_map": "Bruk kort",

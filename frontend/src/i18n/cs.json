@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Chyba při přidávání pinu",
       "error_delete_pin": "Chyba při mazání pinu",
+      "error_download_gpx": "Chyba při stahování GPX souboru.",
       "error_fetching_pins": "Chyba při načítání pinů",
       "error_loading_day_preview": "Chyba při načítání záznamu",
       "error_photon_search": "Chyba při hledání",
@@ -370,6 +371,9 @@
     "map.default_map": "Výchozí zobrazení mapy",
     "map.default_map_description": "Nastavte, jak se má mapa ve výchozím stavu zobrazovat:<ol><li>Vyberte mapovou vrstvu</li><li>Posuňte mapu a zvolte úroveň přiblížení</li></ol>",
     "map.default_map_view": "Výchozí výřez mapy",
+    "map.show_gpx_files": "Zobrazit GPX",
+    "map.show_gpx_files_description": "Pokud jsou k dispozici soubory GPX, automaticky se stáhnou a zobrazí na mapě.",
+    "map.show_pins": "Zobrazit piny",
     "map.use_geolocation": "Geolokace",
     "map.use_geolocation_this_device": "Používat geolokaci (např. GPS) na tomto zařízení pro výběr výřezu mapy.",
     "map.use_map": "Používat mapu",

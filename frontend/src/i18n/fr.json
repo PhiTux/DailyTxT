@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Erreur lors de l’ajout de l’épingle",
       "error_delete_pin": "Erreur lors de la suppression de l’épingle",
+      "error_download_gpx": "Erreur lors du téléchargement du fichier GPX.",
       "error_fetching_pins": "Erreur lors du chargement des épingles",
       "error_loading_day_preview": "Erreur lors du chargement de l’entrée",
       "error_photon_search": "Erreur de recherche",
@@ -370,6 +371,9 @@
     "map.default_map": "Vue de carte par défaut",
     "map.default_map_description": "Définissez la manière dont la carte doit être affichée par défaut :<ol><li>Choisissez la couche cartographique</li><li>Déplacez la carte et choisissez un niveau de zoom</li></ol>",
     "map.default_map_view": "Zone de carte par défaut",
+    "map.show_gpx_files": "Afficher le GPX",
+    "map.show_gpx_files_description": "Si des fichiers GPX sont disponibles, ils sont automatiquement téléchargés et affichés sur la carte.",
+    "map.show_pins": "Afficher les pins",
     "map.use_geolocation": "Géolocalisation",
     "map.use_geolocation_this_device": "Utiliser la géolocalisation (p. ex. GPS) sur cet appareil pour choisir la zone de la carte.",
     "map.use_map": "Utiliser la carte",

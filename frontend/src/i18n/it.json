@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Errore durante l'aggiunta del pin",
       "error_delete_pin": "Errore durante l'eliminazione del pin",
+      "error_download_gpx": "Errore nel download del file GPX.",
       "error_fetching_pins": "Errore durante il caricamento dei pin",
       "error_loading_day_preview": "Errore durante il caricamento della voce",
       "error_photon_search": "Errore di ricerca",
@@ -370,6 +371,9 @@
     "map.default_map": "Vista mappa predefinita",
     "map.default_map_description": "Imposta come visualizzare la mappa per impostazione predefinita:<ol><li>Seleziona il livello della mappa</li><li>Sposta la mappa e scegli un livello di zoom</li></ol>",
     "map.default_map_view": "Area mappa predefinita",
+    "map.show_gpx_files": "Mostra GPX",
+    "map.show_gpx_files_description": "Se sono disponibili file GPX, questi vengono scaricati automaticamente e visualizzati sulla mappa.",
+    "map.show_pins": "Mostra le spille",
     "map.use_geolocation": "Geolocalizzazione",
     "map.use_geolocation_this_device": "Usa la geolocalizzazione (ad es. GPS) su questo dispositivo per scegliere l'area della mappa.",
     "map.use_map": "Carta d'uso",

@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "添加图钉时出错",
       "error_delete_pin": "删除图钉时出错",
+      "error_download_gpx": "下载 GPX 文件出错。",
       "error_fetching_pins": "加载图钉时出错",
       "error_loading_day_preview": "加载条目时出错",
       "error_photon_search": "搜索出错",
@@ -370,6 +371,9 @@
     "map.default_map": "默认地图视图",
     "map.default_map_description": "设置地图默认显示方式：<ol><li>选择地图图层</li><li>移动地图并选择缩放级别</li></ol>",
     "map.default_map_view": "默认地图范围",
+    "map.show_gpx_files": "显示 GPX",
+    "map.show_gpx_files_description": "如果有 GPX 文件，则会自动下载并显示在地图上。",
+    "map.show_pins": "显示引脚",
     "map.use_geolocation": "地理定位",
     "map.use_geolocation_this_device": "在此设备上使用地理定位（例如 GPS）来选择地图显示范围。",
     "map.use_map": "使用卡",

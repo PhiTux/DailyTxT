@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Error adding pin",
       "error_delete_pin": "Error deleting pin",
+      "error_download_gpx": "Error downloading GPX file.",
       "error_fetching_pins": "Error loading pins",
       "error_loading_day_preview": "Error loading entry",
       "error_photon_search": "Search error",
@@ -370,6 +371,9 @@
     "map.default_map": "Default map view",
     "map.default_map_description": "Set how the map should be displayed by default:<ol><li>Select the map layer</li><li>Move the map and choose a zoom level</li></ol>",
     "map.default_map_view": "Default map viewport",
+    "map.show_gpx_files": "Show GPX",
+    "map.show_gpx_files_description": "If GPX files are available, they are automatically downloaded and displayed on the map.",
+    "map.show_pins": "Show pins",
     "map.use_geolocation": "Geolocalisation",
     "map.use_geolocation_this_device": "Use geolocation (e.g., GPS) on this device to select the map area.",
     "map.use_map": "Use map",

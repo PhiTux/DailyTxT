@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Fout bij toevoegen van pin",
       "error_delete_pin": "Fout bij verwijderen van pin",
+      "error_download_gpx": "Fout bij het downloaden van het GPX-bestand.",
       "error_fetching_pins": "Fout bij laden van pins",
       "error_loading_day_preview": "Fout bij laden van invoer",
       "error_photon_search": "Zoekfout",
@@ -370,6 +371,9 @@
     "map.default_map": "Standaard kaartweergave",
     "map.default_map_description": "Stel in hoe de kaart standaard getoond moet worden:<ol><li>Kies de kaartlaag</li><li>Verplaats de kaart en kies een zoomniveau</li></ol>",
     "map.default_map_view": "Standaard kaartuitsnede",
+    "map.show_gpx_files": "GPX weergeven",
+    "map.show_gpx_files_description": "Als er GPX-bestanden beschikbaar zijn, worden deze automatisch gedownload en weergegeven op de kaart.",
+    "map.show_pins": "Pinnen tonen",
     "map.use_geolocation": "Geolocatie",
     "map.use_geolocation_this_device": "Gebruik geolocatie (bijv. GPS) op dit apparaat om het kaartgebied te kiezen.",
     "map.use_map": "Kaart gebruiken",

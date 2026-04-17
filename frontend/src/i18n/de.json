@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Fehler beim Hinzufügen des Pins",
       "error_delete_pin": "Fehler beim Löschen des Pins",
+      "error_download_gpx": "Fehler beim Download der GPX Datei.",
       "error_fetching_pins": "Fehler beim Laden der Pins",
       "error_loading_day_preview": "Fehler beim Laden des Eintrags",
       "error_photon_search": "Fehler bei der Suche ",
@@ -370,6 +371,9 @@
     "map.default_map": "Standard Kartenansicht",
     "map.default_map_description": "Stelle ein, wie die Karte standardmäßig angezeigt werden soll:\n<ol>\n<li>Wähle die Kartenebene</li>\n<li>Verschiebe die Karte und wähle eine Zoomstufe</li>\n</ol>",
     "map.default_map_view": "Standard Kartenausschnitt",
+    "map.show_gpx_files": "Zeige GPX",
+    "map.show_gpx_files_description": "Wenn GPX-Dateien vorhanden sind, dann werden diese automatisch heruntergeladen und in der Karte angezeigt.",
+    "map.show_pins": "Zeige Pins",
     "map.use_geolocation": "Geolokalisierung",
     "map.use_geolocation_this_device": "Auf diesem Gerät die Geolokalisierung (z. B. GPS) verwenden, um den Kartenausschnitt zu wählen.",
     "map.use_map": "Karte verwenden",

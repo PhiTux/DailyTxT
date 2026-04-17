@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "Error en afegir el pin",
       "error_delete_pin": "Error en eliminar el pin",
+      "error_download_gpx": "Error en descarregar el fitxer GPX.",
       "error_fetching_pins": "Error en carregar els pins",
       "error_loading_day_preview": "Error en carregar l'entrada",
       "error_photon_search": "Error a la cerca",
@@ -370,6 +371,9 @@
     "map.default_map": "Vista del mapa per defecte",
     "map.default_map_description": "Configura com s'ha de mostrar el mapa per defecte:<ol><li>Tria la capa del mapa</li><li>Mou el mapa i selecciona un nivell de zoom</li></ol>",
     "map.default_map_view": "Retall del mapa per defecte",
+    "map.show_gpx_files": "Mostra GPX",
+    "map.show_gpx_files_description": "Quan els fitxers GPX estan disponibles, es descarreguen automàticament i es mostren al mapa.",
+    "map.show_pins": "Mostra pins",
     "map.use_geolocation": "Geolocalització",
     "map.use_geolocation_this_device": "Fes servir la geolocalització (p. ex., GPS) en aquest dispositiu per triar l'àrea del mapa.",
     "map.use_map": "Utilitza el mapa",

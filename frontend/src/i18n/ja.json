@@ -125,6 +125,7 @@
     "toast": {
       "error_add_pin": "ピンの追加に失敗しました",
       "error_delete_pin": "ピンの削除に失敗しました",
+      "error_download_gpx": "GPXファイルのダウンロードエラー。",
       "error_fetching_pins": "ピンの読み込みに失敗しました",
       "error_loading_day_preview": "エントリの読み込みに失敗しました",
       "error_photon_search": "検索エラー",
@@ -370,6 +371,9 @@
     "map.default_map": "デフォルトの地図表示",
     "map.default_map_description": "地図のデフォルト表示を設定します：<ol><li>地図レイヤーを選択</li><li>地図を移動してズームレベルを選択</li></ol>",
     "map.default_map_view": "デフォルトの地図範囲",
+    "map.show_gpx_files": "GPXを表示する",
+    "map.show_gpx_files_description": "GPXファイルがあれば自動的にダウンロードされ、地図上に表示されます。",
+    "map.show_pins": "ピンズを表示",
     "map.use_geolocation": "位置情報",
     "map.use_geolocation_this_device": "この端末で地図の表示範囲を選ぶために位置情報（例：GPS）を使用する。",
     "map.use_map": "カード利用",
