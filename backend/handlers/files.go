@@ -255,6 +255,147 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// GetAllGPXFiles returns all GPX files with decrypted filename, decrypted content and date.
+// Response format:
+// [{"year":2026,"month":4,"day":11,"filename":"track.gpx","uuid_filename":"...","content":"..."}]
+func GetAllGPXFiles(w http.ResponseWriter, r *http.Request) {
+	utils.LogsMutex.RLock()
+	defer utils.LogsMutex.RUnlock()
+
+	// Get user ID and derived key from context
+	userID, ok := r.Context().Value(utils.UserIDKey).(int)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+	derivedKey, ok := r.Context().Value(utils.DerivedKeyKey).(string)
+	if !ok {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
+
+	encKey, err := utils.GetEncryptionKey(userID, derivedKey)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error getting encryption key: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	years, err := utils.GetYears(userID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error retrieving years: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	allGPXFiles := make([]map[string]any, 0)
+
+	for _, yearStr := range years {
+		year, err := strconv.Atoi(yearStr)
+		if err != nil {
+			continue
+		}
+
+		months, err := utils.GetMonths(userID, yearStr)
+		if err != nil {
+			continue
+		}
+
+		for _, monthStr := range months {
+			month, err := strconv.Atoi(monthStr)
+			if err != nil {
+				continue
+			}
+
+			content, err := utils.GetMonth(userID, year, month)
+			if err != nil {
+				continue
+			}
+
+			days, ok := content["days"].([]any)
+			if !ok {
+				continue
+			}
+
+			for _, dayInterface := range days {
+				dayObj, ok := dayInterface.(map[string]any)
+				if !ok {
+					continue
+				}
+
+				day := 0
+				switch dayVal := dayObj["day"].(type) {
+				case float64:
+					day = int(dayVal)
+				case int:
+					day = dayVal
+				case string:
+					parsed, err := strconv.Atoi(dayVal)
+					if err != nil {
+						continue
+					}
+					day = parsed
+				default:
+					continue
+				}
+
+				filesList, ok := dayObj["files"].([]any)
+				if !ok || len(filesList) == 0 {
+					continue
+				}
+
+				for _, fileInterface := range filesList {
+					fileObj, ok := fileInterface.(map[string]any)
+					if !ok {
+						continue
+					}
+
+					uuid, ok := fileObj["uuid_filename"].(string)
+					if !ok || uuid == "" {
+						continue
+					}
+
+					encFilename, ok := fileObj["enc_filename"].(string)
+					if !ok || encFilename == "" {
+						continue
+					}
+
+					filename, err := utils.DecryptText(encFilename, encKey)
+					if err != nil {
+						continue
+					}
+
+					if !strings.HasSuffix(strings.ToLower(filename), ".gpx") {
+						continue
+					}
+
+					encryptedFile, err := utils.ReadFile(userID, uuid)
+					if err != nil {
+						continue
+					}
+
+					decryptedFile, err := utils.DecryptFile(encryptedFile, encKey)
+					encryptedFile = nil
+					if err != nil {
+						continue
+					}
+
+					allGPXFiles = append(allGPXFiles, map[string]any{
+						"year":     year,
+						"month":    month,
+						"day":      day,
+						"filename": filename,
+						//"uuid_filename": uuid,
+						"content": string(decryptedFile),
+					})
+
+					decryptedFile = nil
+				}
+			}
+		}
+	}
+
+	utils.JSONResponse(w, http.StatusOK, allGPXFiles)
+}
+
 // DeleteFile handles deleting a file
 func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	utils.LogsMutex.Lock()

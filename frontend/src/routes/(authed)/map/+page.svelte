@@ -63,6 +63,71 @@
 			});
 	}
 
+	let showGPXFiles = $state(false);
+	$effect(() => {
+		if (showGPXFiles && allGPXFiles.length === 0) {
+			loadAllGPX();
+		}
+	});
+
+	let allGPXFiles = $state([]);
+
+	function createGpxBlobUrl(content) {
+		if (typeof content !== 'string' || content.length === 0) return '';
+		const blob = new Blob([content], { type: 'application/gpx+xml;charset=utf-8' });
+		return window.URL.createObjectURL(blob);
+	}
+
+	function loadAllGPX() {
+		axios
+			.get(`${API_URL}/logs/allGPXFiles`)
+			.then((response) => {
+				const nextFiles = Array.isArray(response.data)
+					? response.data.map((file) => ({
+							...file,
+							src: createGpxBlobUrl(file?.content),
+							content: undefined
+						}))
+					: [];
+
+				allGPXFiles = nextFiles;
+			})
+			.catch((error) => {
+				console.error('Error fetching GPX files:', error);
+
+				// toast
+				const toast = new bootstrap.Toast(document.getElementById('toastErrorFetchPins'));
+				toast.show();
+			});
+	}
+
+	let selectedGPXFiles = $derived.by(() => {
+		if (!showGPXFiles) return [];
+		const startDate = parseDateInput(pinStartDate);
+		const endDate = parseDateInput(pinEndDate);
+
+		return allGPXFiles.filter((file) => {
+			const fileDate = {
+				year: Number(file?.year),
+				month: Number(file?.month),
+				day: Number(file?.day)
+			};
+
+			if (
+				!Number.isFinite(fileDate.year) ||
+				!Number.isFinite(fileDate.month) ||
+				!Number.isFinite(fileDate.day)
+			) {
+				return false;
+			}
+
+			if (startDate && compareDateParts(fileDate, startDate) < 0) return false;
+			if (endDate && compareDateParts(fileDate, endDate) > 0) return false;
+
+			return true;
+		});
+	});
+
 	function openPreview(day, month, year) {
 		previewDay = day;
 		previewMonth = month;
@@ -85,7 +150,10 @@
 		return a.day - b.day;
 	}
 
+	let showPins = $state(true);
 	let selectedPins = $derived.by(() => {
+		if (!showPins) return [];
+
 		const startDate = parseDateInput(pinStartDate);
 		const endDate = parseDateInput(pinEndDate);
 		const filteredPins = [];
@@ -167,12 +235,42 @@
 							</div>
 						</div>
 					{/if}
+
+					<div class="form-check form-switch mt-3">
+						<input
+							class="form-check-input"
+							bind:checked={showPins}
+							type="checkbox"
+							role="switch"
+							id="showPinsSwitch"
+						/>
+						<label class="form-check-label" for="showPinsSwitch">
+							<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+							{@html $t('settings.map.show_pins')}
+						</label>
+					</div>
+
+					{#if $settings.showGPXFiles}
+						<div class="form-check form-switch mt-3">
+							<input
+								class="form-check-input"
+								bind:checked={showGPXFiles}
+								type="checkbox"
+								role="switch"
+								id="showGPXFilesSwitch"
+							/>
+							<label class="form-check-label" for="showGPXFilesSwitch">
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+								{@html $t('settings.map.show_gpx_files')}
+							</label>
+						</div>
+					{/if}
 				</div>
 			{/if}
 		</div>
 	</div>
 
-	<Map fullScreen pins={selectedPins} {openPreview} />
+	<Map fullScreen pins={selectedPins} {openPreview} gpxFiles={selectedGPXFiles} />
 {/if}
 
 <DayPreviewModal

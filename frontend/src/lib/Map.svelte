@@ -93,6 +93,18 @@
 	let boundsFitRequestToken = 0;
 	let pinPopupCleanupFns = [];
 
+	const gpxDefaultStyle = {
+		color: '#1976d2',
+		weight: 3,
+		opacity: 0.85
+	};
+
+	const gpxHoverStyle = {
+		color: '#f57c00',
+		weight: 4,
+		opacity: 1
+	};
+
 	function cleanupPinPopups() {
 		pinPopupCleanupFns.forEach((cleanup) => cleanup());
 		pinPopupCleanupFns = [];
@@ -140,6 +152,10 @@
 				continue;
 			}
 
+			if (!file.uuid_filename) {
+				continue;
+			}
+
 			isDownloadingGPX.push(file.uuid_filename);
 			await axios
 				.get(`${API_URL}/logs/downloadFile`, {
@@ -184,10 +200,91 @@
 		for (const file of gpxFiles) {
 			if (file.src) {
 				const gpxLayer = omnivore.gpx(file.src).addTo(map);
+				attachGpxInteractions(gpxLayer, file);
 
 				gpxLayers.push(gpxLayer);
 			}
 		}
+	}
+
+	function setGpxLayerStyle(gpxLayer, style) {
+		if (!gpxLayer?.eachLayer) return;
+
+		gpxLayer.eachLayer((layer) => {
+			if (layer && typeof layer.setStyle === 'function') {
+				layer.setStyle(style);
+			}
+		});
+	}
+
+	function createGpxPopupContent(file) {
+		const day = Number(file?.day);
+		const month = Number(file?.month);
+		const year = Number(file?.year);
+		const hasValidDate =
+			Number.isFinite(day) && Number.isFinite(month) && Number.isFinite(year) && day > 0;
+
+		const container = document.createElement('div');
+		container.className = 'saved-pin-popup';
+
+		const view = document.createElement('div');
+		view.className = 'saved-pin-view d-flex flex-column align-items-center gap-2';
+
+		const dateEl = document.createElement('div');
+		dateEl.className = 'saved-pin-date';
+		dateEl.textContent = hasValidDate
+			? new Date(year, month - 1, day).toLocaleDateString($tolgee.getLanguage(), {
+					year: 'numeric',
+					month: '2-digit',
+					day: '2-digit'
+				})
+			: '-';
+
+		view.appendChild(dateEl);
+
+		if (hasValidDate) {
+			const previewButton = document.createElement('button');
+			previewButton.type = 'button';
+			previewButton.className = 'btn btn-sm btn-primary p-1 mt-1';
+			previewButton.textContent = $t('map.pin.open_preview');
+			previewButton.addEventListener('click', (event) => {
+				event.preventDefault();
+				event.stopPropagation();
+				openPreview(day, month, year);
+			});
+			view.appendChild(previewButton);
+		}
+
+		container.appendChild(view);
+		return container;
+	}
+
+	function attachGpxInteractions(gpxLayer, file) {
+		if (!gpxLayer?.on) return;
+
+		const applyDefaultStyle = () => setGpxLayerStyle(gpxLayer, gpxDefaultStyle);
+		const applyHoverStyle = () => setGpxLayerStyle(gpxLayer, gpxHoverStyle);
+		const popupContent = createGpxPopupContent(file);
+
+		gpxLayer.on('ready', () => {
+			applyDefaultStyle();
+
+			if (!gpxLayer?.eachLayer) return;
+
+			gpxLayer.eachLayer((layer) => {
+				if (layer && layer.on) {
+					if (typeof layer.setStyle === 'function') {
+						layer.on('mouseover', applyHoverStyle);
+						layer.on('mouseout', applyDefaultStyle);
+					}
+
+					layer.bindPopup?.(popupContent);
+					layer.on('click', () => {
+						layer.openPopup?.();
+					});
+				}
+			});
+		});
 	}
 
 	function normalizeBaseMapProvider(provider) {
@@ -548,6 +645,7 @@
 
 	function getMarkerClusterGroup() {
 		return L.markerClusterGroup({
+			maxClusterRadius: 20,
 			disableClusteringAtZoom: 15,
 			clusterPane: 'pinPane',
 			iconCreateFunction: function (cluster) {
@@ -1258,6 +1356,22 @@
 </div>
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
+	<div
+		id="toastErrorDownloadGPX"
+		class="toast align-items-center text-bg-danger"
+		role="alert"
+		aria-live="assertive"
+		aria-atomic="true"
+	>
+		<div class="d-flex">
+			<div class="toast-body">
+				{$t('map.toast.error_download_gpx')}
+			</div>
+			<button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"
+			></button>
+		</div>
+	</div>
+
 	<div
 		id="toastErrorUpdatePinPosition"
 		class="toast align-items-center text-bg-danger"

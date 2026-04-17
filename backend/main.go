@@ -23,6 +23,7 @@ var AppVersion string
 var longTimeoutEndpoints = map[string]bool{
 	"/api/logs/uploadFile":   true,
 	"/api/logs/downloadFile": true,
+	"/api/logs/allGPXFiles":  true,
 	"/api/logs/exportData":   true,
 	"/api/logs/backup":       true,
 	"/api/logs/backupUser":   true,
@@ -118,6 +119,7 @@ func main() {
 	api.HandleFunc("GET /logs/loadMonthForReading", middleware.RequireAuth(handlers.LoadMonthForReading))
 	api.HandleFunc("POST /logs/uploadFile", middleware.RequireAuth(handlers.UploadFile))
 	api.HandleFunc("GET /logs/downloadFile", middleware.RequireAuth(handlers.DownloadFile))
+	api.HandleFunc("GET /logs/allGPXFiles", middleware.RequireAuth(handlers.GetAllGPXFiles))
 	api.HandleFunc("GET /logs/deleteFile", middleware.RequireAuth(handlers.DeleteFile))
 	api.HandleFunc("POST /logs/renameFile", middleware.RequireAuth(handlers.RenameFile))
 	api.HandleFunc("POST /logs/reorderFiles", middleware.RequireAuth(handlers.ReorderFiles))
