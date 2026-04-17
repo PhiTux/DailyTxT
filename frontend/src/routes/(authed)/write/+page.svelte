@@ -422,10 +422,12 @@
 	// copy gpx files information if available
 	let gpxFiles = $state([]);
 	$effect(() => {
-		if (filesOfDay) {
+		if (filesOfDay && $settings.showGPXFiles) {
 			gpxFiles = filesOfDay.filter(
 				(file) => file.filename.split('.').pop().toLowerCase() === 'gpx'
 			);
+		} else if (gpxFiles.length > 0) {
+			gpxFiles = [];
 		}
 	});
 

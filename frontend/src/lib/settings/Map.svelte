@@ -142,6 +142,27 @@
 			</label>
 		</div>
 	</div>
+
+	<div id="showGPX" transition:slide>
+		{#if $tempSettings.showGPXFiles !== $settings.showGPXFiles}
+			{@render unsavedChanges()}
+		{/if}
+		<h5>{$t('settings.map.show_gpx_files')}</h5>
+
+		<div class="form-check form-switch">
+			<input
+				class="form-check-input"
+				bind:checked={$tempSettings.showGPXFiles}
+				type="checkbox"
+				role="switch"
+				id="showGPXFilesSwitch"
+			/>
+			<label class="form-check-label" for="showGPXFilesSwitch">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+				{@html $t('settings.map.show_gpx_files_description')}
+			</label>
+		</div>
+	</div>
 {/if}
 
 <style>
