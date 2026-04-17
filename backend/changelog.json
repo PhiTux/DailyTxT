@@ -1,4 +1,13 @@
 {
+  "2.5.0": {
+    "date": "2026-04-xx",
+    "changes": [
+      "✨ Added map to pin locations for each day",
+      "✨ Map shows GPX files if available",
+      "🌐 Added japanese translation",
+      "✨ Added option to default to TODAY when switching to write-mode"
+    ]
+  },
   "2.4.6": {
     "date": "2026-03-21",
     "changes": [
