@@ -21,6 +21,7 @@
 	import { getTranslate } from '@tolgee/svelte';
 	import 'leaflet.markercluster';
 	import 'leaflet.markercluster/dist/MarkerCluster.css';
+	import omnivore from '@mapbox/leaflet-omnivore';
 
 	const { t } = getTranslate();
 
@@ -43,7 +44,8 @@
 		mapDisabled = false,
 		currentView = $bindable(),
 		fullScreen = false,
-		readingMode = false
+		readingMode = false,
+		gpxFiles = []
 	} = $props();
 
 	let mapElement;
@@ -79,12 +81,16 @@
 	let pinsSetForDate = $state();
 	let viewSetForDate = $state();
 	let lastPinsSignature = '';
+	let lastSelectedDateSignature = '';
+	let lastGpxFilesSignature = '';
 	let movingPinDate = $state();
 	let fullScreenInitialPinsDrawDone = false;
 	let liveLocationRequestToken = 0;
 	let showLiveLocationButton = $state(false);
 	let geolocationPermissionStatus = null;
 	let pinClusterLayer = null;
+	let gpxLayers = [];
+	let boundsFitRequestToken = 0;
 	let pinPopupCleanupFns = [];
 
 	function cleanupPinPopups() {
@@ -105,6 +111,83 @@
 		}
 
 		return [lat, lon, zoom];
+	}
+
+	$effect(() => {
+		const currentGpxFilesSignature = JSON.stringify(
+			(gpxFiles ?? []).map((file) => [file?.uuid_filename ?? '', file?.src ?? ''])
+		);
+
+		if (currentGpxFilesSignature === lastGpxFilesSignature) {
+			return;
+		}
+
+		lastGpxFilesSignature = currentGpxFilesSignature;
+
+		if (gpxFiles) {
+			downloadGPXFiles();
+		}
+	});
+
+	let isDownloadingGPX = [];
+	async function downloadGPXFiles() {
+		for (const file of gpxFiles) {
+			if (file.src && file.src.length > 0) {
+				continue;
+			}
+
+			if (isDownloadingGPX.includes(file.uuid_filename)) {
+				continue;
+			}
+
+			isDownloadingGPX.push(file.uuid_filename);
+			await axios
+				.get(`${API_URL}/logs/downloadFile`, {
+					responseType: 'blob',
+					params: {
+						uuid: file.uuid_filename
+					}
+				})
+				.then((response) => {
+					file.src = window.URL.createObjectURL(new Blob([response.data]));
+				})
+				.catch((error) => {
+					console.error('Error downloading GPX file:', error);
+					const toast = new bootstrap.Toast(document.getElementById('toastErrorDownloadGPX'));
+					toast.show();
+				})
+				.finally(() => {
+					isDownloadingGPX = isDownloadingGPX.filter((uuid) => uuid !== file.uuid_filename);
+				});
+		}
+
+		drawAllPins(true);
+	}
+
+	function clearGpxLayers() {
+		if (!map || gpxLayers.length === 0) return;
+
+		gpxLayers.forEach((layer) => {
+			if (layer && map.hasLayer(layer)) {
+				map.removeLayer(layer);
+			}
+		});
+
+		gpxLayers = [];
+	}
+
+	function showGPXinMap() {
+		if (!map) return;
+
+		clearGpxLayers();
+
+		for (const file of gpxFiles) {
+			if (file.src) {
+				const gpxLayer = omnivore.gpx(file.src).addTo(map);
+
+				gpxLayers.push(gpxLayer);
+			}
+		}
 	}
 
 	function normalizeBaseMapProvider(provider) {
@@ -268,6 +351,19 @@
 	});
 
 	$effect(() => {
+		const selectedDateSignature = JSON.stringify($selectedDate ?? null);
+		if (selectedDateSignature === lastSelectedDateSignature) return;
+
+		lastSelectedDateSignature = selectedDateSignature;
+
+		if (!map) return;
+
+		// Ensure a fresh initial fit/default-view pass on each date switch,
+		// even when pin data changes are not detected by pinsSignature.
+		queueMicrotask(() => onPinsChanged());
+	});
+
+	$effect(() => {
 		if (selectDefaultMap) {
 			setBaseMap(normalizeBaseMapProvider(selectDefaultMap));
 		}
@@ -316,6 +412,13 @@
 			doubleClickZoom: !mapDisabled
 		}).setView([initialMapView[0], initialMapView[1]], initialMapView[2]);
 		hasAppliedInitialDefaultMapView = getValidDefaultMapView() !== null;
+
+		const gpxPane = map.createPane('gpxPane');
+		gpxPane.style.zIndex = '450';
+		gpxPane.style.pointerEvents = 'none';
+
+		const pinPane = map.createPane('pinPane');
+		pinPane.style.zIndex = '650';
 
 		if (mapDisabled) {
 			map.getContainer().style.cursor = 'not-allowed';
@@ -397,6 +500,7 @@
 			}
 			clearTimeout(mapSearchDebounce);
 			cleanupPinPopups();
+			clearGpxLayers();
 			if (pinClusterLayer && map) {
 				map.removeLayer(pinClusterLayer);
 				pinClusterLayer = null;
@@ -445,6 +549,7 @@
 	function getMarkerClusterGroup() {
 		return L.markerClusterGroup({
 			disableClusteringAtZoom: 15,
+			clusterPane: 'pinPane',
 			iconCreateFunction: function (cluster) {
 				const count = cluster.getChildCount();
 				return L.divIcon({
@@ -467,6 +572,7 @@
 
 		cleanupPinPopups();
 		pinClusterLayer.clearLayers();
+		showGPXinMap();
 
 		const pinLatLngs = [];
 		markerByPinKey = {};
@@ -488,7 +594,11 @@
 				return true;
 			};
 
-			const marker = L.marker([pin.lat, pin.lon], { icon: customPinIcon });
+			const marker = L.marker([pin.lat, pin.lon], {
+				icon: customPinIcon,
+				pane: 'pinPane',
+				zIndexOffset: 1000
+			});
 			pinClusterLayer.addLayer(marker);
 			markerByPinKey[pinKey] = marker;
 			pinLatLngs.push([pin.lat, pin.lon]);
@@ -542,13 +652,53 @@
 		});
 
 		if (adjustView) {
-			// adjust map view to fit all pins
-			if (pinLatLngs.length > 0) {
+			const currentRequestToken = ++boundsFitRequestToken;
+
+			const fitPinsAndGpxBounds = () => {
+				if (!map || currentRequestToken !== boundsFitRequestToken) return;
+
+				let combinedBounds = null;
+
+				if (pinLatLngs.length > 0) {
+					combinedBounds = L.latLngBounds(pinLatLngs);
+				}
+
+				for (const gpxLayer of gpxLayers) {
+					if (!gpxLayer?.getBounds) continue;
+
+					const gpxBounds = gpxLayer.getBounds();
+					if (!gpxBounds?.isValid || !gpxBounds.isValid()) continue;
+
+					if (combinedBounds) {
+						combinedBounds.extend(gpxBounds);
+					} else {
+						combinedBounds = L.latLngBounds(gpxBounds.getSouthWest(), gpxBounds.getNorthEast());
+					}
+				}
+
+				if (!combinedBounds || !combinedBounds.isValid()) {
+					const defaultView = getValidDefaultMapView();
+					if (!defaultView) return;
+
+					viewSetForDate = $selectedDate;
+					map.setView([defaultView[0], defaultView[1]], defaultView[2]);
+					return;
+				}
+
 				viewSetForDate = $selectedDate;
-				map.fitBounds(pinLatLngs, {
+				map.fitBounds(combinedBounds, {
 					padding: [30, 30],
 					maxZoom: 15
 				});
+			};
+
+			fitPinsAndGpxBounds();
+
+			// GPX is loaded asynchronously; refit once each track is parsed.
+			for (const gpxLayer of gpxLayers) {
+				if (gpxLayer?.once) {
+					gpxLayer.once('ready', fitPinsAndGpxBounds);
+				}
 			}
 		}
 	}

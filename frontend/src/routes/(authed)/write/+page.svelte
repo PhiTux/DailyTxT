@@ -419,6 +419,16 @@
 		}
 	});
 
+	// copy gpx files information if available
+	let gpxFiles = $state([]);
+	$effect(() => {
+		if (filesOfDay) {
+			gpxFiles = filesOfDay.filter(
+				(file) => file.filename.split('.').pop().toLowerCase() === 'gpx'
+			);
+		}
+	});
+
 	function loadImage(file) {
 		images.map((image) => {
 			if (image.uuid_filename === file.uuid_filename) {
@@ -1723,7 +1733,7 @@
 
 			{#if $settings.useMap}
 				<div class="map-container mb-3">
-					<Map bind:this={mapInstance} bind:pins {openMapModal} showZoomButton />
+					<Map bind:this={mapInstance} bind:pins {openMapModal} showZoomButton {gpxFiles} />
 				</div>
 			{/if}
 

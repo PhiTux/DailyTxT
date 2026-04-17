@@ -38,6 +38,7 @@
 	"dependencies": {
 		"@emoji-mart/data": "^1.2.1",
 		"@fortawesome/free-solid-svg-icons": "^7.1.0",
+		"@mapbox/leaflet-omnivore": "^0.3.4",
 		"@popperjs/core": "^2.11.8",
 		"@tolgee/format-icu": "^6.2.7",
 		"@tolgee/svelte": "^6.2.7",
