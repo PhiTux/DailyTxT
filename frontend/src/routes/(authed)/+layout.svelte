@@ -1428,14 +1428,16 @@
 	<nav class="navbar navbar-expand-lg glass">
 		<div class="row w-100">
 			<div class="col-lg-4 col-sm-5 col d-flex flex-row justify-content-start align-items-center">
-				{#if !$alwaysShowSidenav}
-					<button
-						class="btn d-xl-none ms-1"
-						type="button"
-						data-bs-toggle="offcanvas"
-						data-bs-target="#sidenav"
-						aria-controls="sidenav"><Fa icon={faBars} /></button
-					>
+				{#if !$alwaysShowSidenav && !page.url.pathname.endsWith('/map')}
+					<div transition:slide={{ axis: 'x' }}>
+						<button
+							class="btn d-xl-none üs-1"
+							type="button"
+							data-bs-toggle="offcanvas"
+							data-bs-target="#sidenav"
+							aria-controls="sidenav"><Fa icon={faBars} /></button
+						>
+					</div>
 				{/if}
 
 				<div class="dropdown d-md-none ms-2">
