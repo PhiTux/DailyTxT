@@ -554,7 +554,7 @@
 								{/if}
 							</div>
 
-							<div class="d-flex flex-row justify-content-around flex-wrap">
+							<div class="log-extras gap-2">
 								{#if log.files && log.files.length > 0}
 									<div class="d-flex flex-column files">
 										<FileList files={log.files} {downloadFile} />
@@ -631,6 +631,19 @@
 	.map-container {
 		width: min(100%, 350px);
 		height: 230px;
+	}
+
+	.log-extras {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		align-items: start;
+	}
+
+	@container (max-width: 579px) {
+		.log-extras {
+			grid-template-columns: 1fr;
+			justify-items: center;
+		}
 	}
 
 	:global(body[data-bs-theme='light'] blockquote) {
@@ -765,8 +778,8 @@
 	}
 
 	.logContent {
+		container-type: inline-size;
 		width: 100%;
-		flex-wrap: wrap;
 		overflow-x: auto;
 	}
 
@@ -826,12 +839,6 @@
 		#scrollArea {
 			margin-top: 1rem !important;
 			margin-bottom: 1rem !important;
-		}
-	}
-
-	@media (min-width: 1300px) and (max-width: 1450px) {
-		.files {
-			max-width: 250px;
 		}
 	}
 
