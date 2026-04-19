@@ -167,16 +167,15 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 
 ---
-#### 2.5.0-testing.4 (2026-04-17) 
+
+### 2.5.0 (2026-04-19) 
 ```
-- Added map to pin locations for each day
+- Added a map 🗺️ to pin locations for each day 📍
 - Map shows gpx files if available
 - Added japanese translation [1]
 - Added option to default to TODAY when switching to write-mode
 ```
 [1]: Thanks to [@monta-gh](https://github.com/monta-gh)
-
----
 
 
 ### 2.4.6 (2026-03-21)
