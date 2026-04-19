@@ -77,6 +77,7 @@
 			.then((response) => {
 				$searchResults = [...response.data];
 				$isSearching = false;
+				console.log(response.data);
 			})
 			.catch((error) => {
 				$searchResults = [];
@@ -126,6 +127,7 @@
 			const coarse = window.matchMedia ? window.matchMedia('(pointer: coarse)').matches : false;
 			const iPadLike = /iPad/.test(ua) || (/Mac/.test(platform) && maxTP > 1);
 			isTouchDevice = maxTP > 0 || coarse || iPadLike || 'ontouchstart' in window;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		} catch (e) {
 			isTouchDevice = false;
 		}
@@ -311,7 +313,6 @@
 					/>
 
 					{#if $searchString}
-						<!-- svelte-ignore a11y_missing_attribute -->
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<a
@@ -357,7 +358,6 @@
 					{:else}
 						{#each filteredTags as tag, index (tag.id)}
 							<!-- svelte-ignore a11y_click_events_have_key_events -->
-							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 							<div
 								role="button"
@@ -375,7 +375,7 @@
 		{/if}
 		<div class="list-group flex-grow-1 glass">
 			{#if $searchResults.length > 0}
-				{#each $searchResults as result}
+				{#each $searchResults as result (`${result.year}-${result.month}-${result.day}-${result.text}`)}
 					<button
 						type="button"
 						onclick={() => {
@@ -405,6 +405,7 @@
 								)}
 							</div>
 							<div class="text">
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 								{@html result.text}
 							</div>
 						</div>
