@@ -283,7 +283,6 @@ func Search(w http.ResponseWriter, r *http.Request) {
 					continue
 				}
 				day := int(dayNum)
-				foundInDay := false
 				addResult := func(context string) {
 					results = append(results, map[string]any{
 						"year":  year,
@@ -291,7 +290,6 @@ func Search(w http.ResponseWriter, r *http.Request) {
 						"day":   day,
 						"text":  context,
 					})
-					foundInDay = true
 				}
 
 				// Check text
@@ -344,10 +342,6 @@ func Search(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 
-				if foundInDay {
-					continue
-				}
-
 				// Check filenames
 				if files, ok := dayLog["files"].([]any); ok {
 					for _, fileInterface := range files {
@@ -369,10 +363,6 @@ func Search(w http.ResponseWriter, r *http.Request) {
 							}
 						}
 					}
-				}
-
-				if foundInDay {
-					continue
 				}
 
 				// Check pins
