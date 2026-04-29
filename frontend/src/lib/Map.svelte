@@ -1171,9 +1171,13 @@
 		mapSearchError = '';
 
 		try {
-			const lang = $tolgee.getLanguage() || 'en';
+			let lang = $tolgee.getLanguage() || 'en';
+			// Komoot-API only allows de,en,fr - otherwise: default
+			if (!['de', 'en', 'fr'].includes(lang)) {
+				lang = 'default';
+			}
 			const response = await fetch(
-				`https://photon.komoot.io/api/?q=${encodeURIComponent(query.trim())}&limit=6&lang=${encodeURIComponent(lang)}`,
+				`https://photon.komoot.io/api/?q=${encodeURIComponent(query.trim())}&limit=5&lang=${encodeURIComponent(lang)}`,
 				{ signal: mapSearchAbortController.signal }
 			);
 
