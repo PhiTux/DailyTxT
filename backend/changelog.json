@@ -1,4 +1,11 @@
 {
+  "2.5.1": {
+    "date": "2026-04-29",
+    "changes": [
+      "🐞 Bugfix for map-search (wrong language parameter)",
+      "🐞 Bugfix for date-selection when switching from read-mode to write-mode"
+    ]
+  },
   "2.5.0": {
     "date": "2026-04-19",
     "changes": [

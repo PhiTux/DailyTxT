@@ -168,6 +168,13 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 ---
 
+### 2.5.1 (2026-04-29)
+```
+- Bugfix for map-search (wrong language parameter)
+- Bugfix for date-selection when switching from read-mode to write-mode
+```
+
+
 ### 2.5.0 (2026-04-19) 
 ```
 - Added a map 🗺️ to pin locations for each day 📍
