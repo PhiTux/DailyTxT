@@ -181,7 +181,6 @@
 			if (page.url.pathname.endsWith('/read') && $readingDate) {
 				$selectedDate = $readingDate;
 			}
-			$readingMode = false;
 			goto(resolve('/write'));
 		} else if (pageName === 'read') {
 			$readingMode = true;
