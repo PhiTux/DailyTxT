@@ -22,6 +22,7 @@
 	import 'leaflet.markercluster';
 	import 'leaflet.markercluster/dist/MarkerCluster.css';
 	import omnivore from '@mapbox/leaflet-omnivore';
+	import { slide } from 'svelte/transition';
 
 	const { t } = getTranslate();
 
@@ -49,6 +50,8 @@
 	} = $props();
 
 	let mapElement;
+	let mapBasemapTriggerElement = $state(null);
+	let mapBasemapOptionsElement = $state(null);
 
 	let map = $state(null);
 	let baseMapProvider = $state('osm');
@@ -92,6 +95,8 @@
 	let gpxLayers = [];
 	let boundsFitRequestToken = 0;
 	let pinPopupCleanupFns = [];
+	let basemapOptionsStyle = $state('');
+	let showBasemapOptions = $state(false);
 
 	const gpxDefaultStyle = {
 		color: '#1976d2',
@@ -302,6 +307,54 @@
 			? provider
 			: 'osm';
 	}
+
+	function updateBasemapOptionsPosition() {
+		if (!mapBasemapTriggerElement) return;
+
+		const rect = mapBasemapTriggerElement.getBoundingClientRect();
+		basemapOptionsStyle = `--basemap-options-top: ${rect.top}px; --basemap-options-left: ${rect.right + 6}px;`;
+	}
+
+	function toggleBasemapOptions() {
+		if (showBasemapOptions) {
+			showBasemapOptions = false;
+			return;
+		}
+
+		updateBasemapOptionsPosition();
+		showBasemapOptions = true;
+	}
+
+	function closeBasemapOptions() {
+		showBasemapOptions = false;
+	}
+
+	$effect(() => {
+		if (!showBasemapOptions) return;
+
+		const handleWindowChange = () => updateBasemapOptionsPosition();
+		const handleOutsidePointerDown = (event) => {
+			const target = event.target;
+			if (
+				mapBasemapTriggerElement?.contains(target) ||
+				mapBasemapOptionsElement?.contains(target)
+			) {
+				return;
+			}
+
+			closeBasemapOptions();
+		};
+
+		window.addEventListener('resize', handleWindowChange);
+		window.addEventListener('scroll', handleWindowChange, true);
+		document.addEventListener('pointerdown', handleOutsidePointerDown);
+
+		return () => {
+			window.removeEventListener('resize', handleWindowChange);
+			window.removeEventListener('scroll', handleWindowChange, true);
+			document.removeEventListener('pointerdown', handleOutsidePointerDown);
+		};
+	});
 
 	export function externalDrawAllPins() {
 		drawAllPins(true);
@@ -1257,39 +1310,18 @@
 
 	{#if showMapSelection}
 		<div class="map-basemap-menu" aria-label={$t('map.switch_map')}>
-			<button type="button" class="map-basemap-trigger" title={$t('map.switch_map')}>
+			<button
+				type="button"
+				class="map-basemap-trigger"
+				title={$t('map.switch_map')}
+				aria-haspopup="menu"
+				aria-expanded={showBasemapOptions}
+				aria-controls="map-basemap-options"
+				bind:this={mapBasemapTriggerElement}
+				onclick={toggleBasemapOptions}
+			>
 				<Fa icon={faMap} />
 			</button>
-
-			<div class="map-basemap-options" role="menu">
-				<button
-					type="button"
-					role="menuitemradio"
-					aria-checked={baseMapProvider === 'osm'}
-					class:active={baseMapProvider === 'osm'}
-					onclick={() => setBaseMap('osm')}
-				>
-					{$t('map.osm')}
-				</button>
-				<button
-					type="button"
-					role="menuitemradio"
-					aria-checked={baseMapProvider === 'esri'}
-					class:active={baseMapProvider === 'esri'}
-					onclick={() => setBaseMap('esri')}
-				>
-					{$t('map.satellite')}
-				</button>
-				<button
-					type="button"
-					role="menuitemradio"
-					aria-checked={baseMapProvider === 'esriAndMeta'}
-					class:active={baseMapProvider === 'esriAndMeta'}
-					onclick={() => setBaseMap('esriAndMeta')}
-				>
-					{$t('map.satellite_and_meta')}
-				</button>
-			</div>
 		</div>
 	{/if}
 
@@ -1368,6 +1400,54 @@
 		</div>
 	{/if}
 </div>
+
+{#if showMapSelection && showBasemapOptions}
+	<div
+		id="map-basemap-options"
+		class="map-basemap-options"
+		role="menu"
+		style={basemapOptionsStyle}
+		bind:this={mapBasemapOptionsElement}
+		transition:slide={{ axis: 'x', duration: 200 }}
+	>
+		<button
+			type="button"
+			role="menuitemradio"
+			aria-checked={baseMapProvider === 'osm'}
+			class:active={baseMapProvider === 'osm'}
+			onclick={() => {
+				setBaseMap('osm');
+				closeBasemapOptions();
+			}}
+		>
+			{$t('map.osm')}
+		</button>
+		<button
+			type="button"
+			role="menuitemradio"
+			aria-checked={baseMapProvider === 'esri'}
+			class:active={baseMapProvider === 'esri'}
+			onclick={() => {
+				setBaseMap('esri');
+				closeBasemapOptions();
+			}}
+		>
+			{$t('map.satellite')}
+		</button>
+		<button
+			type="button"
+			role="menuitemradio"
+			aria-checked={baseMapProvider === 'esriAndMeta'}
+			class:active={baseMapProvider === 'esriAndMeta'}
+			onclick={() => {
+				setBaseMap('esriAndMeta');
+				closeBasemapOptions();
+			}}
+		>
+			{$t('map.satellite_and_meta')}
+		</button>
+	</div>
+{/if}
 
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
 	<div
@@ -1536,7 +1616,7 @@
 		position: absolute;
 		left: 12px;
 		top: 12px;
-		z-index: 500;
+		z-index: 1400;
 	}
 
 	.map-basemap-trigger {
@@ -1557,25 +1637,14 @@
 	}
 
 	.map-basemap-options {
-		position: absolute;
-		top: 0;
-		left: 100%;
+		position: fixed;
+		top: var(--basemap-options-top, 12px);
+		left: var(--basemap-options-left, 58px);
+		z-index: 5000;
 		display: flex;
 		flex-direction: column;
 		gap: 0.35rem;
-		padding-left: 6px;
-		opacity: 0;
-		pointer-events: none;
-		transform: translateX(-6px);
-		transition:
-			opacity 120ms ease,
-			transform 120ms ease;
-	}
-
-	.map-basemap-menu:hover .map-basemap-options {
-		opacity: 1;
-		pointer-events: auto;
-		transform: translateX(0);
+		padding-left: 0;
 	}
 
 	.map-basemap-options button {

@@ -171,6 +171,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### 2.5.2 (not yet published)
 ```
 - Added option to change order of days in read mode
+- CSS fixes 
 ```
 
 ---
