@@ -77,7 +77,6 @@
 			.then((response) => {
 				$searchResults = [...response.data];
 				$isSearching = false;
-				console.log(response.data);
 			})
 			.catch((error) => {
 				$searchResults = [];

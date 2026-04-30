@@ -61,7 +61,6 @@
 		event.stopPropagation();
 		isEditing = true;
 		editedText = text || '';
-		console.log(isEditing);
 
 		setTimeout(() => {
 			document.querySelector('#editTextInput')?.focus();

@@ -34,7 +34,6 @@
 
 	$effect(() => {
 		if (Object.keys($settings).length > 0 && !$settings.useMap) {
-			console.log($settings);
 			goto(resolve('/write'));
 		}
 	});

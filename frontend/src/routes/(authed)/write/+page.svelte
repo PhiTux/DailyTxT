@@ -72,7 +72,6 @@
 
 		// If we come from read mode, either keep the last visible day or jump to today based on settings.
 		if (cameFromReadMode) {
-			console.log('huhu');
 			if ($settings.selectTodayWhenSwitchingToWriteMode) {
 				const today = new Date();
 				$selectedDate = {
