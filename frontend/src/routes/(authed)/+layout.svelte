@@ -1468,37 +1468,33 @@
 					<div class="dropdown-menu" id="modeDropdown">
 						<button
 							type="button"
-							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
-								'/write'
-							)
+							class="dropdown-item d-flex align-items-center {page.url.pathname.endsWith('/write')
 								? 'active'
 								: ''}"
 							onclick={() => goToPage('write')}
 						>
-							<Fa icon={faPencil} fw />
+							<Fa size="1.7x" icon={faPencil} fw />
 						</button>
 						<button
 							type="button"
-							class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
+							class="dropdown-item d-flex my-2 align-items-center {page.url.pathname.endsWith(
 								'/read'
 							)
 								? 'active'
 								: ''}"
 							onclick={() => goToPage('read')}
 						>
-							<Fa icon={faGlasses} fw />
+							<Fa size="1.7x" icon={faGlasses} fw />
 						</button>
 						{#if $settings.useMap}
 							<button
 								type="button"
-								class="dropdown-item d-flex align-items-center gap-2 {page.url.pathname.endsWith(
-									'/map'
-								)
+								class="dropdown-item d-flex align-items-center {page.url.pathname.endsWith('/map')
 									? 'active'
 									: ''}"
 								onclick={() => goToPage('map')}
 							>
-								<Fa icon={faMap} fw />
+								<Fa size="1.7x" icon={faMap} fw />
 							</button>
 						{/if}
 					</div>

@@ -168,6 +168,13 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 ---
 
+#### 2.5.2 (not yet published)
+```
+- Added option to change order of days in read mode
+```
+
+---
+
 ### 2.5.1 (2026-04-29)
 ```
 - Bugfix for map-search (wrong language parameter)
