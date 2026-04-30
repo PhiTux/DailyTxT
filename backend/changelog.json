@@ -1,4 +1,11 @@
 {
+  "2.6.0": {
+    "date": "2026-04-30",
+    "changes": [
+      "✨ Added option to change order of days in read mode",
+      "🐞 CSS fixes"
+    ]
+  },
   "2.5.1": {
     "date": "2026-04-29",
     "changes": [
