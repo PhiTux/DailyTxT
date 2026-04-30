@@ -422,6 +422,14 @@
 			});
 	}
 
+	let logsSorted = $derived.by(() => {
+		if ($settings.readModeOldestFirst) {
+			return logs;
+		}
+
+		return [...logs].sort((a, b) => b.day - a.day);
+	});
+
 	let altPressed = false;
 	function on_key_down(event) {
 		if (event.key === 'Alt') {
@@ -496,8 +504,8 @@
 
 	<!-- Center -->
 	<div class="d-flex flex-column my-4 flex-fill overflow-y-auto" id="scrollArea">
-		{#key logs}
-			{#each logs as log (log)}
+		{#key logsSorted}
+			{#each logsSorted as log (log)}
 				<!-- Log-Area -->
 				{#if ('text' in log && log.text !== '') || log.tags?.length > 0 || log.files?.length > 0}
 					<div class="log glass mb-3 p-3 d-flex flex-row" data-log-day={log.day}>

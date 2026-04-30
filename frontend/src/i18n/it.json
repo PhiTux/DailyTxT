@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Ciao {user}"
+    "greeting": "Ciao {user}",
+    "read_mode_newest_first": "Data più recente per primo",
+    "read_mode_oldest_first": "Data più vecchia per primo"
   },
   "nav": {
     "logout": "Disconnetti"

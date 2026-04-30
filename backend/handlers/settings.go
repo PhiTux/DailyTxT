@@ -36,6 +36,7 @@ func GetDefaultSettings() map[string]any {
 		"defaultMapView":                      []float64{50, 5, 4},
 		"useGeolocationOnThisDevice":          true,
 		"showGPXFiles":                        true,
+		"readModeOldestFirst":                 true,
 	}
 }
 

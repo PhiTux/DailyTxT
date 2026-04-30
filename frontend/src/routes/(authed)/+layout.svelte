@@ -32,7 +32,9 @@
 		faSliders,
 		faCircleUp,
 		faBars,
-		faCircle
+		faCircle,
+		faArrowDown19,
+		faArrowDown91
 	} from '@fortawesome/free-solid-svg-icons';
 	import axios from 'axios';
 	import { page } from '$app/state';
@@ -226,6 +228,7 @@
 
 		document.getElementById('settingsModal').addEventListener('hidden.bs.modal', function () {
 			backupCodes = [];
+			$tempSettings = $settings;
 		});
 	});
 
@@ -664,7 +667,7 @@
 					const toast = new bootstrap.Toast(document.getElementById('toastSuccessSaveSettings'));
 					toast.show();
 
-					settingsModal.hide();
+					if (settingsModal) settingsModal.hide();
 				} else {
 					console.error('Error saving settings');
 				}
@@ -1421,6 +1424,11 @@
 			console.log('DailyTxT is not installed');
 		}
 	});
+
+	function sortReadModeOldestFirst(oldestFirst) {
+		$tempSettings.readModeOldestFirst = oldestFirst;
+		saveUserSettings();
+	}
 </script>
 
 <div class="d-flex flex-column h-100">
@@ -1541,6 +1549,41 @@
 						</button>
 						<div class="dropdown-menu dropdown-menu-end" id="demoModeDropdown">
 							<DemoModeText />
+						</div>
+					</div>
+				{/if}
+
+				{#if page.url.pathname.endsWith('/read')}
+					<div class="dropdown me-2">
+						<button
+							type="button"
+							class="btn btn-outline-secondary dropdown-toggle"
+							data-bs-toggle="dropdown"
+							aria-expanded="false"
+						>
+							{#if $settings.readModeOldestFirst}
+								<Fa icon={faArrowDown19} fw />
+							{:else}
+								<Fa icon={faArrowDown91} fw />
+							{/if}
+						</button>
+						<div class="dropdown-menu dropdown-menu-end">
+							<button
+								type="button"
+								class="dropdown-item"
+								aria-expanded="false"
+								onclick={() => {
+									sortReadModeOldestFirst(true);
+								}}><Fa icon={faArrowDown19} fw /> {$t('navbar.read_mode_oldest_first')}</button
+							>
+							<button
+								type="button"
+								class="dropdown-item"
+								aria-expanded="false"
+								onclick={() => {
+									sortReadModeOldestFirst(false);
+								}}><Fa icon={faArrowDown91} fw /> {$t('navbar.read_mode_newest_first')}</button
+							>
 						</div>
 					</div>
 				{/if}

@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Hi {user}"
+    "greeting": "Hi {user}",
+    "read_mode_newest_first": "Newest date first",
+    "read_mode_oldest_first": "Oldest date first"
   },
   "nav": {
     "logout": "Logout"

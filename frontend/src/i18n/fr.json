@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Bonjour {user}"
+    "greeting": "Bonjour {user}",
+    "read_mode_newest_first": "Date la plus récente d’abord",
+    "read_mode_oldest_first": "Date la plus ancienne d’abord"
   },
   "nav": {
     "logout": "Déconnexion"

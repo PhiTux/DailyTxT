@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Hola {user}"
+    "greeting": "Hola {user}",
+    "read_mode_newest_first": "Data més recent primer",
+    "read_mode_oldest_first": "Data més antiga primer"
   },
   "nav": {
     "logout": "Tanca sessió"

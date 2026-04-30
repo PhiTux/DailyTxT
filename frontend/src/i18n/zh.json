@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "嗨 {user}"
+    "greeting": "嗨 {user}",
+    "read_mode_newest_first": "最新 日期 优先",
+    "read_mode_oldest_first": "最早 日期 优先"
   },
   "nav": {
     "logout": "登出"

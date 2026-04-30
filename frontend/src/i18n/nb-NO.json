@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Hei {user}"
+    "greeting": "Hei {user}",
+    "read_mode_newest_first": "Nyeste dato først",
+    "read_mode_oldest_first": "Eldste dato først"
   },
   "nav": {
     "logout": "Logg ut"

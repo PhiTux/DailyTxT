@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Ahoj {user}"
+    "greeting": "Ahoj {user}",
+    "read_mode_newest_first": "Nejnovější datum první",
+    "read_mode_oldest_first": "Nejstarší datum první"
   },
   "nav": {
     "logout": "Odhlásit se"

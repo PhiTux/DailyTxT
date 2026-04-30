@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "Hoi {user}"
+    "greeting": "Hoi {user}",
+    "read_mode_newest_first": "Nieuwste datum eerst",
+    "read_mode_oldest_first": "Oudste datum eerst"
   },
   "nav": {
     "logout": "Uitloggen"

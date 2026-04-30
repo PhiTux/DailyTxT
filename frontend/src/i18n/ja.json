@@ -172,7 +172,9 @@
     }
   },
   "navbar": {
-    "greeting": "こんにちは、{user}さん"
+    "greeting": "こんにちは、{user}さん",
+    "read_mode_newest_first": "最新の日付が先",
+    "read_mode_oldest_first": "最初に古い日付"
   },
   "nav": {
     "logout": "ログアウト"
