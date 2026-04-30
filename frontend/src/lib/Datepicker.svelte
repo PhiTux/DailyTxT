@@ -261,7 +261,7 @@
 		<button type="button" class="btn btnLeftRight" onclick={() => changeMonth(-1)}>&lt;</button>
 		<div class="date-selectors">
 			<select value={months[$cal.currentMonth]} onchange={onMonthSelect}>
-				{#each months as month}
+				{#each months as month (month)}
 					<option value={month}>{month}</option>
 				{/each}
 			</select>
@@ -295,10 +295,11 @@
 				in:fly={{ x: animationDirection > 0 ? 100 : -100, duration: 200 }}
 				out:fly={{ x: animationDirection > 0 ? -100 : 100, duration: 200 }}
 			>
-				{#each weekDays as day}
+				{#each weekDays as day (day)}
 					<div class="day-header">{day}</div>
 				{/each}
-				{#each days as day}
+				{#each days as day, index (index)}
+					{console.log(days)}
 					{#if day}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
