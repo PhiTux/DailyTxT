@@ -1,4 +1,10 @@
 {
+  "2.6.1": {
+    "date": "2026-05-01",
+    "changes": [
+      "🌐 Updated translations for chinese (simplified and traditional)"
+    ]
+  },
   "2.6.0": {
     "date": "2026-04-30",
     "changes": [

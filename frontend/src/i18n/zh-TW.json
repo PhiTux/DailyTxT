@@ -1,6 +1,6 @@
 {
   "aLookBack": {
-    "header_X_years_ago": "{years_old, plural, other {{years_old} 年前}}",
+    "header_X_years_ago": "{years_old, plural, other {{years_old} 年前} }",
     "open": "開啟",
     "Year_one_letter": "年"
   },
@@ -40,7 +40,7 @@
     "decrypting": "正在解密...",
     "download": "下載",
     "drop": {
-      "ready_to_upload": "{count, plural, other {可以上傳 {count} 個檔案}}",
+      "ready_to_upload": "{count, plural, other {可以上傳 {count} 個檔案} }",
       "release_to_upload": "放開即可上傳",
       "title": "將檔案拖曳至此"
     },
@@ -60,7 +60,7 @@
       "deleteDay": "刪除日誌",
       "history": "歷史紀錄"
     },
-    "load_images": "{amount, plural, other {載入 {amount} 張圖片}}",
+    "load_images": "{amount, plural, other {載入 {amount} 張圖片} }",
     "no_entry": "目前沒有紀錄",
     "toast": {
       "error_deleting_day": "刪除當日資料時發生錯誤！",
@@ -143,8 +143,8 @@
       "files": "{files, plural, other {{files} 個檔案}}",
       "history": "歷史紀錄",
       "logEntry": "日誌內容",
-      "mapPins": "{pins, plural, other {{pins} 個圖釘}}",
-      "tags": "{tags, plural, other {{tags} 個標籤}}",
+      "mapPins": "{pins, plural, other {{pins} 個圖釘} }",
+      "tags": "{tags, plural, other {{tags} 個標籤} }",
       "thisIncludes": "這包含了：",
       "title": "完全刪除當日資料？"
     },
@@ -411,11 +411,11 @@
       "bookmarked": "已加入書籤",
       "bookmarkedDays": "{days, plural, other {共有 <b>{days}</b> 天被加入書籤}}",
       "bookpages": "{pages, plural, other {您累積的字數已經可以寫成 {pages} 頁的書了（以一頁 300 字計算）}}",
-      "dayCount": "{dayCount, plural, other {{dayCount} 天}}",
+      "dayCount": "{dayCount, plural, other {{dayCount} 天} }",
       "daysWithActivity": "{days, plural, other {共有 <b>{days}</b> 天有寫下紀錄}}",
       "error_loading_data": "載入統計數據時發生未知的錯誤",
       "favoriteWritingDay": "最喜歡在星期幾寫日記",
-      "fileCount": "{fileCount, plural, other {{fileCount} 個檔案}}",
+      "fileCount": "{fileCount, plural, other {{fileCount} 個檔案} }",
       "fileCountWithDiskUsage": "{fileCount, plural, other {總計 <b>{fileCount}</b> 個檔案，佔用了 <b>{diskUsage}</b> 的空間}}",
       "funFacts": "有趣的小數據",
       "legend": "圖例說明",
@@ -424,7 +424,7 @@
       "mostProductiveDay": "寫最多字的一天",
       "no_data": "目前尚無資料",
       "open": "開啟",
-      "pinCount": "{pinCount, plural, other {{pinCount} 個圖釘}}",
+      "pinCount": "{pinCount, plural, other {{pinCount} 個圖釘} }",
       "pinsTotal": "{pins, plural, other {總共使用了 <b>{pins}</b> 個圖釘}}",
       "tagUsedCount": "共使用了 <b>{count}</b> 次",
       "title": "統計數據",

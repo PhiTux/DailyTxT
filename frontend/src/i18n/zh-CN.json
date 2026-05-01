@@ -143,7 +143,7 @@
       "files": "{files, plural, other {{files} 个文件}}",
       "history": "历史记录",
       "logEntry": "日记内容",
-      "mapPins": "{pins, plural, other {{pins} 个图钉}}",
+      "mapPins": "{pins, plural, other {{pins} 个图钉} }",
       "tags": "{tags, plural, other {{tags} 个标签}}",
       "thisIncludes": "这包含了：",
       "title": "彻底删除当日数据？"
@@ -424,7 +424,7 @@
       "mostProductiveDay": "最文思泉涌的一天",
       "no_data": "目前暂无数据",
       "open": "打开",
-      "pinCount": "{pinCount, plural, other {{pinCount} 个图钉}}",
+      "pinCount": "{pinCount, plural, other {{pinCount} 个图钉} }",
       "pinsTotal": "{pins, plural, other {总共使用了 <b>{pins}</b> 个图钉}}",
       "tagUsedCount": "共使用了 <b>{count}</b> 次",
       "title": "统计数据",

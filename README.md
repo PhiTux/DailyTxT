@@ -168,6 +168,12 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 
 ---
+### 2.6.1 (2026-05-01)
+```
+- Updated translations for chinese (simplified and traditional) [1]
+```
+[1]: Thanks to [@nothing-body](https://github.com/nothing-body)  
+
 
 ### 2.6.0 (2026-04-30)
 ```
