@@ -299,7 +299,6 @@
 					<div class="day-header">{day}</div>
 				{/each}
 				{#each days as day, index (index)}
-					{console.log(days)}
 					{#if day}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
