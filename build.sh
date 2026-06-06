@@ -74,7 +74,7 @@ echo -e "\n[3/3] Building Docker image: $PRIMARY_TAG${SECONDARY_TAG:+, $SECONDAR
 if [[ -z "$PUSH_FLAG" ]]; then
 	# Default: local docker build (no push)
 	if [[ -n "$SECONDARY_TAG" ]]; then
-		docker build \
+		docker build --no-cache \
 			-t phitux/dailytxt:$PRIMARY_TAG \
 			-t phitux/dailytxt:$SECONDARY_TAG \
 			.
@@ -87,13 +87,13 @@ else
 			echo "Pushing image to Docker registry..."
 			# Build for multiple platforms and push to registry
 			if [[ -n "$SECONDARY_TAG" ]]; then
-				docker buildx build \
+				docker buildx build --no-cache \
 					--platform linux/amd64,linux/arm64 \
 					-t phitux/dailytxt:$PRIMARY_TAG \
 					-t phitux/dailytxt:$SECONDARY_TAG \
 					--push .
 			else
-				docker buildx build \
+				docker buildx build --no-cache \
 					--platform linux/amd64,linux/arm64 \
 					-t phitux/dailytxt:$PRIMARY_TAG \
 					--push .
