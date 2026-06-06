@@ -25,6 +25,7 @@ var longTimeoutEndpoints = map[string]bool{
 	"/api/logs/downloadFile": true,
 	"/api/logs/allGPXFiles":  true,
 	"/api/logs/exportData":   true,
+	"/api/logs/importData":   true,
 	"/api/logs/backup":       true,
 	"/api/logs/backupUser":   true,
 	"/api/users/login":       true,
