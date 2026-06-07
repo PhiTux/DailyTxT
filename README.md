@@ -168,6 +168,12 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 
 ---
+### 2.6.2 (2026-06-07)
+```
+- Bugfix: Larger data-import is no longer running into timeout
+```
+
+
 ### 2.6.1 (2026-05-01)
 ```
 - Updated translations for chinese (simplified and traditional) [1]
