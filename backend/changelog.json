@@ -1,4 +1,10 @@
 {
+  "2.6.3": {
+    "date": "2026-08-16",
+    "changes": [
+      "🐞 Bugfix (again): Larger data-import is no longer running into timeout"
+    ]
+  },
   "2.6.2": {
     "date": "2026-06-07",
     "changes": [
