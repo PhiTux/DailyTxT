@@ -169,6 +169,13 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 
 ---
 
+#### 2.6.4 (testing)
+```
+- Updated dependencies for security reasons
+- Bugfix: Calendar date-change when switching between read-/write-mode
+```
+
+
 ### 2.6.3 (2026-08-16)
 ```
 - Bugfix (again): Larger data-import is no longer running into timeout

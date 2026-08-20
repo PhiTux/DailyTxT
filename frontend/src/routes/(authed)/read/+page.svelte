@@ -13,7 +13,7 @@
 	import { faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import ImageViewer from '$lib/ImageViewer.svelte';
-	import { alwaysShowSidenav, formatBytes } from '$lib/helpers.js';
+	import { alwaysShowSidenav, formatBytes, sameDate } from '$lib/helpers.js';
 	import { getTranslate, getTolgee } from '@tolgee/svelte';
 	import Map from '$lib/Map.svelte';
 	import * as bootstrap from 'bootstrap';
@@ -103,8 +103,13 @@
 		}
 	});
 
+	let lastSelectedDateForCalSync = $selectedDate;
 	$effect(() => {
-		if ($selectedDate) {
+		// Only follow $selectedDate when it actually changes (e.g. clicking a day
+		// while in read mode). Otherwise entering read mode would override the
+		// month the user had just navigated to in write mode.
+		if ($selectedDate && !sameDate($selectedDate, lastSelectedDateForCalSync)) {
+			lastSelectedDateForCalSync = $selectedDate;
 			$cal.currentYear = $selectedDate.year;
 			$cal.currentMonth = $selectedDate.month - 1;
 
