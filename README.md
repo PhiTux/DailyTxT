@@ -175,6 +175,7 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 - Bugfix: Better date-change of calendar when switching between read-/write-mode
 - Bugfix: GPX-track is now shown in popup in reading-mode
 - Bugfix: Selection of map-type is now always visible
+- CSS: "written on" now doesn't jump with/without date
 ```
 
 

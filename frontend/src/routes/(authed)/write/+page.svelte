@@ -1544,7 +1544,11 @@
 						</div>
 						<div class="w-50 textAreaWrittenAt">
 							<div class={logDateWritten ? '' : 'opacity-50'}>{$t('log.written_on')}</div>
-							{logDateWritten}
+							{#if logDateWritten}
+								<span logDateWritten>{logDateWritten}</span>
+							{:else}
+								<span>&nbsp;</span>
+							{/if}
 						</div>
 					</div>
 					<!-- Desktop buttons -->
