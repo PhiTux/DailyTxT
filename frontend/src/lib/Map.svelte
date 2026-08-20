@@ -21,7 +21,7 @@
 	import { getTranslate } from '@tolgee/svelte';
 	import 'leaflet.markercluster';
 	import 'leaflet.markercluster/dist/MarkerCluster.css';
-	import omnivore from '@mapbox/leaflet-omnivore';
+	import * as toGeoJSON from '@mapbox/togeojson';
 	import { slide } from 'svelte/transition';
 
 	const { t } = getTranslate();
@@ -94,6 +94,7 @@
 	let pinClusterLayer = null;
 	let gpxLayers = [];
 	let boundsFitRequestToken = 0;
+	let drawPinsRequestToken = 0;
 	let pinPopupCleanupFns = [];
 	let basemapOptionsStyle = $state('');
 	let showBasemapOptions = $state(false);
@@ -197,17 +198,30 @@
 		gpxLayers = [];
 	}
 
-	function showGPXinMap() {
+	async function showGPXinMap() {
 		if (!map) return;
 
 		clearGpxLayers();
 
 		for (const file of gpxFiles) {
-			if (file.src) {
-				const gpxLayer = omnivore.gpx(file.src).addTo(map);
+			if (!file.src) continue;
+
+			try {
+				const response = await fetch(file.src);
+				const gpxText = await response.text();
+				const gpxXml = new DOMParser().parseFromString(gpxText, 'text/xml');
+				const geojson = toGeoJSON.gpx(gpxXml);
+
+				const gpxLayer = L.geoJSON(geojson, {
+					pane: 'gpxPane',
+					style: gpxDefaultStyle
+				});
 				attachGpxInteractions(gpxLayer, file);
+				gpxLayer.addTo(map);
 
 				gpxLayers.push(gpxLayer);
+			} catch (error) {
+				console.error('Error parsing GPX file:', error);
 			}
 		}
 	}
@@ -275,30 +289,26 @@
 	}
 
 	function attachGpxInteractions(gpxLayer, file) {
-		if (!gpxLayer?.on) return;
+		if (!gpxLayer?.eachLayer) return;
 
 		const applyDefaultStyle = () => setGpxLayerStyle(gpxLayer, gpxDefaultStyle);
 		const applyHoverStyle = () => setGpxLayerStyle(gpxLayer, gpxHoverStyle);
 		const popupContent = createGpxPopupContent(file);
 
-		gpxLayer.on('ready', () => {
-			applyDefaultStyle();
+		applyDefaultStyle();
 
-			if (!gpxLayer?.eachLayer) return;
-
-			gpxLayer.eachLayer((layer) => {
-				if (layer && layer.on) {
-					if (typeof layer.setStyle === 'function') {
-						layer.on('mouseover', applyHoverStyle);
-						layer.on('mouseout', applyDefaultStyle);
-					}
-
-					layer.bindPopup?.(popupContent);
-					layer.on('click', () => {
-						layer.openPopup?.();
-					});
+		gpxLayer.eachLayer((layer) => {
+			if (layer && layer.on) {
+				if (typeof layer.setStyle === 'function') {
+					layer.on('mouseover', applyHoverStyle);
+					layer.on('mouseout', applyDefaultStyle);
 				}
-			});
+
+				layer.bindPopup?.(popupContent);
+				layer.on('click', () => {
+					layer.openPopup?.();
+				});
+			}
 		});
 	}
 
@@ -723,8 +733,10 @@
 		});
 	}
 
-	function drawAllPins(adjustView) {
+	async function drawAllPins(adjustView) {
 		if (!map || !customPinIcon) return;
+
+		const requestToken = ++drawPinsRequestToken;
 
 		if (!pinClusterLayer) {
 			pinClusterLayer = getMarkerClusterGroup();
@@ -733,7 +745,10 @@
 
 		cleanupPinPopups();
 		pinClusterLayer.clearLayers();
-		showGPXinMap();
+		await showGPXinMap();
+
+		// A newer drawAllPins call started while we awaited; let it finish the work instead.
+		if (requestToken !== drawPinsRequestToken) return;
 
 		const pinLatLngs = [];
 		markerByPinKey = {};
@@ -854,13 +869,6 @@
 			};
 
 			fitPinsAndGpxBounds();
-
-			// GPX is loaded asynchronously; refit once each track is parsed.
-			for (const gpxLayer of gpxLayers) {
-				if (gpxLayer?.once) {
-					gpxLayer.once('ready', fitPinsAndGpxBounds);
-				}
-			}
 		}
 	}
 
