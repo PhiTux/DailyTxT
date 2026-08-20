@@ -339,6 +339,15 @@
 		showBasemapOptions = false;
 	}
 
+	// Ancestors with backdrop-filter/transform (glass cards, modal-content) create a new
+	// containing block for position:fixed, so re-parent to <body> to keep viewport-relative coords.
+	// Done as an action (runs synchronously on insert, before paint) so the intro transition
+	// never renders at the wrong spot first, and removal is left to Svelte's outro handling
+	// so the close animation isn't cut short by an immediate manual .remove().
+	function portalToBody(node) {
+		document.body.appendChild(node);
+	}
+
 	$effect(() => {
 		if (!showBasemapOptions) return;
 
@@ -1424,6 +1433,7 @@
 		role="menu"
 		style={basemapOptionsStyle}
 		bind:this={mapBasemapOptionsElement}
+		use:portalToBody
 		transition:slide={{ axis: 'x', duration: 200 }}
 	>
 		<button
