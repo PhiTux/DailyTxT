@@ -94,7 +94,7 @@
 	let pinClusterLayer = null;
 	let gpxLayers = [];
 	let boundsFitRequestToken = 0;
-	let drawPinsRequestToken = 0;
+	let drawAllPinsChain = Promise.resolve();
 	let pinPopupCleanupFns = [];
 	let basemapOptionsStyle = $state('');
 	let showBasemapOptions = $state(false);
@@ -733,10 +733,17 @@
 		});
 	}
 
-	async function drawAllPins(adjustView) {
-		if (!map || !customPinIcon) return;
+	// Overlapping calls are serialized so each one's clearLayers/addLayer pass completes
+	// atomically and no adjustView request gets discarded by a later, unrelated call.
+	function drawAllPins(adjustView) {
+		drawAllPinsChain = drawAllPinsChain
+			.then(() => drawAllPinsInternal(adjustView))
+			.catch((error) => console.error('Error drawing pins:', error));
+		return drawAllPinsChain;
+	}
 
-		const requestToken = ++drawPinsRequestToken;
+	async function drawAllPinsInternal(adjustView) {
+		if (!map || !customPinIcon) return;
 
 		if (!pinClusterLayer) {
 			pinClusterLayer = getMarkerClusterGroup();
@@ -746,9 +753,6 @@
 		cleanupPinPopups();
 		pinClusterLayer.clearLayers();
 		await showGPXinMap();
-
-		// A newer drawAllPins call started while we awaited; let it finish the work instead.
-		if (requestToken !== drawPinsRequestToken) return;
 
 		const pinLatLngs = [];
 		markerByPinKey = {};
