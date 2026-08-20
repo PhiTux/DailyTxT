@@ -363,6 +363,11 @@
 		isLoadingMonthForReading = true;
 		imageSizeCalculated = false;
 
+		// Avoid a stale scroll offset picking an arbitrary day once the new month renders.
+		if (scrollAreaEl) {
+			scrollAreaEl.scrollTop = 0;
+		}
+
 		logs = [];
 
 		axios
@@ -383,7 +388,6 @@
 
 				// Wait until DOM is stable (layout after markup injection) then do first calculation
 				requestAnimationFrame(() => {
-					updateReadingDateFromScroll();
 					// Ensure an initial highlight or jump to selectedDate after month switch
 					if (logs && logs.length > 0) {
 						const firstDay = logs[0].day;

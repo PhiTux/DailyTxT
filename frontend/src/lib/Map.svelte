@@ -528,6 +528,10 @@
 
 		if (!map) return;
 
+		// In read mode each Map instance shows a fixed log entry's pins, so it
+		// must not re-fit/zoom whenever the globally selected date changes.
+		if (readingMode) return;
+
 		// Ensure a fresh initial fit/default-view pass on each date switch,
 		// even when pin data changes are not detected by pinsSignature.
 		queueMicrotask(() => onPinsChanged());
