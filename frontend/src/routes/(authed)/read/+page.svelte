@@ -463,8 +463,10 @@
 	let modalMapInstance = $state(null);
 	let isMapModalOpen = $state(false);
 	let modalPins = $state([]);
-	function openMapModal(pins) {
+	let modalGpxFiles = $state([]);
+	function openMapModal(pins, gpxFiles = []) {
 		modalPins = pins;
+		modalGpxFiles = gpxFiles;
 		const modalEl = document.getElementById('modalMap');
 		if (!modalEl) return;
 
@@ -590,7 +592,15 @@
 											allowMouseZoom
 											showSearch={false}
 											pins={log.pins}
-											openMapModal={() => openMapModal(log.pins)}
+											openMapModal={() =>
+												openMapModal(
+													log.pins,
+													$settings.showGPXFiles
+														? log.files?.filter(
+																(file) => file.filename.split('.').pop().toLowerCase() === 'gpx'
+															)
+														: []
+												)}
 											gpxFiles={$settings.showGPXFiles
 												? log.files?.filter(
 														(file) => file.filename.split('.').pop().toLowerCase() === 'gpx'
@@ -631,7 +641,13 @@
 				</div>
 				<div class="modal-body modal-body-map">
 					{#if isMapModalOpen}
-						<Map bind:this={modalMapInstance} showSearch={false} pins={modalPins} readingMode />
+						<Map
+							bind:this={modalMapInstance}
+							showSearch={false}
+							pins={modalPins}
+							gpxFiles={modalGpxFiles}
+							readingMode
+						/>
 					{/if}
 				</div>
 				<div class="modal-footer"></div>

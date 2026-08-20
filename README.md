@@ -172,7 +172,8 @@ The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT
 #### 2.6.4 (testing)
 ```
 - Updated dependencies for security reasons
-- Bugfix: Calendar date-change when switching between read-/write-mode
+- Bugfix: Better date-change of calendar when switching between read-/write-mode
+- Bugfix: GPX-track is now shown in popup in reading-mode
 ```
 
 
