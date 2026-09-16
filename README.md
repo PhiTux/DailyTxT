@@ -115,6 +115,12 @@ services:
       - 127.0.0.1:8000:80
 ```
 
+### Easypanel
+
+[Easypanel](https://easypanel.io) is a self-hosted Docker deployment platform. It has a one-click Easypanel template for DailyTxT, which runs the image above with a persistent volume for the data directory.
+
+[![Deploy on Easypanel](https://easypanel.io/img/deploy-on-easypanel-40.svg)](https://easypanel.io/templates/dailytxt)
+
 ## Migration Instructions 
 
 When coming from version 1 (most likely 1.0.15), please follow these instructions carefully!
