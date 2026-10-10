@@ -164,21 +164,20 @@ In Version A.B.C:
 
 Additionally there are tags like A.B.C-testing.1 (...testing.2 etc.) for **non-stable** versions. These versions are not meant to be used in production, but for testing new features and bug fixes before they are released in a stable version.
 
-The old version 1 is moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
+The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/DailyTxT/tree/v1).
 
 
 ---
 
-#### 2.6.4 (testing)
+### 2.6.4 (2026-10-10)
 ```
-- Updated dependencies for security reasons
 - Bugfix: Better date-change of calendar when switching between read-/write-mode
 - Bugfix: GPX-track is now shown in popup in reading-mode
 - Bugfix: Selection of map-type is now always visible
-- CSS: "written on" now doesn't jump with/without date
 - Bugfix: Editor-height is fixed
+- CSS: "written on" now doesn't jump with/without date
+- Updated dependencies for security reasons
 ```
-
 
 ### 2.6.3 (2026-08-16)
 ```
