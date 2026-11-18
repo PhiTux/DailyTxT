@@ -20,36 +20,36 @@
 		.use(LanguageStorage())
 		.init({
 			availableLanguages: [
-				'en',
-				'de',
-				'fr',
-				'cs',
-				'nb',
-				'no',
-				'zh-TW',
-				'it',
-				'nl',
-				'zh-CN',
 				'ca',
+				'cs',
+				'de',
+				'en',
+				'es',
+				'fr',
+				'it',
 				'ja',
-				'es'
+				'nb',
+				'nl',
+				'no',
+				'zh-CN',
+				'zh-TW'
 			],
 			defaultLanguage: 'en',
 			fallbackLanguage: 'en',
 			staticData: {
-				en: () => import('../i18n/en.json'),
-				de: () => import('../i18n/de.json'),
-				fr: () => import('../i18n/fr.json'),
-				cs: () => import('../i18n/cs.json'),
-				nb: () => import('../i18n/nb-NO.json'),
-				no: () => import('../i18n/nb-NO.json'),
-				'zh-TW': () => import('../i18n/zh-TW.json'),
-				it: () => import('../i18n/it.json'),
-				nl: () => import('../i18n/nl.json'),
-				'zh-CN': () => import('../i18n/zh-CN.json'),
 				ca: () => import('../i18n/ca.json'),
+				cs: () => import('../i18n/cs.json'),
+				de: () => import('../i18n/de.json'),
+				en: () => import('../i18n/en.json'),
+				es: () => import('../i18n/es.json'),
+				fr: () => import('../i18n/fr.json'),
+				it: () => import('../i18n/it.json'),
 				ja: () => import('../i18n/ja.json'),
-				es: () => import('../i18n/es.json')
+				nb: () => import('../i18n/nb-NO.json'),
+				nl: () => import('../i18n/nl.json'),
+				no: () => import('../i18n/nb-NO.json'),
+				'zh-CN': () => import('../i18n/zh-CN.json'),
+				'zh-TW': () => import('../i18n/zh-TW.json')
 			},
 
 			// for development
@@ -66,7 +66,6 @@
 
 	// PWA install prompt state
 	let deferredInstallPrompt = $state(null);
-	let showInstallToast = $state(false);
 
 	axios.interceptors.request.use((config) => {
 		config.withCredentials = true;
@@ -264,7 +263,6 @@
 		// Hide install banner when app gets installed
 		window.addEventListener('appinstalled', () => {
 			deferredInstallPrompt = null;
-			showInstallToast = false;
 		});
 	});
 
@@ -276,7 +274,6 @@
 		} finally {
 			// Only allow prompting once
 			deferredInstallPrompt = null;
-			showInstallToast = false;
 		}
 	}
 
@@ -326,7 +323,6 @@
 						class="btn-close me-2 m-auto"
 						data-bs-dismiss="toast"
 						aria-label="Close"
-						onclick={() => (showInstallToast = false)}
 					></button>
 				</div>
 			</div>
