@@ -31,7 +31,8 @@
 				'nl',
 				'zh-CN',
 				'ca',
-				'ja'
+				'ja',
+				'es'
 			],
 			defaultLanguage: 'en',
 			fallbackLanguage: 'en',
@@ -47,7 +48,8 @@
 				nl: () => import('../i18n/nl.json'),
 				'zh-CN': () => import('../i18n/zh-CN.json'),
 				ca: () => import('../i18n/ca.json'),
-				ja: () => import('../i18n/ja.json')
+				ja: () => import('../i18n/ja.json'),
+				es: () => import('../i18n/es.json')
 			},
 
 			// for development
