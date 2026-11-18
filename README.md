@@ -168,6 +168,13 @@ The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/Da
 
 
 ---
+#### 2.7.0-testing.1 
+```
+- Added spanish translation [1]
+- Added HEIC/HEIF image support to image viewer 
+```
+[1]: Thanks to [@Pedro Flores](https://github.com/PedroFlores199)
+
 
 ### 2.6.4 (2026-10-10)
 ```

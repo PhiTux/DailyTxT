@@ -4,6 +4,7 @@
 	import { faXmark, faChevronRight, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 	import { Fa } from 'svelte-fa';
 	import { getTranslate } from '@tolgee/svelte';
+	import { heicTo, isHeic } from 'heic-to';
 
 	const { t } = getTranslate();
 
@@ -11,6 +12,50 @@
 
 	let fullscreen = $state(false);
 	let currentIndex = $state(0);
+	// eslint-disable-next-line svelte/prefer-svelte-reactivity -- The cache is populated during rendering.
+	const previews = new Map();
+
+	function isHeicFile(filename) {
+		return /\.(heic|heif)$/i.test(filename);
+	}
+
+	function previewSource(image) {
+		const src = image.src;
+		if (!previews.has(src)) {
+			const preview = { active: true, url: undefined, promise: undefined };
+			preview.promise = (async () => {
+				try {
+					const response = await fetch(src);
+					if (!response.ok) throw new Error(`Failed to load image: ${response.status}`);
+					const blob = await response.blob();
+					if (!(await isHeic(new File([blob], image.filename)))) return src;
+					const converted = await heicTo({ blob, type: 'image/jpeg' });
+					if (preview.active) preview.url = URL.createObjectURL(converted);
+					return preview.url;
+				} catch (error) {
+					console.error('Failed to convert image:', image.filename, error);
+					throw error;
+				}
+			})();
+			previews.set(src, preview);
+		}
+		return previews.get(src).promise;
+	}
+
+	function releasePreview(preview) {
+		preview.active = false;
+		if (preview.url) URL.revokeObjectURL(preview.url);
+	}
+
+	$effect(() => {
+		const sources = new Set(images.map((image) => image.src));
+		for (const [src, preview] of previews) {
+			if (!sources.has(src)) {
+				releasePreview(preview);
+				previews.delete(src);
+			}
+		}
+	});
 
 	function openFullscreen(index) {
 		fullscreen = true;
@@ -81,6 +126,8 @@
 		window.addEventListener('keydown', handleKeyDown);
 		return () => {
 			window.removeEventListener('keydown', handleKeyDown);
+			for (const preview of previews.values()) releasePreview(preview);
+			previews.clear();
 		};
 	});
 
@@ -121,11 +168,27 @@
 			</button>
 			{#key images[currentIndex].uuid_filename}
 				{#if images[currentIndex].src}
-					<img
-						class="fullscreen-image"
-						alt={images[currentIndex].filename}
-						src={images[currentIndex].src}
-					/>
+					{#if isHeicFile(images[currentIndex].filename)}
+						{#await previewSource(images[currentIndex])}
+							<div class="spinner-border text-light" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{:then convertedSrc}
+							<img
+								class="fullscreen-image"
+								alt={images[currentIndex].filename}
+								src={convertedSrc}
+							/>
+						{:catch}
+							<div role="alert">{$t('files.toast.error_loading')}</div>
+						{/await}
+					{:else}
+						<img
+							class="fullscreen-image"
+							alt={images[currentIndex].filename}
+							src={images[currentIndex].src}
+						/>
+					{/if}
 				{:else}
 					<div
 						class="spinner-border text-light position-absolute top-50 start-50 translate-middle"
@@ -162,7 +225,22 @@
 				>
 					<div class="image-thumb-wrapper">
 						{#if image.src}
-							<img class="image" alt={image.filename} src={image.src} />
+							{#if isHeicFile(image.filename)}
+								{#await previewSource(image)}
+									<div
+										class="spinner-border text-light spinner-border-sm thumb-spinner"
+										role="status"
+									>
+										<span class="visually-hidden">Loading...</span>
+									</div>
+								{:then convertedSrc}
+									<img class="image" alt={image.filename} src={convertedSrc} />
+								{:catch}
+									<span role="alert">{$t('files.toast.error_loading')}</span>
+								{/await}
+							{:else}
+								<img class="image" alt={image.filename} src={image.src} />
+							{/if}
 						{:else}
 							<div class="spinner-border text-light spinner-border-sm thumb-spinner" role="status">
 								<span class="visually-hidden">Loading...</span>
@@ -185,7 +263,22 @@
 		>
 			<div class="image-thumb-wrapper">
 				{#if image.src}
-					<img class="image" alt={image.filename} src={image.src} transition:fade />
+					{#if isHeicFile(image.filename)}
+						{#await previewSource(image)}
+							<div
+								class="spinner-border text-secondary spinner-border-sm thumb-spinner"
+								role="status"
+							>
+								<span class="visually-hidden">Loading...</span>
+							</div>
+						{:then convertedSrc}
+							<img class="image" alt={image.filename} src={convertedSrc} transition:fade />
+						{:catch}
+							<span role="alert">{$t('files.toast.error_loading')}</span>
+						{/await}
+					{:else}
+						<img class="image" alt={image.filename} src={image.src} transition:fade />
+					{/if}
 				{:else}
 					<div class="spinner-border text-secondary spinner-border-sm thumb-spinner" role="status">
 						<span class="visually-hidden">Loading...</span>

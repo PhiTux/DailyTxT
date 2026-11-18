@@ -393,7 +393,7 @@
 		}
 	});
 
-	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp', 'heic', 'heif'];
 
 	let autoLoadImages = $derived(
 		($settings.setAutoloadImagesPerDevice && $autoLoadImagesThisDevice) ||

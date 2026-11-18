@@ -7,6 +7,9 @@ export default defineConfig({
 		sveltekit(),
 		SvelteKitPWA({
 			scope: '/',
+			workbox: {
+				maximumFileSizeToCacheInBytes: 4 * 1024 * 1024
+			},
 			manifest: {
 				name: 'DailyTxT',
 				short_name: 'DailyTxT',

@@ -120,7 +120,7 @@
 		}
 	});
 
-	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp'];
+	const imageExtensions = ['jpeg', 'jpg', 'gif', 'png', 'webp', 'bmp', 'heic', 'heif'];
 
 	// copy of files, which are images
 	$effect(() => {
