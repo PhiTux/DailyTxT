@@ -1,4 +1,12 @@
 {
+  "2.7.0": {
+    "date": "2026-11-20",
+    "changes": [
+      "🌐 Added spanish translation",
+      "✨ Added HEIC/HEIF image support to image viewer",
+      "⚙️ Updated dependencies for security reasons"
+    ]
+  },
   "2.6.4": {
     "date": "2026-10-10",
     "changes": [

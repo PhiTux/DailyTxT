@@ -3,8 +3,7 @@
 ![GitHub](https://img.shields.io/github/license/PhiTux/DailyTxT)
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/PhiTux)
 
-> [!WARNING]  
-> - When you are coming from version 1 (most likely 1.0.15), you MUST read the [Migration Instructions](#migration-instructions) below!
+> [!NOTE]  
 > - Note: A tag like `...-testing.1` is a <ins>**non-stable**</ins> version and (obviously) used for <ins>testing</ins>. Please backup your data and help testing the new version which uses this testing-tag. You can set up notifications for this at the end of the settings ❤️
 
 # DailyTxT
@@ -168,10 +167,11 @@ The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/Da
 
 
 ---
-#### 2.7.0-testing.1 
+### 2.7.0 (2026-11-20)
 ```
 - Added spanish translation [1]
 - Added HEIC/HEIF image support to image viewer 
+- Updated Packages for security reasons
 ```
 [1]: Thanks to [@Pedro Flores](https://github.com/PedroFlores199)
 
