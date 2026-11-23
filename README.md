@@ -167,6 +167,12 @@ The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/Da
 
 
 ---
+### 2.7.1 (2026-11-23)
+```
+- Bugfix: Fixed dangerous path-traversal vulnerability [1]
+```
+[1]: Thanks to [Iain](https://github.com/NotAFlightRisk)
+
 ### 2.7.0 (2026-11-20)
 ```
 - Added spanish translation [1]
