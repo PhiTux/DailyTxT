@@ -205,7 +205,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Name:     "token",
 		Value:    token,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 		Expires:  time.Now().Add(time.Duration(utils.Settings.LogoutAfterDays) * 24 * time.Hour),
 	})
@@ -393,7 +393,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 		Name:     "token",
 		Value:    "",
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 		Expires:  time.Unix(0, 0),
 		MaxAge:   -1,
@@ -687,7 +687,7 @@ func ChangePassword(w http.ResponseWriter, r *http.Request) {
 		Name:     "token",
 		Value:    token,
 		HttpOnly: true,
-		SameSite: http.SameSiteLaxMode,
+		SameSite: http.SameSiteStrictMode,
 		Path:     "/",
 		Expires:  time.Now().Add(time.Duration(utils.Settings.LogoutAfterDays) * 24 * time.Hour),
 	})

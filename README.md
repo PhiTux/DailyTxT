@@ -167,6 +167,11 @@ The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/Da
 
 
 ---
+#### 2.7.2-testing.1 (2026-11-x)
+```
+- Changed cookie to same-site=strict to prevent CSRF attacks
+```
+
 ### 2.7.1 (2026-11-23)
 ```
 - Bugfix: Fixed dangerous path-traversal vulnerability [1]
