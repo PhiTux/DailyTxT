@@ -512,27 +512,25 @@ func performBackup(w http.ResponseWriter, userID int, derivedKey string, req Bac
 	// 5. Export Files
 	if includeFiles {
 		for uuid, targetName := range filesToExport {
-			filePath := filepath.Join(utils.Settings.DataPath, fmt.Sprintf("%d", userID), "files", uuid)
-			if _, err := os.Stat(filePath); err == nil {
-				rawContent, errRead := os.ReadFile(filePath)
-				if errRead == nil {
-					var contentToWrite []byte
-					if req.Encrypted {
-						contentToWrite = rawContent
+			// utils.ReadFile validates the id (it originates from user-controlled log data)
+			rawContent, errRead := utils.ReadFile(userID, uuid)
+			if errRead == nil {
+				var contentToWrite []byte
+				if req.Encrypted {
+					contentToWrite = rawContent
+				} else {
+					decrypted, errDec := utils.DecryptFile(rawContent, encKey)
+					if errDec == nil {
+						contentToWrite = decrypted
 					} else {
-						decrypted, errDec := utils.DecryptFile(rawContent, encKey)
-						if errDec == nil {
-							contentToWrite = decrypted
-						} else {
-							utils.Logger.Printf("Error decrypting file %s: %v", uuid, errDec)
-							continue
-						}
+						utils.Logger.Printf("Error decrypting file %s: %v", uuid, errDec)
+						continue
 					}
+				}
 
-					f, err := zw.Create(fmt.Sprintf("files/%s", targetName))
-					if err == nil {
-						f.Write(contentToWrite)
-					}
+				f, err := zw.Create(fmt.Sprintf("files/%s", targetName))
+				if err == nil {
+					f.Write(contentToWrite)
 				}
 			}
 		}

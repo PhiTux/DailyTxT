@@ -73,6 +73,10 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Missing uuid parameter", http.StatusBadRequest)
 		return
 	}
+	if err := utils.ValidateFileUUID(uuid); err != nil {
+		http.Error(w, "Invalid uuid parameter", http.StatusBadRequest)
+		return
+	}
 
 	// Get file
 	file, header, err := r.FormFile("file")
@@ -213,6 +217,10 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	uuid := r.URL.Query().Get("uuid")
 	if uuid == "" {
 		http.Error(w, "Missing uuid parameter", http.StatusBadRequest)
+		return
+	}
+	if err := utils.ValidateFileUUID(uuid); err != nil {
+		http.Error(w, "Invalid uuid parameter", http.StatusBadRequest)
 		return
 	}
 
@@ -412,6 +420,10 @@ func DeleteFile(w http.ResponseWriter, r *http.Request) {
 	uuid := r.URL.Query().Get("uuid")
 	if uuid == "" {
 		http.Error(w, "Missing uuid parameter", http.StatusBadRequest)
+		return
+	}
+	if err := utils.ValidateFileUUID(uuid); err != nil {
+		http.Error(w, "Invalid uuid parameter", http.StatusBadRequest)
 		return
 	}
 
