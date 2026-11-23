@@ -1,4 +1,11 @@
 {
+  "2.7.2": {
+    "date": "2026-11-23",
+    "changes": [
+      "⚙️ Changed cookie settings to be more secure (SameSite=Strict)",
+      "⚙️ Changed admin-password-check to use constant-time comparison to prevent timing attacks"
+    ]
+  },
   "2.7.1": {
     "date": "2026-11-23",
     "changes": ["🐞 Bugfix: Fixed dangerous path-traversal vulnerability"]

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -45,8 +47,20 @@ func ValidateAdminPassword(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{
-		"valid": req.Password == adminPassword,
+		"valid": checkAdminPassword(req.Password),
 	})
+}
+
+// checkAdminPassword compares the given password with ADMIN_PASSWORD in constant time.
+// Both values are hashed first, so that neither content nor length leak via timing.
+func checkAdminPassword(candidate string) bool {
+	adminPassword := os.Getenv("ADMIN_PASSWORD")
+	if adminPassword == "" {
+		return false
+	}
+	expected := sha256.Sum256([]byte(adminPassword))
+	given := sha256.Sum256([]byte(candidate))
+	return subtle.ConstantTimeCompare(expected[:], given[:]) == 1
 }
 
 // validateAdminPasswordInRequest checks if the admin password in request is valid
@@ -61,7 +75,7 @@ func validateAdminPasswordInRequest(r *http.Request) bool {
 		return false
 	}
 
-	return req.AdminPassword == adminPassword
+	return checkAdminPassword(req.AdminPassword)
 }
 
 // GetAdminData returns:
@@ -237,8 +251,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Validate admin password
-	adminPassword := os.Getenv("ADMIN_PASSWORD")
-	if adminPassword == "" || req.AdminPassword != adminPassword {
+	if !checkAdminPassword(req.AdminPassword) {
 		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
 		return
 	}
@@ -303,8 +316,7 @@ func OpenRegistrationTemp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	adminPassword := os.Getenv("ADMIN_PASSWORD")
-	if adminPassword == "" || req.AdminPassword != adminPassword {
+	if !checkAdminPassword(req.AdminPassword) {
 		http.Error(w, "Invalid admin password", http.StatusUnauthorized)
 		return
 	}

@@ -167,9 +167,10 @@ The old version 1 has been moved to the [v1 branch](https://github.com/PhiTux/Da
 
 
 ---
-#### 2.7.2-testing.1 (2026-11-x)
+### 2.7.2 (2026-11-23)
 ```
 - Changed cookie to same-site=strict to prevent CSRF attacks
+- Changed admin-password-check to use constant-time comparison to prevent timing attacks
 ```
 
 ### 2.7.1 (2026-11-23)
